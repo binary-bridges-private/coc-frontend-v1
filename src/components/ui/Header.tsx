@@ -10,7 +10,7 @@ const Header = () => {
 
   return (
     <>
-      <div style={{ backgroundColor: "#D30031" }} className="flex items-center justify-center h-8">
+      <div style={{ backgroundColor: "#D30031" }} className="flex items-center justify-center h-auto p-2 text-white">
         <text className="text-mini" >NEED ASSISTANCE IN BUYING / ORDERING ? CALL 7303445575, 8448322142, 9999631597, 7011668629 NOW [Office Timing 10AM to 7PM ]</text>
       </div>
       <div className="h-24 navbar bg-base-100">
