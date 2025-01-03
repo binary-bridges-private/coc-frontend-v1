@@ -9,7 +9,7 @@ import ContactUs from "./components/pages/ContactUs.tsx";
 import Footer from "./components/ui/Footer.tsx";
 function App() {
     return (
-        <div className="flex flex-col min-h-screen">
+        <div className="flex flex-col min-h-screen h-screen w-screen">
             <main className="flex-grow">
                 <Routes>
                     <Route path="/" element={<LandingPage />} />
