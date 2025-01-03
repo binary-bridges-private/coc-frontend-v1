@@ -1,9 +1,12 @@
-import React from 'react'
+import React from "react";
+import Footer from "../ui/Footer.tsx";
 
 const LandingPage = () => {
-  return (
-    <div>LandingPage</div>
-  )
-}
+    return (
+        <div className="h-full w-full">
+            <Footer />
+        </div>
+    );
+};
 
-export default LandingPage
+export default LandingPage;
