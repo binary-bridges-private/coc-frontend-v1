@@ -7,9 +7,12 @@ import Faculties from "./components/pages/Faculties.tsx";
 import AboutUs from "./components/pages/AboutUs.tsx";
 import ContactUs from "./components/pages/ContactUs.tsx";
 import Footer from "./components/ui/Footer.tsx";
+import Header from "./components/ui/Header.tsx";
+
 function App() {
     return (
-        <div className="flex flex-col min-h-screen h-screen w-screen">
+        <div className="flex flex-col w-screen h-screen min-h-screen">
+            <Header />
             <main className="flex-grow">
                 <Routes>
                     <Route path="/" element={<LandingPage />} />
