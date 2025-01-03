@@ -3,9 +3,9 @@ import Footer from "../ui/Footer.tsx";
 
 const LandingPage = () => {
     return (
-        <div className="h-full w-full">
-            <Footer />
-        </div>
+       <>
+            <h1>Landing Page</h1>
+        </>
     );
 };
 

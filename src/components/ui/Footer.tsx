@@ -1,85 +1,149 @@
 import React from "react";
-
+import { FaFacebook, FaInstagram, FaTelegram, FaYoutube } from "react-icons/fa";
+// TODO: add links to important navigation
 const Footer = () => {
     return (
-        <footer className="flex flex-row justify-between items-start px-18 py-12 w-full bg-white">
-            {/* Left Section */}
-            <div className="flex flex-col justify-between items-start gap-8 mx-auto w-[520px] h-[496px]">
-                <div className="flex flex-col gap-8 w-[516px] h-[496px]">
-                    {/* Logo and Address */}
-                    <div className="flex flex-col gap-4 w-[495px]">
+        <footer className="flex flex-col border md:flex-row justify-evenly items-start px-4 md:px-2 py-12 gap-4 bg-white w-full">
+            {/* Group Section */}
+            <div className="flex flex-col justify-between items-start w-full md:w-[520px] gap-8">
+                {/* Frame 255 */}
+                <div className="flex flex-col items-start gap-8">
+                    {/* Frame 254 */}
+                    <div className="flex flex-col items-start gap-3">
+                        {/* Logo */}
                         <img
-                            src={"logo-wide.png"}
+                            src={"icon-wide.svg"}
                             alt="COC Logo"
                             className="w-[271px] h-[93px]"
                         />
-                        <p className="text-lg font-semibold text-gray-800 leading-[150%]">
+                        {/* Address */}
+                        <p className="text-lg font-semibold text-gray-800 leading-6">
                             COC Education Pvt. Ltd. Office No-132 Ithum Tower-B
                             Sector-62, Noida, Uttar Pradesh
                         </p>
                     </div>
+                </div>
 
-                    {/* Contact Sections */}
-                    <div className="flex flex-col gap-8 w-[516px]">
-                        <ContactSection
-                            title="For Purchase Related"
-                            description="Call/WhatsApp: 9999631597/8448322142/7303445575/7011668629
-          E-mail id: enquiry.coceducation@gmail.com"
-                        />
-                        <ContactSection
-                            title="For Technical Support"
-                            description="Call/WhatsApp: 9811455109, 9311281468
-          E-mail id: coceducation.technical@gmail.com"
-                        />
-                        <ContactSection
-                            title="For Courier Related Enquiry"
-                            description="Call/WhatsApp: 8595539968, 7042664033
-          E-mail id: coceducation.logistics@gmail.com"
-                        />
+                {/* Contact Section */}
+                <div className="flex flex-col items-start gap-4">
+                    {/* Section */}
+                    <div className="flex flex-col gap-4">
+                        <h4 className="text-xl font-bold text-gray-800">
+                            For Purchase Related
+                        </h4>
+                        <p className="text-base font-medium text-gray-600 leading-7">
+                            Call/WhatsApp: 9999631597 / 8448322142 / 7303445575
+                            / 7011668629
+                            <br />
+                            E-mail: enquiry.coceducation@gmail.com
+                        </p>
+                    </div>
+                    <div className="flex flex-col gap-4">
+                        <h4 className="text-xl font-bold text-gray-800">
+                            For Technical Support
+                        </h4>
+                        <p className="text-base font-medium text-gray-600 leading-7">
+                            Call/WhatsApp: 9811455109, 9311281468
+                            <br />
+                            E-mail: coceducation.technical@gmail.com
+                        </p>
+                    </div>
+                    <div className="flex flex-col gap-4">
+                        <h4 className="text-xl font-bold text-gray-800">
+                            For Courier Related Enquiry
+                        </h4>
+                        <p className="text-base font-medium text-gray-600 leading-7">
+                            Call/WhatsApp: 8595539968, 7042664033
+                            <br />
+                            E-mail: coceducation.logistics@gmail.com
+                        </p>
                     </div>
                 </div>
             </div>
 
-            {/* Right Section */}
-            <div className="flex flex-col gap-14 mx-auto w-[612px] h-[448px]">
-                <div className="flex flex-row gap-16 w-[612px] h-[448px]">
-                    <NavSection
-                        title="Important"
-                        links={[
-                            "Home",
-                            "About us",
-                            "Video Lectures",
-                            "Faculties",
-                            "Quiz",
-                            "Blogs",
-                            "FAQs",
-                        ]}
-                    />
+            {/* Navigation Section */}
+            <div className="flex flex-col md:flex-row justify-between items-start gap-8 w-full md:w-auto">
+                {/* Navigation Links */}
+                <div className="flex flex-col gap-4">
+                    <h5 className="text-xl font-semibold text-blue-900">
+                        Important
+                    </h5>
+                    <ul className="flex flex-col gap-4 text-base font-medium text-gray-800">
+                        <li>Home</li>
+                        <li>About us</li>
+                        <li>Video Lectures</li>
+                        <li>Faculties</li>
+                        <li>Quiz</li>
+                        <li>Blogs</li>
+                        <li>FAQs</li>
+                    </ul>
+                </div>
+            </div>
+            {/* Links Section */}
+            <div className="flex flex-col h-full md:flex-row justify-between items-start w-full md:w-auto">
+                {/* Navigation Links */}
+                <div className="flex flex-col gap-4 w-full">
+                    <h5 className="text-xl font-semibold text-blue-900">
+                        Follow Us
+                    </h5>
+                    <div className="w-full">
+                        <button className="btn text-xl text-white btn-circle mr-4">
+                            <FaFacebook className="" />
+                        </button>
+                        <button className="btn text-xl text-white btn-circle mr-4">
+                            <FaTelegram className="" />
+                        </button>
+                        <button className="btn text-xl text-white btn-circle mr-4">
+                            <FaInstagram className="" />
+                        </button>
+                        <button className="btn text-xl text-white btn-circle mr-4">
+                            <FaYoutube className="" />
+                        </button>
+                    </div>
+                    <YouTube />
                 </div>
             </div>
         </footer>
     );
 };
+
 export default Footer;
-const ContactSection = ({ title, description }) => (
-    <div className="flex flex-col gap-1 w-[516px]">
-        <h3 className="text-lg font-bold text-gray-800 leading-[150%]">
-            {title}
-        </h3>
-        <p className="text-sm font-medium text-gray-600 leading-[160%]">
-            {description}
-        </p>
-    </div>
-);
-const NavSection = ({ title, links }) => (
-    <div className="flex flex-col gap-4 w-[158px]">
-        <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
-        <ul className="flex flex-col gap-4">
-            {links.map((link, index) => (
-                <li key={index} className="text-sm font-medium text-gray-800">
-                    {link}
-                </li>
-            ))}
-        </ul>
-    </div>
-);
+
+const YouTube = () => {
+    return (
+        <div className="flex flex-row items-center gap-4 w-[308px] h-[66px]">
+            {/* Image */}
+
+            <img
+                src={"santosh.svg"}
+                alt="Youtube"
+                className="w-[66px] h-[66px] rounded-[2px] bg-cover"
+            />
+
+            {/* Content Section */}
+            <div className="flex flex-col items-start gap-3 w-[226px] h-[66px]">
+                {/* Title */}
+                <div className="text-[14px] font-medium leading-[140%] text-[#282828]">
+                    Santosh Kumar - COC Education
+                </div>
+
+                {/* Payment Method Icon Section */}
+                <div className="relative w-[143px] h-[32px] bg-[#FF0000] border rounded-[2px]">
+                    {/* YouTube Logo */}
+                    <img
+                        src={"youtube.svg"}
+                        alt="Youtube Logo"
+                        className="absolute w-[73px] h-[16px] left-[6px] top-[50%] translate-y-[-50%] bg-contain bg-no-repeat"
+                    />
+
+                    {/* Subscriber Count */}
+                    <div className="border absolute w-[49px] h-[32px] left-[94px] top-0 bg-[#FFFFFF] flex items-center justify-center">
+                        <span className="text-[14px] font-normal leading-[140%] text-[#737373]">
+                            329K
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
