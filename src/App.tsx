@@ -6,10 +6,12 @@ import Courses from "./components/pages/Courses.tsx";
 import Faculties from "./components/pages/Faculties.tsx";
 import AboutUs from "./components/pages/AboutUs.tsx";
 import ContactUs from "./components/pages/ContactUs.tsx";
+import Header from "./components/ui/Header.tsx";
 
 function App() {
     return (
         <div className="border h-screen w-screen bg-primary text-white">
+            <Header />
             <Routes>
                 <Route path="/" element={<LandingPage />}></Route>
                 <Route path="/courses" element={<ProtectedRoutes element={Courses} />} ></Route>

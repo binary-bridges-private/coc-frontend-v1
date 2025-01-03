@@ -14,6 +14,15 @@ module.exports = {
                 sans: ["Inter", "sans-serif"], // Default sans-serif font
                 serif: ["Merriweather", "serif"], // Default serif font
             },
+            fontSize: {
+                "mini": "14px",
+                "small": "16px",
+                "medium": "18px",
+                "large": "22px",
+            },
+            screens: {
+                'laptop1': { 'min': '1022px', 'max': '1200px' }, // Custom range
+            },
         },
     },
     plugins: [require("daisyui")],
