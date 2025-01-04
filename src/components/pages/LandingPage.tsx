@@ -8,6 +8,9 @@ const LandingPage = () => {
         <div className="">
             <EnquirySection />
             <ProductSectionLandingPage />
+            <VisitCourses />
+            <WhyChooseCoc />
+            <FreeVideo />
             <WhatOurStudentSays />
         </div>
     );
