@@ -9,7 +9,7 @@ import {
     FaYoutube,
 } from "react-icons/fa";
 
-const EnquiryAndUpdates = () => {
+const EnquirySection = () => {
     return (
         <div className="w-full h-[664px] grid grid-cols-3">
             <div
@@ -41,4 +41,4 @@ const EnquiryAndUpdates = () => {
     );
 };
 
-export default EnquiryAndUpdates;
+export default EnquirySection;
