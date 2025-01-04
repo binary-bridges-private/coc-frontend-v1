@@ -1,11 +1,11 @@
 import React from "react";
 import WhatOurStudentSays from "../ui/WhatOurStudentSays.tsx";
-import EnquiryAndUpdates from "../ui/EnquiryAndUpdates.tsx";
+import EnquirySection from "../ui/EnquirySection.tsx";
 
 const LandingPage = () => {
     return (
         <div className="">
-            <EnquiryAndUpdates/>
+            <EnquirySection/>
             <WhatOurStudentSays />
         </div>
     );
