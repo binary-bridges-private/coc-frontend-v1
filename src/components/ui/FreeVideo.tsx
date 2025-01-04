@@ -2,7 +2,7 @@ import React from 'react'
 
 const FreeVideo = () => {
     return (
-        <section className="bg-[#FCE9E9] w-full h-auto flex flex-col lg:flex-row items-center justify-center p-10">
+        <section className="bg-[#FCE9E9] w-full h-auto flex flex-col lg:flex-row items-center justify-center px-10 py-20">
             <div className="relative flex flex-col items-start gap-3 px-6">
                 <div className="flex flex-col gap-2">
                     <h2 className="text-[#282828] text-4xl md:text-6xl font-semibold">

@@ -4,7 +4,7 @@ import VisitCoursesCard from "./VisitComponentCard.tsx";
 const VisitCoursesHome = () => {
     return (
         <>
-            <div className="flex flex-col items-center w-full h-full gap-10 px-4 my-10 top-44 md:px-8">
+            <div className="flex flex-col items-center w-full h-full gap-10 px-4 my-20 top-44 md:px-8">
 
                 <div className="flex flex-col items-center w-full h-auto max-w-2xl gap-2">
                     <h1 className="text-3xl font-bold text-center text-black">Click and Visit Our Different Courses</h1>
