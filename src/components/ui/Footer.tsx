@@ -3,7 +3,8 @@ import { FaFacebook, FaInstagram, FaTelegram, FaYoutube } from "react-icons/fa";
 // TODO: add links to important navigation
 const Footer = () => {
     return (
-        <>
+        <div className="">
+            <NewsletterSignup />
             <footer className="flex flex-col border md:flex-row justify-evenly items-start px-4 md:px-2 py-12 gap-4 bg-white w-full">
                 {/* Group Section */}
                 <div className="flex flex-col justify-between items-start w-full md:w-[520px] gap-8">
@@ -106,7 +107,7 @@ const Footer = () => {
                 </div>
             </footer>
             <PaymentPartnersSection />
-        </>
+        </div>
     );
 };
 
@@ -200,6 +201,35 @@ const PaymentPartnersSection = () => {
                         }}
                     ></div>
                 </div>
+            </div>
+        </div>
+    );
+};
+const NewsletterSignup = () => {
+    return (
+        <div className="flex flex-col items-center justify-center p-6 md:p-6 w-full bg-gradient-to-b from-[#D30031] to-[#db1d49] text-white max-w-full">
+            {/* Title */}
+            <h2 className="text-2xl md:text-4xl font-bold text-center">
+                Signup to Newsletter
+            </h2>
+
+            {/* Subtitle */}
+            <p className="text-center mt-2 text-sm md:text-base">
+                You will receive every news and recent update on your email!!!
+            </p>
+
+            {/* Input Form */}
+            <div className="mt-6 flex w-full max-w-md">
+                {/* Email Input */}
+                <input
+                    type="email"
+                    placeholder="Enter your email address here"
+                    className="bg-gray-200 flex-1 px-4 py-2 rounded-l-lg border-none focus:outline-none text-black"
+                />
+                {/* Subscribe Button */}
+                <button className="px-4 py-2 bg-[#101C36] text-white rounded-r-lg hover:bg-[#0c162a]">
+                    SUBSCRIBE
+                </button>
             </div>
         </div>
     );
