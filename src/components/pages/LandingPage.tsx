@@ -1,11 +1,15 @@
 import React from "react";
-import Footer from "../ui/Footer.tsx";
+import VisitCourses from "../ui/visitCourses/VisitCoursesHome.tsx"
+import WhyChooseCOC from "../ui/WhyChooseCoc.tsx";
+import FreeVideo from "../ui/FreeVideo.tsx";
 
 const LandingPage = () => {
     return (
-       <>
-            <h1>Landing Page</h1>
-        </>
+        <div>
+            <VisitCourses />
+            <WhyChooseCOC />
+            <FreeVideo />
+        </div>
     );
 };
 
