@@ -11,7 +11,7 @@ import Header from "./components/ui/Header.tsx";
 
 function App() {
     return (
-        <div className="flex flex-col w-screen h-screen min-h-screen">
+        <div className=" overflow-auto flex flex-col w-screen h-screen min-h-screen">
             <Header />
             <main className="flex-grow">
                 <Routes>

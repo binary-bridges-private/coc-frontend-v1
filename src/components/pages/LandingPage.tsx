@@ -1,11 +1,13 @@
 import React from "react";
-import Footer from "../ui/Footer.tsx";
+import WhatOurStudentSays from "../ui/WhatOurStudentSays.tsx";
+import EnquiryAndUpdates from "../ui/EnquiryAndUpdates.tsx";
 
 const LandingPage = () => {
     return (
-       <>
-            <h1>Landing Page</h1>
-        </>
+        <div className="">
+            <EnquiryAndUpdates/>
+            <WhatOurStudentSays />
+        </div>
     );
 };
 
