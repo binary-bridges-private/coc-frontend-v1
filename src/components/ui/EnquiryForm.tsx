@@ -1,5 +1,4 @@
 import React from "react";
-import "daisyui/dist/full.css";
 import useForms from "../../hooks/useForms.ts";
 
 // Validation functions
@@ -35,17 +34,17 @@ export default function EnquiryForm() {
     };
 
     return (
-        <div className="flex justify-center items-center h-full w-full bg-white">
+        <div className="flex items-center justify-center w-full h-full bg-white">
             <form
                 onSubmit={handleSubmit}
                 className="flex justify-center items-center flex-col rounded w-5/6 h-full  mt-8 text-center text-[#0A0A0A]"
             >
                 <h1 className="text-2xl font-bold text-center ">Enquire Now</h1>
-                <p className="mb-3  text-center">
+                <p className="mb-3 text-center">
                     Please fill the form below for any enquiry!
                 </p>
 
-                <div className="form-control mb-4 w-full">
+                <div className="w-full mb-4 form-control">
                     <label className="label">
                         <span className="text-[#041B2D]">Full Name*</span>
                     </label>
@@ -64,7 +63,7 @@ export default function EnquiryForm() {
                 </div>
 
                 {/* Email Address */}
-                <div className="form-control mb-4 w-full">
+                <div className="w-full mb-4 form-control">
                     <label className="label">
                         <span className="text-[#041B2D]">Email Address*</span>
                     </label>
@@ -83,7 +82,7 @@ export default function EnquiryForm() {
                 </div>
 
                 {/* Phone Number */}
-                <div className="form-control mb-4 w-full">
+                <div className="w-full mb-4 form-control">
                     <label className="label">
                         <span className="text-[#041B2D]">
                             Phone Number (+91)*
@@ -104,7 +103,7 @@ export default function EnquiryForm() {
                 </div>
 
                 {/* Message */}
-                <div className="form-control mb-4 w-full">
+                <div className="w-full mb-4 form-control">
                     <label className="label">
                         <span className="text-[#041B2D]">Message*</span>
                     </label>
@@ -123,7 +122,7 @@ export default function EnquiryForm() {
                 </div>
 
                 {/* Submit Button */}
-                <div className="form-control mt-6 w-full ">
+                <div className="w-full mt-6 form-control ">
                     <button type="submit" className="btn btn-[#041B2D] ">
                         Submit
                     </button>
