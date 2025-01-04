@@ -3,17 +3,15 @@ import EnquiryForm from "./EnquiryForm.tsx";
 import {
     FaFacebook,
     FaInstagram,
-    FaLinkedin,
     FaTelegram,
     FaWhatsapp,
     FaYoutube,
 } from "react-icons/fa";
-
 const EnquirySection = () => {
     return (
-        <div className="w-full h-[664px] grid grid-cols-3">
+        <div className="w-full h-auto md:h-[664px] grid md:grid-cols-3 grid-cols-1">
             <div
-                className="h-full col-span-2 bg-cover bg-center opacity-90 flex flex-col justify-center gap-8"
+                className="hidden md:flex h-full col-span-2 bg-cover bg-center opacity-90 flex-col justify-center gap-8"
                 style={{
                     backgroundImage: "url('woman-working-in-office.jpg')",
                 }}
@@ -34,7 +32,7 @@ const EnquirySection = () => {
                     <FaInstagram className="text-white text-5xl" />
                 </div>
             </div>
-            <div className="h-full col-span-1">
+            <div className="h-full col-span-1 flex justify-center items-center">
                 <EnquiryForm />
             </div>
         </div>
