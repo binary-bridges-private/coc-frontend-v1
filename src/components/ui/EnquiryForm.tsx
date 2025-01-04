@@ -1,5 +1,4 @@
 import React from "react";
-import "daisyui/dist/full.css";
 import useForms from "../../hooks/useForms.ts";
 
 // Validation functions
