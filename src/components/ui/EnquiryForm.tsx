@@ -61,11 +61,6 @@ export default function EnquiryForm() {
                         onChange={handleChange}
                         onBlur={handleBlur}
                     />
-                    {errors.fullName && (
-                        <span className="text-error text-sm">
-                            {errors.fullName}
-                        </span>
-                    )}
                 </div>
 
                 {/* Email Address */}
@@ -85,11 +80,6 @@ export default function EnquiryForm() {
                         onChange={handleChange}
                         onBlur={handleBlur}
                     />
-                    {errors.email && (
-                        <span className="text-error text-sm absolute">
-                            {errors.email}
-                        </span>
-                    )}
                 </div>
 
                 {/* Phone Number */}
@@ -111,11 +101,6 @@ export default function EnquiryForm() {
                         onChange={handleChange}
                         onBlur={handleBlur}
                     />
-                    {errors.phone && (
-                        <span className="text-error text-sm">
-                            {errors.phone}
-                        </span>
-                    )}
                 </div>
 
                 {/* Message */}
@@ -135,11 +120,6 @@ export default function EnquiryForm() {
                         onBlur={handleBlur}
                         style={{ minHeight: "100px", maxHeight: "200px" }}
                     ></textarea>
-                    {errors.message && (
-                        <span className="text-error text-sm">
-                            {errors.message}
-                        </span>
-                    )}
                 </div>
 
                 {/* Submit Button */}
