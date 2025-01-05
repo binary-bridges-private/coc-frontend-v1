@@ -106,7 +106,6 @@ const Footer = () => {
                     </div>
                 </div>
             </footer>
-            <PaymentPartnersSection />
         </div>
     );
 };
