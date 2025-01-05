@@ -94,8 +94,8 @@ const ProductSectionLandingPage = () => {
                     ))}
                 </Slider>
             </div>
-            <div>
-                <button className="flex active:scale-80 bg-[#101C36]  active:bg-white active:text-[#101C36] text-white flex-row justify-center items-center gap-2.5 p-2 w-[235px] h-[48px] border border-[#101C36] rounded-md">
+            <div className="w-full flex flex-col items-center mt-8">
+                <button className="flex  active:scale-80 bg-[#101C36]  active:bg-white active:text-[#101C36] text-white flex-row justify-center items-center gap-2.5 p-2 w-[235px] h-[48px] border border-[#101C36] rounded-md">
                     <span className="font-sans font-medium text-[16px]">
                         Explore Courses
                     </span>
@@ -106,18 +106,15 @@ const ProductSectionLandingPage = () => {
 };
 const HeadingSection = () => {
     return (
-        <div className="flex flex-col items-center gap-3 w-[1174px] h-[129px]">
+        <div className="flex flex-col items-center gap-3 px-4 md:px-8 lg:px-12">
             {/* Main Heading */}
-            <h1 className="text-black text-[36px] leading-[140%] text-center w-[1024px] font-bold">
+            <h1 className="text-black text-2xl md:text-3xl lg:text-4xl leading-[140%] text-center font-bold">
                 Boost Your Learning with{" "}
-                <span className="italic text-red-600">
-                    {" "}
-                    Our Trending Combos
-                </span>
+                <span className="italic text-red-600">Our Trending Combos</span>
             </h1>
 
             {/* Subheading */}
-            <p className="text-[#545454] font-normal text-[22px] leading-[148%] text-center w-[1174px]">
+            <p className="text-[#545454] font-normal text-sm md:text-base lg:text-lg leading-[148%] text-center max-w-screen-lg">
                 Maximize your potential with expertly curated course
                 combinations designed to give you an edge. Get the best value,
                 seamless learning, and guaranteed results—all in one package!
@@ -125,5 +122,4 @@ const HeadingSection = () => {
         </div>
     );
 };
-
 export default ProductSectionLandingPage;
