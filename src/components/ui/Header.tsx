@@ -13,7 +13,7 @@ const Header = () => {
       <div style={{ backgroundColor: "#D30031" }} className="flex items-center justify-center h-auto p-2 text-white">
         <text className="text-mini" >NEED ASSISTANCE IN BUYING / ORDERING ? CALL 7303445575, 8448322142, 9999631597, 7011668629 NOW [Office Timing 10AM to 7PM ]</text>
       </div>
-      <div className="h-24 navbar bg-white">
+      <div className="bg-white min-h-24 navbar">
         <div className="flex-1 ml-8">
           <img className="h-12" src='/assets/logo.svg' />
         </div>

@@ -16,19 +16,19 @@ const EnquirySection = () => {
                     backgroundImage: "url('woman-working-in-office.jpg')",
                 }}
             >
-                <div className="relative h-[58px] w-[58px] bg-[#FF0000] flex justify-center items-center">
+                <div className="relative h-[58px] w-[58px] bg-[#FF0000] rounded-lg flex justify-center items-center hover:h-[64px] hover:w-[64px]">
                     <FaYoutube className="text-5xl text-white" />
                 </div>
-                <div className="h-[58px] w-[58px] bg-[#1877F2] flex justify-center items-center">
+                <div className="h-[58px] w-[58px] bg-[#1877F2] flex justify-center rounded-lg items-center hover:h-[64px] hover:w-[64px]">
                     <FaFacebook className="text-5xl text-white" />
                 </div>
-                <div className="h-[58px] w-[58px] bg-[#60D669] flex justify-center items-center">
+                <div className="h-[58px] w-[58px] bg-[#60D669] flex justify-center rounded-lg items-center hover:h-[64px] hover:w-[64px]">
                     <FaWhatsapp className="text-5xl text-white" />
                 </div>
-                <div className="h-[58px] w-[58px] bg-[#2AABEE] flex justify-center items-center">
+                <div className="h-[58px] w-[58px] bg-[#2AABEE] flex justify-center rounded-lg items-center hover:h-[64px] hover:w-[64px]">
                     <FaTelegram className="text-5xl text-white" />
                 </div>
-                <div className="h-[58px] w-[58px] bg-[#FFAB4D] flex justify-center items-center">
+                <div className="h-[58px] w-[58px] bg-[#FFAB4D] flex justify-center rounded-lg items-center hover:h-[64px] hover:w-[64px]">
                     <FaInstagram className="text-5xl text-white" />
                 </div>
             </div>
