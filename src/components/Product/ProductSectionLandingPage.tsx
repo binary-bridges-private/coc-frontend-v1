@@ -110,7 +110,7 @@ const HeadingSection = () => {
             {/* Main Heading */}
             <h1 className="text-black text-[36px] leading-[140%] text-center w-[1024px] font-bold">
                 Boost Your Learning with{" "}
-                <span className="italic text-red-500">
+                <span className="italic text-red-600">
                     {" "}
                     Our Trending Combos
                 </span>
