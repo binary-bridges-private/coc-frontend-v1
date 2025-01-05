@@ -1,16 +1,18 @@
 import React from "react";
 import WhatOurStudentSays from "../ui/WhatOurStudentSays.tsx";
 import EnquirySection from "../ui/EnquirySection.tsx";
-import VisitCourses from "../ui/visitCourses/VisitCoursesHome.tsx"
-import WhyChooseCoc from "../ui/WhyChooseCoc.tsx"
-import FreeVideo from "../ui/FreeVideo.tsx"
+import ProductSectionLandingPage from "../Product/ProductSectionLandingPage.tsx";
+import FreeVideo from "../ui/FreeVideo.tsx";
+import WhyChooseCOC from "../ui/WhyChooseCoc.tsx";
+import VisitCoursesHome from "../ui/visitCourses/VisitCoursesHome.tsx";
 
 const LandingPage = () => {
     return (
-        <div>
-            <EnquirySection/>
-            <VisitCourses />
-            <WhyChooseCoc />
+        <div className="">
+            <EnquirySection />
+            <ProductSectionLandingPage />
+            <VisitCoursesHome />
+            <WhyChooseCOC />
             <FreeVideo />
             <WhatOurStudentSays />
         </div>
