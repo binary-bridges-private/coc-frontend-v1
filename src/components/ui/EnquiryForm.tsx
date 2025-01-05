@@ -123,7 +123,7 @@ export default function EnquiryForm() {
 
                 {/* Submit Button */}
                 <div className="w-full mt-6 form-control ">
-                    <button type="submit" className="btn btn-[#041B2D] ">
+                    <button type="submit" className="btn btn-[#fff] ">
                         Submit
                     </button>
                 </div>
