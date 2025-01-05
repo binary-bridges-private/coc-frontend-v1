@@ -5,12 +5,12 @@ import { MdPhoneInTalk } from "react-icons/md";
 const ProductCard = ({ name, byline, photo, priceRange }) => {
     return (
         <div className="w-full flex justify-center items-center mt-6 mb-6">
-            <div className="flex flex-col items-start p-2 gap-2 shadow-lg w-[370px] bg-white border border-[#DBDBDB] rounded-lg">
+            <div className="flex flex-col items-start p-2 gap-2 shadow-lg w-[330px] bg-white border border-[#DBDBDB] rounded-lg">
                 {/* Client Info Item */}
                 <div className="flex flex-col justify-center items-center gap-4 w-full">
                     {/* Image */}
                     <div
-                        className="w-[350px] h-[400px] rounded-md"
+                        className="w-[310px] h-[350px] rounded-md"
                         style={{
                             backgroundImage: `url('${photo}')`,
                             backgroundSize: "100% 100%",
@@ -19,14 +19,14 @@ const ProductCard = ({ name, byline, photo, priceRange }) => {
                     ></div>
 
                     {/* Person Details */}
-                    <div className="flex flex-col items-start gap-1.5 w-[338px]">
+                    <div className="flex flex-col items-start gap-1.5 w-[300px]">
                         {/* Title */}
-                        <h3 className="w-[338px] h-[54px] font-sans font-semibold text-[21px] leading-[130%] text-[#111827]">
+                        <h3 className="w-[300px] h-[54px] font-sans font-semibold text-[21px] leading-[130%] text-[#111827]">
                             {name}
                         </h3>
 
                         {/* Subtitle */}
-                        <p className="w-[338px] h-[70px] font-mulish font-normal text-[16px] leading-[20px] text-[#374151]">
+                        <p className="w-[300px] h-[70px] font-mulish font-normal text-[16px] leading-[20px] text-[#374151]">
                             By: {byline}
                         </p>
                     </div>
@@ -40,7 +40,7 @@ const ProductCard = ({ name, byline, photo, priceRange }) => {
                 </div>
 
                 {/* Social Media Links */}
-                <div className="flex flex-row items-center gap-6 w-[338px] h-[44px]">
+                <div className="flex flex-row items-center gap-6 w-[310px] h-[44px]">
                     {/* YouTube Icon */}
                     <FaYoutube className="text-5xl text-red-600" />
 

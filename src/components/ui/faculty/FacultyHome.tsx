@@ -1,11 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
-import FacultyCard from "./FacultyCard";
+import React from "react";
+import Slider from "react-slick";
+import FacultyCard from "./FacultyCard.tsx";
+import "./slider.css";
 
 const FacultyHome = () => {
-    // const [offset, setOffset] = useState(0); // Track scroll position
-    // const [direction, setDirection] = useState("right"); // Scroll direction
-    // const scrollContainerRef: any = useRef(null);
-
     const facultiesList = [
         {
             image: "/assets/faculties/first.svg",
@@ -27,68 +25,92 @@ const FacultyHome = () => {
         },
     ];
 
-    // Automatically scrolls horizontally
-    // useEffect(() => {
-    //   const interval = setInterval(() => {
-    //     if (scrollContainerRef.current) {
-    //       const scrollWidth = scrollContainerRef.current.scrollWidth;
-    //       const clientWidth = scrollContainerRef.current.clientWidth;
-
-    //       setOffset((prevOffset) => {
-    //         let newOffset = prevOffset;
-
-    //         if (direction === "right") {
-    //           newOffset += 1;
-    //           if (newOffset >= scrollWidth - clientWidth) {
-    //             setDirection("left"); // Reverse direction
-    //           }
-    //         } else {
-    //           newOffset -= 1;
-    //           if (newOffset <= 0) {
-    //             setDirection("right"); // Reverse direction
-    //           }
-    //         }
-
-    //         return newOffset;
-    //       });
-    //     }
-    //   }, 30); // Adjust speed by changing the interval time
-
-    //   return () => clearInterval(interval);
-    // }, [direction]);
+    const settings = {
+        dots: true,
+        infinite: true,
+        speed: 500,
+        slidesToShow: 4,
+        slidesToScroll: 1,
+        autoplay: true,
+        autoplaySpeed: 3000,
+        pauseOnHover: true,
+        arrows: false,
+        responsive: [
+            {
+                breakpoint: 1400, // Large desktops
+                settings: {
+                    slidesToShow: 3,
+                    slidesToScroll: 1,
+                },
+            },
+            {
+                breakpoint: 1124, // Tablets
+                settings: {
+                    slidesToShow: 2,
+                    slidesToScroll: 1,
+                },
+            },
+            {
+                breakpoint: 868, // Large mobile devices
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                },
+            },
+            {
+                breakpoint: 576, // Small mobile devices
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    arrows: false, // Hide navigation arrows for smaller screens
+                },
+            },
+            {
+                breakpoint: 375, // Very small mobile devices
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    arrows: false,
+                },
+            },
+        ],
+    };
+    
 
     return (
-        <div className="bg-[#101C36] w-full min-h-screen flex flex-col items-center">
-            <div className="py-10 text-3xl font-medium text-center text-white">
-                Our Faculties
-            </div>
+        <div className="faculty-home w-full px-20 py-20 bg-[#101C36] flex flex-col items-center">
+            {/* Heading Section */}
+            <h2 className="text-3xl font-bold text-center mb-8 text-white">
+                Meet Our Faculty
+            </h2>
 
-            <div className="relative w-full max-w-screen-lg px-10 overflow-scroll">
-                <div
-                    // ref={scrollContainerRef}
-                    className="flex gap-10"
-                    style={{
-                        // transform: `translateX(-${offset}px)`,
-                        // transition: "transform 0.1s linear", // Smooth sliding effect
-                        // willChange: "transform",
-                    }}
-                >
-                    {facultiesList.map((ele, index) => (
+            {/* Faculty Slider */}
+            <div className="w-full max-w-8xl slider-container color-white">
+                <Slider {...settings}>
+                    {facultiesList.map((faculty, index) => (
                         <FacultyCard
                             key={index}
-                            image={ele.image}
-                            label={ele.label}
-                            name={ele.name}
-                            bio={ele.bio}
+                            image={faculty.image}
+                            label={faculty.label}
+                            name={faculty.name}
+                            bio={faculty.bio}
                         />
                     ))}
-                </div>
+                </Slider>
+            </div>
+
+            {/* Explore Button */}
+            <div className="w-full flex justify-center mt-12">
+                <button className="explore-btn flex items-center justify-center bg-white text-white hover:bg-white hover:text-blue-600 border px-6 py-2 rounded-lg transition-all duration-300">
+                    <span className="text-lg font-medium text-[#101C36]">Explore Faculty</span>
+                </button>
             </div>
         </div>
     );
 };
 
 export default FacultyHome;
+
 
 
 // import React, { useEffect, useRef } from "react";

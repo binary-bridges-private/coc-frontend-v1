@@ -2,9 +2,9 @@ import React from 'react'
 
 const FacultyCard = ({ image, label, name, bio }) => {
     return (
-        <div className="min-w-[300px] max-w-[300px] bg-white rounded-lg shadow-md p-4 flex flex-col items-start mx-auto">
+        <div className="min-w-[300px] max-w-[360px] bg-white rounded-lg shadow-md p-4 flex flex-col items-start mx-auto">
 
-            <div className="relative">
+            <div className="relative w-full">
                 <img
                     src={image}
                     alt={label}
@@ -15,7 +15,7 @@ const FacultyCard = ({ image, label, name, bio }) => {
                 </div>
             </div>
 
-            <div className="mt-6">
+            <div className="mt-6 overflow-hidden h-[130px]">
                 <h3 className="mb-2 text-lg font-semibold text-black">{name}</h3>
                 <p className="text-sm leading-relaxed text-gray-600">
                     {bio}

@@ -50,34 +50,57 @@ const ProductSectionLandingPage = () => {
 
     // Settings for the carousel
     const settings = {
-        dots: true, // Pagination dots
-        infinite: true, // Infinite scroll
-        speed: 500, // Animation speed
-        slidesToShow: 4, // Number of slides visible
-        slidesToScroll: 1, // Number of slides to scroll per swipe
-        autoplay: true, // Auto-play slides
-        autoplaySpeed: 3000, // Auto-play speed (3 seconds)
-        pauseOnHover: true, // Pause on hover
+        dots: true,
+        infinite: true,
+        speed: 500,
+        slidesToShow: 4,
+        slidesToScroll: 1,
+        autoplay: true,
+        autoplaySpeed: 3000,
+        pauseOnHover: true,
+        arrows: false,
         responsive: [
             {
-                breakpoint: 1024, // Tablet
+                breakpoint: 1400, // Large desktops
+                settings: {
+                    slidesToShow: 3,
+                    slidesToScroll: 1,
+                },
+            },
+            {
+                breakpoint: 1154, // Tablets
                 settings: {
                     slidesToShow: 2,
                     slidesToScroll: 1,
                 },
             },
             {
-                breakpoint: 768, // Mobile
+                breakpoint: 868, // Large mobile devices
                 settings: {
                     slidesToShow: 1,
                     slidesToScroll: 1,
                 },
             },
+            {
+                breakpoint: 576, // Small mobile devices
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    arrows: false, // Hide navigation arrows for smaller screens
+                },
+            },
+            {
+                breakpoint: 375, // Very small mobile devices
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    arrows: false,
+                },
+            },
         ],
     };
-
     return (
-        <div className="w-full px-6 py-10 bg-white overflow-hidden flex flex-col">
+        <div className="w-full px-20 py-20 bg-white overflow-hidden flex flex-col">
             <div>
                 <HeadingSection />
             </div>
