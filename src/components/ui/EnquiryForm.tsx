@@ -34,7 +34,7 @@ export default function EnquiryForm() {
     };
 
     return (
-        <div className="flex items-center justify-center w-full h-full bg-white">
+        <div className="flex items-center justify-center w-full h-full bg-[#FFFFFF]">
             <form
                 onSubmit={handleSubmit}
                 className="flex justify-center items-center flex-col rounded w-5/6 h-full  mt-8 text-center text-[#0A0A0A]"
@@ -51,7 +51,7 @@ export default function EnquiryForm() {
                     <input
                         type="text"
                         name="fullName"
-                        className={`bg-gray-100 flex-1 px-4 py-2 rounded-lg border-2 border-gray-300 focus:outline-none text-black ${
+                        className={`flex-1 px-4 py-2 rounded-lg border-2 focus:outline-none text-black ${
                             errors.fullName ? "input-error" : ""
                         }`}
                         placeholder="Enter your full name"
@@ -70,7 +70,7 @@ export default function EnquiryForm() {
                     <input
                         type="email"
                         name="email"
-                        className={`bg-gray-100 flex-1 px-4 py-2 rounded-lg border-2 border-gray-300 focus:outline-none text-black ${
+                        className={` flex-1 px-4 py-2 rounded-lg border-2 focus:outline-none text-black ${
                             errors.email ? "input-error" : ""
                         }`}
                         placeholder="Enter your email address"
@@ -91,7 +91,7 @@ export default function EnquiryForm() {
                     <input
                         type="text"
                         name="phone"
-                        className={`bg-gray-100 flex-1 px-4 py-2 rounded-lg border-2 border-gray-300 focus:outline-none text-black ${
+                        className={`flex-1 px-4 py-2 rounded-lg border-2 focus:outline-none text-black ${
                             errors.phone ? "input-error" : ""
                         }`}
                         placeholder="+919876543210"
@@ -109,7 +109,7 @@ export default function EnquiryForm() {
                     </label>
                     <textarea
                         name="message"
-                        className={`resize-none bg-gray-100 flex-1 px-4 py-2 rounded-lg border-2 border-gray-300 focus:outline-none text-black ${
+                        className={`resize-none flex-1 px-4 py-2 rounded-lg border-2 focus:outline-none text-black ${
                             errors.message ? "textarea-error" : ""
                         }`}
                         placeholder="Enter your message/query here.."
@@ -123,7 +123,7 @@ export default function EnquiryForm() {
 
                 {/* Submit Button */}
                 <div className="w-full mt-6 form-control ">
-                    <button type="submit" className="btn btn-[#fff] ">
+                    <button type="submit" className="btn bg-[#041B2D] text-white">
                         Submit
                     </button>
                 </div>
