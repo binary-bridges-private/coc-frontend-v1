@@ -12,15 +12,15 @@ const VisitComponentCard = ({ title, label1, label2, label3, iconUrl, iconBgColo
 
             <img className="absolute right-8 top-[calc(50%-24px)] w-12 h-12 bg-cover bg-center" src={iconUrl} />
 
-            <div className="absolute top-20 left-8 flex items-center justify-center gap-2 border border-[#545454] rounded-md p-2 text-[#545454] text-xs">
+            <div className="absolute top-20 left-8 flex items-center justify-center gap-2 border border-[#545454] rounded-md p-2 text-[#545454] text-n2">
                 {label1}
             </div>
 
-            <div className="absolute top-20 left-32 flex items-center justify-center gap-2 border border-[#545454] rounded-md p-2 text-[#545454] text-xs">
+            <div className="absolute top-20 left-32 mx-2 flex items-center justify-center gap-2 border border-[#545454] rounded-md p-2 text-[#545454] text-n2">
                 {label2}
             </div>
 
-            <div className="absolute top-32 left-8 flex items-center justify-center gap-2 border border-[#545454] rounded-md p-2 text-[#545454] text-xs">
+            <div className="absolute top-32 left-8 flex items-center justify-center gap-2 border border-[#545454] rounded-md p-2 text-[#545454] text-n2">
                 {label3}
             </div>
 

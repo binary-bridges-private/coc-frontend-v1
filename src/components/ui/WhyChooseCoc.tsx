@@ -31,8 +31,8 @@ const WhyChooseCOC = () => {
     return (
         <div className="bg-[#101C36] h-full w-full text-white py-20 px-10">
             <div className="mx-auto mb-10 text-center max-w-7xl">
-                <h1 className="mb-4 text-4xl font-bold">Why choose classes from COC Education</h1>
-                <p className="text-large">Explore the benefits of learning with us, tailored to help you excel.</p>
+                <h1 className="mb-4 lg:text-hl md:text-hm text-hs">Why choose classes from COC Education</h1>
+                <p className="lg:text-pl md:text-pm text-ps">Explore the benefits of learning with us, tailored to help you excel.</p>
             </div>
 
             {/* <div className="grid grid-flow-row grid-cols-1 gap-2 px-10 py-10 auto-rows-auto sm:grid-cols-2" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))" }}> */}

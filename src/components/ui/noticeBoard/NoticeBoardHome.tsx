@@ -3,7 +3,7 @@ import React from 'react'
 const NoticeCard = ({ info }) => {
     return (
         <div className="flex items-center justify-between p-4 bg-[#ffffff] rounded-md shadow lg:p-6">
-            <p className="text-lg font-medium text-gray-800">
+            <p className="text-gray-800 text-bold text-n">
                 {info}
             </p>
         </div>
@@ -29,7 +29,7 @@ const NoticeBoardHome = () => {
                     <div className="flex flex-col gap-6 lg:w-[50%] w-[100%] h-[512px]">
                         <div className="flex items-center gap-4">
                             <div className="w-4 h-8 bg-red-500 rounded-md"></div>
-                            <h2 className="text-xl font-bold text-red-500">IMPORTANT UPDATES</h2>
+                            <h2 className="text-2xl font-bold text-red-500 ">IMPORTANT UPDATES</h2>
                         </div>
 
                         <div className="flex flex-col gap-4 overflow-scroll">
@@ -50,7 +50,7 @@ const NoticeBoardHome = () => {
 
                             <div className="absolute inset-0 rounded-lg bg-black/50"></div>
                             <div className="relative flex flex-col items-start justify-center h-full gap-4 p-6">
-                                <p className="text-2xl font-medium leading-snug text-white lg:text-3xl">
+                                <p className="text-2xl font-medium leading-snug text-white">
                                     "Education is the most powerful weapon which you can use to change the world."
                                 </p>
                                 <p className="text-xl italic text-white lg:text-2xl">- Nelson Mandela</p>

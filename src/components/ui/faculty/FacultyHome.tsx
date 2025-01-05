@@ -1,7 +1,6 @@
 import React from "react";
 import Slider from "react-slick";
 import FacultyCard from "./FacultyCard.tsx";
-import "./slider.css";
 
 const FacultyHome = () => {
     const facultiesList = [
@@ -93,17 +92,17 @@ const FacultyHome = () => {
             },
         ],
     };
-    
+
 
     return (
         <div className="faculty-home w-full px-20 py-20 bg-[#101C36] flex flex-col items-center">
             {/* Heading Section */}
-            <h2 className="text-3xl font-bold text-center mb-8 text-white">
-                Meet Our Faculty
+            <h2 className="mb-8 text-center text-white lg:text-hl md:text-hm text-hs">
+                Guiding You to Success: <span className="italic text-red-600">Our Faculty</span>
             </h2>
 
             {/* Faculty Slider */}
-            <div className="w-full max-w-8xl slider-container color-white">
+            <div className="w-full max-w-8xl color-white">
                 <Slider {...settings}>
                     {facultiesList.map((faculty, index) => (
                         <FacultyCard
@@ -118,8 +117,8 @@ const FacultyHome = () => {
             </div>
 
             {/* Explore Button */}
-            <div className="w-full flex justify-center mt-12">
-                <button className="explore-btn flex items-center justify-center bg-white text-white hover:bg-white hover:text-blue-600 border px-6 py-2 rounded-lg transition-all duration-300">
+            <div className="flex justify-center w-full mt-12">
+                <button className="flex items-center justify-center px-6 py-2 text-white transition-all duration-300 bg-white border rounded-lg explore-btn hover:bg-white hover:text-blue-600">
                     <span className="text-lg font-medium text-[#101C36]">Explore Faculty</span>
                 </button>
             </div>

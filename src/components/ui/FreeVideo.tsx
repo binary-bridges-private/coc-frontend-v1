@@ -11,11 +11,11 @@ const FreeVideo = () => {
                     </h2>
                 </div>
 
-                <p className="text-[#282828] text-base md:text-lg leading-relaxed w-4/5 max-w-lg">
-                You can watch free lectures by simply going to the youtube channel or on the website.
+                <p className="text-[#282828] lg:text-pl md:text-pm text-ps leading-relaxed w-4/5 max-w-lg">
+                    You can watch free lectures by simply going to the youtube channel or on the website.
                 </p>
 
-                <button className="bg-[#101C36] text-white text-lg font-semibold rounded-md px-6 py-3 top-[65%] left-10 hover:bg-opacity-90">
+                <button className="bg-[#101C36] text-white lg:text-pl md:text-pm text-ps rounded-md px-6 py-3 top-[65%] left-10 hover:bg-opacity-90">
                     Watch on YouTube
                 </button>
             </div>
@@ -30,7 +30,14 @@ const FreeVideo = () => {
                 </div>
 
                 <div className="flex items-center justify-center h-[200px] md:h-[384px] bg-gray-200">
-                    <p className="text-gray-500">Video Placeholder</p>
+                    <iframe
+                        width="100%"
+                        height="100%"
+                        src="https://www.youtube.com/embed/dV5Z5uL1br8"
+                        title="YouTube video"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                    ></iframe>
                 </div>
             </div>
         </section>

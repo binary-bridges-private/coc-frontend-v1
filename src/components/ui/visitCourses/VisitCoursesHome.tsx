@@ -4,12 +4,12 @@ import VisitCoursesCard from "./VisitComponentCard.tsx";
 const VisitCoursesHome = () => {
     return (
         <>
-            <div className="flex flex-col items-center w-full h-full gap-10 px-4 py-10 top-44 md:px-8 border bg-white">
-                <div className="flex flex-col items-center w-full h-auto max-w-2xl gap-2">
-                    <h1 className="text-3xl font-bold text-center text-black">
+            <div className="flex flex-col items-center w-full h-full gap-10 px-4 py-10 bg-white border top-44 md:px-8">
+                <div className="flex flex-col items-center w-full h-auto max-w-4xl gap-2">
+                    <h1 className="font-semibold text-center text-black lg:text-hl md:text-hm text-hs">
                         Click and Visit Our Different Courses
                     </h1>
-                    <p className="text-lg text-center text-[#545454]">
+                    <p className="lg:text-pl md:text-pm text-ps text-center text-[#545454]">
                         COC is preparing students for different Categories.
                         Explore to find the one you are preparing for.
                     </p>

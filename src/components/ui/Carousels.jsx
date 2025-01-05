@@ -55,24 +55,24 @@ const Carousel = () => {
     };
 
     return (
-        <div className="carousel w-full flex justify-center">
+        <div className="flex justify-center w-full carousel">
             {cards.map((card, index) => {
                 const position = getPosition(index);
 
                 return (
                     <div key={card.id} className={`card ${position}`}>
-                        <div className="h-full w-full flex flex-col items-start justify-evenly p-6 shadow-xl rounded-xl ">
-                            <div className="w-16 h-16 rounded-full mb-4">
+                        <div className="flex flex-col items-start w-full h-full p-6 shadow-xl justify-evenly rounded-xl ">
+                            <div className="w-16 h-16 mb-4 rounded-full">
                                 <img src={"star-icon.svg"} alt="Star Icon" />
                             </div>
-                            <p className={`text-lg mb-4 ${position === "center" && "text-white "}  ${position !== "center" && "text-black "}`}>{card.text}</p>
-                            <div className="flex gap-4 items-center">
-                                <div className="w-16 h-16 rounded-full bg-gray-300">
+                            <p className={`text-n mb-4 ${position === "center" && "text-white "}  ${position !== "center" && "text-black "}`}>{card.text}</p>
+                            <div className="flex items-center gap-4">
+                                <div className="w-16 h-16 bg-gray-300 rounded-full">
                                     <img src="https://avatar.iran.liara.run/public" />
                                 </div>
                                 <div className="flex flex-col">
                                     <span className={` ${position === "center" && "text-white"} ${position !== "center" && "text-black"} font-bold`}>{card.userName}</span>
-                                    <span className="text-gray-400 text-sm">{card.userRole}</span>
+                                    <span className="text-gray-400 text-n2">{card.userRole}</span>
                                 </div>
                             </div>
                         </div>

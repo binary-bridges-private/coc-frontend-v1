@@ -15,9 +15,9 @@ const FacultyCard = ({ image, label, name, bio }) => {
                 </div>
             </div>
 
-            <div className="mt-6 overflow-hidden h-[130px]">
+            <div className="mt-6 overflow-hidden h-[160px]">
                 <h3 className="mb-2 text-lg font-semibold text-black">{name}</h3>
-                <p className="text-sm leading-relaxed text-gray-600">
+                <p className="leading-relaxed text-gray-600 text-n2">
                     {bio}
                 </p>
             </div>

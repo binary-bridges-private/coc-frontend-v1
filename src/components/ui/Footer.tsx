@@ -5,7 +5,7 @@ const Footer = () => {
     return (
         <div className="">
             <NewsletterSignup />
-            <footer className="flex flex-col border md:flex-row justify-evenly items-start px-4 md:px-2 py-12 gap-4 bg-white w-full">
+            <footer className="flex flex-col items-start justify-between w-full gap-4 px-20 py-10 bg-white md:flex-row ">
                 {/* Group Section */}
                 <div className="flex flex-col justify-between items-start w-full md:w-[520px] gap-8">
                     {/* Frame 255 */}
@@ -19,7 +19,7 @@ const Footer = () => {
                                 className="w-[271px] h-[93px]"
                             />
                             {/* Address */}
-                            <p className="text-lg font-semibold text-gray-800 leading-6">
+                            <p className="font-semibold leading-6 text-gray-800 lg:text-pl md:text-pm text-ps ">
                                 COC Education Pvt. Ltd. Office No-132 Ithum
                                 Tower-B Sector-62, Noida, Uttar Pradesh
                             </p>
@@ -30,10 +30,10 @@ const Footer = () => {
                     <div className="flex flex-col items-start gap-4">
                         {/* Section */}
                         <div className="flex flex-col gap-4">
-                            <h4 className="text-xl font-bold text-gray-800">
+                            <h4 className="font-semibold text-gray-800 lg:text-pl md:text-pm text-ps">
                                 For Purchase Related
                             </h4>
-                            <p className="text-base font-medium text-gray-600 leading-7">
+                            <p className="text-base leading-7 text-gray-600 text-n">
                                 Call/WhatsApp: 9999631597 / 8448322142 /
                                 7303445575 / 7011668629
                                 <br />
@@ -41,20 +41,20 @@ const Footer = () => {
                             </p>
                         </div>
                         <div className="flex flex-col gap-4">
-                            <h4 className="text-xl font-bold text-gray-800">
+                            <h4 className="font-semibold text-gray-800 lg:text-pl md:text-pm text-ps">
                                 For Technical Support
                             </h4>
-                            <p className="text-base font-medium text-gray-600 leading-7">
+                            <p className="text-base leading-7 text-gray-600 text-n">
                                 Call/WhatsApp: 9811455109, 9311281468
                                 <br />
                                 E-mail: coceducation.technical@gmail.com
                             </p>
                         </div>
                         <div className="flex flex-col gap-4">
-                            <h4 className="text-xl font-bold text-gray-800">
+                            <h4 className="font-semibold text-gray-800 lg:text-pl md:text-pm text-ps">
                                 For Courier Related Enquiry
                             </h4>
-                            <p className="text-base font-medium text-gray-600 leading-7">
+                            <p className="text-base leading-7 text-gray-600 text-n">
                                 Call/WhatsApp: 8595539968, 7042664033
                                 <br />
                                 E-mail: coceducation.logistics@gmail.com
@@ -64,13 +64,13 @@ const Footer = () => {
                 </div>
 
                 {/* Navigation Section */}
-                <div className="flex flex-col md:flex-row justify-between items-start gap-8 w-full md:w-auto">
+                <div className="flex flex-col items-start justify-between w-full gap-8 md:flex-row md:w-auto">
                     {/* Navigation Links */}
                     <div className="flex flex-col gap-4">
-                        <h5 className="text-xl font-semibold text-blue-900">
+                        <h5 className="font-semibold text-blue-900 lg:text-pl md:text-pm text-ps">
                             Important
                         </h5>
-                        <ul className="flex flex-col gap-4 text-base font-medium text-gray-800">
+                        <ul className="flex flex-col gap-4 text-base text-gray-800 text-n">
                             <li>Home</li>
                             <li>About us</li>
                             <li>Video Lectures</li>
@@ -82,23 +82,23 @@ const Footer = () => {
                     </div>
                 </div>
                 {/* Links Section */}
-                <div className="flex flex-col h-full md:flex-row justify-between items-start w-full md:w-auto">
+                <div className="flex flex-col items-start justify-between w-full h-full md:flex-row md:w-auto">
                     {/* Navigation Links */}
-                    <div className="flex flex-col gap-4 w-full">
-                        <h5 className="text-xl font-semibold text-blue-900">
+                    <div className="flex flex-col w-full gap-4">
+                        <h5 className="font-semibold text-blue-900 lg:text-pl md:text-pm text-ps">
                             Follow Us
                         </h5>
                         <div className="w-full">
-                            <button className="btn text-xl text-white btn-circle mr-4">
+                            <button className="mr-4 text-xl text-white btn btn-circle">
                                 <FaFacebook className="" />
                             </button>
-                            <button className="btn text-xl text-white btn-circle mr-4">
+                            <button className="mr-4 text-xl text-white btn btn-circle">
                                 <FaTelegram className="" />
                             </button>
-                            <button className="btn text-xl text-white btn-circle mr-4">
+                            <button className="mr-4 text-xl text-white btn btn-circle">
                                 <FaInstagram className="" />
                             </button>
-                            <button className="btn text-xl text-white btn-circle mr-4">
+                            <button className="mr-4 text-xl text-white btn btn-circle">
                                 <FaYoutube className="" />
                             </button>
                         </div>
@@ -208,22 +208,22 @@ const NewsletterSignup = () => {
     return (
         <div className="flex flex-col items-center justify-center p-6 md:p-6 w-full bg-gradient-to-b from-[#D30031] to-[#db1d49] text-white max-w-full">
             {/* Title */}
-            <h2 className="text-2xl md:text-4xl font-bold text-center">
+            <h2 className="font-semibold text-center lg:text-hl md:text-hm text-hs">
                 Signup to Newsletter
             </h2>
 
             {/* Subtitle */}
-            <p className="text-center mt-2 text-sm md:text-base">
+            <p className="mt-2 text-center lg:text-pl md:text-pm text-ps">
                 You will receive every news and recent update on your email!!!
             </p>
 
             {/* Input Form */}
-            <div className="mt-6 flex w-full max-w-md">
+            <div className="flex w-full max-w-md mt-6">
                 {/* Email Input */}
                 <input
                     type="email"
                     placeholder="Enter your email address here"
-                    className="bg-gray-200 flex-1 px-4 py-2 rounded-l-lg border-none focus:outline-none text-black"
+                    className="flex-1 px-4 py-2 text-black bg-gray-200 border-none rounded-l-lg focus:outline-none"
                 />
                 {/* Subscribe Button */}
                 <button className="px-4 py-2 bg-[#101C36] text-white rounded-r-lg hover:bg-[#0c162a]">

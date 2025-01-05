@@ -37,16 +37,16 @@ export default function EnquiryForm() {
         <div className="flex items-center justify-center w-full h-full bg-[#FFFFFF]">
             <form
                 onSubmit={handleSubmit}
-                className="flex justify-center items-center flex-col rounded w-5/6 h-full  mt-8 text-center text-[#0A0A0A]"
+                className="flex justify-center items-center flex-col rounded w-5/6 h-full  mt-6 text-center text-[#0A0A0A] py-5"
             >
-                <h1 className="text-2xl font-bold text-center ">Enquire Now</h1>
-                <p className="mb-3 text-center">
+                <h1 className="font-bold text-center lg:text-pl md:text-pm text-ps ">Enquire Now</h1>
+                <p className="mb-3 text-center text-n">
                     Please fill the form below for any enquiry!
                 </p>
 
-                <div className="w-full mb-4 form-control">
+                <div className="w-full mb-2 form-control">
                     <label className="label">
-                        <span className="text-[#041B2D]">Full Name*</span>
+                        <span className="text-[#041B2D] text-n2">Full Name<span className="text-error">*</span></span>
                     </label>
                     <input
                         type="text"
@@ -63,9 +63,9 @@ export default function EnquiryForm() {
                 </div>
 
                 {/* Email Address */}
-                <div className="w-full mb-4 form-control">
+                <div className="w-full mb-2 form-control">
                     <label className="label">
-                        <span className="text-[#041B2D]">Email Address*</span>
+                        <span className="text-[#041B2D] text-n2">Email Address<span className="text-error">*</span></span>
                     </label>
                     <input
                         type="email"
@@ -82,10 +82,10 @@ export default function EnquiryForm() {
                 </div>
 
                 {/* Phone Number */}
-                <div className="w-full mb-4 form-control">
+                <div className="w-full mb-2 form-control">
                     <label className="label">
-                        <span className="text-[#041B2D]">
-                            Phone Number (+91)*
+                        <span className="text-[#041B2D] text-n2">
+                            Phone Number (+91)<span className="text-error">*</span>
                         </span>
                     </label>
                     <input
@@ -105,7 +105,7 @@ export default function EnquiryForm() {
                 {/* Message */}
                 <div className="w-full mb-4 form-control">
                     <label className="label">
-                        <span className="text-[#041B2D]">Message*</span>
+                        <span className="text-[#041B2D] text-n2">Message<span className="text-error">*</span></span>
                     </label>
                     <textarea
                         name="message"
@@ -122,7 +122,7 @@ export default function EnquiryForm() {
                 </div>
 
                 {/* Submit Button */}
-                <div className="w-full mt-6 form-control ">
+                <div className="w-full form-control ">
                     <button type="submit" className="btn bg-[#041B2D] text-white">
                         Submit
                     </button>

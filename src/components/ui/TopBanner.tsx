@@ -79,7 +79,7 @@ const TopBanner = () => {
     <div>
       <section className="flex flex-col items-center w-full gap-5 px-10 py-20 bg-[#FCE9E9]">
         <div className="text-center w-full max-w-[1006px]">
-          <h1 className="font-semibold lg:text-[32px] text-[26px] leading-[122%] text-[#1E1E1E]">
+          <h1 className="lg:text-hl md:text-hm text-hs leading-[122%] text-[#1E1E1E] font-semibold">
             Start your studies with{" "}
             <span
               className="text-[#FF0000]"
@@ -91,7 +91,7 @@ const TopBanner = () => {
           </h1>
         </div>
 
-        <p className="text-center w-full max-w-[880px] text-[#545454] font-normal text-medium lg:text-large leading-[148%]">
+        <p className="text-center w-full max-w-[880px] text-[#545454] font-normal lg:text-pl md:text-pm text-ps leading-[148%]">
           Experienced faculties, daily doubt sessions, ready to counsel any
           enquiry, supportive technical team, and empowering staff differentiate
           us.
