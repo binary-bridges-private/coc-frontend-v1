@@ -5,7 +5,7 @@ const Footer = () => {
     return (
         <div className="">
             <NewsletterSignup />
-            <footer className="flex flex-col items-start justify-between w-full gap-4 px-20 py-10 bg-white md:flex-row ">
+            <footer className="flex flex-col items-start justify-between w-full gap-4 px-5 py-10 bg-white lg:px-20 md:px-20 md:flex-row ">
                 {/* Group Section */}
                 <div className="flex flex-col justify-between items-start w-full md:w-[520px] gap-8">
                     {/* Frame 255 */}

@@ -54,21 +54,21 @@ const FacultyHome = () => {
         arrows: false,
         responsive: [
             {
-                breakpoint: 1400, // Large desktops
+                breakpoint: 1635, // Large desktops
                 settings: {
                     slidesToShow: 3,
                     slidesToScroll: 1,
                 },
             },
             {
-                breakpoint: 1124, // Tablets
+                breakpoint: 1278, // Tablets
                 settings: {
                     slidesToShow: 2,
                     slidesToScroll: 1,
                 },
             },
             {
-                breakpoint: 868, // Large mobile devices
+                breakpoint: 895, // Large mobile devices
                 settings: {
                     slidesToShow: 1,
                     slidesToScroll: 1,
@@ -93,9 +93,8 @@ const FacultyHome = () => {
         ],
     };
 
-
     return (
-        <div className="faculty-home w-full px-20 py-20 bg-[#101C36] flex flex-col items-center">
+        <div className="faculty-home w-full px-2 lg:px-20 md:px-20 py-20 bg-[#101C36] flex flex-col items-center">
             {/* Heading Section */}
             <h2 className="mb-8 text-center text-white lg:text-hl md:text-hm text-hs">
                 Guiding You to Success: <span className="italic text-red-600">Our Faculty</span>

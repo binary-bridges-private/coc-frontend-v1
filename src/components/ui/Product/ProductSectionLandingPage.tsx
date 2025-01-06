@@ -61,14 +61,14 @@ const ProductSectionLandingPage = () => {
         arrows: false,
         responsive: [
             {
-                breakpoint: 1400, // Large desktops
+                breakpoint: 1538, // Large desktops
                 settings: {
                     slidesToShow: 3,
                     slidesToScroll: 1,
                 },
             },
             {
-                breakpoint: 1154, // Tablets
+                breakpoint: 1181, // Tablets
                 settings: {
                     slidesToShow: 2,
                     slidesToScroll: 1,
@@ -100,7 +100,7 @@ const ProductSectionLandingPage = () => {
         ],
     };
     return (
-        <div className="flex flex-col w-full px-20 py-20 overflow-hidden bg-white">
+        <div className="flex flex-col w-full px-2 py-20 overflow-hidden bg-white lg:px-20 md:px-20">
             <div>
                 <HeadingSection />
             </div>
