@@ -18,17 +18,17 @@
     height: 400px;
     transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
     transform: scale(0.9);
-    opacity: 0.8; /* Added initial opacity */
+    opacity: 0.8; 
   }
   
   .card.center {
     background: #101C36;
-    transition: background-color 0.5s ease-in-out, opacity 0.5s ease-in-out; /* Added transition for opacity */
+    transition: background-color 0.5s ease-in-out, opacity 0.5s ease-in-out; 
     color: white;
     transform: scale(1);
-    opacity: 1; /* Updated opacity */
+    opacity: 1; 
     z-index: 10;
-    transition: transform 0.9s ease-in-out; /* Increased duration to 0.9s */
+    transition: transform 0.9s ease-in-out; 
   }
   
   .card-content {
