@@ -4,14 +4,16 @@ import ProtectedRoutes from "./components/helpers/ProtectedRoutes.tsx";
 import LandingPage from "./components/pages/LandingPage.tsx";
 import Courses from "./components/pages/Courses.tsx";
 import Faculties from "./components/pages/Faculties.tsx";
+import FacultyDetails from "./components/ui/faculty/FacultyDetails.tsx";
 import AboutUs from "./components/pages/AboutUs.tsx";
 import ContactUs from "./components/pages/ContactUs.tsx";
 import Footer from "./components/ui/Footer.tsx";
 import Header from "./components/ui/Header.tsx";
+import CartInfo from "./components/ui/cart/CartInfo.tsx";
 
 function App() {
     return (
-        <div className=" overflow-auto flex flex-col w-screen h-screen min-h-screen">
+        <div className="flex flex-col w-screen h-screen min-h-screen overflow-auto ">
             <Header />
             <main className="flex-grow">
                 <Routes>
@@ -22,7 +24,7 @@ function App() {
                     />
                     <Route
                         path="/faculties"
-                        element={<ProtectedRoutes element={Faculties} />}
+                        element={<ProtectedRoutes element={CartInfo} />}
                     />
                     <Route
                         path="/about-us"
