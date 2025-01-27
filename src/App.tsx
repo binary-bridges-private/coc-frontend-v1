@@ -8,6 +8,7 @@ import AboutUs from "./components/pages/AboutUs.tsx";
 import ContactUs from "./components/pages/ContactUs.tsx";
 import Footer from "./components/ui/Footer.tsx";
 import Header from "./components/ui/Header.tsx";
+import ProductPage from "./components/pages/ProductPage.tsx";
 
 function App() {
     return (
@@ -32,6 +33,7 @@ function App() {
                         path="/contact-us"
                         element={<ProtectedRoutes element={ContactUs} />}
                     />
+                    <Route path="/product/:id" element={<ProductPage />} />
                 </Routes>
             </main>
             <Footer />
