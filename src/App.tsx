@@ -10,11 +10,15 @@ import ContactUs from "./components/pages/ContactUs.tsx";
 import Footer from "./components/ui/Footer.tsx";
 import Header from "./components/ui/Header.tsx";
 import CartInfo from "./components/ui/cart/CartInfo.tsx";
+import Login from "./components/ui/auth/Login.jsx";
+import Signup from "./components/ui/auth/Signup.tsx";
 
 function App() {
     return (
         <div className="flex flex-col w-screen h-screen min-h-screen overflow-auto ">
             <Header />
+            <Login />
+            {/* <Signup /> */}
             <main className="flex-grow">
                 <Routes>
                     <Route path="/" element={<LandingPage />} />
