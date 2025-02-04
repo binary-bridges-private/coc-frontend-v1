@@ -13,17 +13,29 @@ import CartInfo from "./components/ui/cart/CartInfo.tsx";
 import Login from "./components/ui/auth/Login.jsx";
 import Signup from "./components/ui/auth/Signup.tsx";
 import ProductPage from "./components/pages/ProductPage.tsx";
+import Practice from "./components/pages/Practice.tsx";
+import Gst from "./components/ui/practice/Gst.tsx";
+import Itr from "./components/ui/practice/Itr.tsx";
+import Tds from "./components/ui/practice/Tds.tsx";
+import RocFiling from "./components/ui/practice/RocFiling.tsx";
+import PfEsi from "./components/ui/practice/PfEsi.tsx";
 
 function App() {
     return (
         <div className="flex flex-col w-screen h-screen min-h-screen overflow-auto ">
             <Header />
-            <Login />
+            {/* <Login /> */}
             {/* <Signup /> */}
             <main className="flex-grow">
                 <Routes>
                     <Route path="/" element={<LandingPage />} />
-                    <Route
+                    <Route path="/practice" element={<ProtectedRoutes element={Practice} />} />
+                    <Route path="/practice/gst" element={<ProtectedRoutes element={Gst} />} />
+                    <Route path="/practice/itr" element={<ProtectedRoutes element={Itr} />} />
+                    <Route path="/practice/tds" element={<ProtectedRoutes element={Tds} />} />
+                    <Route path="/practice/roc-filing" element={<ProtectedRoutes element={RocFiling} />} />
+                    <Route path="/practice/pf-esi" element={<ProtectedRoutes element={PfEsi} />} />
+                    {/* <Route
                         path="/courses"
                         element={<ProtectedRoutes element={Courses} />}
                     />
@@ -39,7 +51,7 @@ function App() {
                         path="/contact-us"
                         element={<ProtectedRoutes element={ContactUs} />}
                     />
-                    <Route path="/product/:id" element={<ProductPage />} />
+                    <Route path="/product/:id" element={<ProductPage />} /> */}
                 </Routes>
             </main>
             <Footer />
