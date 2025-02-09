@@ -26,7 +26,7 @@ const Tds = () => {
                         className="flex flex-col items-center justify-between p-5 mb-4 bg-white border border-gray-300 shadow-xl rounded-xl w-[250px]"
                     >
                         <span className="text-lg font-semibold text-gray-700">{option.name}</span>
-                        <button onClick={() => navigate(`/${option.slug}`)} className="flex items-center m-5 text-gray-700 bg-white border border-gray-400 btn hover:bg-gray-100">
+                        <button onClick={() => navigate(`/practice/tds/${option.slug}`)} className="flex items-center m-5 text-gray-700 bg-white border border-gray-400 btn hover:bg-gray-100">
                             Select <span className="ml-2">→</span>
                         </button>
                     </div>

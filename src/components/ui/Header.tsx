@@ -83,7 +83,7 @@ const Header = () => {
           </div> */}
         </div>
       </div>
-      
+
       <div
         style={{ backgroundColor: "#101C36" }}
         className="h-16 text-white navbar bg-base-100"
@@ -113,20 +113,21 @@ const Header = () => {
           <ul className="flex items-center space-x-2 menu menu-horizontal">
             {[
               "Home",
-              "About-Us",
-              "Courses",
-              "Test-Papers",
-              "E-Book",
-              "Faculties",
-              "Quiz",
-              "Free-Lectures",
-              "Blogs",
-              "FAQs",
-              "Contact-Us",
+              // "About-Us",
+              // "Courses",
+              // "Test-Papers",
+              // "E-Book",
+              // "Faculties",
+              // "Quiz",
+              // "Free-Lectures",
+              // "Blogs",
+              // "FAQs",
+              // "Contact-Us",
+              "Practice"
             ].map((item, index) => (
               <li key={index} className="h-16 hover:border-b-2">
                 <a
-                  href="#"
+                  href={`/${item.toLowerCase()}`}
                   className="flex items-center h-full px-4 border-b-2 border-transparent laptop1:px-2 text-small"
                 >
                   {item}
@@ -161,19 +162,20 @@ const Header = () => {
             <ul className="flex flex-col items-center space-y-4 text-white text-large">
               {[
                 "Home",
-                "About-Us",
-                "Courses",
-                "Test-Papers",
-                "E-Book",
-                "Faculties",
-                "Quiz",
-                "Free-Lectures",
-                "Blogs",
-                "FAQs",
-                "Contact-Us",
+                // "About-Us",
+                // "Courses",
+                // "Test-Papers",
+                // "E-Book",
+                // "Faculties",
+                // "Quiz",
+                // "Free-Lectures",
+                // "Blogs",
+                // "FAQs",
+                // "Contact-Us",
+                "Practice"
               ].map((item, index) => (
                 <li key={index}>
-                  <a href="#" onClick={toggleMenu}>
+                  <a href={`/${item.toLowerCase()}`} onClick={toggleMenu}>
                     {item}
                   </a>
                 </li>
