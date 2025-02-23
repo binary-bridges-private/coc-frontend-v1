@@ -19,6 +19,7 @@ import Itr from "./components/ui/practice/Itr.tsx";
 import Tds from "./components/ui/practice/Tds.tsx";
 import RocFiling from "./components/ui/practice/RocFiling.tsx";
 import PfEsi from "./components/ui/practice/PfEsi.tsx";
+import Registration from "./components/ui/practice/gst/registration/Registration.tsx";
 
 function App() {
     return (
@@ -35,6 +36,9 @@ function App() {
                     <Route path="/practice/tds" element={<ProtectedRoutes element={Tds} />} />
                     <Route path="/practice/roc-filing" element={<ProtectedRoutes element={RocFiling} />} />
                     <Route path="/practice/pf-esi" element={<ProtectedRoutes element={PfEsi} />} />
+
+                    {/*------------- gst ----------------- */}
+                    <Route path="/practice/gst/registration" element={<ProtectedRoutes element={Registration} />} />
                     {/* <Route
                         path="/courses"
                         element={<ProtectedRoutes element={Courses} />}

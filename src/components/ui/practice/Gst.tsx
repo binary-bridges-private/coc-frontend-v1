@@ -1,3 +1,4 @@
+import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const Gst = () => {
@@ -21,7 +22,7 @@ const Gst = () => {
             {/* Hero Section */}
             <div className="w-full py-10 hero">
                 <div className="text-center">
-                    <h1 className="text-4xl font-bold">GST Services</h1>
+                    <h1 className="text-4xl font-bold">GST</h1>
                     <p className="mt-2 text-lg">Select a service to proceed</p>
                 </div>
             </div>
