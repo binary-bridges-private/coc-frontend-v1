@@ -6,7 +6,8 @@ interface props {
 
 const BusinessDetailsForm: React.FC<props> = ({ setStep }) => {
   const [registrations, setRegistrations] = useState([{ id: Date.now(), type: "", number: "", date: "" }]);
-
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  
   // Handle Add Registration
   const handleAddRegistration = () => {
     setRegistrations([...registrations, { id: Date.now(), type: "", number: "", date: "" }]);
@@ -24,6 +25,17 @@ const BusinessDetailsForm: React.FC<props> = ({ setStep }) => {
         reg.id === id ? { ...reg, [field]: value } : reg
       )
     );
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      setSelectedFile(event.target.files[0]);
+    }
+  };
+
+  // Handle File Removal
+  const handleRemoveFile = () => {
+    setSelectedFile(null);
   };
 
   return (
@@ -121,7 +133,15 @@ const BusinessDetailsForm: React.FC<props> = ({ setStep }) => {
 
       {/* Document Upload */}
       <h3 className="mt-10 font-semibold text-md">Document Upload</h3>
-      <input type="file" className="w-full file-input file-input-bordered" />
+      <div className="flex items-center gap-4">
+        <input type="file" className="w-full file-input file-input-bordered" onChange={handleFileChange} />
+        {selectedFile && (
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium">{selectedFile.name}</span>
+            <button className="btn btn-error btn-sm" onClick={handleRemoveFile}>Remove</button>
+          </div>
+        )}
+      </div>
 
       {/* Buttons */}
       <div className="flex justify-end gap-4 mt-6">

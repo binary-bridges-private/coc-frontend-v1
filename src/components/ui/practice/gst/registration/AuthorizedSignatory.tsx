@@ -30,6 +30,15 @@ const AuthorizedSignatory: React.FC<Props> = ({ setStep }) => {
                         </button>
                     )}
 
+                    <h3 className="font-semibold text-md">Details of Authorized Signatory</h3>
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                        <label className="flex items-center space-x-2 text-sm font-medium">
+                            <input type="checkbox" className="checkbox" />
+                            <span>Primary Authorized Signatory</span>
+                        </label>
+                    </div>
+
+
                     <h3 className="font-semibold text-md">Personal Information</h3>
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                         <div>

@@ -386,6 +386,14 @@ const Promoter: React.FC<Props> = ({ setStep }) => {
                     <h3 className="mt-10 font-semibold text-md">Document Upload</h3>
                     <label className="block text-sm font-medium">Photograph ( Of person whose info is given above )</label>
                     <input type="file" className="w-full file-input file-input-bordered" />
+
+                    <h3 className="mt-10 font-semibold text-md">Other Information</h3>
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                        <label className="flex items-center space-x-2 text-sm font-medium">
+                            <input type="checkbox" className="checkbox" />
+                            <span>Also Authorized Signatory</span>
+                        </label>
+                    </div>
                 </div>
             ))}
             <div className="flex justify-end gap-4 mt-6">

@@ -9,6 +9,8 @@ import Place from "./Place.tsx";
 import GoodsServices from "./GoodsServices.tsx";
 import StateSpecificInfo from "./StateSpecificInfo.tsx";
 import AdhaarAuth from "./AdhaarAuthentication.tsx";
+import Verification from "./Verification.tsx";
+import AdditionalPlace from "./AdditionalPlace.tsx";
 
 const Registration = () => {
   const navigate = useNavigate();
@@ -113,43 +115,53 @@ const Registration = () => {
         </div>}
       {step === 2 &&
         <div className="min-h-screen p-8 bg-gray-100">
-          <TopBar curr={0} />
+          <TopBar setStep={setStep} curr={0} />
           <BusinessDetailsForm setStep={setStep} />
         </div>}
       {step === 3 &&
         <div className="min-h-screen p-8 bg-gray-100">
-          <TopBar curr={1} />
+          <TopBar setStep={setStep} curr={1} />
           <Promoter setStep={setStep} />
         </div>}
       {step === 4 &&
         <div className="min-h-screen p-8 bg-gray-100">
-          <TopBar curr={2} />
+          <TopBar setStep={setStep} curr={2} />
           <AuthorizedSignatory setStep={setStep} />
         </div>}
       {step === 5 &&
         <div className="min-h-screen p-8 bg-gray-100">
-          <TopBar curr={3} />
+          <TopBar setStep={setStep} curr={3} />
           <AuthorizedRepresentativeForm setStep={setStep} />
         </div>}
       {step === 6 &&
         <div className="min-h-screen p-8 bg-gray-100">
-          <TopBar curr={4} />
+          <TopBar setStep={setStep} curr={4} />
           <Place setStep={setStep} />
         </div>}
       {step === 7 &&
         <div className="min-h-screen p-8 bg-gray-100">
-          <TopBar curr={6} />
-          <GoodsServices setStep={setStep} />
+          <TopBar setStep={setStep} curr={5} />
+          <AdditionalPlace setStep={setStep} />
         </div>}
       {step === 8 &&
         <div className="min-h-screen p-8 bg-gray-100">
-          <TopBar curr={7} />
-          <StateSpecificInfo setStep={setStep} />
+          <TopBar setStep={setStep} curr={6} />
+          <GoodsServices setStep={setStep} />
         </div>}
       {step === 9 &&
         <div className="min-h-screen p-8 bg-gray-100">
-          <TopBar curr={8} />
+          <TopBar setStep={setStep} curr={7} />
+          <StateSpecificInfo setStep={setStep} />
+        </div>}
+      {step === 10 &&
+        <div className="min-h-screen p-8 bg-gray-100">
+          <TopBar setStep={setStep} curr={8} />
           <AdhaarAuth setStep={setStep} />
+        </div>}
+      {step === 11 &&
+        <div className="min-h-screen p-8 bg-gray-100">
+          <TopBar setStep={setStep} curr={9} />
+          <Verification setStep={setStep} />
         </div>}
     </>
   );

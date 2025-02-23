@@ -1,10 +1,11 @@
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 
 interface props {
-  curr: number
+  curr: number,
+  setStep: Dispatch<SetStateAction<number>>
 }
 
-const TopBar: React.FC<props> = ({ curr }) => {
+const TopBar: React.FC<props> = ({ curr, setStep }) => {
   const tabs = [
     "Business Details",
     "Promoter / Partners",
@@ -23,7 +24,7 @@ const TopBar: React.FC<props> = ({ curr }) => {
       <div className="flex flex-wrap items-center gap-2">
         {tabs.map((tab, index) => (
           <React.Fragment key={index}>
-            <button className={`btn btn-outline btn-sm ${curr === index ? 'text-white bg-[#101C36]' : ''}`}>{tab}</button>
+            <button onClick={() => setStep(index+2)} className={`btn font-medium text-[16px] btn-outline btn-sm ${curr === index ? 'text-white bg-[#101C36]' : ''}`}>{tab}</button>
             {index < tabs.length - 1 && <span className="text-gray-500">|</span>}
           </React.Fragment>
         ))}

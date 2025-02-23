@@ -145,8 +145,8 @@ const AdhaarAuth: React.FC<Props> = ({ setStep }) => {
             )}
 
             <div className="flex justify-end gap-4 mt-6">
-                <button className="btn btn-outline" onClick={() => setStep(8)}>Back</button>
-                <button className="btn bg-[#101C36] text-white" onClick={() => setStep(10)} >Save & Continue</button>
+                <button className="btn btn-outline" onClick={() => setStep(9)}>Back</button>
+                <button className="btn bg-[#101C36] text-white" onClick={() => setStep(11)} >Save & Continue</button>
             </div>
         </div>
     );
