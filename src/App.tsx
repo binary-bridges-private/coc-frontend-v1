@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import ProtectedRoutes from "./components/helpers/ProtectedRoutes.tsx";
 import LandingPage from "./components/pages/LandingPage.tsx";
 import Courses from "./components/pages/Courses.tsx";
@@ -29,6 +29,7 @@ function App() {
             {/* <Signup /> */}
             <main className="flex-grow">
                 <Routes>
+                    <Route path="/" element={<Navigate to="/home" replace />} />
                     <Route path="/home" element={<LandingPage />} />
                     <Route path="/practice" element={<ProtectedRoutes element={Practice} />} />
                     <Route path="/practice/gst" element={<ProtectedRoutes element={Gst} />} />
