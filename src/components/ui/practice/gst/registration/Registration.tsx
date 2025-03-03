@@ -11,6 +11,7 @@ import StateSpecificInfo from "./StateSpecificInfo.tsx";
 import AdhaarAuth from "./AdhaarAuthentication.tsx";
 import Verification from "./Verification.tsx";
 import AdditionalPlace from "./AdditionalPlace.tsx";
+import TrnSuccessfull from "./TrnSuccessfull.tsx";
 
 const Registration = () => {
   const navigate = useNavigate();
@@ -162,6 +163,11 @@ const Registration = () => {
         <div className="min-h-screen p-8 bg-gray-100">
           <TopBar setStep={setStep} curr={9} />
           <Verification setStep={setStep} />
+        </div>}
+      {step === 12 &&
+        <div className="min-h-screen p-8 bg-gray-100">
+          {/* <TopBar setStep={setStep} curr={9} /> */}
+          <TrnSuccessfull />
         </div>}
     </>
   );

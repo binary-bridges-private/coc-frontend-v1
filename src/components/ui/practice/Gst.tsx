@@ -18,7 +18,7 @@ const Gst = () => {
     ];
 
     return (
-        <div className="flex flex-col items-center px-10 py-20">
+        <div className="flex flex-col items-center px-10 pb-20 pt-5">
             {/* Hero Section */}
             <div className="w-full py-10 hero">
                 <div className="text-center">

@@ -88,6 +88,8 @@ const Verification: React.FC<props> = ({ setStep }) => {
         <button className="btn btn-outline" onClick={() => setStep(10)}>Back</button>
         <button className="btn btn-primary" disabled={!isFormValid}>Submit with DSC</button>
         <button className="btn btn-primary" disabled={!isFormValid}>Submit with EVC</button>
+        <button className="btn btn-primary" onClick={() => setStep(12)}>Submit</button>
+
       </div>
     </div>
   );

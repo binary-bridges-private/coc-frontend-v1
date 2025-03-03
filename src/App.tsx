@@ -20,6 +20,7 @@ import Tds from "./components/ui/practice/Tds.tsx";
 import RocFiling from "./components/ui/practice/RocFiling.tsx";
 import PfEsi from "./components/ui/practice/PfEsi.tsx";
 import Registration from "./components/ui/practice/gst/registration/Registration.tsx";
+import Gstr1 from "./components/ui/practice/gst/gsrt1/Gstr1.tsx";
 
 function App() {
     return (
@@ -40,6 +41,8 @@ function App() {
 
                     {/*------------- gst ----------------- */}
                     <Route path="/practice/gst/registration" element={<ProtectedRoutes element={Registration} />} />
+                    <Route path="/practice/gst/gstr-1" element={<ProtectedRoutes element={Gstr1} />} />
+
                     {/* <Route
                         path="/courses"
                         element={<ProtectedRoutes element={Courses} />}
