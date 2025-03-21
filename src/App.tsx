@@ -22,6 +22,8 @@ import PfEsi from "./components/ui/practice/PfEsi.tsx";
 import Registration from "./components/ui/practice/gst/registration/Registration.tsx";
 import Gstr1 from "./components/ui/practice/gst/gsrt1/Gstr1.tsx";
 import Gstr3b from "./components/ui/practice/gst/gstr3b/Gstr3b.tsx";
+import ItrLogin from "./components/ui/practice/itr/Login.tsx";
+
 
 function App() {
     return (
@@ -44,6 +46,9 @@ function App() {
                     <Route path="/practice/gst/registration" element={<ProtectedRoutes element={Registration} />} />
                     <Route path="/practice/gst/gstr-1" element={<ProtectedRoutes element={Gstr1} />} />
                     <Route path="/practice/gst/gstr-3b" element={<ProtectedRoutes element={Gstr3b} />} />
+
+                    {/* -----------------itr-------------------- */}
+                    <Route path="/practice/itr/login" element={<ProtectedRoutes element={ItrLogin} />} />
 
                     {/* <Route
                         path="/courses"

@@ -5,7 +5,7 @@ import React from "react";
 const Itr = () => {
     const navigate = useNavigate();
     const itrOptions = [
-        { name: "Registration", slug: "registration" },
+        { name: "Login", slug: "login" },
         { name: "ITR-1", slug: "itr-1" },
         { name: "ITR-2", slug: "itr-2" },
         { name: "ITR-3", slug: "itr-3" },
