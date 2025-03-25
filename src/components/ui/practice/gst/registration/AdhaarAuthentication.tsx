@@ -1,15 +1,53 @@
-import React, { Dispatch, SetStateAction } from "react";
-import { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 
 interface Props {
     setStep: Dispatch<SetStateAction<number>>;
+    promoterData: any; // Assuming promoterData is an array of promoter objects
 }
 
-const AdhaarAuth: React.FC<Props> = ({ setStep }) => {
-    const [isAadhaarAuth, setIsAadhaarAuth] = useState(false);
+interface Promoter {
+    isIndianCitizen: boolean;
+    isPromoter: boolean;
+    isAuthorizedSignatory: boolean;
+    designation: string;
+    email: string;
+    mobileNumber: string;
+    aadhaarNumber?: string;
+    photograph?: boolean;
+}
 
-    const handleToggle = (e) => {
+const AdhaarAuth: React.FC<Props> = ({ setStep, promoterData }) => {
+    const [isAadhaarAuth, setIsAadhaarAuth] = useState(false);
+    const [selectedPromoter, setSelectedPromoter] = useState<number | null>(null); // Track single selection
+    const [error, setError] = useState<string | null>(null);
+
+    // Handle Aadhaar authentication toggle
+    const handleToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
         setIsAadhaarAuth(e.target.value === "yes");
+        setSelectedPromoter(null); // Reset selected promoter when toggling
+        setError(null); // Clear error
+    };
+
+    // Handle promoter selection (single selection)
+    const handlePromoterSelection = (id: number) => {
+        if (selectedPromoter === id) {
+            // If the same promoter is clicked again, deselect it
+            setSelectedPromoter(null);
+        } else {
+            // Select the new promoter
+            setSelectedPromoter(id);
+        }
+        setError(null); // Clear error when a promoter is selected
+    };
+
+    // Handle form submission
+    const handleSubmit = () => {
+        if (selectedPromoter === null) {
+            setError("Please select at least one promoter.");
+            return;
+        }
+        console.log("Selected Promoter:", selectedPromoter);
+        setStep(11); // Proceed to the next step
     };
 
     return (
@@ -78,19 +116,25 @@ const AdhaarAuth: React.FC<Props> = ({ setStep }) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>
-                                        <input type="checkbox" />
-                                    </td>
-                                    <td>1</td>
-                                    <td>Yes</td>
-                                    <td>Yes</td>
-                                    <td>No</td>
-                                    <td>developer</td>
-                                    <td>test@gmail.com</td>
-                                    <td>8920689369</td>
-                                    <td>NA</td>
-                                </tr>
+                                {promoterData && Array.isArray(promoterData) && promoterData.map((promoter: Promoter, index: number) => (
+                                    <tr key={index}>
+                                        <td>
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedPromoter === index} // Single selection
+                                                onChange={() => handlePromoterSelection(index)}
+                                            />
+                                        </td>
+                                        <td>{index + 1}</td>
+                                        <td>{promoter.isIndianCitizen ? "Yes" : "No"}</td>
+                                        <td>{promoter.isPromoter ? "Yes" : "No"}</td>
+                                        <td>{promoter.isAuthorizedSignatory ? "Yes" : "No"}</td>
+                                        <td>{promoter.designation}</td>
+                                        <td>{promoter.email}</td>
+                                        <td>{promoter.mobileNumber}</td>
+                                        <td>NA</td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </div>
@@ -126,32 +170,44 @@ const AdhaarAuth: React.FC<Props> = ({ setStep }) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>
-                                        <input type="checkbox" />
-                                    </td>
-                                    <td>1</td>
-                                    <td>Yes</td>
-                                    <td>Yes</td>
-                                    <td>No</td>
-                                    <td>developer</td>
-                                    <td>NA</td>
-                                    <td>NA</td>
-                                </tr>
+                                {promoterData && Array.isArray(promoterData) && promoterData.map((promoter: Promoter, index: number) => (
+                                    <tr key={index}>
+                                        <td>
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedPromoter === index} // Single selection
+                                                onChange={() => handlePromoterSelection(index)}
+                                            />
+                                        </td>
+                                        <td>{index + 1}</td>
+                                        <td>{promoter.isIndianCitizen ? "Yes" : "No"}</td>
+                                        <td>{promoter.isPromoter ? "Yes" : "No"}</td>
+                                        <td>{promoter.isAuthorizedSignatory ? "Yes" : "No"}</td>
+                                        <td>{promoter.designation}</td>
+                                        <td>{promoter.aadhaarNumber || "NA"}</td>
+                                        <td>{promoter.photograph ? "Uploaded" : "NA"}</td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </div>
                 </div>
             )}
 
+            {/* Validation Error */}
+            {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
+
+            {/* Action Buttons */}
             <div className="flex justify-end gap-4 mt-6">
-                <button className="btn btn-outline" onClick={() => setStep(9)}>Back</button>
-                <button className="btn bg-[#101C36] text-white" onClick={() => setStep(11)} >Save & Continue</button>
+                <button className="btn btn-outline" onClick={() => setStep(9)}>
+                    Back
+                </button>
+                <button className="btn bg-[#101C36] text-white" onClick={handleSubmit}>
+                    Save & Continue
+                </button>
             </div>
         </div>
     );
 };
 
 export default AdhaarAuth;
-
-

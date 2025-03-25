@@ -10,13 +10,15 @@ interface PlaceProps {
     errors: any;
     handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
     handleCheckboxChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    handleReset: (index: number) => void;
+    index: number;
 }
 
-const Place: React.FC<PlaceProps> = ({ formData, errors, handleInputChange, handleCheckboxChange }) => {
+const Place: React.FC<PlaceProps> = ({ formData, errors, handleInputChange, handleCheckboxChange, handleFileChange, handleReset, index }) => {
     return <div>
         <h2 className="mb-4 text-xl font-bold">GST Registration Form</h2>
         <form>
-            {/* Address Section */}
             <div className="grid grid-cols-1 gap-4 mt-4 md:grid-cols-3">
                 <div>
                     <label className="block text-sm font-medium">PIN Code</label>
@@ -28,7 +30,7 @@ const Place: React.FC<PlaceProps> = ({ formData, errors, handleInputChange, hand
                         placeholder="PIN Code"
                         className="w-full input input-bordered"
                     />
-                    {errors.pinCode && <p className="text-sm text-red-500">{errors.pinCode}</p>}
+                    {errors[`pinCode-${index}`] && <p className="text-sm text-red-500">{errors[`pinCode-${index}`]}</p>}
                 </div>
                 <div>
                     <label className="block text-sm font-medium">State</label>
@@ -50,7 +52,7 @@ const Place: React.FC<PlaceProps> = ({ formData, errors, handleInputChange, hand
                         placeholder="District"
                         className="w-full input input-bordered"
                     />
-                    {errors.district && <p className="text-sm text-red-500">{errors.district}</p>}
+                    {errors[`district-${index}`] && <p className="text-sm text-red-500">{errors[`district-${index}`]}</p>}
                 </div>
             </div>
 
@@ -65,7 +67,7 @@ const Place: React.FC<PlaceProps> = ({ formData, errors, handleInputChange, hand
                         placeholder="City / Town / Village"
                         className="w-full input input-bordered"
                     />
-                    {errors.city && <p className="text-sm text-red-500">{errors.city}</p>}
+                    {errors[`city-${index}`] && <p className="text-sm text-red-500">{errors[`city-${index}`]}</p>}
                 </div>
                 <div>
                     <label className="block text-sm font-medium">Locality / Sub Locality</label>
@@ -77,7 +79,7 @@ const Place: React.FC<PlaceProps> = ({ formData, errors, handleInputChange, hand
                         placeholder="Locality / Sub Locality"
                         className="w-full input input-bordered"
                     />
-                    {errors.locality && <p className="text-sm text-red-500">{errors.locality}</p>}
+                    {errors[`locality-${index}`] && <p className="text-sm text-red-500">{errors[`locality-${index}`]}</p>}
                 </div>
                 <div>
                     <label className="block text-sm font-medium">Road / Street / Lane</label>
@@ -89,7 +91,7 @@ const Place: React.FC<PlaceProps> = ({ formData, errors, handleInputChange, hand
                         placeholder="Road / Street / Lane"
                         className="w-full input input-bordered"
                     />
-                    {errors.road && <p className="text-sm text-red-500">{errors.road}</p>}
+                    {errors[`road-${index}`] && <p className="text-sm text-red-500">{errors[`road-${index}`]}</p>}
                 </div>
             </div>
 
@@ -104,7 +106,7 @@ const Place: React.FC<PlaceProps> = ({ formData, errors, handleInputChange, hand
                         placeholder="Name of the Premises / Building"
                         className="w-full input input-bordered"
                     />
-                    {errors.premises && <p className="text-sm text-red-500">{errors.premises}</p>}
+                    {errors[`premises-${index}`] && <p className="text-sm text-red-500">{errors[`premises-${index}`]}</p>}
                 </div>
                 <div>
                     <label className="block text-sm font-medium">Building No. / Flat No.</label>
@@ -116,7 +118,7 @@ const Place: React.FC<PlaceProps> = ({ formData, errors, handleInputChange, hand
                         placeholder="Building No. / Flat No."
                         className="w-full input input-bordered"
                     />
-                    {errors.buildingNo && <p className="text-sm text-red-500">{errors.buildingNo}</p>}
+                    {errors[`buildingNo-${index}`] && <p className="text-sm text-red-500">{errors[`buildingNo-${index}`]}</p>}
                 </div>
                 <div>
                     <label className="block text-sm font-medium">Floor No.</label>
@@ -128,7 +130,7 @@ const Place: React.FC<PlaceProps> = ({ formData, errors, handleInputChange, hand
                         placeholder="Floor No."
                         className="w-full input input-bordered"
                     />
-                    {errors.floorNo && <p className="text-sm text-red-500">{errors.floorNo}</p>}
+                    {errors[`floorNo-${index}`] && <p className="text-sm text-red-500">{errors[`floorNo-${index}`]}</p>}
                 </div>
             </div>
 
@@ -143,7 +145,7 @@ const Place: React.FC<PlaceProps> = ({ formData, errors, handleInputChange, hand
                         placeholder="Nearby Landmark"
                         className="w-full input input-bordered"
                     />
-                    {errors.landmark && <p className="text-sm text-red-500">{errors.landmark}</p>}
+                    {errors[`landmark-${index}`] && <p className="text-sm text-red-500">{errors[`landmark-${index}`]}</p>}
                 </div>
                 <div>
                     <label className="block text-sm font-medium">Latitude</label>
@@ -155,7 +157,7 @@ const Place: React.FC<PlaceProps> = ({ formData, errors, handleInputChange, hand
                         placeholder="Latitude"
                         className="w-full input input-bordered"
                     />
-                    {errors.latitude && <p className="text-sm text-red-500">{errors.latitude}</p>}
+                    {errors[`latitude-${index}`] && <p className="text-sm text-red-500">{errors[`latitude-${index}`]}</p>}
                 </div>
                 <div>
                     <label className="block text-sm font-medium">Longitude</label>
@@ -167,18 +169,17 @@ const Place: React.FC<PlaceProps> = ({ formData, errors, handleInputChange, hand
                         placeholder="Longitude"
                         className="w-full input input-bordered"
                     />
-                    {errors.longitude && <p className="text-sm text-red-500">{errors.longitude}</p>}
+                    {errors[`longitude-${index}`] && <p className="text-sm text-red-500">{errors[`longitude-${index}`]}</p>}
                 </div>
             </div>
 
             <button
                 type="button"
                 className="w-full mt-4 btn btn-outline"
-            // onClick={handleReset}
+                onClick={() => handleReset(index)}
             >
                 Reset Address
             </button>
-
 
             <div className="w-full mt-20">
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -192,7 +193,7 @@ const Place: React.FC<PlaceProps> = ({ formData, errors, handleInputChange, hand
                             placeholder="Enter state jurisdiction"
                             className="w-full mt-1 input input-bordered"
                         />
-                        {errors.stateJurisdiction && <p className="text-sm text-red-500">{errors.stateJurisdiction}</p>}
+                        {errors[`stateJurisdiction-${index}`] && <p className="text-sm text-red-500">{errors[`stateJurisdiction-${index}`]}</p>}
                     </div>
                     <div>
                         <label className="block text-sm font-medium">Sector / Circle / Ward / Charge / Unit *</label>
@@ -204,7 +205,7 @@ const Place: React.FC<PlaceProps> = ({ formData, errors, handleInputChange, hand
                             placeholder=""
                             className="w-full text-sm font-medium input input-bordered"
                         />
-                        {errors.sector && <p className="text-sm text-red-500">{errors.sector}</p>}
+                        {errors[`sector-${index}`] && <p className="text-sm text-red-500">{errors[`sector-${index}`]}</p>}
                     </div>
                 </div>
 
@@ -219,7 +220,7 @@ const Place: React.FC<PlaceProps> = ({ formData, errors, handleInputChange, hand
                             placeholder=""
                             className="w-full text-sm font-medium input input-bordered"
                         />
-                        {errors.commissioner && <p className="text-sm text-red-500">{errors.commissioner}</p>}
+                        {errors[`commissioner-${index}`] && <p className="text-sm text-red-500">{errors[`commissioner-${index}`]}</p>}
                     </div>
                     <div>
                         <label className="block text-sm font-medium">Division *</label>
@@ -231,7 +232,7 @@ const Place: React.FC<PlaceProps> = ({ formData, errors, handleInputChange, hand
                             placeholder=""
                             className="w-full text-sm font-medium input input-bordered"
                         />
-                        {errors.division && <p className="text-sm text-red-500">{errors.division}</p>}
+                        {errors[`division-${index}`] && <p className="text-sm text-red-500">{errors[`division-${index}`]}</p>}
                     </div>
                     <div>
                         <label className="block text-sm font-medium">Range *</label>
@@ -243,7 +244,7 @@ const Place: React.FC<PlaceProps> = ({ formData, errors, handleInputChange, hand
                             placeholder=""
                             className="w-full text-sm font-medium input input-bordered"
                         />
-                        {errors.range && <p className="text-sm text-red-500">{errors.range}</p>}
+                        {errors[`range-${index}`] && <p className="text-sm text-red-500">{errors[`range-${index}`]}</p>}
                     </div>
                 </div>
             </div>
@@ -261,7 +262,7 @@ const Place: React.FC<PlaceProps> = ({ formData, errors, handleInputChange, hand
                         placeholder="Office Email"
                         className="w-full text-sm font-medium input input-bordered"
                     />
-                    {errors.officeEmail && <p className="text-sm text-red-500">{errors.officeEmail}</p>}
+                    {errors[`officeEmail-${index}`] && <p className="text-sm text-red-500">{errors[`officeEmail-${index}`]}</p>}
                 </div>
                 <div>
                     <label className="block text-sm font-medium">Office Telephone Number *</label>
@@ -273,7 +274,7 @@ const Place: React.FC<PlaceProps> = ({ formData, errors, handleInputChange, hand
                         placeholder="Office Telephone Number"
                         className="w-full text-sm font-medium input input-bordered"
                     />
-                    {errors.officeTelephone && <p className="text-sm text-red-500">{errors.officeTelephone}</p>}
+                    {errors[`officeTelephone-${index}`] && <p className="text-sm text-red-500">{errors[`officeTelephone-${index}`]}</p>}
                 </div>
                 <div>
                     <label className="block text-sm font-medium">Mobile Number *</label>
@@ -285,7 +286,7 @@ const Place: React.FC<PlaceProps> = ({ formData, errors, handleInputChange, hand
                         placeholder="Mobile Number"
                         className="w-full text-sm font-medium input input-bordered"
                     />
-                    {errors.mobileNumber && <p className="text-sm text-red-500">{errors.mobileNumber}</p>}
+                    {errors[`mobileNumber-${index}`] && <p className="text-sm text-red-500">{errors[`mobileNumber-${index}`]}</p>}
                 </div>
             </div>
             <div className="grid grid-cols-1 gap-4 mt-4 md:grid-cols-3">
@@ -317,7 +318,7 @@ const Place: React.FC<PlaceProps> = ({ formData, errors, handleInputChange, hand
                             <option value="Electricity Bill">Electricity Bill</option>
                             <option value="Rent Agreement">Rent Agreement</option>
                         </select>
-                        {errors.natureOfPossession && <p className="text-sm text-red-500">{errors.natureOfPossession}</p>}
+                        {errors[`natureOfPossession-${index}`] && <p className="text-sm text-red-500">{errors[`natureOfPossession-${index}`]}</p>}
                     </div>
                 </div>
                 <div className="flex flex-col lg:w-[48%] w-[100%]">
@@ -333,13 +334,13 @@ const Place: React.FC<PlaceProps> = ({ formData, errors, handleInputChange, hand
                             <option value="Electricity Bill">Electricity Bill</option>
                             <option value="Rent Agreement">Rent Agreement</option>
                         </select>
-                        {errors.documentProof && <p className="text-sm text-red-500">{errors.documentProof}</p>}
+                        {errors[`documentProof-${index}`] && <p className="text-sm text-red-500">{errors[`documentProof-${index}`]}</p>}
                         <input
                             type="file"
-                            // onChange={handleFileChange}
+                            onChange={handleFileChange}
                             className="w-full mt-2 file-input"
                         />
-                        {errors.uploadedFile && <p className="text-sm text-red-500">{errors.uploadedFile}</p>}
+                        {errors[`uploadedFile-${index}`] && <p className="text-sm text-red-500">{errors[`uploadedFile-${index}`]}</p>}
                     </div>
                 </div>
             </div>
@@ -601,7 +602,40 @@ const AdditionalPlace: React.FC<Props> = ({ setStep }) => {
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0] || null;
         const updatedPlaces = [...places];
-        updatedPlaces[0].uploadedFile = file; // Assuming only one place for simplicity
+        updatedPlaces[0].uploadedFile = file;
+        setPlaces(updatedPlaces);
+    };
+
+    const handleReset = (index: number) => {
+        const updatedPlaces: any = [...places];
+        updatedPlaces[index] = {
+            pinCode: "",
+            state: "",
+            district: "",
+            city: "",
+            locality: "",
+            road: "",
+            premises: "",
+            buildingNo: "",
+            floorNo: "",
+            landmark: "",
+            latitude: "",
+            longitude: "",
+            // stateJurisdiction: "",
+            // sector: "",
+            // commissioner: "",
+            // division: "",
+            // range: "",
+            // officeEmail: "",
+            // officeTelephone: "",
+            // mobileNumber: "",
+            // officeFax: "",
+            // natureOfPossession: "",
+            // documentProof: "",
+            // businessNature: [],
+            // otherBusinessNature: "",
+            // uploadedFile: null,
+        };
         setPlaces(updatedPlaces);
     };
 
@@ -628,7 +662,7 @@ const AdditionalPlace: React.FC<Props> = ({ setStep }) => {
         }
 
         console.log(places);
-        setStep(7);
+        setStep(8);
     };
 
     return (
@@ -664,6 +698,9 @@ const AdditionalPlace: React.FC<Props> = ({ setStep }) => {
                         errors={errors}
                         handleInputChange={(e) => handleInputChange(index, e)}
                         handleCheckboxChange={(e) => handleCheckboxChange(index, e)}
+                        handleFileChange={(e) => handleFileChange(e)}
+                        handleReset={() => handleReset(index)}
+                        index={index}
                     />
                 </div>
             ))}

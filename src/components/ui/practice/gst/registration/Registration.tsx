@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TopBar from "./Topbar.tsx";
 import BusinessDetailsForm from "./BusinessDetailsForm.tsx";
@@ -26,6 +26,9 @@ const Registration = () => {
     mobileNumber: "",
   });
 
+  const [promoterData, setPromoterData] = useState([]);
+  const [authorizedSign, setAuthorizedSign] = useState([]);
+
   const [errors, setErrors] = useState({
     userType: false,
     state: false,
@@ -35,6 +38,11 @@ const Registration = () => {
     email: false,
     mobileNumber: false,
   });
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -79,12 +87,12 @@ const Registration = () => {
             {/* User Type */}
             <div>
               <label className="label"><span className="label-text">I am a *</span></label>
-              <input 
-                type="text" 
-                name="userType" 
-                value={formData.userType} 
-                onChange={handleChange} 
-                className={`w-full input input-bordered ${errors.userType ? "border-red-500" : ""}`} 
+              <input
+                type="text"
+                name="userType"
+                value={formData.userType}
+                onChange={handleChange}
+                className={`w-full input input-bordered ${errors.userType ? "border-red-500" : ""}`}
               />
               {errors.userType && <p className="text-sm text-red-500">This field is required.</p>}
             </div>
@@ -92,12 +100,12 @@ const Registration = () => {
             {/* State / UT */}
             <div>
               <label className="label"><span className="label-text">State / UT *</span></label>
-              <input 
-                type="text" 
-                name="state" 
-                value={formData.state} 
-                onChange={handleChange} 
-                className={`w-full input input-bordered ${errors.state ? "border-red-500" : ""}`} 
+              <input
+                type="text"
+                name="state"
+                value={formData.state}
+                onChange={handleChange}
+                className={`w-full input input-bordered ${errors.state ? "border-red-500" : ""}`}
               />
               {errors.state && <p className="text-sm text-red-500">This field is required.</p>}
             </div>
@@ -105,12 +113,12 @@ const Registration = () => {
             {/* District */}
             <div>
               <label className="label"><span className="label-text">District *</span></label>
-              <input 
-                type="text" 
-                name="district" 
-                value={formData.district} 
-                onChange={handleChange} 
-                className={`w-full input input-bordered ${errors.district ? "border-red-500" : ""}`} 
+              <input
+                type="text"
+                name="district"
+                value={formData.district}
+                onChange={handleChange}
+                className={`w-full input input-bordered ${errors.district ? "border-red-500" : ""}`}
               />
               {errors.district && <p className="text-sm text-red-500">This field is required.</p>}
             </div>
@@ -118,12 +126,12 @@ const Registration = () => {
             {/* Business Name */}
             <div>
               <label className="label"><span className="label-text">Legal Name of the Business (As mentioned in PAN) *</span></label>
-              <input 
-                type="text" 
-                name="businessName" 
-                value={formData.businessName} 
-                onChange={handleChange} 
-                className={`w-full input input-bordered ${errors.businessName ? "border-red-500" : ""}`} 
+              <input
+                type="text"
+                name="businessName"
+                value={formData.businessName}
+                onChange={handleChange}
+                className={`w-full input input-bordered ${errors.businessName ? "border-red-500" : ""}`}
               />
               {errors.businessName && <p className="text-sm text-red-500">This field is required.</p>}
             </div>
@@ -131,12 +139,12 @@ const Registration = () => {
             {/* PAN */}
             <div>
               <label className="label"><span className="label-text">Permanent Account Number (PAN) *</span></label>
-              <input 
-                type="text" 
-                name="pan" 
-                value={formData.pan} 
-                onChange={handleChange} 
-                className={`w-full input input-bordered ${errors.pan ? "border-red-500" : ""}`} 
+              <input
+                type="text"
+                name="pan"
+                value={formData.pan}
+                onChange={handleChange}
+                className={`w-full input input-bordered ${errors.pan ? "border-red-500" : ""}`}
               />
               {errors.pan && <p className="text-sm text-red-500">This field is required.</p>}
             </div>
@@ -144,12 +152,12 @@ const Registration = () => {
             {/* Email */}
             <div>
               <label className="label"><span className="label-text">Email Address *</span></label>
-              <input 
-                type="email" 
-                name="email" 
-                value={formData.email} 
-                onChange={handleChange} 
-                className={`w-full input input-bordered ${errors.email ? "border-red-500" : ""}`} 
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className={`w-full input input-bordered ${errors.email ? "border-red-500" : ""}`}
               />
               {errors.email && <p className="text-sm text-red-500">This field is required.</p>}
             </div>
@@ -159,12 +167,12 @@ const Registration = () => {
               <label className="label"><span className="label-text">Mobile Number *</span></label>
               <div className="flex gap-2">
                 <span className="flex items-center justify-center w-16 input input-bordered">+91</span>
-                <input 
-                  type="text" 
-                  name="mobileNumber" 
-                  value={formData.mobileNumber} 
-                  onChange={handleChange} 
-                  className={`w-full input input-bordered ${errors.mobileNumber ? "border-red-500" : ""}`} 
+                <input
+                  type="text"
+                  name="mobileNumber"
+                  value={formData.mobileNumber}
+                  onChange={handleChange}
+                  className={`w-full input input-bordered ${errors.mobileNumber ? "border-red-500" : ""}`}
                 />
               </div>
               {errors.mobileNumber && <p className="text-sm text-red-500">This field is required.</p>}
@@ -180,16 +188,16 @@ const Registration = () => {
         </div>
       )}
 
-      {/* {step === 2 && <BusinessDetailsForm setStep={setStep} data={formData}/>} */}
-      {/* {step === 3 && <Promoter setStep={setStep} />} */}
-      {/* {step === 4 && <AuthorizedSignatory setStep={setStep} />} */}
-      {/* {step === 5 && <AuthorizedRepresentativeForm setStep={setStep} />} */}
-      {/* {step === 6 && <Place setStep={setStep} />} */}
-      {step === 2 && <AdditionalPlace setStep={setStep} />}
+      {step === 2 && <BusinessDetailsForm setStep={setStep} data={formData}/>}
+      {step === 3 && <Promoter setStep={setStep} setPromoterData={setPromoterData} />}
+      {step === 4 && <AuthorizedSignatory setStep={setStep} setAuthorizedSign={setAuthorizedSign} />}
+      {step === 5 && <AuthorizedRepresentativeForm setStep={setStep} />}
+      {step === 6 && <Place setStep={setStep} />}
+      {step === 7 && <AdditionalPlace setStep={setStep} />}
       {step === 8 && <GoodsServices setStep={setStep} />}
       {step === 9 && <StateSpecificInfo setStep={setStep} />}
-      {step === 10 && <AdhaarAuth setStep={setStep} />}
-      {step === 11 && <Verification setStep={setStep} />}
+      {step === 10 && <AdhaarAuth setStep={setStep} promoterData={promoterData} />}
+      {step === 11 && <Verification setStep={setStep} authorizedSign={authorizedSign}/>}
       {step === 12 && <TrnSuccessfull />}
     </>
   );

@@ -38,9 +38,10 @@ interface Director {
 
 interface Props {
     setStep: Dispatch<SetStateAction<number>>,
+    setAuthorizedSign: any
 }
 
-const AuthorizedSignatory: React.FC<Props> = ({ setStep }) => {
+const AuthorizedSignatory: React.FC<Props> = ({ setStep, setAuthorizedSign }) => {
     const [directors, setDirectors] = useState<Director[]>([
         {
             firstName: '',
@@ -162,26 +163,49 @@ const AuthorizedSignatory: React.FC<Props> = ({ setStep }) => {
         return true;
     };
 
+    // const handleInputChange = (index: number, field: keyof Director, value: string | boolean | File) => {
+    //     const updatedDirectors = [...directors];
+
+    //     if (field === 'isPrimaryAuthorizedSignatory') {
+    //         let v: any = value
+    //         console.log(index,v);
+    //         const updatedDirectors = directors.map((director, i) => ({
+    //             ...director,
+    //             isPrimaryAuthorizedSignatory: i === index ? v : false,
+    //         }));
+
+    //         setDirectors(updatedDirectors);
+    //     } else {
+    //         updatedDirectors[index] = { ...updatedDirectors[index], [field]: value };
+    //         setDirectors(updatedDirectors);
+    //     }
+
+
+    //     setDirectors(updatedDirectors);
+
+    //     setErrors((prevErrors) => {
+    //         const newErrors = { ...prevErrors };
+    //         delete newErrors[`${index}-${field}`];
+    //         return newErrors;
+    //     });
+    // };
+
     const handleInputChange = (index: number, field: keyof Director, value: string | boolean | File) => {
-        const updatedDirectors = [...directors];
-
         if (field === 'isPrimaryAuthorizedSignatory') {
-            let newField: string = field;
-            for (let i = 0; i < directors.length; i++) {
-                if (i === index) {
-                    updatedDirectors[index] = { ...updatedDirectors[index], [newField]: value };
-                }
-                else {
-                    updatedDirectors[index] = { ...updatedDirectors[index], [newField]: false };
-                }
-            }
-        }
-        else {
+            // Update all directors to set only the selected one as primary
+            const updatedDirectors: any = directors.map((director, i) => ({
+                ...director,
+                isPrimaryAuthorizedSignatory: i === index ? value : false,
+            }));
+            setDirectors(updatedDirectors);
+        } else {
+            // Update only the specific field for the selected director
+            const updatedDirectors = [...directors];
             updatedDirectors[index] = { ...updatedDirectors[index], [field]: value };
+            setDirectors(updatedDirectors);
         }
-
-        setDirectors(updatedDirectors);
-
+    
+        // Clear errors for the updated field
         setErrors((prevErrors) => {
             const newErrors = { ...prevErrors };
             delete newErrors[`${index}-${field}`];
@@ -231,6 +255,8 @@ const AuthorizedSignatory: React.FC<Props> = ({ setStep }) => {
             return;
         }
 
+        setAuthorizedSign(directors);
+        setStep(3);
     }
 
     return (

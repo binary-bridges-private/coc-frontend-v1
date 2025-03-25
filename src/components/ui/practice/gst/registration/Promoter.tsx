@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction, useEffect } from "react";
 import { useState } from "react";
 
 interface Director {
@@ -37,9 +37,10 @@ interface Director {
 
 interface Props {
     setStep: Dispatch<SetStateAction<number>>;
+    setPromoterData: any;
 }
 
-const Promoter: React.FC<Props> = ({ setStep }) => {
+const Promoter: React.FC<Props> = ({ setStep, setPromoterData }) => {
 
     const [directors, setDirectors] = useState<Director[]>([
         {
@@ -213,8 +214,11 @@ const Promoter: React.FC<Props> = ({ setStep }) => {
             }
         }
 
+        setPromoterData(directors);
         setStep(4);
     }
+
+
 
     return (
         <div className="w-[60%] mb-10 p-6 mx-auto bg-white rounded-lg shadow-lg">

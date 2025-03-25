@@ -11,33 +11,86 @@ interface Item {
 }
 
 const GoodsServices: React.FC<Props> = ({ setStep }) => {
-  const [activeTab, setActiveTab] = useState("goods");
+  const [activeTab, setActiveTab] = useState<"goods" | "services">("goods");
   const [goods, setGoods] = useState<Item[]>([{ id: 1, hsnCode: "", description: "" }]);
   const [services, setServices] = useState<Item[]>([{ id: 1, hsnCode: "", description: "" }]);
+  const [goodsErrors, setGoodsErrors] = useState<{ [key: number]: { hsnCode?: string } }>({});
+  const [servicesErrors, setServicesErrors] = useState<{ [key: number]: { hsnCode?: string } }>({});
 
-  // Function to get the current active list
+  // Function to get the current active list and errors
   const getCurrentList = () => (activeTab === "goods" ? goods : services);
+  const getCurrentErrors = () => (activeTab === "goods" ? goodsErrors : servicesErrors);
 
   // Function to update the active list
   const setCurrentList = (newList: Item[]) => {
     activeTab === "goods" ? setGoods(newList) : setServices(newList);
   };
 
+  // Function to update the active errors
+  const setCurrentErrors = (newErrors: { [key: number]: { hsnCode?: string } }) => {
+    activeTab === "goods" ? setGoodsErrors(newErrors) : setServicesErrors(newErrors);
+  };
+
   // Function to add a new row
   const addItem = () => {
-    setCurrentList([...getCurrentList(), { id: Date.now(), hsnCode: "", description: "" }]);
+    const newItem = { id: Date.now(), hsnCode: "", description: "" };
+    setCurrentList([...getCurrentList(), newItem]);
   };
 
   // Function to remove a row
   const removeItem = (id: number) => {
-    setCurrentList(getCurrentList().filter(item => item.id !== id));
+    const updatedList = getCurrentList().filter((item) => item.id !== id);
+    setCurrentList(updatedList);
+
+    // Remove errors for the deleted item
+    const updatedErrors = { ...getCurrentErrors() };
+    delete updatedErrors[id];
+    setCurrentErrors(updatedErrors);
   };
 
   // Function to handle input change
   const handleChange = (id: number, field: keyof Item, value: string) => {
-    setCurrentList(
-      getCurrentList().map(item => (item.id === id ? { ...item, [field]: value } : item))
+    const updatedList = getCurrentList().map((item) =>
+      item.id === id ? { ...item, [field]: value } : item
     );
+    setCurrentList(updatedList);
+
+    // Clear error for the field if it's valid
+    if (field === "hsnCode" && value.trim()) {
+      const updatedErrors = { ...getCurrentErrors() };
+      if (updatedErrors[id]) {
+        delete updatedErrors[id].hsnCode;
+        if (Object.keys(updatedErrors[id]).length === 0) {
+          delete updatedErrors[id];
+        }
+      }
+      setCurrentErrors(updatedErrors);
+    }
+  };
+
+  // Function to validate the current list
+  const validateList = () => {
+    const errors: { [key: number]: { hsnCode?: string } } = {};
+    let isValid = true;
+
+    getCurrentList().forEach((item) => {
+      if (!item.hsnCode.trim()) {
+        errors[item.id] = { hsnCode: "HSN Code is required" };
+        isValid = false;
+      }
+    });
+
+    setCurrentErrors(errors);
+    return isValid;
+  };
+
+  // Function to handle form submission
+  const handleSubmit = () => {
+    const isValid = validateList();
+    if (isValid) {
+      console.log(activeTab === "goods" ? goods : services);
+      setStep(9); // Proceed to the next step
+    }
   };
 
   return (
@@ -45,13 +98,17 @@ const GoodsServices: React.FC<Props> = ({ setStep }) => {
       {/* Tab Navigation */}
       <div className="flex space-x-4 border-b">
         <button
-          className={`pb-2 px-4 font-medium ${activeTab === "goods" ? "border-b-2 border-blue-500 text-blue-500" : "text-gray-600"}`}
+          className={`pb-2 px-4 font-medium ${
+            activeTab === "goods" ? "border-b-2 border-blue-500 text-blue-500" : "text-gray-600"
+          }`}
           onClick={() => setActiveTab("goods")}
         >
           Goods
         </button>
         <button
-          className={`pb-2 px-4 font-medium ${activeTab === "services" ? "border-b-2 border-blue-500 text-blue-500" : "text-gray-600"}`}
+          className={`pb-2 px-4 font-medium ${
+            activeTab === "services" ? "border-b-2 border-blue-500 text-blue-500" : "text-gray-600"
+          }`}
           onClick={() => setActiveTab("services")}
         >
           Services
@@ -85,8 +142,13 @@ const GoodsServices: React.FC<Props> = ({ setStep }) => {
                 value={item.hsnCode}
                 onChange={(e) => handleChange(item.id, "hsnCode", e.target.value)}
                 placeholder="Enter HSN Code"
-                className="w-full p-2 text-sm font-medium border rounded-md"
+                className={`w-full p-2 text-sm font-medium border rounded-md ${
+                  getCurrentErrors()[item.id]?.hsnCode ? "border-red-500" : ""
+                }`}
               />
+              {getCurrentErrors()[item.id]?.hsnCode && (
+                <p className="text-sm text-red-500">{getCurrentErrors()[item.id].hsnCode}</p>
+              )}
             </div>
 
             {/* Description Input */}
@@ -129,7 +191,7 @@ const GoodsServices: React.FC<Props> = ({ setStep }) => {
         <button className="px-4 py-2 border border-gray-400 rounded-md" onClick={() => setStep(7)}>
           Back
         </button>
-        <button className="px-4 py-2 bg-[#101C36] text-white rounded-md" onClick={() => setStep(9)}>
+        <button className="px-4 py-2 bg-[#101C36] text-white rounded-md" onClick={handleSubmit}>
           Save & Continue
         </button>
       </div>
