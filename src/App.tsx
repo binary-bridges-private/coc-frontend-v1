@@ -124,7 +124,7 @@ function App() {
 
           {/* ITR Routes */}
           <Route path="/practice/itr" element={<ProtectedRoutes element={Itr} />} />
-          <Route path="/practice/itr/login" element={<ProtectedRoutes element={ItrLogin} />} />
+          <Route path="/practice/itr/login" element={<ProtectedRoutes element={ComingSoon} />} />
           <Route path="/practice/itr/itr-1" element={<ProtectedRoutes element={ComingSoon} />} />
           <Route path="/practice/itr/itr-2" element={<ProtectedRoutes element={ComingSoon} />} />
           <Route path="/practice/itr/itr-3" element={<ProtectedRoutes element={ComingSoon} />} />
