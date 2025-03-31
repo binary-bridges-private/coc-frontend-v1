@@ -128,7 +128,7 @@ const Header = () => {
               <li key={index} className="h-16 hover:border-b-2">
                 <a
                   href={`/${item.toLowerCase()}`}
-                  className="flex items-center h-full px-4 border-b-2 border-transparent laptop1:px-2 text-small"
+                  className="flex items-center h-full px-4 border-b-2 border-transparent laptop1:px-2 text-medium"
                 >
                   {item}
                 </a>
