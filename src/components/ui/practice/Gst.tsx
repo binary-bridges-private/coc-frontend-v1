@@ -5,6 +5,7 @@ const Gst = () => {
     const navigate = useNavigate();
     const gstOptions = [
         { name: "Registration", slug: "registration" },
+        { name: "Trn", slug: "trn" },
         { name: "GSTR-1", slug: "gstr-1" },
         { name: "GSTR-2A", slug: "gstr-2a" },
         { name: "GSTR-2B", slug: "gstr-2b" },
@@ -18,7 +19,7 @@ const Gst = () => {
     ];
 
     return (
-        <div className="flex flex-col items-center px-10 pb-20 pt-5">
+        <div className="flex flex-col items-center px-10 pt-5 pb-20">
             {/* Hero Section */}
             <div className="w-full py-10 hero">
                 <div className="text-center">

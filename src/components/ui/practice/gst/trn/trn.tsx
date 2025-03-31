@@ -17,6 +17,13 @@ const Trn = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
+    userType: "",
+    state: "",
+    district: "",
+    businessName: "",
+    pan: "",
+    email: "",
+    mobileNumber: "",
     trn: "",
   });
 
@@ -58,7 +65,7 @@ const Trn = () => {
         <ul>
           <li className="cursor-pointer" onClick={() => navigate("/practice")}>Practice</li>
           <li className="cursor-pointer" onClick={() => navigate("/practice/gst")}>Gst</li>
-          <li>Registration</li>
+          <li>Trn</li>
         </ul>
       </div>
 
@@ -71,26 +78,13 @@ const Trn = () => {
               <label className="label"><span className="label-text">TRN :</span></label>
               <input
                 type="text"
-                name="userType"
+                name="trn"
                 value={formData.trn}
                 onChange={handleChange}
                 className={`w-full input input-bordered ${errors.trn ? "border-red-500" : ""}`}
               />
               {errors.trn && <p className="text-sm text-red-500">This field is required.</p>}
             </div>
-
-            {/* State / UT */}
-            {/* <div>
-              <label className="label"><span className="label-text">State / UT *</span></label>
-              <input
-                type="text"
-                name="state"
-                value={formData.state}
-                onChange={handleChange}
-                className={`w-full input input-bordered ${errors.state ? "border-red-500" : ""}`}
-              />
-              {errors.state && <p className="text-sm text-red-500">This field is required.</p>}
-            </div> */}
 
             {/* Submit Button */}
             <div className="mt-4">
@@ -102,7 +96,7 @@ const Trn = () => {
         </div>
       )}
 
-      {step === 2 && <BusinessDetailsForm setStep={setStep} data={formData}/>}
+      {step === 2 && <BusinessDetailsForm setStep={setStep} data={formData} />}
       {step === 3 && <Promoter setStep={setStep} setPromoterData={setPromoterData} />}
       {step === 4 && <AuthorizedSignatory setStep={setStep} setAuthorizedSign={setAuthorizedSign} />}
       {step === 5 && <AuthorizedRepresentativeForm setStep={setStep} />}
@@ -111,7 +105,7 @@ const Trn = () => {
       {step === 8 && <GoodsServices setStep={setStep} />}
       {step === 9 && <StateSpecificInfo setStep={setStep} />}
       {step === 10 && <AdhaarAuth setStep={setStep} promoterData={promoterData} />}
-      {step === 11 && <Verification setStep={setStep} authorizedSign={authorizedSign}/>}
+      {step === 11 && <Verification setStep={setStep} authorizedSign={authorizedSign} />}
       {step === 12 && <TrnSuccessfull />}
     </>
   );
