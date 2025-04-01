@@ -148,6 +148,11 @@ interface Props {
     setOpen: Dispatch<SetStateAction<number>>
     formData?: B2BFormData
     updateFormState: (slug: string, data: B2BFormData) => void
+    period: {
+        financialYear: string;
+        quarter: string;
+        period: string;
+    };
 }
 
 interface B2BFormData {

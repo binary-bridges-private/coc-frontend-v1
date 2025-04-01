@@ -65,6 +65,11 @@ interface Props {
     setOpen: Dispatch<SetStateAction<number>>
     formData?: EcoOperatorData
     updateFormState: (slug: string, data: EcoOperatorData) => void
+    period: {
+        financialYear: string;
+        quarter: string;
+        period: string;
+    };
 }
 
 interface EcoOperatorData {

@@ -143,6 +143,11 @@ interface Props {
     setOpen: Dispatch<SetStateAction<number>>
     formData?: any
     updateFormState: (slug: string, data: any) => void
+    period: {
+        financialYear: string;
+        quarter: string;
+        period: string;
+    };
 }
 
 const B2c: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {

@@ -197,6 +197,11 @@ interface Props {
     setOpen: Dispatch<SetStateAction<number>>;
     formData?: DocumentTables;
     updateFormState: (slug: string, data: DocumentTables) => void;
+    period: {
+        financialYear: string;
+        quarter: string;
+        period: string;
+    };
 }
 
 interface DocumentRow {
