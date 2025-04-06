@@ -1,11 +1,19 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-const Gst = () => {
+const GstLogin = () => {
     const navigate = useNavigate();
     const gstOptions = [
-        { name: "Registration", slug: "registration" },
-        { name: "Login", slug: "login" },
+        { name: "GSTR-1", slug: "gstr-1" },
+        { name: "GSTR-2A", slug: "gstr-2a" },
+        { name: "GSTR-2B", slug: "gstr-2b" },
+        { name: "GSTR-3B", slug: "gstr-3b" },
+        { name: "GSTR-4", slug: "gstr-4" },
+        { name: "GSTR-9", slug: "gstr-9" },
+        { name: "GSTR-9C", slug: "gstr-9c" },
+        { name: "GSTR-10", slug: "gstr-10" },
+        { name: "EWAY BILL", slug: "eway-bill" },
+        { name: "E INVOICE", slug: "e-invoice" },
     ];
 
     return (
@@ -41,4 +49,4 @@ const Gst = () => {
     );
 };
 
-export default Gst;
+export default GstLogin;
