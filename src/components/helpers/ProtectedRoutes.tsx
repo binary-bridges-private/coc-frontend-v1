@@ -1,18 +1,25 @@
-import React from 'react';
-// import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '../../store/hooks.ts';
+import { openLoginPopup, toggleLoginPopup } from '../../store/slices/PopupSlice.ts';
+import { Navigate } from 'react-router-dom';
 
-const ProtectedRoute = ({ element: Element, ...rest }) => {
-    // setTimeout(() => {
-    //     const accessToken = localStorage.getItem('accessToken');
-    //     console.log("Protected Route triggered :", accessToken);
-    //     if (!accessToken) {
-    //         window.location.href = `${mainBaseUrl}/auth/login`;
-    //         return null;
-    //     }
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+    const dispatch = useAppDispatch();
+    const token = useAppSelector((state) => state.auth.token);
 
-    // }, 700);
+    console.log(token);
 
-    return <Element {...rest} />;
+    useEffect(() => {
+        if (!token) {
+            dispatch(openLoginPopup());
+        }
+    }, [token, dispatch]);
+
+    if (!token) {
+        return <Navigate to="/" replace />;
+    }
+
+    return children;
 };
 
 export default ProtectedRoute;

@@ -655,6 +655,8 @@
 // export default AuthorizedSignatory;
 import React, { Dispatch, SetStateAction } from "react";
 import { useState } from "react";
+import { useAppDispatch } from "../../../../../store/hooks.ts";
+import { saveGstRegistration } from "../../../../../store/slices/gstSlice.ts";
 
 interface Director {
     firstName: string;
@@ -692,11 +694,12 @@ interface Director {
 }
 
 interface Props {
-    setStep: Dispatch<SetStateAction<number>>,
-    setAuthorizedSign: any
+    setStep: Dispatch<SetStateAction<number>>;
+    setAuthorizedSign: any;
+    gstRegistratinId: string | null; 
 }
 
-const AuthorizedSignatory: React.FC<Props> = ({ setStep, setAuthorizedSign }) => {
+const AuthorizedSignatory: React.FC<Props> = ({ setStep, setAuthorizedSign, gstRegistratinId }) => {
     const [directors, setDirectors] = useState<Director[]>([
         {
             firstName: '',
@@ -850,7 +853,20 @@ const AuthorizedSignatory: React.FC<Props> = ({ setStep, setAuthorizedSign }) =>
         setDirectors(updatedDirectors);
     };
 
-    const handleSubmit = () => {
+    const dispatch = useAppDispatch();
+
+    const handleSave = async (directors: any) => {
+        try {
+            const result = await dispatch(saveGstRegistration({ id: gstRegistratinId, authorizedSignatory: directors })).unwrap();
+            console.log('Save successful:', result.data);
+            return true;
+        } catch (error) {
+            console.error('Save failed:', error);
+            return false;
+        }
+    };
+
+    const handleSubmit = async (directors: any) => {
         const newErrors: { [key: string]: string } = {};
 
         let check = false;
@@ -884,8 +900,11 @@ const AuthorizedSignatory: React.FC<Props> = ({ setStep, setAuthorizedSign }) =>
             return;
         }
 
-        setAuthorizedSign(directors);
-        setStep(3);
+        const success = await handleSave(directors);
+        if (success) {
+            setAuthorizedSign(directors);
+            setStep(5);
+        }
     }
 
     return (
@@ -1282,7 +1301,7 @@ const AuthorizedSignatory: React.FC<Props> = ({ setStep, setAuthorizedSign }) =>
                             onChange={(e) => handleFileChange(index, e.target.files ? e.target.files[0] : null, 'proof')}
                         />
                         {errors[`${index}-proof`] && <p className="mt-1 text-sm text-red-500">{errors[`${index}-proof`]}</p>}
-                        
+
                         <h3 className="mt-6 text-lg font-semibold text-gray-700">Upload Photograph</h3>
                         <input
                             type="file"
@@ -1292,9 +1311,9 @@ const AuthorizedSignatory: React.FC<Props> = ({ setStep, setAuthorizedSign }) =>
                         {errors[`${index}-photograph`] && <p className="mt-1 text-sm text-red-500">{errors[`${index}-photograph`]}</p>}
                     </div>
                 ))}
-                
+
                 {errors[`check`] && <p className="mt-4 text-sm text-red-500">{errors[`check`]}</p>}
-                
+
                 <div className="flex justify-end gap-4 mt-8">
                     <button
                         className="px-6 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
@@ -1310,7 +1329,7 @@ const AuthorizedSignatory: React.FC<Props> = ({ setStep, setAuthorizedSign }) =>
                     </button>
                     <button
                         className="px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-                        onClick={handleSubmit}
+                        onClick={() => handleSubmit(directors)}
                     >
                         Save & Continue
                     </button>

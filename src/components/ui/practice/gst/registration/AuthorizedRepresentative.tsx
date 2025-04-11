@@ -136,12 +136,15 @@
 // export default AuthorizedRepresentativeForm;
 
 import React, { Dispatch, SetStateAction, useState } from "react";
+import { useAppDispatch } from "../../../../../store/hooks.ts";
+import { saveGstRegistration } from "../../../../../store/slices/gstSlice.ts";
 
 interface Props {
   setStep: Dispatch<SetStateAction<number>>;
+  gstRegistratinId: string | null;
 }
 
-const AuthorizedRepresentativeForm: React.FC<Props> = ({ setStep }) => {
+const AuthorizedRepresentativeForm: React.FC<Props> = ({ setStep, gstRegistratinId }) => {
   const [isEnabled, setIsEnabled] = useState(false);
   const [formData, setFormData] = useState({
     type: "",
@@ -189,9 +192,25 @@ const AuthorizedRepresentativeForm: React.FC<Props> = ({ setStep }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = () => {
+  const dispatch = useAppDispatch();
+
+  const handleSave = async (data: any) => {
+    try {
+      const result = await dispatch(saveGstRegistration({ id: gstRegistratinId, authorizedRepresentative: data })).unwrap();
+      console.log('Save successful:', result.data);
+      return true;
+    } catch (error) {
+      console.error('Save failed:', error);
+      return false;
+    }
+  };
+
+  const handleSubmit = async (data: any) => {
     if (isEnabled && !validate()) return;
-    setStep(6);
+    const success = await handleSave(data);
+    if (success) {
+      setStep(6);
+    }
   };
 
   return (
@@ -225,22 +244,22 @@ const AuthorizedRepresentativeForm: React.FC<Props> = ({ setStep }) => {
                 </label>
                 <div className="flex space-x-6">
                   <label className="flex items-center space-x-2">
-                    <input 
-                      type="radio" 
-                      name="type" 
-                      value="GST Practitioner" 
-                      onChange={handleChange} 
-                      className="radio radio-primary" 
+                    <input
+                      type="radio"
+                      name="type"
+                      value="GST Practitioner"
+                      onChange={handleChange}
+                      className="radio radio-primary"
                     />
                     <span>GST Practitioner</span>
                   </label>
                   <label className="flex items-center space-x-2">
-                    <input 
-                      type="radio" 
-                      name="type" 
-                      value="Other" 
-                      onChange={handleChange} 
-                      className="radio radio-primary" 
+                    <input
+                      type="radio"
+                      name="type"
+                      value="Other"
+                      onChange={handleChange}
+                      className="radio radio-primary"
                     />
                     <span>Other</span>
                   </label>
@@ -379,7 +398,7 @@ const AuthorizedRepresentativeForm: React.FC<Props> = ({ setStep }) => {
           </button>
           <button
             className="px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-            onClick={handleSubmit}
+            onClick={() => handleSubmit(formData)}
           >
             Save & Continue
           </button>

@@ -11,33 +11,21 @@ import StateSpecificInfo from "./StateSpecificInfo.tsx";
 import AdhaarAuth from "./AdhaarAuthentication.tsx";
 import Verification from "./Verification.tsx";
 import AdditionalPlace from "./AdditionalPlace.tsx";
-import TrnSuccessfull from "./TrnSuccessfull.tsx";
+import { useAppDispatch, useAppSelector } from "../../../../../store/hooks.ts"
+import { saveGstRegistration } from "../../../../../store/slices/gstSlice.ts";
 
-interface FormData {
-  userType: string;
-  state: string;
-  district: string;
-  businessName: string;
-  pan: string;
-  email: string;
-  mobileNumber: string;
-  trn: string;
-}
-
-interface Errors {
-  trn: boolean;
-  captcha: string;
-}
+// interface Errors {
+//   trn: boolean;
+//   captcha: string;
+// }
 
 interface PromoterData {
-  // Define your promoter data interface here
   [key: string]: any;
 }
 
-interface AuthorizedSignatoryData {
-  // Define your authorized signatory data interface here
-  [key: string]: any;
-}
+// interface AuthorizedSignatoryData {
+//   [key: string]: any;
+// }
 
 
 let stateCodes: Record<string, string> = {
@@ -80,16 +68,19 @@ let stateCodes: Record<string, string> = {
 };
 
 const Registration = () => {
+
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    userType: "d",
-    state: "de",
-    district: "de",
-    businessName: "de",
-    pan: "de",
-    email: "de",
-    mobileNumber: "de",
+    userType: "",
+    state: "",
+    district: "",
+    businessName: "",
+    pan: "",
+    email: "",
+    mobileNumber: "",
   });
   const [errors, setErrors] = useState({
     userType: false,
@@ -101,13 +92,9 @@ const Registration = () => {
     mobileNumber: false,
   });
 
-
+  const [gstRegistratinId, setGstRegistartionId] = useState<string | null>(null);
   const [promoterData, setPromoterData] = useState<PromoterData[]>([]);
   const [authorizedSign, setAuthorizedSign] = useState<any>();
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -128,10 +115,22 @@ const Registration = () => {
     return !Object.values(newErrors).includes(true);
   };
 
-  const handleNextStep = () => {
+  const handleSave = async (registrationData: any) => {
+    try {
+      const result = await dispatch(saveGstRegistration(registrationData)).unwrap();
+      console.log('Save successful:', result.data);
+      setGstRegistartionId(result?.data?.data?.id);
+      return true;
+    } catch (error) {
+      console.error('Save failed:', error);
+      return false;
+    }
+  };
+
+  const handleNextStep = async (registrationData: any) => {
     if (!validateForm()) return;
-    console.log(formData);
-    setStep(step + 1);
+    const success = await handleSave(registrationData);
+    if (success) setStep(step + 1);
   };
 
   return (
@@ -299,7 +298,7 @@ const Registration = () => {
               <div className="pt-4">
                 <button
                   type="button"
-                  onClick={handleNextStep}
+                  onClick={() => handleNextStep(formData)}
                   className="w-full px-6 py-3 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 >
                   Submit Application
@@ -310,17 +309,16 @@ const Registration = () => {
         </>
       )}
 
-      {step === 2 && <BusinessDetailsForm setStep={setStep} data={formData} />}
-      {step === 3 && <Promoter setStep={setStep} setPromoterData={setPromoterData} />}
-      {step === 4 && <AuthorizedSignatory setStep={setStep} setAuthorizedSign={setAuthorizedSign} />}
-      {step === 5 && <AuthorizedRepresentativeForm setStep={setStep} />}
-      {step === 6 && <Place setStep={setStep} />}
-      {step === 7 && <AdditionalPlace setStep={setStep} />}
-      {step === 8 && <GoodsServices setStep={setStep} />}
-      {step === 9 && <StateSpecificInfo setStep={setStep} />}
-      {step === 10 && <AdhaarAuth setStep={setStep} promoterData={promoterData} />}
-      {step === 11 && <Verification setStep={setStep} authorizedSign={authorizedSign} />}
-      {/* {step === 12 && <TrnSuccessfull />} */}
+      {step === 2 && <BusinessDetailsForm setStep={setStep} data={formData} gstRegistratinId={gstRegistratinId} />}
+      {step === 3 && <Promoter setStep={setStep} setPromoterData={setPromoterData} gstRegistratinId={gstRegistratinId} />}
+      {step === 4 && <AuthorizedSignatory setStep={setStep} setAuthorizedSign={setAuthorizedSign} gstRegistratinId={gstRegistratinId} />}
+      {step === 5 && <AuthorizedRepresentativeForm setStep={setStep} gstRegistratinId={gstRegistratinId} />}
+      {step === 6 && <Place setStep={setStep} gstRegistratinId={gstRegistratinId} />}
+      {step === 7 && <AdditionalPlace setStep={setStep} gstRegistratinId={gstRegistratinId} />}
+      {step === 8 && <GoodsServices setStep={setStep} gstRegistratinId={gstRegistratinId} />}
+      {step === 9 && <StateSpecificInfo setStep={setStep} gstRegistratinId={gstRegistratinId} />}
+      {step === 10 && <AdhaarAuth setStep={setStep} promoterData={promoterData} gstRegistratinId={gstRegistratinId} />}
+      {step === 11 && <Verification setStep={setStep} authorizedSign={authorizedSign} gstRegistratinId={gstRegistratinId} />}
     </>
   );
 };

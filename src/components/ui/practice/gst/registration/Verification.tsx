@@ -237,13 +237,16 @@
 
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "../../../../../store/hooks.ts";
+import { saveGstRegistration } from "../../../../../store/slices/gstSlice.ts";
 
 interface Props {
   setStep: Dispatch<SetStateAction<number>>;
   authorizedSign: { firstName: string; middleName?: string; lastName: string }[];
+  gstRegistratinId: string | null;
 }
 
-const Verification: React.FC<Props> = ({ setStep, authorizedSign }) => {
+const Verification: React.FC<Props> = ({ setStep, authorizedSign, gstRegistratinId }) => {
 
   const navigate = useNavigate();
 
@@ -296,13 +299,28 @@ const Verification: React.FC<Props> = ({ setStep, authorizedSign }) => {
     return `22AAAAA0000A1Z${randomPart}`;
   };
 
-  const handleSubmit = () => {
+  const dispatch = useAppDispatch();
+
+  const handleSave = async (generatedGstrin: string) => {
+    try {
+      const result = await dispatch(saveGstRegistration({ id: gstRegistratinId, verification: formData, gstIn: generatedGstrin })).unwrap();
+      console.log('Save successful:', result.data);
+      return true;
+    } catch (error) {
+      console.error('Save failed:', error);
+      return false;
+    }
+  };
+
+  const handleSubmit = async () => {
     const isValid = validateForm();
-    if (isValid) {
+    const generatedGstrin = generateGSTRIN();
+    setGstrinNumber(generatedGstrin);
+    const success = await handleSave(generatedGstrin);
+
+    if (isValid && success) {
       console.log("Form submitted:", formData);
       // Generate a sample GSTRIN number
-      const generatedGstrin = generateGSTRIN();
-      setGstrinNumber(generatedGstrin);
       setShowSuccessModal(true);
     }
   };

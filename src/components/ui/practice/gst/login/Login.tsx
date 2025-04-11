@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { apiRestricted } from "../../../../../store/api.ts"
 
 const Login = () => {
     const navigate = useNavigate();
@@ -71,7 +72,7 @@ const Login = () => {
             // Random font size and style
             ctx.font = `${20 + Math.random() * 10}px ${Math.random() > 0.5 ? 'Arial' : 'Verdana'}`;
             ctx.fillStyle = `rgba(0, 0, 0, ${0.7 + Math.random() * 0.3})`;
-            
+
             // Random rotation and position
             ctx.save();
             ctx.translate(
@@ -79,7 +80,7 @@ const Login = () => {
                 canvas.height / 2 + (Math.random() * 10 - 5)
             );
             ctx.rotate((Math.random() * 0.4 - 0.2));
-            
+
             // Draw character
             ctx.fillText(
                 text.charAt(i),
@@ -100,13 +101,14 @@ const Login = () => {
         const fetchGstins = async () => {
             try {
                 setIsLoading(true);
-                // Mock response - replace with actual API call
-                const mockResponse = { data: [] }; // Empty array for demo
 
-                if (mockResponse.data.length > 0) {
-                    setGstins(mockResponse.data);
+                const res = await apiRestricted.get("/gst/gstIns");
+
+                console.log(res);
+                if (res?.data?.data?.gstIns?.length > 0) {
+                    setGstins(res.data?.data?.gstIns);
                 } else {
-                    // setShowRegistrationPrompt(true);
+                    setShowRegistrationPrompt(true);
                 }
             } catch (err) {
                 setError('Failed to fetch GSTINs. Please try again.');
@@ -156,6 +158,10 @@ const Login = () => {
                 <span className="loading loading-spinner loading-lg text-primary"></span>
             </div>
         );
+    }
+
+    const validateLogin = () => {
+        if(selectedGstin && captcha) navigate("/practice/gst/dashboard");
     }
 
     return (
@@ -213,9 +219,9 @@ const Login = () => {
                                         required
                                     >
                                         <option value="">-- Select GSTIN --</option>
-                                        {gstins.map((gstin: any) => (
-                                            <option key={gstin.id} value={gstin.number}>
-                                                {gstin.number}
+                                        {gstins.map((gstin: any, index: any) => (
+                                            <option key={index} value={gstin}>
+                                                {gstin}
                                             </option>
                                         ))}
                                     </select>
@@ -282,6 +288,7 @@ const Login = () => {
                                 <div>
                                     <button
                                         type="submit"
+                                        onClick={validateLogin}
                                         className="flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                                     >
                                         Login
