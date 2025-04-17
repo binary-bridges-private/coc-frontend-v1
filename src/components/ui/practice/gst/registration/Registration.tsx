@@ -102,15 +102,20 @@ const Registration = () => {
   };
 
   const validateForm = () => {
+    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const mobileRegex = /^[6-9]\d{9}$/;
+
     const newErrors = {
       userType: !formData.userType.trim(),
       state: !formData.state.trim(),
       district: !formData.district.trim(),
       businessName: !formData.businessName.trim(),
-      pan: !formData.pan.trim(),
-      email: !formData.email.trim(),
-      mobileNumber: !formData.mobileNumber.trim(),
+      pan: !formData.pan.trim() || !panRegex.test(formData.pan.toUpperCase()),
+      email: !formData.email.trim() || !emailRegex.test(formData.email),
+      mobileNumber: !formData.mobileNumber.trim() || !mobileRegex.test(formData.mobileNumber),
     };
+
     setErrors(newErrors);
     return !Object.values(newErrors).includes(true);
   };
@@ -135,6 +140,9 @@ const Registration = () => {
 
   return (
     <>
+      <div className="p-4 mt-4 text-sm text-yellow-700 bg-yellow-100 border border-yellow-300 rounded-md ">
+        Please do not refresh otherwise the progress will be lost!.
+      </div>
       <div className="w-[60%] mt-20 p-6 mx-auto bg-white/80 backdrop-blur-lg rounded-xl shadow-xl border border-gray-200 transform transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
         <ul className="flex items-center space-x-4 text-lg font-semibold text-gray-700">
           <li
@@ -255,7 +263,7 @@ const Registration = () => {
                   placeholder="10 character PAN"
                   className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.pan ? "border-red-500" : "border-gray-300"}`}
                 />
-                {errors.pan && <p className="mt-1 text-xs text-red-500">This field is required</p>}
+                {errors.pan && <p className="mt-1 text-xs text-red-500">This field is required ( Must be a VALID field )</p>}
               </div>
 
               {/* Email */}
@@ -271,7 +279,7 @@ const Registration = () => {
                   placeholder="official@email.com"
                   className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.email ? "border-red-500" : "border-gray-300"}`}
                 />
-                {errors.email && <p className="mt-1 text-xs text-red-500">This field is required</p>}
+                {errors.email && <p className="mt-1 text-xs text-red-500">This field is required ( Must be a VALID field )</p>}
               </div>
 
               {/* Mobile Number */}
@@ -292,7 +300,7 @@ const Registration = () => {
                     className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.mobileNumber ? "border-red-500" : "border-gray-300"}`}
                   />
                 </div>
-                {errors.mobileNumber && <p className="mt-1 text-xs text-red-500">This field is required</p>}
+                {errors.mobileNumber && <p className="mt-1 text-xs text-red-500">This field is required ( Must be a VALID field )</p>}
               </div>
 
               <div className="pt-4">
@@ -317,7 +325,7 @@ const Registration = () => {
       {step === 7 && <AdditionalPlace setStep={setStep} gstRegistratinId={gstRegistratinId} />}
       {step === 8 && <GoodsServices setStep={setStep} gstRegistratinId={gstRegistratinId} />}
       {step === 9 && <StateSpecificInfo setStep={setStep} gstRegistratinId={gstRegistratinId} />}
-      {step === 10 && <AdhaarAuth setStep={setStep} promoterData={promoterData} gstRegistratinId={gstRegistratinId} />}
+      {step === 10 && <AdhaarAuth setStep={setStep} promoterData={promoterData} authorizedSign={authorizedSign} gstRegistratinId={gstRegistratinId} />}
       {step === 11 && <Verification setStep={setStep} authorizedSign={authorizedSign} gstRegistratinId={gstRegistratinId} />}
     </>
   );

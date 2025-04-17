@@ -1,21 +1,21 @@
 import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks.ts';
-import { openLoginPopup, toggleLoginPopup } from '../../store/slices/PopupSlice.ts';
+import { openLoginPopup } from '../../store/slices/PopupSlice.ts';
 import { Navigate } from 'react-router-dom';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     const dispatch = useAppDispatch();
-    const token = useAppSelector((state) => state.auth.token);
+    const isAuth = useAppSelector((state) => state.auth.isAuthenticated);
 
-    console.log(token);
+    console.log(isAuth);
 
     useEffect(() => {
-        if (!token) {
+        if (!isAuth) {
             dispatch(openLoginPopup());
         }
-    }, [token, dispatch]);
+    }, [isAuth, dispatch]);
 
-    if (!token) {
+    if (!isAuth) {
         return <Navigate to="/" replace />;
     }
 

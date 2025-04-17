@@ -488,12 +488,6 @@ const Verification: React.FC<Props> = ({ setStep, authorizedSign, gstRegistratin
           </div>
         </div>
 
-        <div className="mt-6">
-          <a href="#" className="text-sm text-blue-600 hover:underline">
-            ⚠ Facing problem using DSC? Click here for help
-          </a>
-        </div>
-
         <div className="p-4 mt-4 text-sm text-yellow-700 bg-yellow-100 border border-yellow-300 rounded-md">
           Submit buttons will get enabled only after all mandatory fields are filled.
           Please check that you have filled all mandatory fields in the Form.

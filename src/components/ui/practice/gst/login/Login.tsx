@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiRestricted } from "../../../../../store/api.ts"
+import { gstLogin } from "../../../../../store/slices/gstAuthSlice.ts";
+import { useAppDispatch } from "../../../../../store/hooks.ts";
 
 const Login = () => {
     const navigate = useNavigate();
@@ -13,8 +15,10 @@ const Login = () => {
     const [showRegistrationPrompt, setShowRegistrationPrompt] = useState(false);
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
+    const dispatch = useAppDispatch();
+
     const generateCaptchaText = () => {
-        const chars = '0123456789ABCDEFGHJKLMNPQRSTUVWXYZ'; // Removed similar looking characters
+        const chars = '0123456789ABCDEFGHJKLMNPQRSTUVWXYZ';
         let result = '';
         for (let i = 0; i < 6; i++) {
             result += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -122,7 +126,18 @@ const Login = () => {
         fetchGstins();
     }, []);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSave = async () => {
+        try {
+            const result = await dispatch(gstLogin({ gstIn: selectedGstin })).unwrap();
+            console.log("Gst login :", result);
+            return true;
+        } catch (error) {
+            console.error('Save failed:', error);
+            return false;
+        }
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (showRegistrationPrompt) {
@@ -135,16 +150,20 @@ const Login = () => {
             return;
         }
 
-        if (userInput.toUpperCase() !== captcha) {
+        if (userInput !== captcha) {
             setError('Captcha verification failed. Please try again.');
             generateNewCaptcha();
             setUserInput('');
             return;
         }
 
-        setError('');
-        // Proceed with login
-        console.log('Logging in with GSTIN:', selectedGstin);
+        const success = await handleSave();
+
+        if (success) {
+            setError('');
+            console.log('Logging in with GSTIN:', selectedGstin);
+            navigate("/practice/gst/dashboard");
+        }
     };
 
     const handleRegisterClick = () => {
@@ -158,10 +177,6 @@ const Login = () => {
                 <span className="loading loading-spinner loading-lg text-primary"></span>
             </div>
         );
-    }
-
-    const validateLogin = () => {
-        if(selectedGstin && captcha) navigate("/practice/gst/dashboard");
     }
 
     return (
@@ -205,7 +220,8 @@ const Login = () => {
                                 </button>
                             </div>
                         ) : (
-                            <form onSubmit={handleSubmit} className="space-y-6">
+                            // <form onSubmit={handleSubmit} className="space-y-6">
+                            <div className="space-y-6">
                                 {/* GSTIN Selection */}
                                 <div>
                                     <label htmlFor="gstin" className="block mb-1 text-sm font-medium text-gray-700">
@@ -288,13 +304,14 @@ const Login = () => {
                                 <div>
                                     <button
                                         type="submit"
-                                        onClick={validateLogin}
+                                        onClick={handleSubmit}
                                         className="flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                                     >
                                         Login
                                     </button>
                                 </div>
-                            </form>
+                            </div>
+                            // </form>
                         )}
                     </div>
                 </div>

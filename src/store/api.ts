@@ -1,21 +1,17 @@
 import axios from 'axios';
 import { store } from './index.ts';
+import { openLoginPopup } from './slices/PopupSlice.ts';
+import { logout } from './slices/AuthSlice.ts';
+
+const devUrl = 'http://localhost:8080/practice/v1';
+const prodUrl = 'http://practice.coceducation.com/api/practice/v1';
 
 export const api = axios.create({
-  baseURL: 'http://practice.coceducation.com/api/practice/v1',
+  baseURL: devUrl,
   withCredentials: true,
 });
 
 export const apiRestricted = axios.create({
-  baseURL: 'http://practice.coceducation.com/api/practice/v1',
+  baseURL: devUrl,
   withCredentials: true
-});
-
-apiRestricted.interceptors.request.use((config) => {
-  const token: any = store.getState().auth.token; 
-  console.log(token);
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
 });

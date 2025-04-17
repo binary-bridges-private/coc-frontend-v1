@@ -156,7 +156,7 @@ export interface GstRegistrations {
         designation: string,
         agreed: boolean,
     },
-    gstIn ?: string, 
+    gstIn?: string,
     createdBy?: string;
     updatedBy?: string;
     createdAt?: Date;
@@ -196,6 +196,25 @@ export const saveGstRegistration = createAsyncThunk(
         } catch (error: any) {
             return rejectWithValue(
                 error.response?.data?.message || error.message || 'Something went wrong'
+            );
+        }
+    }
+);
+
+export const getGstIns = createAsyncThunk(
+    'gst/gstins',
+    async (_, { rejectWithValue }) => {
+        try {
+            const url = '/gst/gstIns';
+            const response = await apiRestricted.get(url);
+            return {
+                data: response.data,
+            };
+        } catch (error: any) {
+            return rejectWithValue(
+                error.response?.data?.message ||
+                error.message ||
+                'Failed to fetch GSTINs'
             );
         }
     }

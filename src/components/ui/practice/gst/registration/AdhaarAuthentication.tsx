@@ -5,7 +5,8 @@ import { saveGstRegistration } from "../../../../../store/slices/gstSlice.ts";
 interface Props {
     setStep: Dispatch<SetStateAction<number>>;
     promoterData: any;
-    gstRegistratinId: string | null; 
+    authorizedSign: any;
+    gstRegistratinId: string | null;
 }
 
 interface Promoter {
@@ -19,7 +20,7 @@ interface Promoter {
     photograph?: boolean;
 }
 
-const AdhaarAuth: React.FC<Props> = ({ setStep, promoterData, gstRegistratinId }) => {
+const AdhaarAuth: React.FC<Props> = ({ setStep, promoterData, authorizedSign, gstRegistratinId }) => {
     const [isAadhaarAuth, setIsAadhaarAuth] = useState(false);
     const [selectedPromoter, setSelectedPromoter] = useState<number | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -49,13 +50,13 @@ const AdhaarAuth: React.FC<Props> = ({ setStep, promoterData, gstRegistratinId }
     };
 
     const handleSubmit = async () => {
-        if (selectedPromoter === null) {
+        if (isAadhaarAuth && selectedPromoter === null) {
             setError("Please select at least one promoter.");
             return;
         }
         const success = await handleSave();
 
-        if(success) setStep(11);
+        if (success) setStep(11);
     };
 
     return (
@@ -187,6 +188,35 @@ const AdhaarAuth: React.FC<Props> = ({ setStep, promoterData, gstRegistratinId }
                                         <>
                                             <td className="p-3 text-sm text-gray-700 border">{promoter.aadhaarNumber || "NA"}</td>
                                             <td className="p-3 text-sm text-gray-700 border">{promoter.photograph ? "Uploaded" : "NA"}</td>
+                                        </>
+                                    )}
+                                </tr>
+                            ))}
+                            {authorizedSign && Array.isArray(authorizedSign) && authorizedSign.map((authS: Promoter, index: number) => (
+                                <tr key={index} className="border hover:bg-gray-50">
+                                    <td className="p-3 border">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedPromoter === index}
+                                            onChange={() => handlePromoterSelection(index)}
+                                            className="checkbox checkbox-primary"
+                                        />
+                                    </td>
+                                    <td className="p-3 text-sm text-gray-700 border">{index + 1}</td>
+                                    <td className="p-3 text-sm text-gray-700 border">{authS.isIndianCitizen ? "Yes" : "No"}</td>
+                                    <td className="p-3 text-sm text-gray-700 border">{authS.isPromoter ? "Yes" : "No"}</td>
+                                    <td className="p-3 text-sm text-gray-700 border">{authS.isAuthorizedSignatory ? "Yes" : "No"}</td>
+                                    <td className="p-3 text-sm text-gray-700 border">{authS.designation}</td>
+                                    {isAadhaarAuth ? (
+                                        <>
+                                            <td className="p-3 text-sm text-gray-700 border">{authS.email}</td>
+                                            <td className="p-3 text-sm text-gray-700 border">{authS.mobileNumber}</td>
+                                            <td className="p-3 text-sm text-gray-700 border">NA</td>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <td className="p-3 text-sm text-gray-700 border">{authS.aadhaarNumber || "NA"}</td>
+                                            <td className="p-3 text-sm text-gray-700 border">{authS.photograph ? "Uploaded" : "NA"}</td>
                                         </>
                                     )}
                                 </tr>

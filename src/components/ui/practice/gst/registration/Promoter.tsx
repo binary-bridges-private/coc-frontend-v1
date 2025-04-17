@@ -40,7 +40,7 @@ interface Director {
 interface Props {
     setStep: Dispatch<SetStateAction<number>>;
     setPromoterData: any;
-    gstRegistratinId: string | null; 
+    gstRegistratinId: string | null;
 }
 
 const Promoter: React.FC<Props> = ({ setStep, setPromoterData, gstRegistratinId }) => {
@@ -64,7 +64,7 @@ const Promoter: React.FC<Props> = ({ setStep, setPromoterData, gstRegistratinId 
             passportNumber: '',
             aadhaarNumber: '',
             pinCode: '',
-            state: 'Delhi',
+            state: '',
             district: '',
             city: '',
             locality: '',
@@ -102,7 +102,7 @@ const Promoter: React.FC<Props> = ({ setStep, setPromoterData, gstRegistratinId 
             passportNumber: '',
             aadhaarNumber: '',
             pinCode: '',
-            state: 'Delhi',
+            state: '',
             district: '',
             city: '',
             locality: '',
@@ -122,6 +122,114 @@ const Promoter: React.FC<Props> = ({ setStep, setPromoterData, gstRegistratinId 
         setDirectors(directors.filter((director, index) => index !== id));
     };
 
+    // const validateForm = (director: Director): boolean => {
+    //     const requiredFields = [
+    //         'firstName',
+    //         'lastName',
+    //         'dateOfBirth',
+    //         'mobileNumber',
+    //         'email',
+    //         'gender',
+    //         'designation',
+    //         'directorIdentificationNumber',
+    //         'pan',
+    //         'aadhaarNumber',
+    //         'pinCode',
+    //         'district',
+    //         'city',
+    //     ];
+
+    //     for (const field of requiredFields) {
+    //         if (!director[field as keyof Director]) {
+    //             return false;
+    //         }
+    //     }
+
+    //     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    //     if (!emailRegex.test(director.email)) {
+    //         return false;
+    //     }
+
+    //     const mobileRegex = /^[0-9]{10}$/;
+    //     if (!mobileRegex.test(director.mobileNumber)) {
+    //         return false;
+    //     }
+
+    //     return true;
+    // };
+
+    // const handleInputChange = (index: number, field: keyof Director, value: string | boolean | File) => {
+    //     const updatedDirectors = [...directors];
+    //     updatedDirectors[index] = { ...updatedDirectors[index], [field]: value };
+    //     setDirectors(updatedDirectors);
+
+    //     setErrors((prevErrors) => {
+    //         const newErrors = { ...prevErrors };
+    //         delete newErrors[`${index}-${field}`];
+    //         return newErrors;
+    //     });
+    // };
+
+    // const handleFileChange = (index: number, file: File | null) => {
+    //     const updatedDirectors = [...directors];
+    //     updatedDirectors[index].photograph = file;
+    //     setDirectors(updatedDirectors);
+    // };
+
+    // const dispatch = useAppDispatch();
+
+    // const handleSave = async (directors: any) => {
+    //     try {
+    //         const result = await dispatch(saveGstRegistration({ id: gstRegistratinId, promoter: directors })).unwrap();
+    //         console.log('Save successful:', result.data);
+    //         return true;
+    //     } catch (error) {
+    //         console.error('Save failed:', error);
+    //         return false;
+    //     }
+    // };
+
+    // const handleSubmit = async (directors: any) => {
+    //     const newErrors: { [key: string]: string } = {};
+
+    //     directors.forEach((director, index) => {
+    //         if (!validateForm(director)) {
+    //             if (!director.firstName) newErrors[`${index}-firstName`] = 'First Name is required';
+    //             if (!director.lastName) newErrors[`${index}-lastName`] = 'Last Name is required';
+    //             if (!director.dateOfBirth) newErrors[`${index}-dateOfBirth`] = 'Date of Birth is required';
+    //             if (!director.mobileNumber) newErrors[`${index}-mobileNumber`] = 'Mobile Number is required';
+    //             if (!director.email) newErrors[`${index}-email`] = 'Email is required';
+    //             if (!director.gender) newErrors[`${index}-gender`] = 'Gender is required';
+    //             if (!director.designation) newErrors[`${index}-designation`] = 'Designation is required';
+    //             if (!director.directorIdentificationNumber) newErrors[`${index}-directorIdentificationNumber`] = 'Director Identification Number is required';
+    //             if (!director.pan) newErrors[`${index}-pan`] = 'PAN is required';
+    //             if (!director.aadhaarNumber) newErrors[`${index}-aadhaarNumber`] = 'Aadhaar Number is required';
+    //             if (!director.pinCode) newErrors[`${index}-pinCode`] = 'PIN Code is required';
+    //             if (!director.district) newErrors[`${index}-district`] = 'District is required';
+    //             if (!director.city) newErrors[`${index}-city`] = 'City is required';
+    //         }
+    //     });
+
+    //     console.log(newErrors);
+    //     if (Object.keys(newErrors).length > 0) {
+    //         setErrors(newErrors);
+    //         return;
+    //     }
+    //     const success = await handleSave(directors);
+
+    //     if (success) {
+    //         for (let i = 0; i < directors.length; i++) {
+    //             if (directors[i].isAuthorizedSignatory) {
+    //                 setStep(5);
+    //                 return;
+    //             }
+    //         }
+    //         setPromoterData(directors);
+    //         setStep(4);
+    //     }
+    // }
+
+
     const validateForm = (director: Director): boolean => {
         const requiredFields = [
             'firstName',
@@ -137,11 +245,6 @@ const Promoter: React.FC<Props> = ({ setStep, setPromoterData, gstRegistratinId 
             'pinCode',
             'district',
             'city',
-            'locality',
-            'road',
-            'premisesName',
-            'buildingNumber',
-            'floorNumber',
         ];
 
         for (const field of requiredFields) {
@@ -150,15 +253,15 @@ const Promoter: React.FC<Props> = ({ setStep, setPromoterData, gstRegistratinId 
             }
         }
 
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(director.email)) {
-            return false;
-        }
+        // const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        // if (!emailRegex.test(director.email)) {
+        //     return false;
+        // }
 
-        const mobileRegex = /^[0-9]{10}$/;
-        if (!mobileRegex.test(director.mobileNumber)) {
-            return false;
-        }
+        // const mobileRegex = /^[0-9]{10}$/;
+        // if (!mobileRegex.test(director.mobileNumber)) {
+        //     return false;
+        // }
 
         return true;
     };
@@ -198,21 +301,51 @@ const Promoter: React.FC<Props> = ({ setStep, setPromoterData, gstRegistratinId 
         const newErrors: { [key: string]: string } = {};
 
         directors.forEach((director, index) => {
-            if (!validateForm(director)) {
-                if (!director.firstName) newErrors[`${index}-firstName`] = 'First Name is required';
-                if (!director.lastName) newErrors[`${index}-lastName`] = 'Last Name is required';
-                if (!director.dateOfBirth) newErrors[`${index}-dateOfBirth`] = 'Date of Birth is required';
-                if (!director.mobileNumber) newErrors[`${index}-mobileNumber`] = 'Mobile Number is required';
-                if (!director.email) newErrors[`${index}-email`] = 'Email is required';
-                if (!director.gender) newErrors[`${index}-gender`] = 'Gender is required';
-                if (!director.designation) newErrors[`${index}-designation`] = 'Designation is required';
-                if (!director.directorIdentificationNumber) newErrors[`${index}-directorIdentificationNumber`] = 'Director Identification Number is required';
-                if (!director.pan) newErrors[`${index}-pan`] = 'PAN is required';
-                if (!director.aadhaarNumber) newErrors[`${index}-aadhaarNumber`] = 'Aadhaar Number is required';
-                if (!director.pinCode) newErrors[`${index}-pinCode`] = 'PIN Code is required';
-                if (!director.district) newErrors[`${index}-district`] = 'District is required';
-                if (!director.city) newErrors[`${index}-city`] = 'City is required';
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            const mobileRegex = /^[0-9]{10}$/;
+            const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+            const aadhaarRegex = /^\d{12}$/;
+            const pinCodeRegex = /^\d{6}$/;
+
+            if (!director.firstName) newErrors[`${index}-firstName`] = 'First Name is required';
+            if (!director.lastName) newErrors[`${index}-lastName`] = 'Last Name is required';
+            if (!director.dateOfBirth) newErrors[`${index}-dateOfBirth`] = 'Date of Birth is required';
+
+            if (!director.mobileNumber) {
+                newErrors[`${index}-mobileNumber`] = 'Mobile Number is required';
+            } else if (!mobileRegex.test(director.mobileNumber)) {
+                newErrors[`${index}-mobileNumber`] = 'Invalid Mobile Number';
             }
+
+            if (!director.email) {
+                newErrors[`${index}-email`] = 'Email is required';
+            } else if (!emailRegex.test(director.email)) {
+                newErrors[`${index}-email`] = 'Invalid Email';
+            }
+
+            if (!director.gender) newErrors[`${index}-gender`] = 'Gender is required';
+            if (!director.designation) newErrors[`${index}-designation`] = 'Designation is required';
+            if (!director.directorIdentificationNumber) newErrors[`${index}-directorIdentificationNumber`] = 'Director Identification Number is required';
+
+            if (!director.pan) {
+                newErrors[`${index}-pan`] = 'PAN is required';
+            } else if (!panRegex.test(director.pan)) {
+                newErrors[`${index}-pan`] = 'Invalid PAN format (e.g., ABCDE1234F)';
+            }
+
+            if (!director.aadhaarNumber) {
+                newErrors[`${index}-aadhaarNumber`] = 'Aadhaar Number is required';
+            } else if (!aadhaarRegex.test(director.aadhaarNumber)) {
+                newErrors[`${index}-aadhaarNumber`] = 'Aadhaar must be a 12-digit number';
+            }
+
+            if (!director.pinCode) {
+                newErrors[`${index}-pinCode`] = 'PIN Code is required';
+            } else if (!pinCodeRegex.test(director.pinCode)) {
+                newErrors[`${index}-pinCode`] = 'PIN Code must be 6 digits';
+            }
+            if (!director.district) newErrors[`${index}-district`] = 'District is required';
+            if (!director.city) newErrors[`${index}-city`] = 'City is required';
         });
 
         console.log(newErrors);
@@ -220,19 +353,23 @@ const Promoter: React.FC<Props> = ({ setStep, setPromoterData, gstRegistratinId 
             setErrors(newErrors);
             return;
         }
+
         const success = await handleSave(directors);
 
         if (success) {
+            setPromoterData(directors);
             for (let i = 0; i < directors.length; i++) {
                 if (directors[i].isAuthorizedSignatory) {
                     setStep(5);
+                    // setStep(2);
                     return;
                 }
             }
-            setPromoterData(directors);
+            // setPromoterData(directors);
             setStep(4);
+            return;
         }
-    }
+    };
 
 
     // Standardized input classes
