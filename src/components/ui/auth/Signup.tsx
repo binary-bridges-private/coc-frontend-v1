@@ -88,7 +88,7 @@ const Signup = () => {
         if (!inputValues.phoneNumber.trim()) {
             newErrors.phoneNumber = "Phone number is required";
             valid = false;
-        } else if (!/^\+?[0-9]{10,15}$/.test(inputValues.phoneNumber)) {
+        } else if (!/^\+?[0-9]{10}$/.test(inputValues.phoneNumber)) {
             newErrors.phoneNumber = "Please enter a valid phone number";
             valid = false;
         }

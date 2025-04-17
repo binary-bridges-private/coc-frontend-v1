@@ -866,46 +866,139 @@ const AuthorizedSignatory: React.FC<Props> = ({ setStep, setAuthorizedSign, gstR
         }
     };
 
+    // const handleSubmit = async (directors: any) => {
+    //     const newErrors: { [key: string]: string } = {};
+
+    //     let check = false;
+    //     for (let i = 0; i < directors.length; i++) {
+    //         if (directors[i].isPrimaryAuthorizedSignatory) {
+    //             check = true;
+    //         }
+    //     }
+
+    //     directors.forEach((director, index) => {
+    //         if (!validateForm(director)) {
+    //             if (!director.firstName) newErrors[`${index}-firstName`] = 'First Name is required';
+    //             if (!director.lastName) newErrors[`${index}-lastName`] = 'Last Name is required';
+    //             if (!director.dateOfBirth) newErrors[`${index}-dateOfBirth`] = 'Date of Birth is required';
+    //             if (!director.mobileNumber) newErrors[`${index}-mobileNumber`] = 'Mobile Number is required';
+    //             if (!director.email) newErrors[`${index}-email`] = 'Email is required';
+    //             if (!director.gender) newErrors[`${index}-gender`] = 'Gender is required';
+    //             if (!director.designation) newErrors[`${index}-designation`] = 'Designation is required';
+    //             if (!director.directorIdentificationNumber) newErrors[`${index}-directorIdentificationNumber`] = 'Director Identification Number is required';
+    //             if (!director.pan) newErrors[`${index}-pan`] = 'PAN is required';
+    //             if (!director.aadhaarNumber) newErrors[`${index}-aadhaarNumber`] = 'Aadhaar Number is required';
+    //             if (!director.pinCode) newErrors[`${index}-pinCode`] = 'PIN Code is required';
+    //             if (!director.district) newErrors[`${index}-district`] = 'District is required';
+    //             if (!director.city) newErrors[`${index}-city`] = 'City is required';
+    //             if (!check) newErrors['check'] = 'Need to select a primary signatory!';
+    //         }
+    //     });
+
+    //     if (Object.keys(newErrors).length > 0) {
+    //         setErrors(newErrors);
+    //         return;
+    //     }
+
+    //     const success = await handleSave(directors);
+    //     if (success) {
+    //         setAuthorizedSign(directors);
+    //         setStep(5);
+    //     }
+    // }
+
     const handleSubmit = async (directors: any) => {
         const newErrors: { [key: string]: string } = {};
-
-        let check = false;
-        for (let i = 0; i < directors.length; i++) {
-            if (directors[i].isPrimaryAuthorizedSignatory) {
-                check = true;
+        const hasPrimarySignatory = directors.some((d: any) => d.isPrimaryAuthorizedSignatory);
+    
+        // Validation regex patterns
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        const mobileRegex = /^[0-9]{10}$/;
+        const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+        const aadhaarRegex = /^\d{12}$/;
+        const pinCodeRegex = /^\d{6}$/;
+        const dinRegex = /^[0-9]{8}$/; // Assuming DIN is 8 digits
+    
+        directors.forEach((director: any, index: number) => {
+            // Required field validations
+            if (!director.firstName?.trim()) newErrors[`${index}-firstName`] = 'First Name is required';
+            if (!director.lastName?.trim()) newErrors[`${index}-lastName`] = 'Last Name is required';
+            if (!director.dateOfBirth) newErrors[`${index}-dateOfBirth`] = 'Date of Birth is required';
+            
+            // Mobile number validation
+            if (!director.mobileNumber) {
+                newErrors[`${index}-mobileNumber`] = 'Mobile Number is required';
+            } else if (!mobileRegex.test(director.mobileNumber)) {
+                newErrors[`${index}-mobileNumber`] = 'Invalid Mobile Number (10 digits required)';
             }
-        }
-
-        directors.forEach((director, index) => {
-            if (!validateForm(director)) {
-                if (!director.firstName) newErrors[`${index}-firstName`] = 'First Name is required';
-                if (!director.lastName) newErrors[`${index}-lastName`] = 'Last Name is required';
-                if (!director.dateOfBirth) newErrors[`${index}-dateOfBirth`] = 'Date of Birth is required';
-                if (!director.mobileNumber) newErrors[`${index}-mobileNumber`] = 'Mobile Number is required';
-                if (!director.email) newErrors[`${index}-email`] = 'Email is required';
-                if (!director.gender) newErrors[`${index}-gender`] = 'Gender is required';
-                if (!director.designation) newErrors[`${index}-designation`] = 'Designation is required';
-                if (!director.directorIdentificationNumber) newErrors[`${index}-directorIdentificationNumber`] = 'Director Identification Number is required';
-                if (!director.pan) newErrors[`${index}-pan`] = 'PAN is required';
-                if (!director.aadhaarNumber) newErrors[`${index}-aadhaarNumber`] = 'Aadhaar Number is required';
-                if (!director.pinCode) newErrors[`${index}-pinCode`] = 'PIN Code is required';
-                if (!director.district) newErrors[`${index}-district`] = 'District is required';
-                if (!director.city) newErrors[`${index}-city`] = 'City is required';
-                if (!check) newErrors['check'] = 'Need to select a primary signatory!';
+    
+            // Email validation
+            if (!director.email) {
+                newErrors[`${index}-email`] = 'Email is required';
+            } else if (!emailRegex.test(director.email)) {
+                newErrors[`${index}-email`] = 'Invalid Email format';
             }
+    
+            // Other required fields
+            if (!director.gender) newErrors[`${index}-gender`] = 'Gender is required';
+            if (!director.designation) newErrors[`${index}-designation`] = 'Designation is required';
+    
+            // DIN validation
+            if (!director.directorIdentificationNumber) {
+                newErrors[`${index}-directorIdentificationNumber`] = 'Director Identification Number is required';
+            } else if (!dinRegex.test(director.directorIdentificationNumber)) {
+                newErrors[`${index}-directorIdentificationNumber`] = 'DIN must be 8 digits';
+            }
+    
+            // PAN validation
+            if (!director.pan) {
+                newErrors[`${index}-pan`] = 'PAN is required';
+            } else if (!panRegex.test(director.pan)) {
+                newErrors[`${index}-pan`] = 'Invalid PAN format (e.g., ABCDE1234F)';
+            }
+    
+            // Aadhaar validation
+            if (!director.aadhaarNumber) {
+                newErrors[`${index}-aadhaarNumber`] = 'Aadhaar Number is required';
+            } else if (!aadhaarRegex.test(director.aadhaarNumber)) {
+                newErrors[`${index}-aadhaarNumber`] = 'Aadhaar must be 12 digits';
+            }
+    
+            // Address validations
+            if (!director.pinCode) {
+                newErrors[`${index}-pinCode`] = 'PIN Code is required';
+            } else if (!pinCodeRegex.test(director.pinCode)) {
+                newErrors[`${index}-pinCode`] = 'PIN Code must be 6 digits';
+            }
+            if (!director.district) newErrors[`${index}-district`] = 'District is required';
+            if (!director.city) newErrors[`${index}-city`] = 'City is required';
         });
-
+    
+        // Check for primary authorized signatory
+        if (!hasPrimarySignatory) {
+            newErrors['check'] = 'At least one director must be marked as primary authorized signatory';
+        }
+    
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
-            return;
+            return false;
         }
-
-        const success = await handleSave(directors);
-        if (success) {
-            setAuthorizedSign(directors);
-            setStep(5);
+    
+        try {
+            const success = await handleSave(directors);
+            if (success) {
+                setAuthorizedSign(directors);
+                setStep(5);
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error('Submission failed:', error);
+            newErrors['form'] = 'Submission failed. Please try again.';
+            setErrors(newErrors);
+            return false;
         }
-    }
+    };
 
     return (
         <>

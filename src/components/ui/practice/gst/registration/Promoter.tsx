@@ -354,20 +354,23 @@ const Promoter: React.FC<Props> = ({ setStep, setPromoterData, gstRegistratinId 
             return;
         }
 
-        const success = await handleSave(directors);
-
-        if (success) {
+        try {
+            const success = await handleSave(directors);
             setPromoterData(directors);
             for (let i = 0; i < directors.length; i++) {
                 if (directors[i].isAuthorizedSignatory) {
                     setStep(5);
-                    // setStep(2);
                     return;
                 }
             }
-            // setPromoterData(directors);
             setStep(4);
-            return;
+            return true;
+        }
+        catch(error) {
+            console.error('Submission failed:', error);
+            newErrors['form'] = 'Submission failed. Please try again.';
+            setErrors(newErrors);
+            return false;
         }
     };
 
