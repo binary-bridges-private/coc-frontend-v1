@@ -1,6 +1,7 @@
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { useAppDispatch } from "../../../../../store/hooks.ts";
 import { saveGstRegistration } from "../../../../../store/slices/gstSlice.ts";
+import { stateCodes } from "../../../../helpers/Constants.tsx";
 
 interface PlaceProps {
     formData: any;
@@ -40,13 +41,19 @@ const Place: React.FC<PlaceProps> = ({ formData, errors, handleInputChange, hand
                     </div>
                     <div>
                         <label className="block mb-2 text-sm font-medium text-gray-700">State</label>
-                        <input
-                            type="text"
+                        <select
                             name="state"
-                            value={formData.state || "Delhi"}
-                            readOnly
+                            value={formData.state}
                             className={disabledInputClass}
-                        />
+                            onChange={(e) => handleInputChange(e as any)}
+                        >
+                            <option value="">Select state</option>
+                            {Object.keys(stateCodes).map((state) => (
+                                <option key={state} value={state}>
+                                    {state}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                     <div>
                         <label className="block mb-2 text-sm font-medium text-gray-700">District *</label>
@@ -265,7 +272,6 @@ const Place: React.FC<PlaceProps> = ({ formData, errors, handleInputChange, hand
                             placeholder="Office Email"
                             className={inputClass}
                         />
-                        {errors[`officeEmail-${index}`] && <p className="mt-1 text-sm text-red-500">{errors[`officeEmail-${index}`]}</p>}
                     </div>
                     <div>
                         <label className="block mb-2 text-sm font-medium text-gray-700">Office Telephone Number *</label>
@@ -277,7 +283,6 @@ const Place: React.FC<PlaceProps> = ({ formData, errors, handleInputChange, hand
                             placeholder="Office Telephone Number"
                             className={inputClass}
                         />
-                        {errors[`officeTelephone-${index}`] && <p className="mt-1 text-sm text-red-500">{errors[`officeTelephone-${index}`]}</p>}
                     </div>
                     <div>
                         <label className="block mb-2 text-sm font-medium text-gray-700">Mobile Number *</label>
@@ -289,7 +294,6 @@ const Place: React.FC<PlaceProps> = ({ formData, errors, handleInputChange, hand
                             placeholder="Mobile Number"
                             className={inputClass}
                         />
-                        {errors[`mobileNumber-${index}`] && <p className="mt-1 text-sm text-red-500">{errors[`mobileNumber-${index}`]}</p>}
                     </div>
                 </div>
                 <div className="grid grid-cols-1 gap-4 mt-4 md:grid-cols-3">
@@ -319,8 +323,10 @@ const Place: React.FC<PlaceProps> = ({ formData, errors, handleInputChange, hand
                             className={selectClass}
                         >
                             <option value="">Select</option>
-                            <option value="Electricity Bill">Electricity Bill</option>
-                            <option value="Rent Agreement">Rent Agreement</option>
+                            <option value="Owned">Owned</option>
+                            <option value="Rented">Rented</option>
+                            <option value="Shared">Shared</option>
+                            <option value="Consented">Consented</option>
                         </select>
                     </div>
                     <div>
@@ -505,7 +511,7 @@ const Place: React.FC<PlaceProps> = ({ formData, errors, handleInputChange, hand
 
 interface Props {
     setStep: Dispatch<SetStateAction<number>>;
-    gstRegistratinId: string | null; 
+    gstRegistratinId: string | null;
 }
 
 const AdditionalPlace: React.FC<Props> = ({ setStep, gstRegistratinId }) => {
@@ -635,9 +641,6 @@ const AdditionalPlace: React.FC<Props> = ({ setStep, gstRegistratinId }) => {
             if (!place.pinCode) newErrors[`pinCode-${index}`] = "PIN Code is required";
             if (!place.district) newErrors[`district-${index}`] = "District is required";
             if (!place.city) newErrors[`city-${index}`] = "City is required";
-            if (!place.officeEmail) newErrors[`officeEmail-${index}`] = "Office Email is required";
-            if (!place.officeTelephone) newErrors[`officeTelephone-${index}`] = "Office Telephone is required";
-            if (!place.mobileNumber) newErrors[`mobileNumber-${index}`] = "Mobile Number is required";
             if (!place.sector) newErrors[`sector-${index}`] = "Sector is required";
             if (!place.commissioner) newErrors[`commissioner-${index}`] = "Commissionerate is required";
             if (!place.division) newErrors[`division-${index}`] = "Division is required";
@@ -651,7 +654,7 @@ const AdditionalPlace: React.FC<Props> = ({ setStep, gstRegistratinId }) => {
         }
 
         const success = await handleSave();
-        if(success) setStep(8);
+        if (success) setStep(8);
     };
 
     return (

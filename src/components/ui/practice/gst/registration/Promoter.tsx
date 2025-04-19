@@ -239,7 +239,6 @@ const Promoter: React.FC<Props> = ({ setStep, setPromoterData, gstRegistratinId 
             'email',
             'gender',
             'designation',
-            'directorIdentificationNumber',
             'pan',
             'aadhaarNumber',
             'pinCode',
@@ -325,7 +324,6 @@ const Promoter: React.FC<Props> = ({ setStep, setPromoterData, gstRegistratinId 
 
             if (!director.gender) newErrors[`${index}-gender`] = 'Gender is required';
             if (!director.designation) newErrors[`${index}-designation`] = 'Designation is required';
-            if (!director.directorIdentificationNumber) newErrors[`${index}-directorIdentificationNumber`] = 'Director Identification Number is required';
 
             if (!director.pan) {
                 newErrors[`${index}-pan`] = 'PAN is required';
@@ -566,7 +564,6 @@ const Promoter: React.FC<Props> = ({ setStep, setPromoterData, gstRegistratinId 
                                     value={director.directorIdentificationNumber}
                                     onChange={(e) => handleInputChange(index, 'directorIdentificationNumber', e.target.value)}
                                 />
-                                {errors[`${index}-directorIdentificationNumber`] && <p className="mt-1 text-sm text-red-500">{errors[`${index}-directorIdentificationNumber`]}</p>}
                             </div>
                             <div className="flex items-center">
                                 <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
@@ -635,7 +632,7 @@ const Promoter: React.FC<Props> = ({ setStep, setPromoterData, gstRegistratinId 
                                 <label className="block mb-2 text-sm font-medium text-gray-700">State</label>
                                 <input
                                     type="text"
-                                    value="Delhi"
+                                    value={director.state}
                                     readOnly
                                     className={`${inputClass} bg-gray-100`}
                                 />

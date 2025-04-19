@@ -198,7 +198,8 @@ interface Props {
     period: {
         financialYear: string;
         quarter: string;
-        period: string;
+        month: string;
+        monthName: string;
     };
 }
 

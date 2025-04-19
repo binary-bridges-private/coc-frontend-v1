@@ -13,59 +13,11 @@ import Verification from "./Verification.tsx";
 import AdditionalPlace from "./AdditionalPlace.tsx";
 import { useAppDispatch, useAppSelector } from "../../../../../store/hooks.ts"
 import { saveGstRegistration } from "../../../../../store/slices/gstSlice.ts";
-
-// interface Errors {
-//   trn: boolean;
-//   captcha: string;
-// }
+import { stateCodes } from "../../../../helpers/Constants.tsx";
 
 interface PromoterData {
   [key: string]: any;
 }
-
-// interface AuthorizedSignatoryData {
-//   [key: string]: any;
-// }
-
-
-let stateCodes: Record<string, string> = {
-  'andhra pradesh': '37',
-  'arunachal pradesh': '12',
-  'assam': '18',
-  'bihar': '10',
-  'chhattisgarh': '22',
-  'goa': '30',
-  'gujarat': '24',
-  'haryana': '06',
-  'himachal pradesh': '02',
-  'jharkhand': '20',
-  'karnataka': '29',
-  'kerala': '32',
-  'madhya pradesh': '23',
-  'maharashtra': '27',
-  'manipur': '14',
-  'meghalaya': '17',
-  'mizoram': '15',
-  'nagaland': '13',
-  'odisha': '21',
-  'punjab': '03',
-  'rajasthan': '08',
-  'sikkim': '11',
-  'tamil nadu': '33',
-  'telangana': '36',
-  'tripura': '16',
-  'uttar pradesh': '09',
-  'uttarakhand': '05',
-  'west bengal': '19',
-  'andaman and nicobar islands': '35',
-  'chandigarh': '04',
-  'dadra and nagar haveli and daman and diu': '26',
-  'lakshadweep': '31',
-  'puducherry': '34',
-  'delhi': '07',
-  'ladakh': '38',
-  'jammu and kashmir': '01'
-};
 
 const Registration = () => {
 
@@ -83,13 +35,13 @@ const Registration = () => {
     mobileNumber: "",
   });
   const [errors, setErrors] = useState({
-    userType: false,
-    state: false,
-    district: false,
-    businessName: false,
-    pan: false,
-    email: false,
-    mobileNumber: false,
+    userType: "",
+    state: "",
+    district: "",
+    businessName: "",
+    pan: "",
+    email: "",
+    mobileNumber: "",
   });
 
   const [gstRegistratinId, setGstRegistartionId] = useState<string | null>(null);
@@ -107,17 +59,17 @@ const Registration = () => {
     const mobileRegex = /^[6-9]\d{9}$/;
 
     const newErrors = {
-      userType: !formData.userType.trim(),
-      state: !formData.state.trim(),
-      district: !formData.district.trim(),
-      businessName: !formData.businessName.trim(),
-      pan: !formData.pan.trim() || !panRegex.test(formData.pan.toUpperCase()),
-      email: !formData.email.trim() || !emailRegex.test(formData.email),
-      mobileNumber: !formData.mobileNumber.trim() || !mobileRegex.test(formData.mobileNumber),
+      userType: !formData.userType.trim() ? "This field is required" : "",
+      state: !formData.state.trim() ? "This field is required" : "",
+      district: !formData.district.trim() ? "This field is required" : "",
+      businessName: !formData.businessName.trim() ? "This field is required" : "",
+      pan: !formData.pan.trim() ? "This field is required" : (!panRegex.test(formData.pan.toUpperCase()) ? "Invalid format" : ""),
+      email: !formData.email.trim() ? "This field is required" : (!emailRegex.test(formData.email) ? "Invalid format" : ""),
+      mobileNumber: !formData.mobileNumber.trim() ? "This field is required" : (!mobileRegex.test(formData.mobileNumber) ? "Invalid format" : ""),
     };
 
     setErrors(newErrors);
-    return !Object.values(newErrors).includes(true);
+    return !Object.values(newErrors).some(error => error !== "");
   };
 
   const handleSave = async (registrationData: any) => {
@@ -140,7 +92,7 @@ const Registration = () => {
 
   return (
     <>
-      <div className="p-4 mt-4 text-sm text-yellow-700 bg-yellow-100 border border-yellow-300 rounded-md ">
+      <div className="p-4 mt-4 text-lg text-center text-yellow-700 bg-yellow-100 border border-yellow-300 rounded-md ">
         Please do not refresh otherwise the progress will be lost!.
       </div>
       <div className="w-[60%] mt-20 p-6 mx-auto bg-white/80 backdrop-blur-lg rounded-xl shadow-xl border border-gray-200 transform transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
@@ -182,19 +134,15 @@ const Registration = () => {
                 <label className="block mb-2 text-sm font-medium text-gray-700">
                   I am a <span className="text-red-500">*</span>
                 </label>
-                <select
+                <input
+                  type="text"
                   name="userType"
                   value={formData.userType}
-                  onChange={(e) => handleChange(e as any)}
+                  onChange={handleChange}
+                  placeholder=""
                   className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.userType ? "border-red-500" : "border-gray-300"}`}
-                >
-                  <option value="">Select user type</option>
-                  <option value="Individual">Individual</option>
-                  <option value="Company">Company</option>
-                  <option value="LLP">LLP</option>
-                  <option value="Partnership">Partnership</option>
-                </select>
-                {errors.userType && <p className="mt-1 text-xs text-red-500">This field is required</p>}
+                />
+                {errors.userType && <p className="mt-1 text-sm text-red-500">{errors.userType}</p>}
               </div>
 
               {/* State */}
@@ -211,11 +159,11 @@ const Registration = () => {
                   <option value="">Select state</option>
                   {Object.keys(stateCodes).map((state) => (
                     <option key={state} value={state}>
-                      {state.charAt(0).toUpperCase() + state.slice(1)}
+                      {state}
                     </option>
                   ))}
                 </select>
-                {errors.state && <p className="mt-1 text-xs text-red-500">This field is required</p>}
+                {errors.state && <p className="mt-1 text-sm text-red-500">{errors.state}</p>}
               </div>
 
               {/* District */}
@@ -231,7 +179,7 @@ const Registration = () => {
                   placeholder="Enter district"
                   className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.district ? "border-red-500" : "border-gray-300"}`}
                 />
-                {errors.district && <p className="mt-1 text-xs text-red-500">This field is required</p>}
+                {errors.district && <p className="mt-1 text-sm text-red-500">{errors.district}</p>}
               </div>
 
               {/* Business Name */}
@@ -247,7 +195,7 @@ const Registration = () => {
                   placeholder="As per PAN records"
                   className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.businessName ? "border-red-500" : "border-gray-300"}`}
                 />
-                {errors.businessName && <p className="mt-1 text-xs text-red-500">This field is required</p>}
+                {errors.businessName && <p className="mt-1 text-sm text-red-500">{errors.businessName}</p>}
               </div>
 
               {/* PAN */}
@@ -263,7 +211,7 @@ const Registration = () => {
                   placeholder="10 character PAN"
                   className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.pan ? "border-red-500" : "border-gray-300"}`}
                 />
-                {errors.pan && <p className="mt-1 text-xs text-red-500">This field is required ( Must be a VALID field )</p>}
+                {errors.pan && <p className="mt-1 text-sm text-red-500">{errors.pan}</p>}
               </div>
 
               {/* Email */}
@@ -279,7 +227,7 @@ const Registration = () => {
                   placeholder="official@email.com"
                   className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.email ? "border-red-500" : "border-gray-300"}`}
                 />
-                {errors.email && <p className="mt-1 text-xs text-red-500">This field is required ( Must be a VALID field )</p>}
+                {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
               </div>
 
               {/* Mobile Number */}
@@ -300,7 +248,7 @@ const Registration = () => {
                     className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.mobileNumber ? "border-red-500" : "border-gray-300"}`}
                   />
                 </div>
-                {errors.mobileNumber && <p className="mt-1 text-xs text-red-500">This field is required ( Must be a VALID field )</p>}
+                {errors.mobileNumber && <p className="mt-1 text-sm text-red-500">{errors.mobileNumber}</p>}
               </div>
 
               <div className="pt-4">
@@ -326,7 +274,7 @@ const Registration = () => {
       {step === 8 && <GoodsServices setStep={setStep} gstRegistratinId={gstRegistratinId} />}
       {step === 9 && <StateSpecificInfo setStep={setStep} gstRegistratinId={gstRegistratinId} />}
       {step === 10 && <AdhaarAuth setStep={setStep} promoterData={promoterData} authorizedSign={authorizedSign} gstRegistratinId={gstRegistratinId} />}
-      {step === 11 && <Verification setStep={setStep} authorizedSign={authorizedSign} gstRegistratinId={gstRegistratinId} />}
+      {step === 11 && <Verification setStep={setStep} promoterData={promoterData} authorizedSign={authorizedSign} gstRegistratinId={gstRegistratinId} />}
     </>
   );
 };

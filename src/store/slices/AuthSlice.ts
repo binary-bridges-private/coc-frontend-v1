@@ -1,4 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { api } from '../api.ts';
 
 interface AuthState {
@@ -12,7 +14,6 @@ interface AuthState {
   } | null;
 }
 
-// Load initial state from localStorage if available
 const loadInitialState = (): AuthState => {
   const persistedAuth = localStorage.getItem('auth');
   if (persistedAuth) {
@@ -56,6 +57,7 @@ export const loginUser = createAsyncThunk(
   async (credentials: LoginCredentials, { rejectWithValue }) => {
     try {
       const response = await api.post('/auth/login', credentials);
+      toast.success('Login successful!');
       return {
         userData: {
           email: response.data?.data?.email,
@@ -64,6 +66,8 @@ export const loginUser = createAsyncThunk(
         }
       };
     } catch (error: any) {
+      const errorMessage = error.response?.data?.message || 'Login failed';
+      toast.error(errorMessage);
       return rejectWithValue(error.response?.data?.message || 'Login failed');
     }
   }
@@ -74,6 +78,7 @@ export const signupUser = createAsyncThunk(
   async (credentials: SignupCredentials, { rejectWithValue }) => {
     try {
       const response = await api.post('/auth/signup', credentials);
+      toast.success('Signup successful! Welcome!');
       return {
         userData: {
           email: response.data?.data?.email,
@@ -82,6 +87,8 @@ export const signupUser = createAsyncThunk(
         }
       };
     } catch (error: any) {
+      const errorMessage = error.response?.data?.message || 'Signup failed';
+      toast.error(errorMessage);
       return rejectWithValue(error.response?.data?.message || 'Signup failed');
     }
   }

@@ -1,6 +1,7 @@
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { useAppDispatch } from "../../../../../store/hooks.ts";
 import { saveGstRegistration } from "../../../../../store/slices/gstSlice.ts";
+import { stateCodes } from "../../../../helpers/Constants.tsx";
 
 interface Props {
     setStep: Dispatch<SetStateAction<number>>;
@@ -104,9 +105,6 @@ const Place: React.FC<Props> = ({ setStep, gstRegistratinId }) => {
         if (!formData.pinCode) newErrors.pinCode = "PIN Code is required";
         if (!formData.district) newErrors.district = "District is required";
         if (!formData.city) newErrors.city = "City is required";
-        if (!formData.officeEmail) newErrors.officeEmail = "Office Email is required";
-        if (!formData.officeTelephone) newErrors.officeTelephone = "Office Telephone is required";
-        if (!formData.mobileNumber) newErrors.mobileNumber = "Mobile Number is required";
         if (!formData.sector) newErrors.sector = "Sector is required";
         if (!formData.commissioner) newErrors.commissioner = "Commissionerate is required";
         if (!formData.division) newErrors.division = "Division is required";
@@ -153,13 +151,19 @@ const Place: React.FC<Props> = ({ setStep, gstRegistratinId }) => {
                             </div>
                             <div>
                                 <label className="block mb-2 text-sm font-medium text-gray-700">State</label>
-                                <input
-                                    type="text"
+                                <select
                                     name="state"
                                     value={formData.state}
-                                    readOnly
+                                    onChange={(e) => handleInputChange(e as any)}
                                     className={disabledInputClass}
-                                />
+                                >
+                                    <option value="">Select state</option>
+                                    {Object.keys(stateCodes).map((state) => (
+                                        <option key={state} value={state}>
+                                            {state}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                             <div>
                                 <label className="block mb-2 text-sm font-medium text-gray-700">District</label>
@@ -393,7 +397,6 @@ const Place: React.FC<Props> = ({ setStep, gstRegistratinId }) => {
                                     placeholder="Office Email"
                                     className={inputClass}
                                 />
-                                {errors.officeEmail && <p className="mt-1 text-sm text-red-500">{errors.officeEmail}</p>}
                             </div>
                             <div>
                                 <label className="block mb-2 text-sm font-medium text-gray-700">Office Telephone Number *</label>
@@ -405,7 +408,6 @@ const Place: React.FC<Props> = ({ setStep, gstRegistratinId }) => {
                                     placeholder="Office Telephone Number"
                                     className={inputClass}
                                 />
-                                {errors.officeTelephone && <p className="mt-1 text-sm text-red-500">{errors.officeTelephone}</p>}
                             </div>
                             <div>
                                 <label className="block mb-2 text-sm font-medium text-gray-700">Mobile Number *</label>
@@ -417,7 +419,6 @@ const Place: React.FC<Props> = ({ setStep, gstRegistratinId }) => {
                                     placeholder="Mobile Number"
                                     className={inputClass}
                                 />
-                                {errors.mobileNumber && <p className="mt-1 text-sm text-red-500">{errors.mobileNumber}</p>}
                             </div>
                         </div>
                         <div className="grid grid-cols-1 gap-4 mt-4 md:grid-cols-3">
@@ -447,8 +448,10 @@ const Place: React.FC<Props> = ({ setStep, gstRegistratinId }) => {
                                     className={selectClass}
                                 >
                                     <option value="">Select</option>
-                                    <option value="Electricity Bill">Electricity Bill</option>
-                                    <option value="Rent Agreement">Rent Agreement</option>
+                                    <option value="Owned">Owned</option>
+                                    <option value="Rented">Rented</option>
+                                    <option value="Shared">Shared</option>
+                                    <option value="Consented">Consented</option>
                                 </select>
                             </div>
                             <div>
