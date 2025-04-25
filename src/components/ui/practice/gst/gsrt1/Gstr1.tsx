@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
-import B2b from './B2b.tsx'
-import { useNavigate } from 'react-router-dom'
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import B2b from './B2b.tsx';
 import B2c from './B2c.tsx';
 import Exports from './Exports.tsx';
 import B2cs from './B2cs.tsx';
@@ -13,341 +13,396 @@ import Hsn from './Hsn.tsx';
 import SuppliesThroughEco from './SuppliesThroughEco.tsx';
 import SuppliesB2b from './SuppliesB2b.tsx';
 import Document from './Documents.tsx';
+import { getGSTR1Entries, getSuggestedGSTR1Period, saveGSTR1Entry } from '../../../../../store/slices/gstr1Slice.ts';
+import { useAppDispatch, useAppSelector } from '../../../../../store/hooks.ts';
+import { getSingleRegistration } from '../../../../../store/slices/gstSlice.ts';
+
+interface GSTPeriod {
+    financialYear: string;
+    quarter: string;
+    month: string;
+    monthName: string;
+}
 
 const Gstr1 = () => {
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+    const { entries, loading, error, suggestedPeriod } = useAppSelector((state: any) => state.gstr1);
 
-    // State to track form data
     const [formStates, setFormStates] = useState<Record<string, any>>({});
-
-    // State to track which form is open
     const [open, setOpen] = useState(0);
-    const [period, setPeriod] = useState({
-        financialYear: '',
-        quarter: '',
-        month: '',
-        monthName: ''
-    });
+    const [showNewFiling, setShowNewFiling] = useState(false);
+    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+    const [selectedEntry, setSelectedEntry] = useState<any>(null);
+    const [viewMode, setViewMode] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const [periodSelected, setPeriodSelected] = useState(false);
-    const [filledPeriods, setFilledPeriods] = useState<string[]>([]);
+    console.log("formStates :", formStates);
+    console.log("selectedEntry :", selectedEntry);
 
-    // Generate last 6 quarters (18 months)
-    const generateLast6Quarters = () => {
-        const quarters: any = [];
-        const monthNames = [
-            'January', 'February', 'March', 'April', 'May', 'June',
-            'July', 'August', 'September', 'October', 'November', 'December'
-        ];
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [open]);
 
-        const currentDate = new Date();
-        currentDate.setMonth(currentDate.getMonth() + 1); // Start from next month
-
-        for (let i = 0; i < 6; i++) {
-            currentDate.setMonth(currentDate.getMonth() - 3); // Go back 3 months each iteration
-
-            const year = currentDate.getFullYear();
-            const quarter = Math.floor(currentDate.getMonth() / 3) + 1;
-            const financialYear = quarter > 1 ? `${year}-${(year + 1).toString().slice(2)}` : `${year - 1}-${year.toString().slice(2)}`;
-
-            // Get months in this quarter
-            const startMonth = (quarter - 1) * 3;
-            const quarterMonths: any = [];
-
-            for (let m = 0; m < 3; m++) {
-                const monthIndex = startMonth + m;
-                quarterMonths.push({
-                    value: `${year}-${(monthIndex + 1).toString().padStart(2, '0')}`,
-                    display: monthNames[monthIndex],
-                    monthName: monthNames[monthIndex]
-                });
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setIsLoading(true);
+                await dispatch(getGSTR1Entries()).unwrap();
+                await dispatch(getSuggestedGSTR1Period()).unwrap();
+                setInitialLoadComplete(true);
+            } catch (error) {
+                setIsLoading(false);
+                console.error("Failed to fetch GSTR1 data:", error);
+            } finally {
+                setIsLoading(false);
             }
+        };
+        fetchData();
+    }, [dispatch]);
 
-            quarters.push({
-                financialYear,
-                quarter: `Q${quarter}`,
-                quarterName: `Quarter ${quarter}`,
-                months: quarterMonths
-            });
+    const handleNewFiling = () => {
+        if (suggestedPeriod) {
+            setShowNewFiling(true);
+            setSelectedEntry(null);
+            setViewMode(false);
+            setFormStates({});
+            setOpen(0);
         }
-
-        return quarters;
     };
 
-    const last6Quarters = generateLast6Quarters();
+    const handleViewEntry = (entry: any) => {
+        setSelectedEntry({
+            ...entry,
+            monthName: new Date(0, parseInt(entry.month) - 1).toLocaleDateString('en-US', { month: 'long' })
+        });
+        setShowNewFiling(true);
+        setViewMode(true);
+        setFormStates({});
+        setOpen(0);
 
-    // Financial years options (unique from last 6 quarters)
-    const financialYears = Array.from(new Set(last6Quarters.map(q => q.financialYear)));
-
-    // Get quarters for selected financial year
-    const getQuartersForYear = (year: string) => {
-        return last6Quarters.filter(q => q.financialYear === year);
+        // Auto-open first section with data
+        // const sectionsWithData = gstOptions.filter(option => entry[option.slug.toLowerCase()]);
+        // if (sectionsWithData.length > 0) {
+        //     setOpen(gstOptions.findIndex(opt => opt.slug === sectionsWithData[0].slug) + 1);
+        // }
     };
 
-    // Get months for selected quarter
-    const getMonthsForQuarter = (year: string, quarter: string) => {
-        const quarterData = last6Quarters.find(q =>
-            q.financialYear === year && q.quarter === quarter
+    const getFormData = (slug: string) => {
+
+        console.log("selectedEntry :", selectedEntry);
+        if (viewMode && selectedEntry) {
+            return selectedEntry[slug];
+        }
+        if (!showNewFiling || !suggestedPeriod?.month) return undefined;
+
+        const entry = entries.find((e: any) =>
+            e.financialYear === suggestedPeriod.financialYear &&
+            e.quarter === suggestedPeriod.quarter &&
+            e.month === suggestedPeriod.month
         );
-        return quarterData ? quarterData.months : [];
+
+        return entry ? entry[slug] : undefined;
     };
 
-    // Handle period selection submit
-    const handlePeriodSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (period.financialYear && period.quarter && period.month) {
-            setPeriodSelected(true);
-        }
-    };
-
-    // Reset quarter and month when financial year changes
-    useEffect(() => {
-        setPeriod(prev => ({ ...prev, quarter: '', month: '', monthName: '' }));
-    }, [period.financialYear]);
-
-    // Reset month when quarter changes
-    useEffect(() => {
-        setPeriod(prev => ({ ...prev, month: '', monthName: '' }));
-    }, [period.quarter]);
-
-
-    // Options list
-    const gstOptions = [
-        { name: "4A, 4B, 6B, 6C - B2B, SEZ, DE Invoices", slug: "B2B" },
-        { name: "5 - B2C (Large) Invoices", slug: "B2CL" },
-        { name: "6A - Exports Invoices", slug: "EXP" },
-        { name: "7 - B2C (Others)", slug: "B2CS" },
-        { name: "8A, 8B, 8C, 8D - Nil Rated Supplies", slug: "NIL-RATED" },
-        { name: "9B - Credit / Debit Notes (Registered)", slug: "CDNR" },
-        { name: "9B - Credit / Debit Notes (Unregistered)", slug: "CDNUR" },
-        { name: "11A(1), 11A(2) - Tax Liability (Advances Received)", slug: "TAX-LIABILITY" },
-        { name: "11B(1), 11B(2) - Adjustment of Advances", slug: "ADJUSTMENT" },
-        { name: "HSN-wise summary of outward supplies", slug: "HSN" },
-        { name: "Documents Issued", slug: "DOCUMENTS" },
-        { name: "Supplies made through ECO", slug: "ECO" },
-        { name: "Supplies U/s 9(5)", slug: "SUPPLIES-B2B" },
-    ];
-
-    // Function to update form states
     const updateFormState = (slug: string, data: any) => {
+        if (viewMode) return;
         setFormStates((prev) => ({ ...prev, [slug]: data }));
     };
 
+    const gstOptions = [
+        { name: "B2B, SEZ, DE Invoices", slug: "b2b" },
+        { name: "B2C (Large) Invoices", slug: "b2c" },
+        { name: "Exports Invoices", slug: "exports" },
+        { name: "B2C (Others)", slug: "b2cs" },
+        { name: "Nil Rated Supplies", slug: "nilRated" },
+        { name: "Credit/Debit Notes (Registered)", slug: "credit" },
+        { name: "Credit/Debit Notes (Unregistered)", slug: "creditUnregistered" },
+        { name: "Tax Liability (Advances)", slug: "taxLiability" },
+        { name: "Adjustment of Advances", slug: "adjustments" },
+        { name: "HSN Summary", slug: "hsn" },
+        { name: "Documents Issued", slug: "documents" },
+        { name: "ECO Supplies", slug: "suppliesThroughEco" },
+        { name: "Supplies U/s 9(5)", slug: "suppliesB2b" },
+    ];
+
+    const handleSubmit = async () => {
+        if (!suggestedPeriod) {
+            alert("Please select a filing period");
+            return;
+        }
+
+        if (Object.keys(formStates).length === 0) {
+            alert("Please fill at least one section before submitting");
+            return;
+        }
+
+        try {
+            setIsLoading(true);
+            const entryData = {
+                financialYear: suggestedPeriod.financialYear,
+                quarter: suggestedPeriod.quarter,
+                month: suggestedPeriod.month,
+                monthName: suggestedPeriod.monthName,
+                ...formStates
+            };
+
+            const result = await dispatch(saveGSTR1Entry(entryData)).unwrap();
+
+            if (result) {
+                navigate("/practice/gst/dashboard", { state: { success: true } });
+            }
+        } catch (error) {
+            alert("Submission failed. Please try again.");
+            console.error("Submission error:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+            dispatch(getSingleRegistration());
+    }, [dispatch]);
+
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="flex flex-col items-center">
+                    <div className="w-16 h-16 border-t-4 border-blue-500 border-solid rounded-full animate-spin"></div>
+                    <p className="mt-4 text-lg font-medium text-gray-700">Loading GSTR1 data...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return <div className="flex justify-center p-10 text-red-500">Error loading GSTR1 data: {error}</div>;
+    }
+
     return (
         <div className="flex flex-col items-center px-10 pt-5 pb-20">
-            {!periodSelected && (
-                <div className="w-full max-w-2xl p-8 mx-auto mt-10 bg-white rounded-lg shadow-lg">
-                    <h2 className="mb-6 text-2xl font-bold text-center">Select Filing Period</h2>
-                    <form onSubmit={handlePeriodSubmit}>
-                        <div className="space-y-4">
-                            {/* Financial Year Selection */}
-                            <div>
-                                <label className="block mb-2 text-sm font-medium text-gray-700">Financial Year</label>
-                                <select
-                                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    value={period.financialYear}
-                                    onChange={(e) => setPeriod({
-                                        ...period,
-                                        financialYear: e.target.value,
-                                        quarter: '',
-                                        month: '',
-                                        monthName: ''
-                                    })}
-                                    required
-                                >
-                                    <option value="">Select Financial Year</option>
-                                    {financialYears.map((year: any) => (
-                                        <option key={year} value={year}>{year}</option>
-                                    ))}
-                                </select>
-                            </div>
+            {!showNewFiling ? (
+                <div className="w-full max-w-4xl">
+                    <h1 className="mb-6 text-2xl font-bold text-center">Your GSTR1 Filings</h1>
 
-                            {/* Quarter Selection */}
-                            {period.financialYear && (
-                                <div>
-                                    <label className="block mb-2 text-sm font-medium text-gray-700">Quarter</label>
-                                    <select
-                                        className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        value={period.quarter}
-                                        onChange={(e) => setPeriod({
-                                            ...period,
-                                            quarter: e.target.value,
-                                            month: '',
-                                            monthName: ''
-                                        })}
-                                        required
-                                    >
-                                        <option value="">Select Quarter</option>
-                                        {getQuartersForYear(period.financialYear).map((qtr) => (
-                                            <option key={qtr.quarter} value={qtr.quarter}>
-                                                {qtr.quarterName} (FY {qtr.financialYear})
-                                            </option>
+                    <div className="p-6 bg-white rounded-lg shadow-lg">
+                        {entries?.length === 0 ? (
+                            <div className="py-8 text-center">
+                                <p className="text-gray-600">No GSTR1 filings found</p>
+                            </div>
+                        ) : (
+                            <div className="overflow-x-auto">
+                                <table className="min-w-full divide-y divide-gray-200">
+                                    <thead className="bg-gray-50">
+                                        <tr>
+                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Financial Year</th>
+                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Quarter</th>
+                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Month</th>
+                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Status</th>
+                                            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="bg-white divide-y divide-gray-200">
+                                        {entries?.map((entry: any) => (
+                                            <tr key={`${entry.financialYear}-${entry.quarter}-${entry.month}`}>
+                                                <td className="px-6 py-4 whitespace-nowrap">{entry.financialYear}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap">{entry.quarter}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    {new Date(0, parseInt(entry.month) - 1).toLocaleDateString('en-US', { month: 'long' })}
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <span className="px-2 py-1 text-sm text-green-800 bg-green-100 rounded-full">
+                                                        Filed
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <button
+                                                        onClick={() => handleViewEntry(entry)}
+                                                        className="px-3 py-1 text-sm text-blue-600 hover:underline"
+                                                    >
+                                                        View Details
+                                                    </button>
+                                                </td>
+                                            </tr>
                                         ))}
-                                    </select>
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+
+                        <div className="mt-6 text-center">
+                            {suggestedPeriod ? (
+                                <button
+                                    onClick={handleNewFiling}
+                                    className="px-6 py-3 text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                                >
+                                    File for Suggested Period: {suggestedPeriod.monthName}, {suggestedPeriod.quarter}, FY {suggestedPeriod.financialYear}
+                                </button>
+                            ) : (
+                                <div className="p-4 text-blue-800 rounded-lg bg-blue-50">
+                                    All available periods have been filed. No new filing suggested.
                                 </div>
                             )}
+                        </div>
+                    </div>
 
-                            {/* Month Selection */}
-                            {period.quarter && (
-                                <div>
-                                    <label className="block mb-2 text-sm font-medium text-gray-700">Month</label>
-                                    <select
-                                        className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        value={period.month}
-                                        onChange={(e) => {
-                                            const selectedMonth = getMonthsForQuarter(
-                                                period.financialYear,
-                                                period.quarter
-                                            ).find(m => m.value === e.target.value);
-
-                                            if (selectedMonth) {
-                                                setPeriod({
-                                                    ...period,
-                                                    month: selectedMonth.value,
-                                                    monthName: selectedMonth.monthName
-                                                });
-                                            }
+                    <div className="mt-6 text-center">
+                        <button
+                            onClick={() => navigate("/practice/gst")}
+                            className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                        >
+                            ← Back to GST Services
+                        </button>
+                    </div>
+                </div>
+            ) : (
+                <div className="w-full">
+                    <div className="w-full py-10 hero">
+                        <div className="text-center">
+                            <h1 className="text-4xl font-bold">GSTR1</h1>
+                            <p className="mt-2 text-lg">Details of outward supplies of goods or services</p>
+                            {selectedEntry ? (
+                                <div className="p-4 mt-4 bg-blue-100 rounded-lg">
+                                    <p className="font-semibold">
+                                        Viewing Filed Return: {selectedEntry.monthName}, {selectedEntry.quarter}, FY {selectedEntry.financialYear}
+                                    </p>
+                                    <button
+                                        onClick={() => {
+                                            setShowNewFiling(false);
+                                            setSelectedEntry(null);
+                                            setViewMode(false);
                                         }}
-                                        required
+                                        className="mt-2 text-sm text-blue-600 hover:underline"
                                     >
-                                        <option value="">Select Month</option>
-                                        {getMonthsForQuarter(period.financialYear, period.quarter).map((month) => (
-                                            <option
-                                                key={month.value}
-                                                value={month.value}
-                                                disabled={filledPeriods.includes(month.value)}
-                                                className={filledPeriods.includes(month.value) ? 'text-gray-400' : ''}
-                                            >
-                                                {month.display} {filledPeriods.includes(month.value) ? '(Already Filed)' : ''}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {filledPeriods.includes(period.month) && (
-                                        <p className="mt-1 text-sm text-red-500">
-                                            This period has already been filed. Please select another month.
-                                        </p>
+                                        Back to Filed Returns
+                                    </button>
+                                </div>
+                            ) : suggestedPeriod ? (
+                                <div className="p-4 mt-4 bg-blue-100 rounded-lg">
+                                    <p className="font-semibold">
+                                        Filing Period: {suggestedPeriod.monthName}, {suggestedPeriod.quarter}, FY {suggestedPeriod.financialYear}
+                                    </p>
+                                    <button
+                                        onClick={() => setShowNewFiling(false)}
+                                        className="mt-2 text-sm text-blue-600 hover:underline"
+                                    >
+                                        Back to Filed Returns
+                                    </button>
+                                </div>
+                            ) : null}
+                        </div>
+                    </div>
+
+                    {open === 0 ? (
+                        <div className="flex flex-wrap justify-center gap-3">
+                            {gstOptions.map((option, index) => (
+                                <div
+                                    key={index}
+                                    className="relative flex flex-col items-center justify-between p-5 mb-4 bg-white border border-gray-300 shadow-xl rounded-xl w-[250px] h-[180px] transition-all duration-300 ease-in-out"
+                                >
+                                    <span className="text-lg font-semibold text-gray-700">{option.name}</span>
+
+                                    <div className="flex items-center gap-2 mt-4">
+                                        <button
+                                            onClick={() => setOpen(index + 1)}
+                                            className={`flex items-center px-4 py-2 text-gray-700 transition-all bg-white border rounded-lg ${viewMode ? "border-gray-300" : "border-gray-400 hover:bg-gray-100"
+                                                }`}
+                                        >
+                                            {viewMode ? "View" : "Select"} <span className="ml-2">→</span>
+                                        </button>
+
+                                        {(formStates[option.slug] || (selectedEntry && selectedEntry[option.slug])) && (
+                                            <div className="flex items-center justify-center w-10 h-10 text-white bg-green-500 rounded-lg">
+                                                <span className="text-2xl">✔</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="w-[60%] my-10 p-6 mx-auto bg-white rounded-lg shadow-lg">
+                            <div className="flex items-center justify-between mb-4">
+                                <button
+                                    onClick={() => setOpen(0)}
+                                    className="flex items-center px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                                >
+                                    ← Back to Sections
+                                </button>
+                                <div className="text-sm text-gray-600">
+                                    {selectedEntry ? (
+                                        `Viewing filed return for: ${selectedEntry.monthName}, ${selectedEntry.quarter}, FY ${selectedEntry.financialYear}`
+                                    ) : (
+                                        `Filing for: ${suggestedPeriod.monthName}, ${suggestedPeriod.quarter}, FY ${suggestedPeriod.financialYear}`
                                     )}
                                 </div>
+                            </div>
+
+                            {open === 1 && (
+                                <B2b
+                                    setOpen={setOpen}
+                                    formData={getFormData("b2b")}
+                                    updateFormState={updateFormState}
+                                    period={selectedEntry || suggestedPeriod}
+                                    viewMode={viewMode}
+                                />
                             )}
-
-                            <div className="pt-4">
-                                <button
-                                    type="submit"
-                                    className="w-full px-4 py-3 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                                    disabled={filledPeriods.includes(period.month)}
-                                >
-                                    Continue to GSTR-1
-                                </button>
-                            </div>
+                            {open === 2 && (
+                                <B2c
+                                    setOpen={setOpen}
+                                    formData={getFormData("b2c")}
+                                    updateFormState={updateFormState}
+                                    period={selectedEntry || suggestedPeriod}
+                                    viewMode={viewMode}
+                                />
+                            )}
+                            {open === 3 && (
+                                <Exports
+                                    setOpen={setOpen}
+                                    formData={getFormData("exports")}
+                                    updateFormState={updateFormState}
+                                    period={selectedEntry || suggestedPeriod}
+                                    viewMode={viewMode}
+                                />
+                            )}
+                            {open === 4 && <B2cs setOpen={setOpen} formData={getFormData("b2cs")} updateFormState={updateFormState} period={selectedEntry || suggestedPeriod} viewMode={viewMode} />}
+                            {open === 5 && <NilRated setOpen={setOpen} formData={getFormData("nilRated")} updateFormState={updateFormState} period={selectedEntry || suggestedPeriod} viewMode={viewMode} />}
+                            {open === 6 && <Credit setOpen={setOpen} formData={getFormData("credit")} updateFormState={updateFormState} period={selectedEntry || suggestedPeriod} viewMode={viewMode} />}
+                            {open === 7 && <CreditUnregistered setOpen={setOpen} formData={getFormData("creditUnregistered")} updateFormState={updateFormState} period={selectedEntry || suggestedPeriod} viewMode={viewMode} />}
+                            {open === 8 && <TaxLiability setOpen={setOpen} formData={getFormData("taxLiability")} updateFormState={updateFormState} period={selectedEntry || suggestedPeriod} viewMode={viewMode} />}
+                            {open === 9 && <Adjustment setOpen={setOpen} formData={getFormData("adjustments")} updateFormState={updateFormState} period={selectedEntry || suggestedPeriod} viewMode={viewMode} />}
+                            {open === 10 && <Hsn setOpen={setOpen} formData={getFormData("hsn")} updateFormState={updateFormState} period={selectedEntry || suggestedPeriod} viewMode={viewMode} />}
+                            {open === 11 && <Document setOpen={setOpen} formData={getFormData("documents")} updateFormState={updateFormState} period={selectedEntry || suggestedPeriod} viewMode={viewMode} />}
+                            {open === 12 && <SuppliesThroughEco setOpen={setOpen} formData={getFormData("suppliesThroughEco")} updateFormState={updateFormState} period={selectedEntry || suggestedPeriod} viewMode={viewMode} />}
+                            {open === 13 && <SuppliesB2b setOpen={setOpen} formData={getFormData("suppliesB2b")} updateFormState={updateFormState} period={selectedEntry || suggestedPeriod} viewMode={viewMode} />}
                         </div>
-                    </form>
-                </div>
-            )}
+                    )}
 
-            {/* Header Section */}
-            {periodSelected && open === 0 && (
-                <div className="w-full py-10 hero">
-                    <div className="text-center">
-                        <h1 className="text-4xl font-bold">GSTR1</h1>
-                        <p className="mt-2 text-lg">Details of outward supplies of goods or services</p>
-                        <div className="p-4 mt-4 bg-blue-100 rounded-lg">
-                            <p className="font-semibold">
-                                Selected Period: {period.monthName}, {period.quarter}, FY {period.financialYear}
-                            </p>
-                            <button
-                                onClick={() => setPeriodSelected(false)}
-                                className="mt-2 text-sm text-blue-600 hover:underline"
-                            >
-                                Change Period
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-
-            {/* Selection Grid */}
-            {periodSelected && open === 0 && (
-                <div className="flex flex-wrap justify-center gap-3">
-                    {gstOptions.map((option, index) => (
-                        <div
-                            key={index}
-                            className="relative flex flex-col items-center justify-between p-5 mb-4 bg-white border border-gray-300 shadow-xl rounded-xl w-[250px] h-[180px] transition-all duration-300 ease-in-out"
+                    <div className="mt-6 text-center">
+                        <button
+                            onClick={() => {
+                                setShowNewFiling(false);
+                                setSelectedEntry(null);
+                                setViewMode(false);
+                                setOpen(0);
+                            }}
+                            className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
                         >
-                            <span className="text-lg font-semibold text-gray-700">{option.name}</span>
-
-                            <div className="flex items-center gap-2 mt-4">
-                                <button
-                                    onClick={() => setOpen(index + 1)}
-                                    className="flex items-center px-4 py-2 text-gray-700 transition-all bg-white border border-gray-400 rounded-lg hover:bg-gray-100"
-                                >
-                                    Select <span className="ml-2">→</span>
-                                </button>
-
-                                {/* Tick Icon (Shown only if form is submitted) */}
-                                {formStates[option.slug] && (
-                                    <div className="flex items-center justify-center w-10 h-10 text-white bg-green-500 rounded-lg">
-                                        <span className="text-2xl">✔</span>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
-
-            {/* Back Button */}
-            {periodSelected && open === 0 && (
-                <div>
-                    <button onClick={() => navigate("/practice/gst")} className="mt-6 btn btn-outline">
-                        ⬅ Back to Services
-                    </button>
-                    <button
-                        className="btn ml-5 bg-[#101C36] text-white"
-                        onClick={() => navigate("/practice/gst/dashboard")}
-                    >
-                        Submit
-                    </button>
-                </div>
-            )}
-
-            {/* Breadcrumbs */}
-            {periodSelected && open > 0 && (
-                <div className="w-[60%] mt-10 p-6 mx-auto bg-white rounded-lg shadow-lg breadcrumbs">
-                    <ul>
-                        <li className="cursor-pointer" onClick={() => navigate("/practice")}>Practice</li>
-                        <li className="cursor-pointer" onClick={() => navigate("/practice/gst")}>Gst</li>
-                        <li className="cursor-pointer" onClick={() => setOpen(0)}>Gstr-1</li>
-                        <li>{gstOptions[open - 1].slug}</li>
-                    </ul>
-                </div>
-            )}
-
-            {/* Form Rendering */}
-            {periodSelected && open > 0 && (
-                <div className="w-[60%] mb-10 p-6 mx-auto bg-white rounded-lg shadow-lg">
-                    <div className="mb-4 text-sm text-gray-600">
-                        Filing for: {period.month}, {period.quarter}, FY {period.financialYear}
+                            ← Back to Filed Returns
+                        </button>
+                        {!viewMode && open === 0 && (
+                            <button
+                                className="px-4 py-2 ml-4 text-white bg-[#101C36] rounded-md hover:bg-[#0a1427]"
+                                onClick={handleSubmit}
+                            >
+                                Submit GSTR1
+                            </button>
+                        )}
                     </div>
-
-                    {open === 1 && <B2b setOpen={setOpen} formData={formStates["B2B"]} updateFormState={updateFormState} period={period} />}
-                    {open === 2 && <B2c setOpen={setOpen} formData={formStates["B2CL"]} updateFormState={updateFormState} period={period} />}
-                    {open === 3 && <Exports setOpen={setOpen} formData={formStates["EXP"]} updateFormState={updateFormState} period={period} />}
-                    {open === 4 && <B2cs setOpen={setOpen} formData={formStates["B2CS"]} updateFormState={updateFormState} period={period} />}
-                    {open === 5 && <NilRated setOpen={setOpen} formData={formStates["NIL-RATED"]} updateFormState={updateFormState} period={period} />}
-
-                    {open === 6 && <Credit setOpen={setOpen} formData={formStates["CDNR"]} updateFormState={updateFormState} period={period} />}
-                    {open === 7 && <CreditUnregistered setOpen={setOpen} formData={formStates["CDNUR"]} updateFormState={updateFormState} period={period} />}
-                    {open === 8 && <TaxLiability setOpen={setOpen} formData={formStates["TAX-LIABILITY"]} updateFormState={updateFormState} period={period} />}
-                    {open === 9 && <Adjustment setOpen={setOpen} formData={formStates["ADJUSTMENT"]} updateFormState={updateFormState} period={period} />}
-                    {open === 10 && <Hsn setOpen={setOpen} formData={formStates["HSN"]} updateFormState={updateFormState} period={period} />}
-                    {open === 11 && <Document setOpen={setOpen} formData={formStates["DOCUMENTS"]} updateFormState={updateFormState} period={period} />}
-                    {open === 12 && <SuppliesThroughEco setOpen={setOpen} formData={formStates["ECO"]} updateFormState={updateFormState} period={period} />}
-                    {open === 13 && <SuppliesB2b setOpen={setOpen} formData={formStates["SUPPLIES-B2B"]} updateFormState={updateFormState} period={period} />}
                 </div>
             )}
         </div>
     );
 };
 
-export default Gstr1
+export default Gstr1;

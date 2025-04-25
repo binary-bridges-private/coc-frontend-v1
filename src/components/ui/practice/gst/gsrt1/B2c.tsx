@@ -137,23 +137,40 @@
 // }
 
 // export default B2c
-import React, { Dispatch, SetStateAction, useState } from 'react'
+
+import React, { Dispatch, SetStateAction, useState } from 'react';
 
 interface Props {
-    setOpen: Dispatch<SetStateAction<number>>
-    formData?: any
-    updateFormState: (slug: string, data: any) => void
+    setOpen: Dispatch<SetStateAction<number>>;
+    formData?: any;
+    updateFormState: (slug: string, data: any) => void;
     period: {
         financialYear: string;
         quarter: string;
         month: string;
         monthName: string;
     };
+    viewMode?: boolean;
 }
 
-const B2c: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
+interface TaxValues {
+    [rate: number]: number;
+}
+
+interface FormState {
+    isDifferentialTax: boolean;
+    pos: string;
+    invoiceNo: string;
+    invoiceDate: string;
+    supplyType: string;
+    totalValue: string;
+    taxableValues: TaxValues;
+    cessValues: TaxValues;
+}
+
+const B2c: React.FC<Props> = ({ setOpen, formData, updateFormState, period, viewMode = false }) => {
     // Initialize form state with existing data or defaults
-    const [formState, setFormState] = useState({
+    const [formState, setFormState] = useState<FormState>({
         isDifferentialTax: false,
         pos: '',
         invoiceNo: '',
@@ -175,6 +192,8 @@ const B2c: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
     const taxRates = [0, 0.1, 0.25, 1, 1.5, 3, 5, 6, 7.5, 12, 18, 28];
 
     const validateField = (name: string, value: string) => {
+        if (viewMode) return ''; // Skip validation in view mode
+        
         let error = '';
         if (!value.trim()) {
             error = 'This field is required';
@@ -185,6 +204,8 @@ const B2c: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (viewMode) return; // Don't allow changes in view mode
+
         const { name, value, type, checked } = e.target;
         
         setFormState(prev => ({
@@ -202,6 +223,8 @@ const B2c: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
     };
 
     const handleTaxableValueChange = (rate: number, value: string) => {
+        if (viewMode) return; // Don't allow changes in view mode
+        
         setFormState(prev => ({
             ...prev,
             taxableValues: {
@@ -212,6 +235,8 @@ const B2c: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
     };
 
     const handleCessValueChange = (rate: number, value: string) => {
+        if (viewMode) return; // Don't allow changes in view mode
+        
         setFormState(prev => ({
             ...prev,
             cessValues: {
@@ -227,6 +252,8 @@ const B2c: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
     };
 
     const validateForm = () => {
+        if (viewMode) return true; // Skip validation in view mode
+        
         const newErrors = {
             pos: validateField('pos', formState.pos),
             invoiceNo: validateField('invoiceNo', formState.invoiceNo),
@@ -240,19 +267,24 @@ const B2c: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
     };
 
     const handleSubmit = () => {
+        if (viewMode) {
+            setOpen(0); // Just close the form if in view mode
+            return;
+        }
+
         if (validateForm()) {
-            updateFormState('B2CL', formState);
+            updateFormState('b2c', formState);
             setOpen(0);
         }
     };
 
     return (
         <div>
-            <h3 className="font-semibold text-md">B2C(Large) Invoices - Details</h3>
+            <h3 className="text-lg font-semibold">B2C(Large) Invoices - {viewMode ? 'View' : 'Edit'} Details</h3>
             <div className='border' />
             
             {/* Differential Tax Section */}
-            <div className="grid items-center grid-cols-1 gap-4 mt-10 md:grid-cols-2">
+            <div className="grid items-center grid-cols-1 gap-4 mt-6 md:grid-cols-2">
                 <label className="flex items-center space-x-2 text-sm font-medium">
                     <input
                         type="checkbox"
@@ -260,6 +292,7 @@ const B2c: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
                         checked={formState.isDifferentialTax}
                         onChange={handleChange}
                         className="checkbox"
+                        disabled={viewMode}
                     />
                     <span>Is the supply eligible to be taxed at a differential percentage (%) of the existing rate of tax, as notified by the Government?</span>
                 </label>
@@ -278,7 +311,7 @@ const B2c: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
             </div>
 
             {/* Invoice Information */}
-            <div className="grid grid-cols-1 gap-4 mt-10 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 mt-6 md:grid-cols-3">
                 <div>
                     <label className="block text-sm font-medium">POS *</label>
                     <input 
@@ -288,6 +321,8 @@ const B2c: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
                         onChange={handleChange}
                         placeholder="POS" 
                         className={`w-full text-sm font-medium input input-bordered ${errors.pos ? 'input-error' : ''}`}
+                        disabled={viewMode}
+                        readOnly={viewMode}
                     />
                     {errors.pos && <p className="mt-1 text-sm text-red-500">{errors.pos}</p>}
                 </div>
@@ -300,6 +335,8 @@ const B2c: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
                         onChange={handleChange}
                         placeholder="Invoice no." 
                         className={`w-full text-sm font-medium input input-bordered ${errors.invoiceNo ? 'input-error' : ''}`}
+                        disabled={viewMode}
+                        readOnly={viewMode}
                     />
                     {errors.invoiceNo && <p className="mt-1 text-sm text-red-500">{errors.invoiceNo}</p>}
                 </div>
@@ -311,6 +348,8 @@ const B2c: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
                         value={formState.invoiceDate}
                         onChange={handleChange}
                         className={`w-full text-sm font-medium input input-bordered ${errors.invoiceDate ? 'input-error' : ''}`}
+                        disabled={viewMode}
+                        readOnly={viewMode}
                     />
                     {errors.invoiceDate && <p className="mt-1 text-sm text-red-500">{errors.invoiceDate}</p>}
                 </div>
@@ -326,7 +365,9 @@ const B2c: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
                         value={formState.supplyType}
                         onChange={handleChange}
                         placeholder="Supply Type" 
-                        className="w-full text-sm font-medium input input-bordered" 
+                        className="w-full text-sm font-medium input input-bordered"
+                        disabled={viewMode}
+                        readOnly={viewMode}
                     />
                 </div>
                 <div>
@@ -338,13 +379,15 @@ const B2c: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
                         onChange={handleChange}
                         placeholder="Total invoice value (₹)" 
                         className={`w-full text-sm font-medium input input-bordered ${errors.totalValue ? 'input-error' : ''}`}
+                        disabled={viewMode}
+                        readOnly={viewMode}
                     />
                     {errors.totalValue && <p className="mt-1 text-sm text-red-500">{errors.totalValue}</p>}
                 </div>
             </div>
 
             {/* Item Details Table */}
-            <h2 className="pb-2 mt-10 text-lg font-semibold">Item Details</h2>
+            <h2 className="pb-2 mt-6 text-lg font-semibold">Item Details</h2>
             <div className="overflow-x-auto">
                 <table className="w-full border-collapse">
                     <thead>
@@ -365,6 +408,8 @@ const B2c: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
                                         value={formState.taxableValues[rate] || ''}
                                         onChange={(e) => handleTaxableValueChange(rate, e.target.value)}
                                         className="w-[70%] p-1 text-center border border-gray-300 rounded-md"
+                                        disabled={viewMode}
+                                        readOnly={viewMode}
                                     />
                                 </td>
                                 <td className="p-3 text-center border border-gray-300">
@@ -376,6 +421,8 @@ const B2c: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
                                         value={formState.cessValues[rate] || ''}
                                         onChange={(e) => handleCessValueChange(rate, e.target.value)}
                                         className="w-[70%] p-1 text-center border border-gray-300 rounded-md"
+                                        disabled={viewMode}
+                                        readOnly={viewMode}
                                     />
                                 </td>
                             </tr>
@@ -393,10 +440,10 @@ const B2c: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
                     Back
                 </button>
                 <button 
-                    className="btn bg-[#101C36] text-white" 
+                    className={`btn ${viewMode ? 'btn-outline' : 'bg-[#101C36] text-white'}`}
                     onClick={handleSubmit}
                 >
-                    Save
+                    {viewMode ? 'Close' : 'Save'}
                 </button>
             </div>
         </div>

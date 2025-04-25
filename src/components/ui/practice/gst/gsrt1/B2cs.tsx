@@ -1,5 +1,6 @@
-import React, { Dispatch, SetStateAction, useState } from 'react'
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { stateCodes } from "../../../../helpers/Constants.tsx";
+import { useAppSelector } from '../../../../../store/hooks.ts';
 
 interface Props {
     setOpen: Dispatch<SetStateAction<number>>
@@ -11,11 +12,29 @@ interface Props {
         month: string;
         monthName: string;
     };
+    viewMode?: boolean;
 }
 
-const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
+interface FormState {
+    pos: string;
+    taxableValue: string;
+    supplyType: string;
+    isDifferentialTax: boolean;
+    rate: string;
+    cgst: string;
+    sgst: string;
+    igst: string;
+    cess: string;
+}
+
+const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState, period, viewMode = false }) => {
     // Initialize form state with existing data or defaults
-    const [formState, setFormState] = useState({
+
+    const currentRegistration = useAppSelector(state => state.gstRegistration.currentRegistration);
+
+    console.log("curr regis :", currentRegistration);
+
+    const [formState, setFormState] = useState<FormState>({
         pos: formData?.pos || '',
         taxableValue: formData?.taxableValue || '',
         supplyType: formData?.supplyType || '',
@@ -28,7 +47,7 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
         ...formData
     });
 
-    const [regisState] = useState<string>("Assam"); // This should come from props or context
+    const [regisState] = useState<string | undefined>(currentRegistration?.state);
     const [errors, setErrors] = useState({
         pos: '',
         taxableValue: '',
@@ -42,6 +61,8 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
     const isIntraState = formState.pos === regisState;
 
     const validateField = (name: string, value: string) => {
+        if (viewMode) return ''; // Skip validation in view mode
+
         let error = '';
         if (!value.trim()) {
             error = 'This field is required';
@@ -53,34 +74,17 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
         return error;
     };
 
-    // const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    //     const { name, value, type, checked } = e.target;
-
-    //     setFormState(prev => ({
-    //         ...prev,
-    //         [name]: type === 'checkbox' ? checked : value,
-    //         supplyType: name === 'pos' ? 
-    //             (value === regisState ? 'intra-state' : 'inter-state') : 
-    //             prev.supplyType
-    //     }));
-
-    //     if (['pos', 'taxableValue', 'rate', 'cgst', 'sgst', 'igst'].includes(name)) {
-    //         setErrors(prev => ({
-    //             ...prev,
-    //             [name]: validateField(name, value)
-    //         }));
-    //     }
-    // };
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        if (viewMode) return; // Don't allow changes in view mode
+
         const { name, value, type } = e.target;
         const target = e.target as HTMLInputElement; // Type assertion for checkbox
 
         setFormState(prev => ({
             ...prev,
             [name]: type === 'checkbox' ? target.checked : value,
-            supplyType: name === 'pos' ? 
-                (value === regisState ? 'intra-state' : 'inter-state') : 
+            supplyType: name === 'pos' ?
+                (value === regisState ? 'intra-state' : 'inter-state') :
                 prev.supplyType
         }));
 
@@ -98,7 +102,7 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
             const taxableValue = parseFloat(formState.taxableValue);
             const applicableRate = formState.isDifferentialTax ? (rate * 65) / 100 : rate;
             const taxAmount = (taxableValue * applicableRate) / 100;
-            
+
             return {
                 cgst: isIntraState ? (taxAmount / 2).toFixed(2) : '0.00',
                 sgst: isIntraState ? (taxAmount / 2).toFixed(2) : '0.00',
@@ -113,6 +117,8 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
     };
 
     const validateForm = () => {
+        if (viewMode) return true; // Skip validation in view mode
+
         const taxCalculated = calculateTax();
         const newErrors = {
             pos: validateField('pos', formState.pos),
@@ -130,6 +136,11 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
     };
 
     const handleSubmit = () => {
+        if (viewMode) {
+            setOpen(0); // Just close the form if in view mode
+            return;
+        }
+
         if (validateForm()) {
             const taxCalculated = calculateTax();
             const finalState = {
@@ -139,7 +150,7 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
                 sgst: isIntraState ? (formState.sgst || taxCalculated.sgst) : '0.00',
                 igst: !isIntraState ? (formState.igst || taxCalculated.igst) : '0.00'
             };
-            updateFormState('B2CS', finalState);
+            updateFormState('b2cs', finalState);
             setOpen(0);
         }
     };
@@ -148,11 +159,11 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
 
     return (
         <div>
-            <h3 className="font-semibold text-md">B2CS- Add Details</h3>
+            <h3 className="text-lg font-semibold">B2CS - {viewMode ? 'View' : 'Add'} Details</h3>
             <div className='border' />
 
             {/* Basic Information */}
-            <div className="grid grid-cols-1 gap-4 mt-10 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 mt-6 md:grid-cols-3">
                 <div>
                     <label className="block text-sm font-medium">POS *</label>
                     <select
@@ -160,6 +171,7 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
                         value={formState.pos}
                         onChange={handleChange}
                         className={`w-full text-sm font-medium input input-bordered ${errors.pos ? 'input-error' : ''}`}
+                        disabled={viewMode}
                     >
                         <option value="">Select state</option>
                         {Object.keys(stateCodes).map((state) => (
@@ -179,6 +191,8 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
                         onChange={handleChange}
                         placeholder=""
                         className={`w-full text-sm font-medium input input-bordered ${errors.taxableValue ? 'input-error' : ''}`}
+                        disabled={viewMode}
+                        readOnly={viewMode}
                     />
                     {errors.taxableValue && <p className="mt-1 text-sm text-red-500">{errors.taxableValue}</p>}
                 </div>
@@ -196,7 +210,7 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
             </div>
 
             {/* Differential Tax Section */}
-            <div className="grid items-center grid-cols-1 gap-4 mt-10 md:grid-cols-2">
+            <div className="grid items-center grid-cols-1 gap-4 mt-6 md:grid-cols-2">
                 <label className="flex items-center space-x-2 text-sm font-medium">
                     <input
                         type="checkbox"
@@ -204,6 +218,7 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
                         checked={formState.isDifferentialTax}
                         onChange={handleChange}
                         className="checkbox"
+                        disabled={viewMode}
                     />
                     <span>Is the supply eligible to be taxed at a differential percentage (%) of the existing rate of tax, as notified by the Government?</span>
                 </label>
@@ -222,7 +237,7 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
             </div>
 
             {/* Rate and Tax Information */}
-            <div className="grid grid-cols-1 gap-4 mt-10 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 mt-6 md:grid-cols-3">
                 <div>
                     <label className="block text-sm font-medium">Rate *</label>
                     <input
@@ -232,13 +247,15 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
                         onChange={handleChange}
                         placeholder="Rate"
                         className={`w-full text-sm font-medium input input-bordered ${errors.rate ? 'input-error' : ''}`}
+                        disabled={viewMode}
+                        readOnly={viewMode}
                     />
                     {errors.rate && <p className="mt-1 text-sm text-red-500">{errors.rate}</p>}
                 </div>
             </div>
 
             {/* Tax Fields - Show CGST/SGST for intra-state, IGST for inter-state */}
-            <div className="grid grid-cols-1 gap-4 mt-10 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 mt-6 md:grid-cols-3">
                 {isIntraState ? (
                     <>
                         <div>
@@ -250,6 +267,8 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
                                 onChange={handleChange}
                                 placeholder="0.00"
                                 className={`w-full text-sm font-medium input input-bordered ${errors.cgst ? 'input-error' : ''}`}
+                                disabled={viewMode}
+                                readOnly={viewMode}
                             />
                             {errors.cgst && <p className="mt-1 text-sm text-red-500">{errors.cgst}</p>}
                         </div>
@@ -262,6 +281,8 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
                                 onChange={handleChange}
                                 placeholder="0.00"
                                 className={`w-full text-sm font-medium input input-bordered ${errors.sgst ? 'input-error' : ''}`}
+                                disabled={viewMode}
+                                readOnly={viewMode}
                             />
                             {errors.sgst && <p className="mt-1 text-sm text-red-500">{errors.sgst}</p>}
                         </div>
@@ -276,6 +297,8 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
                             onChange={handleChange}
                             placeholder="0.00"
                             className={`w-full text-sm font-medium input input-bordered ${errors.igst ? 'input-error' : ''}`}
+                            disabled={viewMode}
+                            readOnly={viewMode}
                         />
                         {errors.igst && <p className="mt-1 text-sm text-red-500">{errors.igst}</p>}
                     </div>
@@ -289,6 +312,8 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
                         onChange={handleChange}
                         placeholder="0.00"
                         className="w-full text-sm font-medium input input-bordered"
+                        disabled={viewMode}
+                        readOnly={viewMode}
                     />
                 </div>
             </div>
@@ -302,10 +327,10 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
                     Back
                 </button>
                 <button
-                    className="btn bg-[#101C36] text-white"
+                    className={`btn ${viewMode ? 'btn-outline' : 'bg-[#101C36] text-white'}`}
                     onClick={handleSubmit}
                 >
-                    Save
+                    {viewMode ? 'Close' : 'Save'}
                 </button>
             </div>
         </div>
@@ -313,5 +338,3 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState }) => {
 };
 
 export default B2cs;
-
-// export default B2cs;

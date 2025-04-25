@@ -220,6 +220,23 @@ export const getGstIns = createAsyncThunk(
     }
 );
 
+export const getSingleRegistration = createAsyncThunk(
+    'gstRegistration/getSingle',
+    async (_, { rejectWithValue }) => {
+        try {
+            const url = '/gst/registrations/single';
+            const response = await apiRestricted.get(url);
+            return response.data;
+        } catch (error: any) {
+            return rejectWithValue(
+                error.response?.data?.message ||
+                error.message ||
+                'Failed to fetch registration'
+            );
+        }
+    }
+);
+
 const gstRegistrationSlice = createSlice({
     name: 'gstRegistration',
     initialState,
@@ -252,6 +269,20 @@ const gstRegistrationSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload as string;
                 // state.lastOperation = null;
+            })
+            .addCase(getSingleRegistration.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.success = false;
+            })
+            .addCase(getSingleRegistration.fulfilled, (state, action) => {
+                state.loading = false;
+                state.currentRegistration = action.payload.data?.registration || null;
+                state.success = true;
+            })
+            .addCase(getSingleRegistration.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
             });
     },
 });
