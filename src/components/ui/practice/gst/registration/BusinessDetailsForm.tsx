@@ -284,8 +284,25 @@ const BusinessDetailsForm: React.FC<Props> = ({ setStep, data, gstRegistratinId 
               onChange={(e) => setFormData({ ...formData, reasonForRegistration: e.target.value })}
             >
               <option value="">Select</option>
-              <option value="New Business">New Business</option>
-              <option value="Expansion">Expansion</option>
+              <option value="New Business">Crossing the threshold</option>
+              <option value="Expansion">Inter-state supply</option>
+              <option value="Expansion">Liability to pay as reciept of goods and services</option>
+              <option value="Expansion">Transfer / Succession of business</option>
+              <option value="Expansion">Death of the proprietor</option>
+              <option value="Expansion">De-merger</option>
+              <option value="Expansion">Change in constitution of business</option>
+              <option value="Expansion">Merger / Amalgamation</option>
+              <option value="Expansion">E-commerce operator</option>
+              <option value="Expansion">Selling through e-commerce portal</option>
+              <option value="Expansion">Voluntary basis</option>
+              <option value="Expansion">Input service distributor only</option>
+              <option value="Expansion">Supplies on behalf of other taxable person</option>
+              <option value="Expansion">SEZ unit</option>
+              <option value="Expansion">SEZ developer</option>
+              <option value="Expansion">Others</option>
+              <option value="Expansion">Corporate debtor undergoing the corporate insolvency resolution process with IRP/RP</option>
+
+
             </select>
             {errors.reasonForRegistration && (
               <p className="mt-1 text-sm text-red-500">{errors.reasonForRegistration}</p>

@@ -48,6 +48,8 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState, period, vie
     });
 
     const [regisState] = useState<string | undefined>(currentRegistration?.state);
+
+    console.log(regisState);
     const [errors, setErrors] = useState({
         pos: '',
         taxableValue: '',
@@ -59,6 +61,7 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState, period, vie
     });
 
     const isIntraState = formState.pos === regisState;
+    console.log(formState.pos , regisState,  isIntraState);
 
     const validateField = (name: string, value: string) => {
         if (viewMode) return ''; // Skip validation in view mode
@@ -84,7 +87,7 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState, period, vie
             ...prev,
             [name]: type === 'checkbox' ? target.checked : value,
             supplyType: name === 'pos' ?
-                (value === regisState ? 'intra-state' : 'inter-state') :
+                (isIntraState ? 'intra-state' : 'inter-state') :
                 prev.supplyType
         }));
 

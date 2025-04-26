@@ -13,6 +13,7 @@ const Signup = () => {
         phoneNumber: "",
         password: "",
         confirmPassword: "",
+        enrollmentNumber: "",
     });
     const [errors, setErrors] = useState<{
         firstName?: string;
@@ -21,6 +22,7 @@ const Signup = () => {
         phoneNumber?: string;
         password?: string;
         confirmPassword?: string;
+        enrollmentNumber?: string;
         general?: string;
     }>({});
     const [showPassword, setShowPassword] = useState(false);
@@ -132,6 +134,7 @@ const Signup = () => {
                 email: inputValues.email,
                 phoneNumber: inputValues.phoneNumber,
                 password: inputValues.password,
+                enrollmentNumber: inputValues.enrollmentNumber,
             }));
 
             if (signupUser.fulfilled.match(resultAction)) {
@@ -143,6 +146,7 @@ const Signup = () => {
                     phoneNumber: "",
                     password: "",
                     confirmPassword: "",
+                    enrollmentNumber: "",
                 });
                 dispatch(toggleSignupPopup());
             } else if (signupUser.rejected.match(resultAction)) {
@@ -181,7 +185,6 @@ const Signup = () => {
                             )}
                         </div>
 
-                        {/* Form Section */}
                         <form onSubmit={handleSubmit} className="flex flex-col w-full gap-4">
                             {/* First Name */}
                             <div className="w-full form-control">
@@ -259,6 +262,26 @@ const Signup = () => {
                                 {errors.phoneNumber && (
                                     <span className="mt-1 text-sm text-red-500">
                                         {errors.phoneNumber}
+                                    </span>
+                                )}
+                            </div>
+
+                            {/* enrollmentNumber */}
+                            <div className="w-full form-control">
+                                <label className="label">
+                                    <span className="text-gray-900 label-text">Enrollment Number*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    name="enrollmentNumber"
+                                    placeholder="Enter your enrollment number"
+                                    value={inputValues.enrollmentNumber}
+                                    onChange={handleInputChange}
+                                    className={`w-full input input-bordered ${errors.enrollmentNumber ? "input-error" : ""}`}
+                                />
+                                {errors.lastName && (
+                                    <span className="mt-1 text-sm text-red-500">
+                                        {errors.enrollmentNumber}
                                     </span>
                                 )}
                             </div>

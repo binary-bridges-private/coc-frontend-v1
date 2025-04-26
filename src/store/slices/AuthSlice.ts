@@ -43,6 +43,7 @@ interface SignupCredentials {
   lastName: string;
   email: string;
   phoneNumber: string;
+  enrollmentNumber: string;
   password: string;
 }
 
@@ -84,6 +85,7 @@ export const signupUser = createAsyncThunk(
           email: response.data?.data?.email,
           firstName: response.data?.data?.firstName,
           lastName: response.data?.data?.lastName,
+          enrollmentNumber: response.data?.data?.enrollmentNumber
         }
       };
     } catch (error: any) {
