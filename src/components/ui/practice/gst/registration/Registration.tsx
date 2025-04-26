@@ -24,6 +24,9 @@ const Registration = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     userType: "",
@@ -72,7 +75,21 @@ const Registration = () => {
     return !Object.values(newErrors).some(error => error !== "");
   };
 
+  // const handleSave = async (registrationData: any) => {
+  //   try {
+  //     const result = await dispatch(saveGstRegistration(registrationData)).unwrap();
+  //     console.log('Save successful:', result.data);
+  //     setGstRegistartionId(result?.data?.data?.id);
+  //     return true;
+  //   } catch (error) {
+  //     console.error('Save failed:', error);
+  //     return false;
+  //   }
+  // };
+
   const handleSave = async (registrationData: any) => {
+    setIsLoading(true);
+    setSaveError(null);
     try {
       const result = await dispatch(saveGstRegistration(registrationData)).unwrap();
       console.log('Save successful:', result.data);
@@ -80,7 +97,10 @@ const Registration = () => {
       return true;
     } catch (error) {
       console.error('Save failed:', error);
+      setSaveError('Failed to save registration. Please try again.');
       return false;
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -144,7 +164,7 @@ const Registration = () => {
                 />
                 {errors.userType && <p className="mt-1 text-sm text-red-500">{errors.userType}</p>}
               </div>
-
+              
               {/* State */}
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
@@ -251,7 +271,7 @@ const Registration = () => {
                 {errors.mobileNumber && <p className="mt-1 text-sm text-red-500">{errors.mobileNumber}</p>}
               </div>
 
-              <div className="pt-4">
+              {/* <div className="pt-4">
                 <button
                   type="button"
                   onClick={() => handleNextStep(formData)}
@@ -259,6 +279,32 @@ const Registration = () => {
                 >
                   Submit Application
                 </button>
+              </div> */}
+              <div className="pt-4">
+                <button
+                  type="button"
+                  onClick={() => handleNextStep(formData)}
+                  disabled={isLoading}
+                  className={`w-full px-6 py-3 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${isLoading
+                      ? 'bg-blue-400 cursor-not-allowed'
+                      : 'bg-blue-600 hover:bg-blue-700'
+                    }`}
+                >
+                  {isLoading ? (
+                    <div className="flex items-center justify-center">
+                      <svg className="w-5 h-5 mr-2 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Processing...
+                    </div>
+                  ) : (
+                    'Submit Application'
+                  )}
+                </button>
+                {saveError && (
+                  <div className="mt-2 text-sm text-red-500">{saveError}</div>
+                )}
               </div>
             </form>
           </div>

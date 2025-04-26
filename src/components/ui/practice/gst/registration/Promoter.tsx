@@ -82,6 +82,9 @@ const Promoter: React.FC<Props> = ({ setStep, setPromoterData, gstRegistratinId 
 
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
+    const [isLoading, setIsLoading] = useState(false);
+    const [saveError, setSaveError] = useState<string | null>(null);
+
     const addNewDirector = () => {
         setDirectors([...directors, {
             firstName: '',
@@ -122,114 +125,6 @@ const Promoter: React.FC<Props> = ({ setStep, setPromoterData, gstRegistratinId 
         setDirectors(directors.filter((director, index) => index !== id));
     };
 
-    // const validateForm = (director: Director): boolean => {
-    //     const requiredFields = [
-    //         'firstName',
-    //         'lastName',
-    //         'dateOfBirth',
-    //         'mobileNumber',
-    //         'email',
-    //         'gender',
-    //         'designation',
-    //         'directorIdentificationNumber',
-    //         'pan',
-    //         'aadhaarNumber',
-    //         'pinCode',
-    //         'district',
-    //         'city',
-    //     ];
-
-    //     for (const field of requiredFields) {
-    //         if (!director[field as keyof Director]) {
-    //             return false;
-    //         }
-    //     }
-
-    //     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    //     if (!emailRegex.test(director.email)) {
-    //         return false;
-    //     }
-
-    //     const mobileRegex = /^[0-9]{10}$/;
-    //     if (!mobileRegex.test(director.mobileNumber)) {
-    //         return false;
-    //     }
-
-    //     return true;
-    // };
-
-    // const handleInputChange = (index: number, field: keyof Director, value: string | boolean | File) => {
-    //     const updatedDirectors = [...directors];
-    //     updatedDirectors[index] = { ...updatedDirectors[index], [field]: value };
-    //     setDirectors(updatedDirectors);
-
-    //     setErrors((prevErrors) => {
-    //         const newErrors = { ...prevErrors };
-    //         delete newErrors[`${index}-${field}`];
-    //         return newErrors;
-    //     });
-    // };
-
-    // const handleFileChange = (index: number, file: File | null) => {
-    //     const updatedDirectors = [...directors];
-    //     updatedDirectors[index].photograph = file;
-    //     setDirectors(updatedDirectors);
-    // };
-
-    // const dispatch = useAppDispatch();
-
-    // const handleSave = async (directors: any) => {
-    //     try {
-    //         const result = await dispatch(saveGstRegistration({ id: gstRegistratinId, promoter: directors })).unwrap();
-    //         console.log('Save successful:', result.data);
-    //         return true;
-    //     } catch (error) {
-    //         console.error('Save failed:', error);
-    //         return false;
-    //     }
-    // };
-
-    // const handleSubmit = async (directors: any) => {
-    //     const newErrors: { [key: string]: string } = {};
-
-    //     directors.forEach((director, index) => {
-    //         if (!validateForm(director)) {
-    //             if (!director.firstName) newErrors[`${index}-firstName`] = 'First Name is required';
-    //             if (!director.lastName) newErrors[`${index}-lastName`] = 'Last Name is required';
-    //             if (!director.dateOfBirth) newErrors[`${index}-dateOfBirth`] = 'Date of Birth is required';
-    //             if (!director.mobileNumber) newErrors[`${index}-mobileNumber`] = 'Mobile Number is required';
-    //             if (!director.email) newErrors[`${index}-email`] = 'Email is required';
-    //             if (!director.gender) newErrors[`${index}-gender`] = 'Gender is required';
-    //             if (!director.designation) newErrors[`${index}-designation`] = 'Designation is required';
-    //             if (!director.directorIdentificationNumber) newErrors[`${index}-directorIdentificationNumber`] = 'Director Identification Number is required';
-    //             if (!director.pan) newErrors[`${index}-pan`] = 'PAN is required';
-    //             if (!director.aadhaarNumber) newErrors[`${index}-aadhaarNumber`] = 'Aadhaar Number is required';
-    //             if (!director.pinCode) newErrors[`${index}-pinCode`] = 'PIN Code is required';
-    //             if (!director.district) newErrors[`${index}-district`] = 'District is required';
-    //             if (!director.city) newErrors[`${index}-city`] = 'City is required';
-    //         }
-    //     });
-
-    //     console.log(newErrors);
-    //     if (Object.keys(newErrors).length > 0) {
-    //         setErrors(newErrors);
-    //         return;
-    //     }
-    //     const success = await handleSave(directors);
-
-    //     if (success) {
-    //         for (let i = 0; i < directors.length; i++) {
-    //             if (directors[i].isAuthorizedSignatory) {
-    //                 setStep(5);
-    //                 return;
-    //             }
-    //         }
-    //         setPromoterData(directors);
-    //         setStep(4);
-    //     }
-    // }
-
-
     const validateForm = (director: Director): boolean => {
         const requiredFields = [
             'firstName',
@@ -251,16 +146,6 @@ const Promoter: React.FC<Props> = ({ setStep, setPromoterData, gstRegistratinId 
                 return false;
             }
         }
-
-        // const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        // if (!emailRegex.test(director.email)) {
-        //     return false;
-        // }
-
-        // const mobileRegex = /^[0-9]{10}$/;
-        // if (!mobileRegex.test(director.mobileNumber)) {
-        //     return false;
-        // }
 
         return true;
     };
@@ -286,13 +171,18 @@ const Promoter: React.FC<Props> = ({ setStep, setPromoterData, gstRegistratinId 
     const dispatch = useAppDispatch();
 
     const handleSave = async (directors: any) => {
+        setIsLoading(true);
+        setSaveError(null);
         try {
             const result = await dispatch(saveGstRegistration({ id: gstRegistratinId, promoter: directors })).unwrap();
             console.log('Save successful:', result.data);
             return true;
         } catch (error) {
             console.error('Save failed:', error);
+            setSaveError('Failed to save registration. Please try again.');
             return false;
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -364,7 +254,7 @@ const Promoter: React.FC<Props> = ({ setStep, setPromoterData, gstRegistratinId 
             setStep(4);
             return true;
         }
-        catch(error) {
+        catch (error) {
             console.error('Submission failed:', error);
             newErrors['form'] = 'Submission failed. Please try again.';
             setErrors(newErrors);
@@ -809,8 +699,23 @@ const Promoter: React.FC<Props> = ({ setStep, setPromoterData, gstRegistratinId 
                 <div className="flex justify-end gap-4 mt-6">
                     <button className={outlineButtonClass} onClick={() => setStep(2)}>Back</button>
                     <button className={outlineButtonClass} onClick={addNewDirector}>Add New Promoter</button>
-                    <button className={primaryButtonClass} onClick={() => handleSubmit(directors)}>Save & Continue</button>
+                    <button className={primaryButtonClass} onClick={() => handleSubmit(directors)}>
+                        {isLoading ? (
+                            <div className="flex items-center justify-center">
+                                <svg className="w-5 h-5 mr-2 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Processing...
+                            </div>
+                        ) : (
+                            'Next'
+                        )}
+                    </button>
                 </div>
+                {saveError && (
+                    <div className="mt-2 text-sm text-red-500">{saveError}</div>
+                )}
             </div>
         </>
     );

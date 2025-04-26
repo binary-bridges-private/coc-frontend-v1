@@ -4,7 +4,7 @@ import { saveGstRegistration } from "../../../../../store/slices/gstSlice.ts";
 
 interface Props {
   setStep: Dispatch<SetStateAction<number>>;
-  gstRegistratinId: string | null; 
+  gstRegistratinId: string | null;
 }
 
 interface Item {
@@ -19,6 +19,9 @@ const GoodsServices: React.FC<Props> = ({ setStep, gstRegistratinId }) => {
   const [services, setServices] = useState<Item[]>([{ id: "1", hsnCode: "", description: "" }]);
   const [goodsErrors, setGoodsErrors] = useState<{ [key: number]: { hsnCode?: string } }>({});
   const [servicesErrors, setServicesErrors] = useState<{ [key: number]: { hsnCode?: string } }>({});
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   // Standardized input classes
   const inputClass = "w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500";
@@ -94,14 +97,20 @@ const GoodsServices: React.FC<Props> = ({ setStep, gstRegistratinId }) => {
   const dispatch = useAppDispatch();
 
   const handleSave = async () => {
+    setIsLoading(true);
+    setSaveError(null);
     try {
       const result = await dispatch(saveGstRegistration({ id: gstRegistratinId, goods: goods, services: services })).unwrap();
       console.log('Save successful:', result.data);
       return true;
     } catch (error) {
       console.error('Save failed:', error);
+      setSaveError('Failed to save registration. Please try again.');
+
       return false;
-    }   
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSubmit = async () => {
@@ -224,9 +233,22 @@ const GoodsServices: React.FC<Props> = ({ setStep, gstRegistratinId }) => {
             className="px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
             onClick={handleSubmit}
           >
-            Save & Continue
+            {isLoading ? (
+              <div className="flex items-center justify-center">
+                <svg className="w-5 h-5 mr-2 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Processing...
+              </div>
+            ) : (
+              'Next'
+            )}
           </button>
         </div>
+        {saveError && (
+          <div className="mt-2 text-sm text-red-500">{saveError}</div>
+        )}
       </div>
     </>
   );

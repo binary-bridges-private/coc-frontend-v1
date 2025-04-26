@@ -41,7 +41,7 @@ interface Director {
 interface Props {
     setStep: Dispatch<SetStateAction<number>>;
     setAuthorizedSign: any;
-    gstRegistratinId: string | null; 
+    gstRegistratinId: string | null;
 }
 
 const AuthorizedSignatory: React.FC<Props> = ({ setStep, setAuthorizedSign, gstRegistratinId }) => {
@@ -83,6 +83,8 @@ const AuthorizedSignatory: React.FC<Props> = ({ setStep, setAuthorizedSign, gstR
     ]);
 
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
+    const [isLoading, setIsLoading] = useState(false);
+    const [saveError, setSaveError] = useState<string | null>(null);
 
     // Standardized input classes
     const inputClass = "w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500";
@@ -201,61 +203,25 @@ const AuthorizedSignatory: React.FC<Props> = ({ setStep, setAuthorizedSign, gstR
     const dispatch = useAppDispatch();
 
     const handleSave = async (directors: any) => {
+        setIsLoading(true);
+        setSaveError(null);
         try {
             const result = await dispatch(saveGstRegistration({ id: gstRegistratinId, authorizedSignatory: directors })).unwrap();
             console.log('Save successful:', result.data);
             return true;
         } catch (error) {
             console.error('Save failed:', error);
+            setSaveError('Failed to save registration. Please try again.');
             return false;
+        } finally {
+            setIsLoading(false);
         }
     };
-
-    // const handleSubmit = async (directors: any) => {
-    //     const newErrors: { [key: string]: string } = {};
-
-    //     let check = false;
-    //     for (let i = 0; i < directors.length; i++) {
-    //         if (directors[i].isPrimaryAuthorizedSignatory) {
-    //             check = true;
-    //         }
-    //     }
-
-    //     directors.forEach((director, index) => {
-    //         if (!validateForm(director)) {
-    //             if (!director.firstName) newErrors[`${index}-firstName`] = 'First Name is required';
-    //             if (!director.lastName) newErrors[`${index}-lastName`] = 'Last Name is required';
-    //             if (!director.dateOfBirth) newErrors[`${index}-dateOfBirth`] = 'Date of Birth is required';
-    //             if (!director.mobileNumber) newErrors[`${index}-mobileNumber`] = 'Mobile Number is required';
-    //             if (!director.email) newErrors[`${index}-email`] = 'Email is required';
-    //             if (!director.gender) newErrors[`${index}-gender`] = 'Gender is required';
-    //             if (!director.designation) newErrors[`${index}-designation`] = 'Designation is required';
-    //             if (!director.directorIdentificationNumber) newErrors[`${index}-directorIdentificationNumber`] = 'Director Identification Number is required';
-    //             if (!director.pan) newErrors[`${index}-pan`] = 'PAN is required';
-    //             if (!director.aadhaarNumber) newErrors[`${index}-aadhaarNumber`] = 'Aadhaar Number is required';
-    //             if (!director.pinCode) newErrors[`${index}-pinCode`] = 'PIN Code is required';
-    //             if (!director.district) newErrors[`${index}-district`] = 'District is required';
-    //             if (!director.city) newErrors[`${index}-city`] = 'City is required';
-    //             if (!check) newErrors['check'] = 'Need to select a primary signatory!';
-    //         }
-    //     });
-
-    //     if (Object.keys(newErrors).length > 0) {
-    //         setErrors(newErrors);
-    //         return;
-    //     }
-
-    //     const success = await handleSave(directors);
-    //     if (success) {
-    //         setAuthorizedSign(directors);
-    //         setStep(5);
-    //     }
-    // }
 
     const handleSubmit = async (directors: any) => {
         const newErrors: { [key: string]: string } = {};
         const hasPrimarySignatory = directors.some((d: any) => d.isPrimaryAuthorizedSignatory);
-    
+
         // Validation regex patterns
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         const mobileRegex = /^[0-9]{10}$/;
@@ -263,45 +229,45 @@ const AuthorizedSignatory: React.FC<Props> = ({ setStep, setAuthorizedSign, gstR
         const aadhaarRegex = /^\d{12}$/;
         const pinCodeRegex = /^\d{6}$/;
         const dinRegex = /^[0-9]{8}$/; // Assuming DIN is 8 digits
-    
+
         directors.forEach((director: any, index: number) => {
             // Required field validations
             if (!director.firstName?.trim()) newErrors[`${index}-firstName`] = 'First Name is required';
             if (!director.lastName?.trim()) newErrors[`${index}-lastName`] = 'Last Name is required';
             if (!director.dateOfBirth) newErrors[`${index}-dateOfBirth`] = 'Date of Birth is required';
-            
+
             // Mobile number validation
             if (!director.mobileNumber) {
                 newErrors[`${index}-mobileNumber`] = 'Mobile Number is required';
             } else if (!mobileRegex.test(director.mobileNumber)) {
                 newErrors[`${index}-mobileNumber`] = 'Invalid Mobile Number (10 digits required)';
             }
-    
+
             // Email validation
             if (!director.email) {
                 newErrors[`${index}-email`] = 'Email is required';
             } else if (!emailRegex.test(director.email)) {
                 newErrors[`${index}-email`] = 'Invalid Email format';
             }
-    
+
             // Other required fields
             if (!director.gender) newErrors[`${index}-gender`] = 'Gender is required';
             if (!director.designation) newErrors[`${index}-designation`] = 'Designation is required';
-    
+
             // PAN validation
             if (!director.pan) {
                 newErrors[`${index}-pan`] = 'PAN is required';
             } else if (!panRegex.test(director.pan)) {
                 newErrors[`${index}-pan`] = 'Invalid PAN format (e.g., ABCDE1234F)';
             }
-    
+
             // Aadhaar validation
             if (!director.aadhaarNumber) {
                 newErrors[`${index}-aadhaarNumber`] = 'Aadhaar Number is required';
             } else if (!aadhaarRegex.test(director.aadhaarNumber)) {
                 newErrors[`${index}-aadhaarNumber`] = 'Aadhaar must be 12 digits';
             }
-    
+
             // Address validations
             if (!director.pinCode) {
                 newErrors[`${index}-pinCode`] = 'PIN Code is required';
@@ -311,17 +277,17 @@ const AuthorizedSignatory: React.FC<Props> = ({ setStep, setAuthorizedSign, gstR
             if (!director.district) newErrors[`${index}-district`] = 'District is required';
             if (!director.city) newErrors[`${index}-city`] = 'City is required';
         });
-    
+
         // Check for primary authorized signatory
         if (!hasPrimarySignatory) {
             newErrors['check'] = 'At least one director must be marked as primary authorized signatory';
         }
-    
+
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             return false;
         }
-    
+
         try {
             const success = await handleSave(directors);
             if (success) {
@@ -761,9 +727,22 @@ const AuthorizedSignatory: React.FC<Props> = ({ setStep, setAuthorizedSign, gstR
                         className="px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
                         onClick={() => handleSubmit(directors)}
                     >
-                        Save & Continue
+                        {isLoading ? (
+                            <div className="flex items-center justify-center">
+                                <svg className="w-5 h-5 mr-2 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Processing...
+                            </div>
+                        ) : (
+                            'Next'
+                        )}
                     </button>
                 </div>
+                {saveError && (
+                    <div className="mt-2 text-sm text-red-500">{saveError}</div>
+                )}
             </div>
         </>
     );
