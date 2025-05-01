@@ -61,7 +61,7 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState, period, vie
     });
 
     const isIntraState = formState.pos === regisState;
-    console.log(formState.pos , regisState,  isIntraState);
+    console.log(formState.pos, regisState, isIntraState);
 
     const validateField = (name: string, value: string) => {
         if (viewMode) return ''; // Skip validation in view mode
@@ -161,19 +161,22 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState, period, vie
     const taxCalculated = calculateTax();
 
     return (
-        <div>
-            <h3 className="text-lg font-semibold">B2CS - {viewMode ? 'View' : 'Add'} Details</h3>
-            <div className='border' />
+        <>
+            <div className="w-[100%] mx-auto p-6 bg-blue-500 shadow-lg rounded-lg">
+                <h2 className="text-xl font-extrabold text-white">
+                    B2CS - {viewMode ? 'View' : 'Add'} Details
+                </h2>
+            </div>
 
-            {/* Basic Information */}
             <div className="grid grid-cols-1 gap-4 mt-6 md:grid-cols-3">
                 <div>
-                    <label className="block text-sm font-medium">POS *</label>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">POS *</label>
                     <select
                         name="pos"
                         value={formState.pos}
                         onChange={handleChange}
-                        className={`w-full text-sm font-medium input input-bordered ${errors.pos ? 'input-error' : ''}`}
+                        className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.pos ? 'border-red-500' : 'border-gray-300'
+                            } ${viewMode ? 'bg-gray-100' : ''}`}
                         disabled={viewMode}
                     >
                         <option value="">Select state</option>
@@ -186,27 +189,29 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState, period, vie
                     {errors.pos && <p className="mt-1 text-sm text-red-500">{errors.pos}</p>}
                 </div>
                 <div>
-                    <label className="block text-sm font-medium">Taxable value (₹) *</label>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">Taxable value (₹) *</label>
                     <input
                         type="text"
                         name="taxableValue"
                         value={formState.taxableValue}
                         onChange={handleChange}
                         placeholder=""
-                        className={`w-full text-sm font-medium input input-bordered ${errors.taxableValue ? 'input-error' : ''}`}
+                        className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.taxableValue ? 'border-red-500' : 'border-gray-300'
+                            } ${viewMode ? 'bg-gray-100' : ''}`}
                         disabled={viewMode}
                         readOnly={viewMode}
                     />
                     {errors.taxableValue && <p className="mt-1 text-sm text-red-500">{errors.taxableValue}</p>}
                 </div>
                 <div>
-                    <label className="block text-sm font-medium">Supply Type *</label>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">Supply Type *</label>
                     <input
                         type="text"
                         name="supplyType"
                         value={isIntraState ? 'intra-state' : 'inter-state'}
                         readOnly
-                        className={`w-full text-sm font-medium input input-bordered ${errors.supplyType ? 'input-error' : ''}`}
+                        className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.supplyType ? 'border-red-500' : 'border-gray-300'
+                            } bg-gray-100`}
                     />
                     {errors.supplyType && <p className="mt-1 text-sm text-red-500">{errors.supplyType}</p>}
                 </div>
@@ -220,7 +225,7 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState, period, vie
                         name="isDifferentialTax"
                         checked={formState.isDifferentialTax}
                         onChange={handleChange}
-                        className="checkbox"
+                        className="checkbox checkbox-primary"
                         disabled={viewMode}
                     />
                     <span>Is the supply eligible to be taxed at a differential percentage (%) of the existing rate of tax, as notified by the Government?</span>
@@ -232,7 +237,7 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState, period, vie
                         <input
                             type="text"
                             value="65%"
-                            className="w-16 p-1 text-center bg-gray-100 border border-gray-300 rounded-md"
+                            className="w-16 p-2 text-center bg-gray-100 border border-gray-300 rounded-md"
                             readOnly
                         />
                     </div>
@@ -242,14 +247,15 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState, period, vie
             {/* Rate and Tax Information */}
             <div className="grid grid-cols-1 gap-4 mt-6 md:grid-cols-3">
                 <div>
-                    <label className="block text-sm font-medium">Rate *</label>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">Rate *</label>
                     <input
                         type="text"
                         name="rate"
                         value={formState.rate}
                         onChange={handleChange}
                         placeholder="Rate"
-                        className={`w-full text-sm font-medium input input-bordered ${errors.rate ? 'input-error' : ''}`}
+                        className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.rate ? 'border-red-500' : 'border-gray-300'
+                            } ${viewMode ? 'bg-gray-100' : ''}`}
                         disabled={viewMode}
                         readOnly={viewMode}
                     />
@@ -262,28 +268,30 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState, period, vie
                 {isIntraState ? (
                     <>
                         <div>
-                            <label className="block text-sm font-medium">CGST (₹) *</label>
+                            <label className="block mb-2 text-sm font-medium text-gray-700">CGST (₹) *</label>
                             <input
                                 type="number"
                                 name="cgst"
                                 value={formState.cgst || taxCalculated.cgst}
                                 onChange={handleChange}
                                 placeholder="0.00"
-                                className={`w-full text-sm font-medium input input-bordered ${errors.cgst ? 'input-error' : ''}`}
+                                className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.cgst ? 'border-red-500' : 'border-gray-300'
+                                    } ${viewMode ? 'bg-gray-100' : ''}`}
                                 disabled={viewMode}
                                 readOnly={viewMode}
                             />
                             {errors.cgst && <p className="mt-1 text-sm text-red-500">{errors.cgst}</p>}
                         </div>
                         <div>
-                            <label className="block text-sm font-medium">SGST (₹) *</label>
+                            <label className="block mb-2 text-sm font-medium text-gray-700">SGST (₹) *</label>
                             <input
                                 type="number"
                                 name="sgst"
                                 value={formState.sgst || taxCalculated.sgst}
                                 onChange={handleChange}
                                 placeholder="0.00"
-                                className={`w-full text-sm font-medium input input-bordered ${errors.sgst ? 'input-error' : ''}`}
+                                className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.sgst ? 'border-red-500' : 'border-gray-300'
+                                    } ${viewMode ? 'bg-gray-100' : ''}`}
                                 disabled={viewMode}
                                 readOnly={viewMode}
                             />
@@ -292,14 +300,15 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState, period, vie
                     </>
                 ) : (
                     <div>
-                        <label className="block text-sm font-medium">Integrated Tax (₹) *</label>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">Integrated Tax (₹) *</label>
                         <input
                             type="number"
                             name="igst"
                             value={formState.igst || taxCalculated.igst}
                             onChange={handleChange}
                             placeholder="0.00"
-                            className={`w-full text-sm font-medium input input-bordered ${errors.igst ? 'input-error' : ''}`}
+                            className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.igst ? 'border-red-500' : 'border-gray-300'
+                                } ${viewMode ? 'bg-gray-100' : ''}`}
                             disabled={viewMode}
                             readOnly={viewMode}
                         />
@@ -307,36 +316,40 @@ const B2cs: React.FC<Props> = ({ setOpen, formData, updateFormState, period, vie
                     </div>
                 )}
                 <div>
-                    <label className="block text-sm font-medium">CESS (₹)</label>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">CESS (₹)</label>
                     <input
                         type="number"
                         name="cess"
                         value={formState.cess}
                         onChange={handleChange}
                         placeholder="0.00"
-                        className="w-full text-sm font-medium input input-bordered"
+                        className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${viewMode ? 'bg-gray-100' : ''
+                            }`}
                         disabled={viewMode}
                         readOnly={viewMode}
                     />
                 </div>
             </div>
 
-            {/* Action Buttons */}
+            {/* Action Buttons - matching Place component styling */}
             <div className="flex justify-end gap-4 mt-6">
                 <button
-                    className="btn btn-outline"
+                    type="button"
                     onClick={() => setOpen(0)}
+                    className="px-6 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
                 >
                     Back
                 </button>
                 <button
-                    className={`btn ${viewMode ? 'btn-outline' : 'bg-[#101C36] text-white'}`}
+                    type="button"
                     onClick={handleSubmit}
+                    className={`px-6 py-2 text-sm font-medium text-white rounded-md hover:bg-blue-700 ${viewMode ? 'bg-gray-500' : 'bg-blue-600'
+                        }`}
                 >
                     {viewMode ? 'Close' : 'Save'}
                 </button>
             </div>
-        </div>
+        </>
     );
 };
 

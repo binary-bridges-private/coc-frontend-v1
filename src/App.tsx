@@ -23,6 +23,7 @@ import ItrLogin from "./components/ui/practice/itr/Login.tsx";
 import LoginGst from "./components/ui/practice/gst/login/Login.tsx";
 import Login from "./components/ui/auth/Login.tsx";
 import Signup from "./components/ui/auth/Signup.tsx";
+import Banner from "./components/ui/Banner.tsx";
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
       <div className="flex flex-col w-screen h-screen min-h-screen overflow-auto">
         <Login />
         <Signup />
+        <Banner />
         <Header />
         <main className="flex-grow">
           <Routes>

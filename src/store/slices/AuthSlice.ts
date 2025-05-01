@@ -118,6 +118,7 @@ const authSlice = createSlice({
       state.status = 'idle';
       state.error = null;
       localStorage.removeItem('auth');
+      localStorage.removeItem('gstAuth');
     },
     clearAuthError(state) {
       state.error = null;
@@ -169,6 +170,7 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
         state.userData = null;
         localStorage.removeItem('auth');
+        localStorage.removeItem('gstAuth');
       })
       .addCase(logoutUser.rejected, (state, action) => {
         state.status = 'failed';
@@ -177,6 +179,7 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
         state.userData = null;
         localStorage.removeItem('auth');
+        localStorage.removeItem('gstAuth');
       });
   },
 });

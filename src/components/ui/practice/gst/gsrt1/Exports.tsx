@@ -57,7 +57,7 @@
 
 //     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 //         const { name, value, type } = e.target;
-        
+
 //         setFormState(prev => ({
 //             ...prev,
 //             [name]: value
@@ -120,7 +120,7 @@
 //         <div>
 //             <h3 className="font-semibold text-md">6A - Exports Invoices</h3>
 //             <div className='border' />
-            
+
 //             {/* Invoice Information */}
 //             <div className="grid grid-cols-1 gap-4 mt-4 md:grid-cols-3">
 //                 <div>
@@ -384,7 +384,7 @@ const Exports: React.FC<Props> = ({ setOpen, formData, updateFormState, period, 
 
     const validateField = (name: string, value: string) => {
         if (viewMode) return ''; // Skip validation in view mode
-        
+
         let error = '';
         if (!value.trim()) {
             error = 'This field is required';
@@ -402,7 +402,7 @@ const Exports: React.FC<Props> = ({ setOpen, formData, updateFormState, period, 
         if (viewMode) return; // Don't allow changes in view mode
 
         const { name, value } = e.target;
-        
+
         setFormState(prev => ({
             ...prev,
             [name]: value
@@ -419,7 +419,7 @@ const Exports: React.FC<Props> = ({ setOpen, formData, updateFormState, period, 
 
     const handleTaxableValueChange = (rate: number, value: string) => {
         if (viewMode) return; // Don't allow changes in view mode
-        
+
         setFormState(prev => ({
             ...prev,
             taxableValues: {
@@ -431,7 +431,7 @@ const Exports: React.FC<Props> = ({ setOpen, formData, updateFormState, period, 
 
     const handleCessValueChange = (rate: number, value: string) => {
         if (viewMode) return; // Don't allow changes in view mode
-        
+
         setFormState(prev => ({
             ...prev,
             cessValues: {
@@ -447,7 +447,7 @@ const Exports: React.FC<Props> = ({ setOpen, formData, updateFormState, period, 
 
     const validateForm = () => {
         if (viewMode) return true; // Skip validation in view mode
-        
+
         const newErrors = {
             invoiceNo: validateField('invoiceNo', formState.invoiceNo),
             invoiceDate: validateField('invoiceDate', formState.invoiceDate),
@@ -473,230 +473,247 @@ const Exports: React.FC<Props> = ({ setOpen, formData, updateFormState, period, 
     };
 
     return (
-        <div>
-            <h3 className="text-lg font-semibold">6A - Exports Invoices {viewMode ? '(View)' : '(Edit)'}</h3>
-            <div className='border' />
-            
-            {/* Invoice Information */}
-            <div className="grid grid-cols-1 gap-4 mt-6 md:grid-cols-3">
-                <div>
-                    <label className="block text-sm font-medium">Invoice no. *</label>
-                    <input 
-                        type="text" 
-                        name="invoiceNo"
-                        value={formState.invoiceNo}
-                        onChange={handleChange}
-                        placeholder="Invoice no." 
-                        className={`w-full text-sm font-medium input input-bordered ${errors.invoiceNo ? 'input-error' : ''}`}
-                        disabled={viewMode}
-                        readOnly={viewMode}
-                    />
-                    {errors.invoiceNo && <p className="mt-1 text-sm text-red-500">{errors.invoiceNo}</p>}
-                </div>
-                <div>
-                    <label className="block text-sm font-medium">Invoice date *</label>
-                    <input 
-                        type="date" 
-                        name="invoiceDate"
-                        value={formState.invoiceDate}
-                        onChange={handleChange}
-                        className={`w-full text-sm font-medium input input-bordered ${errors.invoiceDate ? 'input-error' : ''}`}
-                        disabled={viewMode}
-                        readOnly={viewMode}
-                    />
-                    {errors.invoiceDate && <p className="mt-1 text-sm text-red-500">{errors.invoiceDate}</p>}
-                </div>
-                <div>
-                    <label className="block text-sm font-medium">Port Code</label>
-                    <input 
-                        type="text" 
-                        name="portCode"
-                        value={formState.portCode}
-                        onChange={handleChange}
-                        placeholder="Port Code" 
-                        className="w-full text-sm font-medium input input-bordered"
-                        disabled={viewMode}
-                        readOnly={viewMode}
-                    />
-                </div>
+        <>
+            <div className="w-[100%] mx-auto p-6 bg-blue-500 shadow-lg rounded-lg">
+                <h2 className="text-xl font-extrabold text-white">
+                    6A - Exports Invoices {viewMode ? '(View)' : '(Edit)'}
+                </h2>
             </div>
+            <div>
+                <div className="grid grid-cols-1 gap-4 mt-6 md:grid-cols-3">
+                    <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">Invoice no. *</label>
+                        <input
+                            type="text"
+                            name="invoiceNo"
+                            value={formState.invoiceNo}
+                            onChange={handleChange}
+                            placeholder="Invoice no."
+                            className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.invoiceNo ? 'border-red-500' : 'border-gray-300'
+                                } ${viewMode ? 'bg-gray-100' : ''}`}
+                            disabled={viewMode}
+                            readOnly={viewMode}
+                        />
+                        {errors.invoiceNo && <p className="mt-1 text-sm text-red-500">{errors.invoiceNo}</p>}
+                    </div>
+                    <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">Invoice date *</label>
+                        <input
+                            type="date"
+                            name="invoiceDate"
+                            value={formState.invoiceDate}
+                            onChange={handleChange}
+                            className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.invoiceDate ? 'border-red-500' : 'border-gray-300'
+                                } ${viewMode ? 'bg-gray-100' : ''}`}
+                            disabled={viewMode}
+                            readOnly={viewMode}
+                        />
+                        {errors.invoiceDate && <p className="mt-1 text-sm text-red-500">{errors.invoiceDate}</p>}
+                    </div>
+                    <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">Port Code</label>
+                        <input
+                            type="text"
+                            name="portCode"
+                            value={formState.portCode}
+                            onChange={handleChange}
+                            placeholder="Port Code"
+                            className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${viewMode ? 'bg-gray-100' : ''
+                                }`}
+                            disabled={viewMode}
+                            readOnly={viewMode}
+                        />
+                    </div>
+                </div>
 
-            {/* Shipping Information */}
-            <div className="grid grid-cols-1 gap-4 mt-6 md:grid-cols-3">
-                <div>
-                    <label className="block text-sm font-medium">Shipping Bill No.</label>
-                    <input 
-                        type="text" 
-                        name="shippingBillNo"
-                        value={formState.shippingBillNo}
-                        onChange={handleChange}
-                        placeholder="" 
-                        className="w-full text-sm font-medium input input-bordered"
-                        disabled={viewMode}
-                        readOnly={viewMode}
-                    />
+                {/* Shipping Information - matching Place component styling */}
+                <div className="grid grid-cols-1 gap-4 mt-6 md:grid-cols-3">
+                    <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">Shipping Bill No.</label>
+                        <input
+                            type="text"
+                            name="shippingBillNo"
+                            value={formState.shippingBillNo}
+                            onChange={handleChange}
+                            placeholder=""
+                            className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${viewMode ? 'bg-gray-100' : ''
+                                }`}
+                            disabled={viewMode}
+                            readOnly={viewMode}
+                        />
+                    </div>
+                    <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">Shipping Bill Date</label>
+                        <input
+                            type="date"
+                            name="shippingBillDate"
+                            value={formState.shippingBillDate}
+                            onChange={handleChange}
+                            className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${viewMode ? 'bg-gray-100' : ''
+                                }`}
+                            disabled={viewMode}
+                            readOnly={viewMode}
+                        />
+                    </div>
+                    <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">Total invoice value (₹) *</label>
+                        <input
+                            type="text"
+                            name="totalValue"
+                            value={formState.totalValue}
+                            onChange={handleChange}
+                            placeholder="Total invoice value (₹)"
+                            className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.totalValue ? 'border-red-500' : 'border-gray-300'
+                                } ${viewMode ? 'bg-gray-100' : ''}`}
+                            disabled={viewMode}
+                            readOnly={viewMode}
+                        />
+                        {errors.totalValue && <p className="mt-1 text-sm text-red-500">{errors.totalValue}</p>}
+                    </div>
                 </div>
-                <div>
-                    <label className="block text-sm font-medium">Shipping Bill Date</label>
-                    <input 
-                        type="date" 
-                        name="shippingBillDate"
-                        value={formState.shippingBillDate}
-                        onChange={handleChange}
-                        className="w-full text-sm font-medium input input-bordered"
-                        disabled={viewMode}
-                        readOnly={viewMode}
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium">Total invoice value (₹) *</label>
-                    <input 
-                        type="text" 
-                        name="totalValue"
-                        value={formState.totalValue}
-                        onChange={handleChange}
-                        placeholder="Total invoice value (₹)" 
-                        className={`w-full text-sm font-medium input input-bordered ${errors.totalValue ? 'input-error' : ''}`}
-                        disabled={viewMode}
-                        readOnly={viewMode}
-                    />
-                    {errors.totalValue && <p className="mt-1 text-sm text-red-500">{errors.totalValue}</p>}
-                </div>
-            </div>
 
-            {/* Additional Information */}
-            <div className="grid grid-cols-1 gap-4 mt-6 md:grid-cols-3">
-                <div>
-                    <label className="block text-sm font-medium">Supply Type</label>
-                    <input 
-                        type="text" 
-                        name="supplyType"
-                        value={formState.supplyType}
-                        onChange={handleChange}
-                        placeholder="" 
-                        className="w-full text-sm font-medium input input-bordered"
-                        disabled={viewMode}
-                        readOnly={viewMode}
-                    />
+                {/* Additional Information - matching Place component styling */}
+                <div className="grid grid-cols-1 gap-4 mt-6 md:grid-cols-3">
+                    <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">Supply Type</label>
+                        <input
+                            type="text"
+                            name="supplyType"
+                            value={formState.supplyType}
+                            onChange={handleChange}
+                            placeholder=""
+                            className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${viewMode ? 'bg-gray-100' : ''
+                                }`}
+                            disabled={viewMode}
+                            readOnly={viewMode}
+                        />
+                    </div>
+                    <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">GST Payment *</label>
+                        <input
+                            type="text"
+                            name="gstPayment"
+                            value={formState.gstPayment}
+                            onChange={handleChange}
+                            placeholder="with or without"
+                            className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.gstPayment ? 'border-red-500' : 'border-gray-300'
+                                } ${viewMode ? 'bg-gray-100' : ''}`}
+                            disabled={viewMode}
+                            readOnly={viewMode}
+                        />
+                        {errors.gstPayment && <p className="mt-1 text-sm text-red-500">{errors.gstPayment}</p>}
+                    </div>
                 </div>
-                <div>
-                    <label className="block text-sm font-medium">GST Payment *</label>
-                    <input 
-                        type="text" 
-                        name="gstPayment"
-                        value={formState.gstPayment}
-                        onChange={handleChange}
-                        placeholder="with or without" 
-                        className={`w-full text-sm font-medium input input-bordered ${errors.gstPayment ? 'input-error' : ''}`}
-                        disabled={viewMode}
-                        readOnly={viewMode}
-                    />
-                    {errors.gstPayment && <p className="mt-1 text-sm text-red-500">{errors.gstPayment}</p>}
-                </div>
-            </div>
 
-            <div className="grid grid-cols-1 gap-4 mt-6 md:grid-cols-3">
-                <div>
-                    <label className="block text-sm font-medium">Source</label>
-                    <input 
-                        type="text" 
-                        name="source"
-                        value={formState.source}
-                        onChange={handleChange}
-                        placeholder="Source" 
-                        className="w-full text-sm font-medium input input-bordered"
-                        disabled={viewMode}
-                        readOnly={viewMode}
-                    />
+                <div className="grid grid-cols-1 gap-4 mt-6 md:grid-cols-3">
+                    <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">Source</label>
+                        <input
+                            type="text"
+                            name="source"
+                            value={formState.source}
+                            onChange={handleChange}
+                            placeholder="Source"
+                            className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${viewMode ? 'bg-gray-100' : ''
+                                }`}
+                            disabled={viewMode}
+                            readOnly={viewMode}
+                        />
+                    </div>
+                    <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">IRN</label>
+                        <input
+                            type="text"
+                            name="irn"
+                            value={formState.irn}
+                            onChange={handleChange}
+                            placeholder="IRN"
+                            className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${viewMode ? 'bg-gray-100' : ''
+                                }`}
+                            disabled={viewMode}
+                            readOnly={viewMode}
+                        />
+                    </div>
+                    <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">IRN date</label>
+                        <input
+                            type="date"
+                            name="irnDate"
+                            value={formState.irnDate}
+                            onChange={handleChange}
+                            className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${viewMode ? 'bg-gray-100' : ''
+                                }`}
+                            disabled={viewMode}
+                            readOnly={viewMode}
+                        />
+                    </div>
                 </div>
-                <div>
-                    <label className="block text-sm font-medium">IRN</label>
-                    <input 
-                        type="text" 
-                        name="irn"
-                        value={formState.irn}
-                        onChange={handleChange}
-                        placeholder="IRN" 
-                        className="w-full text-sm font-medium input input-bordered"
-                        disabled={viewMode}
-                        readOnly={viewMode}
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium">IRN date</label>
-                    <input 
-                        type="date" 
-                        name="irnDate"
-                        value={formState.irnDate}
-                        onChange={handleChange}
-                        className="w-full text-sm font-medium input input-bordered"
-                        disabled={viewMode}
-                        readOnly={viewMode}
-                    />
-                </div>
-            </div>
 
-            {/* Item Details Table */}
-            <h2 className="pb-2 mt-6 text-lg font-semibold">Item Details</h2>
-            <div className="overflow-x-auto">
-                <table className="w-full border-collapse">
-                    <thead>
-                        <tr className="bg-gray-100">
-                            <th className="p-3 font-medium text-center border border-gray-300">Rate (%)</th>
-                            <th className="p-3 font-medium text-center border border-gray-300">Taxable Value (₹)</th>
-                            <th className="p-3 font-medium text-center border border-gray-300">Amount of Tax (₹)</th>
-                            <th className="p-3 font-medium text-center border border-gray-300">Cess (₹)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {taxRates.map((rate, index) => (
-                            <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                                <td className="p-3 text-center border border-gray-300">{rate}%</td>
-                                <td className="p-3 text-center border border-gray-300">
-                                    <input
-                                        type="number"
-                                        value={formState.taxableValues[rate] || ''}
-                                        onChange={(e) => handleTaxableValueChange(rate, e.target.value)}
-                                        className="w-[70%] p-1 text-center border border-gray-300 rounded-md"
-                                        disabled={viewMode}
-                                        readOnly={viewMode}
-                                    />
-                                </td>
-                                <td className="p-3 text-center border border-gray-300">
-                                    {calculateTax(rate, formState.taxableValues[rate] || 0)}
-                                </td>
-                                <td className="p-3 text-center border border-gray-300">
-                                    <input
-                                        type="number"
-                                        value={formState.cessValues[rate] || ''}
-                                        onChange={(e) => handleCessValueChange(rate, e.target.value)}
-                                        className="w-[70%] p-1 text-center border border-gray-300 rounded-md"
-                                        disabled={viewMode}
-                                        readOnly={viewMode}
-                                    />
-                                </td>
+                {/* Item Details Table - matching Place component styling */}
+                <h2 className="pb-2 mt-6 text-lg font-semibold">Item Details</h2>
+                <div className="overflow-x-auto">
+                    <table className="w-full border-collapse">
+                        <thead>
+                            <tr className="bg-gray-100">
+                                <th className="p-3 font-medium text-center border border-gray-300">Rate (%)</th>
+                                <th className="p-3 font-medium text-center border border-gray-300">Taxable Value (₹)</th>
+                                <th className="p-3 font-medium text-center border border-gray-300">Amount of Tax (₹)</th>
+                                <th className="p-3 font-medium text-center border border-gray-300">Cess (₹)</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                            {taxRates.map((rate, index) => (
+                                <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                                    <td className="p-3 text-center border border-gray-300">{rate}%</td>
+                                    <td className="p-3 text-center border border-gray-300">
+                                        <input
+                                            type="number"
+                                            value={formState.taxableValues[rate] || ''}
+                                            onChange={(e) => handleTaxableValueChange(rate, e.target.value)}
+                                            className="w-[70%] p-2 text-center border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                                            disabled={viewMode}
+                                            readOnly={viewMode}
+                                        />
+                                    </td>
+                                    <td className="p-3 text-center border border-gray-300">
+                                        {calculateTax(rate, formState.taxableValues[rate] || 0)}
+                                    </td>
+                                    <td className="p-3 text-center border border-gray-300">
+                                        <input
+                                            type="number"
+                                            value={formState.cessValues[rate] || ''}
+                                            onChange={(e) => handleCessValueChange(rate, e.target.value)}
+                                            className="w-[70%] p-2 text-center border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                                            disabled={viewMode}
+                                            readOnly={viewMode}
+                                        />
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
 
-            {/* Action Buttons */}
-            <div className="flex justify-end gap-4 mt-6">
-                <button 
-                    className="btn btn-outline" 
-                    onClick={() => setOpen(0)}
-                >
-                    Back
-                </button>
-                <button 
-                    className={`btn ${viewMode ? 'btn-outline' : 'bg-[#101C36] text-white'}`}
-                    onClick={handleSubmit}
-                >
-                    {viewMode ? 'Close' : 'Save'}
-                </button>
+                {/* Action Buttons - matching Place component styling */}
+                <div className="flex justify-end gap-4 mt-6">
+                    <button
+                        type="button"
+                        onClick={() => setOpen(0)}
+                        className="px-6 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                    >
+                        Back
+                    </button>
+                    <button
+                        type="button"
+                        onClick={handleSubmit}
+                        className={`px-6 py-2 text-sm font-medium text-white rounded-md hover:bg-blue-700 ${viewMode ? 'bg-gray-500' : 'bg-blue-600'
+                            }`}
+                    >
+                        {viewMode ? 'Close' : 'Save'}
+                    </button>
+                </div>
             </div>
-        </div>
+        </>
     );
 };
 

@@ -4,6 +4,8 @@ import authReducer, { logout } from './slices/AuthSlice.ts';
 import gstAuthReducer from './slices/gstAuthSlice.ts';
 import gstr1Reducer from "./slices/gstr1Slice.ts";
 import gstRegistrationReducer from "./slices/gstSlice.ts";
+import bannerReducer from "./slices/BannerSlice.ts";
+
 import { apiRestricted } from './api.ts';
 
 export const store = configureStore({
@@ -12,7 +14,8 @@ export const store = configureStore({
     auth: authReducer,
     gstAuth: gstAuthReducer,
     gstr1: gstr1Reducer,
-    gstRegistration: gstRegistrationReducer
+    gstRegistration: gstRegistrationReducer,
+    banner: bannerReducer
   },
 });
 
