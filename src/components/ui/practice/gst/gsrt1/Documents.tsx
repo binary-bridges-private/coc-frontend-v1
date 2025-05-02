@@ -429,8 +429,8 @@ const TableRow: FC<TableRowProps> = ({ row, index, handleChange, removeRow, tabl
             </td>
             {!viewMode && (
                 <td className="p-2 text-center border border-gray-200">
-                    <button 
-                        onClick={() => removeRow(tableKey, row.id)} 
+                    <button
+                        onClick={() => removeRow(tableKey, row.id)}
                         className="px-2 py-1 text-xs font-medium text-white bg-red-600 rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
                     >
                         Remove
@@ -490,8 +490,8 @@ const DocumentsTable: FC<DocumentsTableProps> = ({
                 </table>
             </div>
             {!viewMode && (
-                <button 
-                    onClick={() => addRow(tableKey)} 
+                <button
+                    onClick={() => addRow(tableKey)}
                     className="px-4 py-2 mt-3 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                     Add Document
@@ -503,18 +503,18 @@ const DocumentsTable: FC<DocumentsTableProps> = ({
 
 const Documents: FC<Props> = ({ setOpen, formData, updateFormState, viewMode = false }) => {
     const initialTables: DocumentTables = {
-        rows1: [{ id: 1, from: "", to: "", total: "", cancelled: "", netIssued: "" }],
-        rows2: [{ id: 1, from: "", to: "", total: "", cancelled: "", netIssued: "" }],
-        rows3: [{ id: 1, from: "", to: "", total: "", cancelled: "", netIssued: "" }],
-        rows4: [{ id: 1, from: "", to: "", total: "", cancelled: "", netIssued: "" }],
-        rows5: [{ id: 1, from: "", to: "", total: "", cancelled: "", netIssued: "" }],
-        rows6: [{ id: 1, from: "", to: "", total: "", cancelled: "", netIssued: "" }],
-        rows7: [{ id: 1, from: "", to: "", total: "", cancelled: "", netIssued: "" }],
-        rows8: [{ id: 1, from: "", to: "", total: "", cancelled: "", netIssued: "" }],
-        rows9: [{ id: 1, from: "", to: "", total: "", cancelled: "", netIssued: "" }],
-        rows10: [{ id: 1, from: "", to: "", total: "", cancelled: "", netIssued: "" }],
-        rows11: [{ id: 1, from: "", to: "", total: "", cancelled: "", netIssued: "" }],
-        rows12: [{ id: 1, from: "", to: "", total: "", cancelled: "", netIssued: "" }],
+        rows1: [],
+        rows2: [],
+        rows3: [],
+        rows4: [],
+        rows5: [],
+        rows6: [],
+        rows7: [],
+        rows8: [],
+        rows9: [],
+        rows10: [],
+        rows11: [],
+        rows12: [],
         ...formData
     };
 
@@ -555,7 +555,7 @@ const Documents: FC<Props> = ({ setOpen, formData, updateFormState, viewMode = f
 
         Object.keys(tables).forEach(tableKey => {
             const tableErrors: Record<number, Record<string, string>> = {};
-            
+
             tables[tableKey as keyof DocumentTables].forEach(row => {
                 const rowErrors = validateRow(row);
                 if (Object.keys(rowErrors).length > 0) {
@@ -575,7 +575,7 @@ const Documents: FC<Props> = ({ setOpen, formData, updateFormState, viewMode = f
 
     const handleChange = (tableKey: string, id: number, field: keyof DocumentRow, value: string) => {
         if (viewMode) return;
-        
+
         setTables(prevTables => ({
             ...prevTables,
             [tableKey]: prevTables[tableKey as keyof DocumentTables].map(row =>
@@ -603,7 +603,7 @@ const Documents: FC<Props> = ({ setOpen, formData, updateFormState, viewMode = f
 
     const addRow = (tableKey: string) => {
         if (viewMode) return;
-        
+
         setTables(prevTables => {
             const currentRows = prevTables[tableKey as keyof DocumentTables];
             const newId = currentRows.length > 0 ? Math.max(...currentRows.map(r => r.id)) + 1 : 1;
@@ -627,7 +627,7 @@ const Documents: FC<Props> = ({ setOpen, formData, updateFormState, viewMode = f
 
     const removeRow = (tableKey: string, id: number) => {
         if (viewMode) return;
-        
+
         setTables(prevTables => ({
             ...prevTables,
             [tableKey]: prevTables[tableKey as keyof DocumentTables].filter(row => row.id !== id),
@@ -639,7 +639,7 @@ const Documents: FC<Props> = ({ setOpen, formData, updateFormState, viewMode = f
             setOpen(0);
             return;
         }
-        
+
         if (validateAllTables()) {
             updateFormState('documents', tables);
             setOpen(0);
@@ -647,46 +647,52 @@ const Documents: FC<Props> = ({ setOpen, formData, updateFormState, viewMode = f
     };
 
     return (
-        <div className="p-4 space-y-6">
-            <h3 className="text-lg font-semibold text-gray-800">Documents issued during the tax period</h3>
-            <div className="my-2 border-t border-gray-200" />
-            <p className="mt-4 text-sm text-gray-600">
-                Note: Kindly click on save button after any modification (add, edit, delete) to save the changes
-            </p>
-
-            <div className="space-y-6">
-                {Object.keys(tables).map((tableKey, index) => (
-                    <DocumentsTable
-                        key={tableKey}
-                        tableKey={tableKey}
-                        rows={tables[tableKey as keyof DocumentTables]}
-                        handleChange={handleChange}
-                        removeRow={removeRow}
-                        addRow={addRow}
-                        title={tableTitles[index] || `Table ${index + 1}`}
-                        errors={errors[tableKey]}
-                        viewMode={viewMode}
-                    />
-                ))}
+        <>
+            <div className="w-[100%] mx-auto p-6 bg-blue-500 shadow-lg rounded-lg">
+                <h2 className="text-xl font-extrabold text-white">
+                    Documents issued during the tax period
+                    {viewMode && <span className="ml-2 text-gray-500">(View Mode)</span>}
+                </h2>
             </div>
+            <div className="p-4 space-y-6">
+                <p className="mt-4 text-gray-700 text-md">
+                    Note: Kindly click on save button after any modification (add, edit, delete) to save the changes
+                </p>
 
-            <div className="flex justify-end gap-4 mt-6">
-                <button 
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                    onClick={() => setOpen(0)}
-                >
-                    {viewMode ? 'Close' : 'Cancel'}
-                </button>
-                {!viewMode && (
-                    <button 
-                        className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                        onClick={handleSubmit}
+                <div className="space-y-6">
+                    {Object.keys(tables).map((tableKey, index) => (
+                        <DocumentsTable
+                            key={tableKey}
+                            tableKey={tableKey}
+                            rows={tables[tableKey as keyof DocumentTables]}
+                            handleChange={handleChange}
+                            removeRow={removeRow}
+                            addRow={addRow}
+                            title={tableTitles[index] || `Table ${index + 1}`}
+                            errors={errors[tableKey]}
+                            viewMode={viewMode}
+                        />
+                    ))}
+                </div>
+
+                <div className="flex justify-end gap-4 mt-6">
+                    <button
+                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        onClick={() => setOpen(0)}
                     >
-                        Save Changes
+                        {viewMode ? 'Close' : 'Cancel'}
                     </button>
-                )}
+                    {!viewMode && (
+                        <button
+                            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                            onClick={handleSubmit}
+                        >
+                            Save Changes
+                        </button>
+                    )}
+                </div>
             </div>
-        </div>
+        </>
     );
 };
 

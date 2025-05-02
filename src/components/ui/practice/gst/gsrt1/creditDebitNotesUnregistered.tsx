@@ -93,8 +93,8 @@ const CreditUnregistered: React.FC<Props> = ({ setOpen, formData, updateFormStat
                 if (value.length > 16) {
                     return 'Max 16 characters allowed';
                 }
-                if (!/^[a-zA-Z0-9/-]+$/.test(value)) {
-                    return 'Only alphanumeric, hyphens and slashes allowed';
+                if (isNaN(Number(value))) {
+                    return 'Must be a valid number'
                 }
                 break;
             case 'noteDate':
@@ -192,15 +192,15 @@ const CreditUnregistered: React.FC<Props> = ({ setOpen, formData, updateFormStat
         }
     };
 
-    const formatCurrency = (value: string | number) => {
-        if (value === '' || value === null || value === undefined) return '';
-        const num = typeof value === 'string' ? parseFloat(value) : value;
-        return new Intl.NumberFormat('en-IN', {
-            style: 'decimal',
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        }).format(num);
-    };
+    // const formatCurrency = (value: string | number) => {
+    //     if (value === '' || value === null || value === undefined) return '';
+    //     const num = typeof value === 'string' ? parseFloat(value) : value;
+    //     return new Intl.NumberFormat('en-IN', {
+    //         style: 'decimal',
+    //         minimumFractionDigits: 2,
+    //         maximumFractionDigits: 2
+    //     }).format(num);
+    // };
 
     // const parseCurrency = (value: string) => {
     //     return value.replace(/,/g, '');
@@ -307,15 +307,15 @@ const CreditUnregistered: React.FC<Props> = ({ setOpen, formData, updateFormStat
                             <label className="block mb-2 text-sm font-medium text-gray-700">Note value (₹) *</label>
                             {viewMode ? (
                                 <div className="w-full p-3 bg-gray-100 border rounded-md">
-                                    {formState.noteValue ? `₹${formatCurrency(formState.noteValue)}` : '-'}
+                                    {formState.noteValue ? `₹${formState.noteValue}` : '-'}
                                 </div>
                             ) : (
                                 <div className="relative">
-                                    <span className="absolute text-gray-500 transform -translate-y-1/2 left-3 top-1/2">₹</span>
+                                    {/* <span className="absolute text-gray-500 transform -translate-y-1/2 left-3 top-1/2">₹</span> */}
                                     <input
                                         type="text"
                                         name="noteValue"
-                                        value={formatCurrency(formState.noteValue)}
+                                        value={formState.noteValue}
                                         onChange={(e) => {
                                             // const unformattedValue = parseCurrency(e.target.value);
                                             handleChange({
@@ -463,14 +463,14 @@ const CreditUnregistered: React.FC<Props> = ({ setOpen, formData, updateFormStat
                                         <td className="p-3 text-center border border-gray-300">
                                             {viewMode ? (
                                                 <div className="w-full p-2 text-center bg-gray-100 rounded-md">
-                                                    {formState.taxableValues[rate] ? formatCurrency(formState.taxableValues[rate]) : '0.00'}
+                                                    {formState.taxableValues[rate] ? formState.taxableValues[rate] : '0.00'}
                                                 </div>
                                             ) : (
                                                 <div className="relative">
                                                     <span className="absolute text-gray-500 transform -translate-y-1/2 left-3 top-1/2">₹</span>
                                                     <input
                                                         type="text"
-                                                        value={formatCurrency(formState.taxableValues[rate] || '')}
+                                                        value={formState.taxableValues[rate] || ''}
                                                         onChange={(e) => handleTaxableValueChange(rate, e.target.value)}
                                                         className="w-full p-2 pl-8 text-center border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                                                     />
@@ -483,14 +483,14 @@ const CreditUnregistered: React.FC<Props> = ({ setOpen, formData, updateFormStat
                                         <td className="p-3 text-center border border-gray-300">
                                             {viewMode ? (
                                                 <div className="w-full p-2 text-center bg-gray-100 rounded-md">
-                                                    {formState.cessValues[rate] ? formatCurrency(formState.cessValues[rate]) : '0.00'}
+                                                    {formState.cessValues[rate] ? formState.cessValues[rate] : '0.00'}
                                                 </div>
                                             ) : (
                                                 <div className="relative">
                                                     <span className="absolute text-gray-500 transform -translate-y-1/2 left-3 top-1/2">₹</span>
                                                     <input
                                                         type="text"
-                                                        value={formatCurrency(formState.cessValues[rate] || '')}
+                                                        value={formState.cessValues[rate] || ''}
                                                         onChange={(e) => handleCessValueChange(rate, e.target.value)}
                                                         className="w-full p-2 pl-8 text-center border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                                                     />

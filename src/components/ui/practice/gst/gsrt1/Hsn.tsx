@@ -67,7 +67,7 @@
 
 //     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 //         const { name, value } = e.target;
-        
+
 //         setFormState(prev => ({
 //             ...prev,
 //             [name]: value
@@ -87,7 +87,7 @@
 //             const rate = parseFloat(formState.rate);
 //             const taxableValue = parseFloat(formState.taxableValue);
 //             const taxAmount = (taxableValue * rate) / 100;
-            
+
 //             setFormState(prev => ({
 //                 ...prev,
 //                 integratedTax: taxAmount.toFixed(2),
@@ -406,9 +406,9 @@ const Hsn: FC<Props> = ({ setOpen, formData, updateFormState, viewMode = false }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (viewMode) return;
-        
+
         const { name, value } = e.target;
-        
+
         setFormState(prev => ({
             ...prev,
             [name]: value
@@ -420,7 +420,7 @@ const Hsn: FC<Props> = ({ setOpen, formData, updateFormState, viewMode = false }
             const rate = parseFloat(formState.rate);
             const taxableValue = parseFloat(formState.taxableValue);
             const taxAmount = (taxableValue * rate) / 100;
-            
+
             setFormState(prev => ({
                 ...prev,
                 integratedTax: taxAmount.toFixed(2),
@@ -463,267 +463,288 @@ const Hsn: FC<Props> = ({ setOpen, formData, updateFormState, viewMode = false }
             setOpen(0);
             return;
         }
-        
+
         if (validateForm()) {
             updateFormState('hsn', formState);
             setOpen(0);
         }
     };
 
-    const formatCurrency = (value: string) => {
-        if (!value) return '';
-        const num = parseFloat(value);
-        return isNaN(num) ? '' : num.toLocaleString('en-IN', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        });
-    };
+    // const formatCurrency = (value: string) => {
+    //     if (!value) return '';
+    //     const num = parseFloat(value);
+    //     return isNaN(num) ? '' : num.toLocaleString('en-IN', {
+    //         minimumFractionDigits: 2,
+    //         maximumFractionDigits: 2
+    //     });
+    // };
 
     const parseCurrency = (value: string) => {
         return value.replace(/,/g, '');
     };
 
     return (
-        <div className="p-4">
-            <h3 className="text-lg font-semibold text-gray-800">HSN - wise summary of outward supplies</h3>
-            <div className="my-2 border-t border-gray-200" />
-            <ul className="mt-4 space-y-1 text-sm text-gray-600">
-                <li>Note:</li>
-                <li className="ml-4">1. In case there are no suggestions for any HSN, then after typing the required HSN; click on description/UQC to enable other fields.</li>
-                <li className="ml-4">2. Please select HSN from the search results dropdown only. In case HSN entered is not available, you can enter HSN manually</li>
-                <li className="ml-4">3. Kindly click on save button after any modification( add, edit) to save the changes</li>
-            </ul>
-
-            <div className="grid grid-cols-1 gap-4 mt-6 md:grid-cols-3">
-                <div>
-                    <label className="block mb-1 text-sm font-medium text-gray-700">HSN *</label>
-                    <input 
-                        type="text" 
-                        name="hsn"
-                        value={formState.hsn}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        className={viewMode ? disabledInputClass : `${inputClass} ${errors.hsn ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
-                        disabled={viewMode}
-                        readOnly={viewMode}
-                    />
-                    {!viewMode && errors.hsn && touched.hsn && (
-                        <p className="mt-1 text-xs text-red-600">{errors.hsn}</p>
-                    )}
-                </div>
-                <div>
-                    <label className="block mb-1 text-sm font-medium text-gray-700">Description</label>
-                    <input 
-                        type="text" 
-                        name="description"
-                        value={formState.description}
-                        onChange={handleChange}
-                        className={viewMode ? disabledInputClass : inputClass}
-                        disabled={viewMode}
-                        readOnly={viewMode}
-                    />
-                </div>
-                <div>
-                    <label className="block mb-1 text-sm font-medium text-gray-700">Product name as in Master *</label>
-                    <input 
-                        type="text" 
-                        name="productName"
-                        value={formState.productName}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        className={viewMode ? disabledInputClass : `${inputClass} ${errors.productName ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
-                        disabled={viewMode}
-                        readOnly={viewMode}
-                    />
-                    {!viewMode && errors.productName && touched.productName && (
-                        <p className="mt-1 text-xs text-red-600">{errors.productName}</p>
-                    )}
-                </div>
+        <>
+            <div className="w-[100%] mx-auto p-6 bg-blue-500 shadow-lg rounded-lg">
+                <h2 className="text-xl font-extrabold text-white">
+                    HSN - wise summary of outward supplies
+                    {viewMode && <span className="ml-2 text-gray-500">(View Mode)</span>}
+                </h2>
             </div>
+            <div className="p-4">
+                <div className="my-2 border-t border-gray-200" />
+                <ul className="mt-4 space-y-1 text-gray-700 text-md">
+                    <li>Note:</li>
+                    <li className="ml-4">1. In case there are no suggestions for any HSN, then after typing the required HSN; click on description/UQC to enable other fields.</li>
+                    <li className="ml-4">2. Please select HSN from the search results dropdown only. In case HSN entered is not available, you can enter HSN manually</li>
+                    <li className="ml-4">3. Kindly click on save button after any modification( add, edit) to save the changes</li>
+                </ul>
 
-            <div className="grid grid-cols-1 gap-4 mt-4 md:grid-cols-3">
-                <div>
-                    <label className="block mb-1 text-sm font-medium text-gray-700">UQC *</label>
-                    <input 
-                        type="text" 
-                        name="uqc"
-                        value={formState.uqc}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        className={viewMode ? disabledInputClass : `${inputClass} ${errors.uqc ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
-                        disabled={viewMode}
-                        readOnly={viewMode}
-                    />
-                    {!viewMode && errors.uqc && touched.uqc && (
-                        <p className="mt-1 text-xs text-red-600">{errors.uqc}</p>
-                    )}
+                <div className="grid grid-cols-1 gap-4 mt-6 md:grid-cols-3">
+                    <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">HSN *</label>
+                        <input
+                            type="text"
+                            name="hsn"
+                            value={formState.hsn}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.hsn ? 'border-red-500' : 'border-gray-300'
+                                } ${viewMode ? 'bg-gray-100' : ''}`}
+                            disabled={viewMode}
+                            readOnly={viewMode}
+                        />
+                        {errors.hsn && (
+                            <p className="mt-1 text-sm text-red-500">{errors.hsn}</p>
+                        )}
+                    </div>
+                    <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">Description</label>
+                        <input
+                            type="text"
+                            name="description"
+                            value={formState.description}
+                            onChange={handleChange}
+                            className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${viewMode ? 'bg-gray-100' : 'border-gray-300'
+                                }`}
+                            disabled={viewMode}
+                            readOnly={viewMode}
+                        />
+                    </div>
+                    <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">Product name as in Master *</label>
+                        <input
+                            type="text"
+                            name="productName"
+                            value={formState.productName}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.productName ? 'border-red-500' : 'border-gray-300'
+                                } ${viewMode ? 'bg-gray-100' : ''}`}
+                            disabled={viewMode}
+                            readOnly={viewMode}
+                        />
+                        {errors.productName && (
+                            <p className="mt-1 text-sm text-red-500">{errors.productName}</p>
+                        )}
+                    </div>
                 </div>
-                <div>
-                    <label className="block mb-1 text-sm font-medium text-gray-700">Total Quantity *</label>
-                    <input 
-                        type="text" 
-                        name="quantity"
-                        value={formState.quantity}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        className={viewMode ? disabledInputClass : `${inputClass} ${errors.quantity ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
-                        disabled={viewMode}
-                        readOnly={viewMode}
-                    />
-                    {!viewMode && errors.quantity && touched.quantity && (
-                        <p className="mt-1 text-xs text-red-600">{errors.quantity}</p>
-                    )}
+
+                <div className="grid grid-cols-1 gap-4 mt-4 md:grid-cols-3">
+                    <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">UQC *</label>
+                        <input
+                            type="text"
+                            name="uqc"
+                            value={formState.uqc}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.uqc ? 'border-red-500' : 'border-gray-300'
+                                } ${viewMode ? 'bg-gray-100' : ''}`}
+                            disabled={viewMode}
+                            readOnly={viewMode}
+                        />
+                        {errors.uqc && (
+                            <p className="mt-1 text-sm text-red-500">{errors.uqc}</p>
+                        )}
+                    </div>
+                    <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">Total Quantity *</label>
+                        <input
+                            type="text"
+                            name="quantity"
+                            value={formState.quantity}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.quantity ? 'border-red-500' : 'border-gray-300'
+                                } ${viewMode ? 'bg-gray-100' : ''}`}
+                            disabled={viewMode}
+                            readOnly={viewMode}
+                        />
+                        {errors.quantity && (
+                            <p className="mt-1 text-sm text-red-500">{errors.quantity}</p>
+                        )}
+                    </div>
+                    <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">Total taxable value (₹) *</label>
+                        <div className="relative">
+                            <span className="absolute text-gray-500 transform -translate-y-1/2 left-3 top-1/2">₹</span>
+                            <input
+                                type="text"
+                                name="taxableValue"
+                                value={formState.taxableValue}
+                                onChange={(e) => {
+                                    const unformattedValue = parseCurrency(e.target.value);
+                                    handleChange({
+                                        ...e,
+                                        target: {
+                                            ...e.target,
+                                            name: 'taxableValue',
+                                            value: unformattedValue
+                                        }
+                                    });
+                                }}
+                                onBlur={(e) => {
+                                    handleBlur(e);
+                                    calculateTaxes();
+                                }}
+                                className={`w-full p-3 pl-8 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.taxableValue ? 'border-red-500' : 'border-gray-300'
+                                    } ${viewMode ? 'bg-gray-100' : ''}`}
+                                disabled={viewMode}
+                                readOnly={viewMode}
+                            />
+                        </div>
+                        {errors.taxableValue && (
+                            <p className="mt-1 text-sm text-red-500">{errors.taxableValue}</p>
+                        )}
+                    </div>
                 </div>
-                <div>
-                    <label className="block mb-1 text-sm font-medium text-gray-700">Total taxable value (₹) *</label>
-                    <div className="relative">
-                        <span className="absolute text-gray-500 transform -translate-y-1/2 left-3 top-1/2">₹</span>
-                        <input 
-                            type="text" 
-                            name="taxableValue"
-                            value={formatCurrency(formState.taxableValue)}
-                            onChange={(e) => {
-                                const unformattedValue = parseCurrency(e.target.value);
-                                handleChange({
-                                    ...e,
-                                    target: {
-                                        ...e.target,
-                                        name: 'taxableValue',
-                                        value: unformattedValue
-                                    }
-                                });
-                            }}
+
+                <div className="grid grid-cols-1 gap-4 mt-4 md:grid-cols-3">
+                    <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">Rate (%) *</label>
+                        <input
+                            type="text"
+                            name="rate"
+                            value={formState.rate}
+                            onChange={handleChange}
                             onBlur={(e) => {
                                 handleBlur(e);
                                 calculateTaxes();
                             }}
-                            className={`${viewMode ? disabledInputClass : inputClass} pl-8 ${errors.taxableValue ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
+                            className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.rate ? 'border-red-500' : 'border-gray-300'
+                                } ${viewMode ? 'bg-gray-100' : ''}`}
                             disabled={viewMode}
                             readOnly={viewMode}
                         />
+                        {errors.rate && (
+                            <p className="mt-1 text-sm text-red-500">{errors.rate}</p>
+                        )}
                     </div>
-                    {!viewMode && errors.taxableValue && touched.taxableValue && (
-                        <p className="mt-1 text-xs text-red-600">{errors.taxableValue}</p>
-                    )}
+                    <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">Integrated tax (₹) *</label>
+                        <div className="relative">
+                            <span className="absolute text-gray-500 transform -translate-y-1/2 left-3 top-1/2">₹</span>
+                            <input
+                                type="text"
+                                name="integratedTax"
+                                value={formState.integratedTax}
+                                className={`w-full p-3 pl-8 bg-gray-100 border border-gray-300 rounded-md ${errors.integratedTax ? 'border-red-500' : ''
+                                    }`}
+                                readOnly
+                            />
+                        </div>
+                        {errors.integratedTax && (
+                            <p className="mt-1 text-sm text-red-500">{errors.integratedTax}</p>
+                        )}
+                    </div>
+                    <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">Central tax (₹) *</label>
+                        <div className="relative">
+                            <span className="absolute text-gray-500 transform -translate-y-1/2 left-3 top-1/2">₹</span>
+                            <input
+                                type="text"
+                                name="centralTax"
+                                value={formState.centralTax}
+                                className={`w-full p-3 pl-8 bg-gray-100 border border-gray-300 rounded-md ${errors.centralTax ? 'border-red-500' : ''
+                                    }`}
+                                readOnly
+                            />
+                        </div>
+                        {errors.centralTax && (
+                            <p className="mt-1 text-sm text-red-500">{errors.centralTax}</p>
+                        )}
+                    </div>
                 </div>
-            </div>
 
-            <div className="grid grid-cols-1 gap-4 mt-4 md:grid-cols-3">
-                <div>
-                    <label className="block mb-1 text-sm font-medium text-gray-700">Rate (%) *</label>
-                    <input 
-                        type="text" 
-                        name="rate"
-                        value={formState.rate}
-                        onChange={handleChange}
-                        onBlur={(e) => {
-                            handleBlur(e);
-                            calculateTaxes();
-                        }}
-                        className={viewMode ? disabledInputClass : `${inputClass} ${errors.rate ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
-                        disabled={viewMode}
-                        readOnly={viewMode}
-                    />
-                    {!viewMode && errors.rate && touched.rate && (
-                        <p className="mt-1 text-xs text-red-600">{errors.rate}</p>
-                    )}
-                </div>
-                <div>
-                    <label className="block mb-1 text-sm font-medium text-gray-700">Integrated tax (₹) *</label>
-                    <div className="relative">
-                        <span className="absolute text-gray-500 transform -translate-y-1/2 left-3 top-1/2">₹</span>
-                        <input 
-                            type="text" 
-                            name="integratedTax"
-                            value={formatCurrency(formState.integratedTax)}
-                            className={`${disabledInputClass} pl-8 ${errors.integratedTax ? 'border-red-300' : ''}`}
-                            readOnly
-                        />
+                <div className="grid grid-cols-1 gap-4 mt-4 md:grid-cols-3">
+                    <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">State/UT tax (₹) *</label>
+                        <div className="relative">
+                            <span className="absolute text-gray-500 transform -translate-y-1/2 left-3 top-1/2">₹</span>
+                            <input
+                                type="text"
+                                name="stateTax"
+                                value={formState.stateTax}
+                                className={`w-full p-3 pl-8 bg-gray-100 border border-gray-300 rounded-md ${errors.stateTax ? 'border-red-500' : ''
+                                    }`}
+                                readOnly
+                            />
+                        </div>
+                        {errors.stateTax && (
+                            <p className="mt-1 text-sm text-red-500">{errors.stateTax}</p>
+                        )}
                     </div>
-                    {errors.integratedTax && (
-                        <p className="mt-1 text-xs text-red-600">{errors.integratedTax}</p>
-                    )}
-                </div>
-                <div>
-                    <label className="block mb-1 text-sm font-medium text-gray-700">Central tax (₹) *</label>
-                    <div className="relative">
-                        <span className="absolute text-gray-500 transform -translate-y-1/2 left-3 top-1/2">₹</span>
-                        <input 
-                            type="text" 
-                            name="centralTax"
-                            value={formatCurrency(formState.centralTax)}
-                            className={`${disabledInputClass} pl-8 ${errors.centralTax ? 'border-red-300' : ''}`}
-                            readOnly
-                        />
+                    <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">Cess (₹)</label>
+                        <div className="relative">
+                            <span className="absolute text-gray-500 transform -translate-y-1/2 left-3 top-1/2">₹</span>
+                            <input
+                                type="text"
+                                name="cess"
+                                value={formState.cess}
+                                onChange={(e) => {
+                                    const unformattedValue = parseCurrency(e.target.value);
+                                    handleChange({
+                                        ...e,
+                                        target: {
+                                            ...e.target,
+                                            name: 'cess',
+                                            value: unformattedValue
+                                        }
+                                    });
+                                }}
+                                className={`w-full p-3 pl-8 border rounded-md focus:ring-2 focus:ring-blue-500 ${viewMode ? 'bg-gray-100' : 'border-gray-300'
+                                    }`}
+                                disabled={viewMode}
+                                readOnly={viewMode}
+                            />
+                        </div>
                     </div>
-                    {errors.centralTax && (
-                        <p className="mt-1 text-xs text-red-600">{errors.centralTax}</p>
-                    )}
                 </div>
-            </div>
 
-            <div className="grid grid-cols-1 gap-4 mt-4 md:grid-cols-3">
-                <div>
-                    <label className="block mb-1 text-sm font-medium text-gray-700">State/UT tax (₹) *</label>
-                    <div className="relative">
-                        <span className="absolute text-gray-500 transform -translate-y-1/2 left-3 top-1/2">₹</span>
-                        <input 
-                            type="text" 
-                            name="stateTax"
-                            value={formatCurrency(formState.stateTax)}
-                            className={`${disabledInputClass} pl-8 ${errors.stateTax ? 'border-red-300' : ''}`}
-                            readOnly
-                        />
-                    </div>
-                    {errors.stateTax && (
-                        <p className="mt-1 text-xs text-red-600">{errors.stateTax}</p>
-                    )}
-                </div>
-                <div>
-                    <label className="block mb-1 text-sm font-medium text-gray-700">Cess (₹)</label>
-                    <div className="relative">
-                        <span className="absolute text-gray-500 transform -translate-y-1/2 left-3 top-1/2">₹</span>
-                        <input 
-                            type="text" 
-                            name="cess"
-                            value={formatCurrency(formState.cess)}
-                            onChange={(e) => {
-                                const unformattedValue = parseCurrency(e.target.value);
-                                handleChange({
-                                    ...e,
-                                    target: {
-                                        ...e.target,
-                                        name: 'cess',
-                                        value: unformattedValue
-                                    }
-                                });
-                            }}
-                            className={`${viewMode ? disabledInputClass : inputClass} pl-8`}
-                            disabled={viewMode}
-                            readOnly={viewMode}
-                        />
-                    </div>
-                </div>
-            </div>
-
-            <div className="flex justify-end gap-4 pb-4 mt-6">
-                <button 
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                    onClick={() => setOpen(0)}
-                >
-                    {viewMode ? 'Close' : 'Cancel'}
-                </button>
-                {!viewMode && (
-                    <button 
-                        className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-                        onClick={handleSubmit}
-                        disabled={Object.values(errors).some(error => error !== '')}
+                <div className="flex justify-end gap-4 mt-6">
+                    <button
+                        type="button"
+                        onClick={() => setOpen(0)}
+                        className="px-6 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
                     >
-                        Save Changes
+                        {viewMode ? 'Close' : 'Back'}
                     </button>
-                )}
+                    {!viewMode && (
+                        <button
+                            type="button"
+                            onClick={handleSubmit}
+                            className={`px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 ${Object.values(errors).some(error => error !== '') ? 'opacity-50 cursor-not-allowed' : ''
+                                }`}
+                            disabled={Object.values(errors).some(error => error !== '')}
+                        >
+                            Save Changes
+                        </button>
+                    )}
+                </div>
             </div>
-        </div>
+        </>
     );
 };
 
