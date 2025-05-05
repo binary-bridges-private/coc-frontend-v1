@@ -1,3 +1,4 @@
+import React from "react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -56,20 +57,20 @@ const ProductPage = () => {
     }, [id]);
 
     if (loading) {
-        return <div className="text-center mt-8">Loading...</div>;
+        return <div className="mt-8 text-center">Loading...</div>;
     }
 
     if (!product) {
-        return <div className="text-center mt-8">Product not found</div>;
+        return <div className="mt-8 text-center">Product not found</div>;
     }
 
     return (
-        <div className="max-w-4xl mx-auto p-6">
-            <h1 className="text-3xl font-bold mb-4">{product.Title}</h1>
+        <div className="max-w-4xl p-6 mx-auto">
+            <h1 className="mb-4 text-3xl font-bold">{product.Title}</h1>
             <p className="text-gray-700">{product.Description}</p>
             <p className="mt-4">
                 <span className="text-xl font-semibold">₹{product.Price}</span>{" "}
-                <span className="text-sm line-through text-gray-500">
+                <span className="text-sm text-gray-500 line-through">
                     ₹{product.Price + product.TotalTaxAmount}
                 </span>{" "}
                 <span className="text-green-600">
@@ -79,23 +80,23 @@ const ProductPage = () => {
             <p className="mt-2 text-gray-600">Rating: {product.Rating} ⭐</p>
 
             <div className="mt-6">
-                <h2 className="text-2xl font-bold mb-2">Variants</h2>
+                <h2 className="mb-2 text-2xl font-bold">Variants</h2>
                 {product.Variants.map((variant) => (
-                    <div key={variant.ID} className="mb-4 border p-4 rounded-lg">
+                    <div key={variant.ID} className="p-4 mb-4 border rounded-lg">
                         <h3 className="text-lg font-semibold">
                             Exam Date: {variant.ExamDate}
                         </h3>
                         {variant.SecondaryVariants.map((secondaryVariant) => (
                             <div
                                 key={secondaryVariant.ID}
-                                className="flex justify-between items-center mt-2"
+                                className="flex items-center justify-between mt-2"
                             >
                                 <span>{secondaryVariant.Name}</span>
                                 <span className="font-semibold">
                                     ₹{secondaryVariant.SellingPrice}
                                 </span>
                                 <button
-                                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                                    className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600"
                                     onClick={() =>
                                         alert(
                                             `Added "${secondaryVariant.Name}" to cart!`

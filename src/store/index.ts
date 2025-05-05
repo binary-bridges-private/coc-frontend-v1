@@ -3,6 +3,7 @@ import popupReducer, { openLoginPopup } from './slices/PopupSlice.ts';
 import authReducer, { logout } from './slices/AuthSlice.ts';
 import gstAuthReducer from './slices/gstAuthSlice.ts';
 import gstr1Reducer from "./slices/gstr1Slice.ts";
+import gstr3bReducer from "./slices/gstr3bSlice.ts";
 import gstRegistrationReducer from "./slices/gstSlice.ts";
 import bannerReducer from "./slices/BannerSlice.ts";
 
@@ -14,6 +15,7 @@ export const store = configureStore({
     auth: authReducer,
     gstAuth: gstAuthReducer,
     gstr1: gstr1Reducer,
+    gstr3b: gstr3bReducer,
     gstRegistration: gstRegistrationReducer,
     banner: bannerReducer
   },

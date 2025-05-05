@@ -48,13 +48,13 @@ function App() {
           <Routes>
             <Route path="/" element={<Navigate to="/home" replace />} />
             <Route path="/home" element={<LandingPage />} />
-            <Route path="/practice" element={<ProtectedRoutes children={<Practice />} />} />
+            <Route path="/practice" element={<Practice />} />
 
             {/* GST Routes */}
 
-            <Route path="/practice/gst" element={<ProtectedRoutes children={< Gst />} />} />
-            <Route path="/practice/gst/login" element={<ProtectedRoutes children={<LoginGst />} />} />
-            <Route path="/practice/gst/registration" element={<ProtectedRoutes children={<Registration />} />} />
+            <Route path="/practice/gst" element={<ProtectedRoutes isFree={true} children={< Gst />} />} />
+            <Route path="/practice/gst/login" element={<ProtectedRoutes isFree={false} children={<LoginGst />} />} />
+            <Route path="/practice/gst/registration" element={<ProtectedRoutes isFree={true} children={<Registration />} />} />
             <Route path="/practice/gst/dashboard" element={<GstProtectedRoutes children={<GstLogin />} />} />
             <Route path="/practice/gst/gstr-1" element={<GstProtectedRoutes children={< Gstr1 />} />} />
             <Route path="/practice/gst/gstr-2a" element={<GstProtectedRoutes children={<Gstr2a />} />} />
@@ -68,34 +68,34 @@ function App() {
             <Route path="/practice/gst/e-invoice" element={<GstProtectedRoutes children={<ComingSoon />} />} />
 
             {/* ITR Routes */}
-            <Route path="/practice/itr" element={<ProtectedRoutes children={<Itr />} />} />
-            <Route path="/practice/itr/login" element={<ProtectedRoutes children={<ComingSoon />} />} />
-            <Route path="/practice/itr/itr-1" element={<ProtectedRoutes children={<ComingSoon />} />} />
-            <Route path="/practice/itr/itr-2" element={<ProtectedRoutes children={<ComingSoon />} />} />
-            <Route path="/practice/itr/itr-3" element={<ProtectedRoutes children={<ComingSoon />} />} />
-            <Route path="/practice/itr/itr-4" element={<ProtectedRoutes children={<ComingSoon />} />} />
-            <Route path="/practice/itr/itr-5" element={<ProtectedRoutes children={<ComingSoon />} />} />
-            <Route path="/practice/itr/itr-6" element={<ProtectedRoutes children={<ComingSoon />} />} />
-            <Route path="/practice/itr/itr-7" element={<ProtectedRoutes children={<ComingSoon />} />} />
-            <Route path="/practice/itr/registration" element={<ProtectedRoutes children={<ComingSoon />} />} />
+            <Route path="/practice/itr" element={<ProtectedRoutes isFree={false} children={<Itr />} />} />
+            <Route path="/practice/itr/login" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
+            <Route path="/practice/itr/itr-1" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
+            <Route path="/practice/itr/itr-2" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
+            <Route path="/practice/itr/itr-3" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
+            <Route path="/practice/itr/itr-4" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
+            <Route path="/practice/itr/itr-5" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
+            <Route path="/practice/itr/itr-6" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
+            <Route path="/practice/itr/itr-7" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
+            <Route path="/practice/itr/registration" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
 
             {/* TDS Routes */}
-            <Route path="/practice/tds" element={<ProtectedRoutes children={<Tds />} />} />
-            <Route path="/practice/tds/registration" element={<ProtectedRoutes children={<ComingSoon />} />} />
-            <Route path="/practice/tds/pay-tds" element={<ProtectedRoutes children={<ComingSoon />} />} />
-            <Route path="/practice/tds/tds-return" element={<ProtectedRoutes children={<ComingSoon />} />} />
+            <Route path="/practice/tds" element={<ProtectedRoutes isFree={false} children={<Tds />} />} />
+            <Route path="/practice/tds/registration" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
+            <Route path="/practice/tds/pay-tds" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
+            <Route path="/practice/tds/tds-return" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
 
             {/* PF/ESI Routes */}
-            <Route path="/practice/pf-esi" element={<ProtectedRoutes children={<PfEsi />} />} />
-            <Route path="/practice/pf-esi/pf-return" element={<ProtectedRoutes children={<ComingSoon />} />} />
-            <Route path="/practice/pf-esi/esi-return" element={<ProtectedRoutes children={<ComingSoon />} />} />
-            <Route path="/practice/pf-esi/registration" element={<ProtectedRoutes children={<ComingSoon />} />} />
+            <Route path="/practice/pf-esi" element={<ProtectedRoutes isFree={false} children={<PfEsi />} />} />
+            <Route path="/practice/pf-esi/pf-return" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
+            <Route path="/practice/pf-esi/esi-return" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
+            <Route path="/practice/pf-esi/registration" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
 
 
             {/* ROC Filing Routes */}
-            <Route path="/practice/roc-filing" element={<ProtectedRoutes children={<RocFiling />} />} />
-            <Route path="/practice/roc-filing/incorporation" element={<ProtectedRoutes children={<ComingSoon />} />} />
-            <Route path="/practice/roc-filing/roc-filing" element={<ProtectedRoutes children={<ComingSoon />} />} />
+            <Route path="/practice/roc-filing" element={<ProtectedRoutes isFree={false} children={<RocFiling />} />} />
+            <Route path="/practice/roc-filing/incorporation" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
+            <Route path="/practice/roc-filing/roc-filing" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
 
           </Routes>
         </main>

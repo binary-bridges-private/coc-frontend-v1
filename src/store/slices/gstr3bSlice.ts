@@ -1,10 +1,10 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { apiRestricted } from '../api';
+import { apiRestricted } from '../api.ts';
 import { toast } from 'react-toastify';
 
 // ==================== INTERFACES ====================
 
-interface TaxDetails {
+export interface TaxDetails {
   taxableValue?: string;
   integratedTax?: string;
   centralTax?: string;
@@ -12,7 +12,7 @@ interface TaxDetails {
   cess?: string;
 }
 
-interface OutwardReverseCharge {
+export interface OutwardReverseCharge {
   ots?: TaxDetails;
   otsZeroRated?: TaxDetails;
   oss?: TaxDetails;
@@ -20,24 +20,24 @@ interface OutwardReverseCharge {
   os?: TaxDetails;
 }
 
-interface EcommerceSupplies {
+export interface EcommerceSupplies {
   first?: TaxDetails;
   second?: TaxDetails;
 }
 
-interface InterstateSupplyRow {
+export interface InterstateSupplyRow {
   placeOfSupply?: string;
   taxableValue?: string;
   integratedTax?: string;
 }
 
-interface InterstateSupplies {
+export interface InterstateSupplies {
   nregisteredRows?: InterstateSupplyRow[];
   compositionRows?: InterstateSupplyRow[];
   uinRows?: InterstateSupplyRow[];
 }
 
-interface EligibleItc {
+export interface EligibleItc {
   importOfGoods?: TaxDetails;
   importOfServices?: TaxDetails;
   inwardSuppliesReverseCharge?: TaxDetails;
@@ -50,7 +50,7 @@ interface EligibleItc {
   ineligibleItc?: TaxDetails;
 }
 
-interface InwardSupplies {
+export interface InwardSupplies {
   supplierUnderScheme?: {
     interState?: string;
     intraState?: string;
@@ -61,20 +61,20 @@ interface InwardSupplies {
   };
 }
 
-interface TaxInterest {
+export interface TaxInterest {
   integratedTax?: string;
   centralTax?: string;
   stateTax?: string;
   cess?: string;
 }
 
-interface InterestPreviousTaxPeriod {
+export interface InterestPreviousTaxPeriod {
   declare?: boolean;
   interest?: TaxInterest;
   lateFees?: TaxInterest;
 }
 
-interface PaymentLedger {
+export interface PaymentLedger {
   igst?: string;
   cgst?: string;
   sgst?: string;
@@ -82,12 +82,12 @@ interface PaymentLedger {
   total?: string;
 }
 
-interface PaymentCategory {
+export interface PaymentCategory {
   cashLedger?: PaymentLedger;
   creditLedger?: PaymentLedger;
 }
 
-interface PaymentOfTax {
+export interface PaymentOfTax {
   Tax?: PaymentCategory;
   Interest?: PaymentCategory;
   LateFees?: PaymentCategory;
@@ -99,6 +99,8 @@ export interface Gstr3b {
   gstin: string;
   financialYear: string;
   month: string;
+  monthName: string;
+  quarter: string;
   outwardAndReverseChargeInward?: OutwardReverseCharge;
   suppliesThroughEcommerceOperators?: EcommerceSupplies;
   interStateSupplies?: InterstateSupplies;
@@ -112,17 +114,22 @@ export interface Gstr3b {
   updatedAt?: Date;
 }
 
+export interface GSTR3BPeriod {
+  financialYear: string;
+  quarter: string;
+  month: string;
+  monthName: string;
+}
+
 interface Gstr3bState {
   currentReturn: Gstr3b | null;
   returns: Gstr3b[];
-  suggestedPeriod: {
-    financialYear: string;
-    month: string;
-  } | null;
+  suggestedPeriod: GSTR3BPeriod | null;
   loading: boolean;
   error: string | null;
   success: boolean;
 }
+
 
 // ==================== INITIAL STATE ====================
 
@@ -145,7 +152,7 @@ export const saveGstr3b = createAsyncThunk(
       const method = returnData.id ? 'put' : 'post';
       const response = await apiRestricted[method](url, returnData);
       toast.success('GSTR-3B saved successfully');
-      return response.data;
+      return response.data as Gstr3b;
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Failed to save GSTR-3B');
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -155,13 +162,17 @@ export const saveGstr3b = createAsyncThunk(
 
 export const getGstr3b = createAsyncThunk(
   'gstr3b/getOne',
-  async ({ gstin, financialYear, month }: { gstin: string; financialYear: string; month: string }, 
-  { rejectWithValue }) => {
+  async ({ gstin, financialYear, month }: { gstin: string; financialYear: string; month: string },
+    { rejectWithValue }) => {
     try {
       const response = await apiRestricted.get('/gst/gstr3b', {
         params: { gstin, financialYear, month }
       });
-      return response.data;
+      // return response.data.data.entry as Gstr3b;
+      return {
+        ...response.data.data.entry,
+        interStateSupplies: response.data.data.entry.interStateSupplies // Map the property
+      } as Gstr3b;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || error.message);
     }
@@ -170,12 +181,10 @@ export const getGstr3b = createAsyncThunk(
 
 export const getGstr3bList = createAsyncThunk(
   'gstr3b/getList',
-  async (gstin: string, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await apiRestricted.get('/gst/gstr3b/all', {
-        params: { gstin }
-      });
-      return response.data;
+      const response = await apiRestricted.get('/gst/gstr3b/all');
+      return response.data.data.gstr3bEntries as Gstr3b[];
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || error.message);
     }
@@ -184,12 +193,10 @@ export const getGstr3bList = createAsyncThunk(
 
 export const getSuggestedPeriod = createAsyncThunk(
   'gstr3b/suggestedPeriod',
-  async (gstin: string, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await apiRestricted.get('/gst/gstr3b/suggested-period', {
-        params: { gstin }
-      });
-      return response.data;
+      const response = await apiRestricted.get('/gst/gstr3b/suggested-period');
+      return response.data.data.suggestedPeriod as GSTR3BPeriod | null;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || error.message);
     }
@@ -206,9 +213,12 @@ const gstr3bSlice = createSlice({
       state.currentReturn = action.payload;
     },
     resetGstr3bState(state) {
-      Object.assign(state, initialState);
+      // Object.assign(state, initialState);
+      state.currentReturn = initialState.currentReturn;
+      state.loading = initialState.loading;
+      state.error = initialState.error;
+      state.success = initialState.success;
     },
-    // Section-specific reducers
     updateOutwardSupplies(state, action: PayloadAction<Partial<OutwardReverseCharge>>) {
       if (state.currentReturn) {
         state.currentReturn.outwardAndReverseChargeInward = {
@@ -278,7 +288,7 @@ const gstr3bSlice = createSlice({
         state.loading = false;
         state.success = true;
         state.currentReturn = action.payload;
-        
+
         // Update or add to returns list
         const index = state.returns.findIndex(r => r.id === action.payload.id);
         if (index >= 0) {
@@ -291,7 +301,7 @@ const gstr3bSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      
+
       // Get single return
       .addCase(getGstr3b.pending, (state) => {
         state.loading = true;
@@ -305,7 +315,7 @@ const gstr3bSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      
+
       // Get return list
       .addCase(getGstr3bList.pending, (state) => {
         state.loading = true;
@@ -319,7 +329,7 @@ const gstr3bSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      
+
       // Get suggested period
       .addCase(getSuggestedPeriod.pending, (state) => {
         state.loading = true;
@@ -327,6 +337,7 @@ const gstr3bSlice = createSlice({
       })
       .addCase(getSuggestedPeriod.fulfilled, (state, action) => {
         state.loading = false;
+        console.log('Setting suggested period:', action.payload);
         state.suggestedPeriod = action.payload;
       })
       .addCase(getSuggestedPeriod.rejected, (state, action) => {
@@ -338,8 +349,8 @@ const gstr3bSlice = createSlice({
 
 // ==================== EXPORTS ====================
 
-export const { 
-  setCurrentReturn, 
+export const {
+  setCurrentReturn,
   resetGstr3bState,
   updateOutwardSupplies,
   updateEcommerceSupplies,

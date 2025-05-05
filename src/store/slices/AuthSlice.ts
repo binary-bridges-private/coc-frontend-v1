@@ -11,6 +11,7 @@ interface AuthState {
     email: string | null;
     firstName: string | null;
     lastName: string | null;
+    enrollmentType: string | null;
   } | null;
 }
 
@@ -51,6 +52,7 @@ interface UserData {
   email: string;
   firstName: string;
   lastName: string;
+  enrollmentType: string;
 }
 
 export const loginUser = createAsyncThunk(
@@ -59,11 +61,13 @@ export const loginUser = createAsyncThunk(
     try {
       const response = await api.post('/auth/login', credentials);
       toast.success('Login successful!');
+      console.log("login successful :", response.data);
       return {
         userData: {
-          email: response.data?.data?.email,
-          firstName: response.data?.data?.firstName,
-          lastName: response.data?.data?.lastName,
+          email: response.data?.data?.user?.emailAddress,
+          firstName: response.data?.data?.user?.firstName,
+          lastName: response.data?.data?.user?.lastName,
+          enrollmentType: response.data?.data?.user?.enrollmentType,
         }
       };
     } catch (error: any) {
@@ -82,10 +86,10 @@ export const signupUser = createAsyncThunk(
       toast.success('Signup successful! Welcome!');
       return {
         userData: {
-          email: response.data?.data?.email,
-          firstName: response.data?.data?.firstName,
-          lastName: response.data?.data?.lastName,
-          enrollmentNumber: response.data?.data?.enrollmentNumber
+          email: response.data?.data?.user?.emailAddress,
+          firstName: response.data?.data?.user?.firstName,
+          lastName: response.data?.data?.user?.lastName,
+          enrollmentType: response.data?.data?.user?.enrollmentType,
         }
       };
     } catch (error: any) {
@@ -134,6 +138,7 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action: PayloadAction<{ userData: UserData }>) => {
         state.status = 'succeeded';
         state.isAuthenticated = true;
+        console.log("from redux :", action.payload.userData);
         state.userData = action.payload.userData;
         persistAuthState(state);
       })

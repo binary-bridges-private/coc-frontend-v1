@@ -80,12 +80,6 @@ const Gstr1 = () => {
         setViewMode(true);
         setFormStates({});
         setOpen(0);
-
-        // Auto-open first section with data
-        // const sectionsWithData = gstOptions.filter(option => entry[option.slug.toLowerCase()]);
-        // if (sectionsWithData.length > 0) {
-        //     setOpen(gstOptions.findIndex(opt => opt.slug === sectionsWithData[0].slug) + 1);
-        // }
     };
 
     const getFormData = (slug: string) => {
@@ -256,80 +250,6 @@ const Gstr1 = () => {
                         </button>
                     </div>
                 </div>
-
-                // <div className="w-full max-w-4xl">
-                //     <h1 className="mb-6 text-2xl font-bold text-center">Your GSTR1 Filings</h1>
-
-                //     <div className="p-6 bg-white rounded-lg shadow-lg">
-                //         {entries?.length === 0 ? (
-                //             <div className="py-8 text-center">
-                //                 <p className="text-gray-600">No GSTR1 filings found</p>
-                //             </div>
-                //         ) : (
-                //             <div className="overflow-x-auto">
-                //                 <table className="min-w-full divide-y divide-gray-200">
-                //                     <thead className="bg-gray-50">
-                //                         <tr>
-                //                             <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Financial Year</th>
-                //                             <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Quarter</th>
-                //                             <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Month</th>
-                //                             <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Status</th>
-                //                             <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Actions</th>
-                //                         </tr>
-                //                     </thead>
-                //                     <tbody className="bg-white divide-y divide-gray-200">
-                //                         {entries?.map((entry: any) => (
-                //                             <tr key={`${entry.financialYear}-${entry.quarter}-${entry.month}`}>
-                //                                 <td className="px-6 py-4 whitespace-nowrap">{entry.financialYear}</td>
-                //                                 <td className="px-6 py-4 whitespace-nowrap">{entry.quarter}</td>
-                //                                 <td className="px-6 py-4 whitespace-nowrap">
-                //                                     {new Date(0, parseInt(entry.month) - 1).toLocaleDateString('en-US', { month: 'long' })}
-                //                                 </td>
-                //                                 <td className="px-6 py-4 whitespace-nowrap">
-                //                                     <span className="px-2 py-1 text-sm text-green-800 bg-green-100 rounded-full">
-                //                                         Filed
-                //                                     </span>
-                //                                 </td>
-                //                                 <td className="px-6 py-4 whitespace-nowrap">
-                //                                     <button
-                //                                         onClick={() => handleViewEntry(entry)}
-                //                                         className="px-3 py-1 text-sm text-blue-600 hover:underline"
-                //                                     >
-                //                                         View Details
-                //                                     </button>
-                //                                 </td>
-                //                             </tr>
-                //                         ))}
-                //                     </tbody>
-                //                 </table>
-                //             </div>
-                //         )}
-
-                //         <div className="mt-6 text-center">
-                //             {suggestedPeriod ? (
-                //                 <button
-                //                     onClick={handleNewFiling}
-                //                     className="px-6 py-3 text-white bg-blue-600 rounded-md hover:bg-blue-700"
-                //                 >
-                //                     File for Suggested Period: {suggestedPeriod.monthName}, {suggestedPeriod.quarter}, FY {suggestedPeriod.financialYear}
-                //                 </button>
-                //             ) : (
-                //                 <div className="p-4 text-blue-800 rounded-lg bg-blue-50">
-                //                     All available periods have been filed. No new filing suggested.
-                //                 </div>
-                //             )}
-                //         </div>
-                //     </div>
-
-                //     <div className="mt-6 text-center">
-                //         <button
-                //             onClick={() => navigate("/practice/gst")}
-                //             className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-                //         >
-                //             ← Back to GST Services
-                //         </button>
-                //     </div>
-                // </div>
             ) : (
                 <>
                     <div className="w-full p-4 mt-4 text-lg text-center text-yellow-700 bg-yellow-100 border border-yellow-300 rounded-md ">
