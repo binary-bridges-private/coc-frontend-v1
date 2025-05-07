@@ -313,7 +313,7 @@ const Header = () => {
       </div>
 
       {/* Navigation Bar */}
-      <div className="h-16 text-white bg-blue-500 navbar">
+      <div className="h-16 text-white bg-theme1 navbar">
         {/* Mobile Menu Button */}
         <div className="lg:hidden">
           <button onClick={toggleMenu} className="text-white">

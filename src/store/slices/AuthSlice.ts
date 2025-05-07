@@ -156,9 +156,9 @@ const authSlice = createSlice({
       })
       .addCase(signupUser.fulfilled, (state, action: PayloadAction<{ userData: UserData }>) => {
         state.status = 'succeeded';
-        state.isAuthenticated = true;
-        state.userData = action.payload.userData;
-        persistAuthState(state);
+        // state.isAuthenticated = true;
+        // state.userData = action.payload.userData;
+        // persistAuthState(state);
       })
       .addCase(signupUser.rejected, (state, action) => {
         state.status = 'failed';

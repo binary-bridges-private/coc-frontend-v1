@@ -111,7 +111,7 @@ const ProtectedRoute = ({ children, isFree }: { children: React.ReactNode, isFre
                                 height: '4px',
                                 background: 'linear-gradient(90deg, #3498db, #9b59b6)'
                             }} />
-                            
+
                             <div style={{
                                 marginBottom: '1.5rem',
                                 display: 'flex',
@@ -127,16 +127,16 @@ const ProtectedRoute = ({ children, isFree }: { children: React.ReactNode, isFre
                                     justifyContent: 'center',
                                     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
                                 }}>
-                                    <FaLock style={{ 
-                                        fontSize: '2rem', 
+                                    <FaLock style={{
+                                        fontSize: '2rem',
                                         color: '#3498db',
                                         filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))'
                                     }} />
                                 </div>
                             </div>
-                            
-                            <h3 style={{ 
-                                color: '#2c3e50', 
+
+                            <h3 style={{
+                                color: '#2c3e50',
                                 marginBottom: '1rem',
                                 fontSize: '1.5rem',
                                 fontWeight: '700',
@@ -147,7 +147,7 @@ const ProtectedRoute = ({ children, isFree }: { children: React.ReactNode, isFre
                             }}>
                                 Practice forms Locked
                             </h3>
-                            
+
                             <div style={{
                                 marginBottom: '2rem',
                                 color: '#7f8c8d',
@@ -157,18 +157,17 @@ const ProtectedRoute = ({ children, isFree }: { children: React.ReactNode, isFre
                                 <p>These practice forms are part of our exclusive <strong>CFM (Charted Financial Management)</strong> course.</p>
                                 <p style={{ marginTop: '0.5rem' }}>Buy this course to unlock this and all other practice forms.</p>
                             </div>
-                            
+
                             <div style={{
                                 display: 'flex',
                                 flexDirection: 'column',
                                 gap: '1rem'
                             }}>
-                                <motion.button 
+                                <motion.button
                                     whileHover={{ scale: 1.03 }}
                                     whileTap={{ scale: 0.98 }}
-                                    onClick={() => navigate('/buy-it')}
+                                    onClick={() => window.location.href = 'https://www.coceducation.com/course/sap-id-cfm-course'}
                                     style={{
-                                        backgroundColor: 'linear-gradient(135deg, #3498db, #9b59b6)',
                                         background: 'linear-gradient(135deg, #3498db, #9b59b6)',
                                         color: 'white',
                                         border: 'none',
@@ -186,8 +185,8 @@ const ProtectedRoute = ({ children, isFree }: { children: React.ReactNode, isFre
                                 >
                                     Upgrade Now <FaArrowRight />
                                 </motion.button>
-                                
-                                <motion.button 
+
+                                <motion.button
                                     whileHover={{ backgroundColor: '#f1f2f6' }}
                                     whileTap={{ scale: 0.98 }}
                                     onClick={() => navigate('/home')}

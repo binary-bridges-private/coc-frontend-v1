@@ -263,7 +263,7 @@ const Login = () => {
               <button
                 onClick={handleLogin}
                 disabled={loading}
-                className="flex justify-center items-center w-full h-12 px-4 py-2 bg-[#101C36] text-white text-base font-medium rounded-lg"
+                className="flex items-center justify-center w-full h-12 px-4 py-2 text-base font-medium text-white rounded-lg bg-theme1"
               >
                 {loading ? 'Logging in...' : 'Continue'}
               </button>
@@ -274,7 +274,7 @@ const Login = () => {
                 </span>
                 <button
                   onClick={() => dispatch(switchLoginToSignup())}
-                  className="text-[#101C36] text-base font-medium"
+                  className="text-base font-medium text-theme1"
                 >
                   Sign Up
                 </button>
