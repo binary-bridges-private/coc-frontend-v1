@@ -61,7 +61,7 @@ const Carousel = () => {
 
                 return (
                     <div key={card.id} className={`card ${position}`}>
-                        <div className="flex flex-col items-start w-full h-full p-6 shadow-xl justify-evenly rounded-xl ">
+                        <div className="flex flex-col items-start w-full h-full p-6 shadow-xl justify-evenly rounded-xl">
                             <div className="w-16 h-16 mb-4 rounded-full">
                                 <img src={"star-icon.svg"} alt="Star Icon" />
                             </div>

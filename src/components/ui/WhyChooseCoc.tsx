@@ -5,49 +5,97 @@ const WhyChooseCOC = () => {
         {
             title: 'Studio Recorded Sessions',
             icon: '/assets/whyChooseCoc/first.svg',
+            description: 'High-quality HD recordings with professional production values for optimal learning',
+            accentColor: 'bg-blue-100'
         },
         {
             title: 'Excellent Supportive Team',
             icon: '/assets/whyChooseCoc/second.svg',
+            description: '24/7 dedicated support team ready to assist with any queries or technical issues',
+            accentColor: 'bg-purple-100'
         },
         {
             title: 'Academic Instructor Team',
             icon: '/assets/whyChooseCoc/third.svg',
+            description: 'Learn from industry experts and certified professionals with years of experience',
+            accentColor: 'bg-amber-100'
         },
         {
             title: 'Material Covering all MTR/RTP',
             icon: '/assets/whyChooseCoc/fourth.svg',
+            description: 'Comprehensive study materials aligned with exam patterns and syllabus',
+            accentColor: 'bg-green-100'
         },
         {
             title: 'Daily Doubt Sessions',
             icon: '/assets/whyChooseCoc/fifth.svg',
+            description: 'Regular interactive sessions to clarify concepts and strengthen understanding',
+            accentColor: 'bg-red-100'
         },
         {
             title: 'Unlimited Views Available',
             icon: '/assets/whyChooseCoc/sixth.svg',
+            description: 'Watch lectures as many times as you need with lifetime access to course content',
+            accentColor: 'bg-indigo-100'
         },
     ];
 
     return (
-        <div className="bg-[#101C36] h-full w-full text-white py-20 px-10">
-            <div className="mx-auto mb-10 text-center max-w-7xl">
-                <h1 className="mb-4 lg:text-hl md:text-hm text-hs">Why choose classes from COC Education</h1>
-                <p className="lg:text-pl md:text-pm text-ps">Explore the benefits of learning with us, tailored to help you excel.</p>
-            </div>
+        <section className="relative w-full py-20 overflow-hidden bg-gradient-to-br from-theme1 to-theme2">
+            {/* Decorative elements */}
+            <div className="absolute top-0 left-0 w-32 h-32 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/10"></div>
+            <div className="absolute bottom-0 right-0 w-64 h-64 translate-x-1/2 translate-y-1/2 rounded-full bg-white/10"></div>
+            
+            <div className="relative px-5 mx-auto max-w-7xl sm:px-6 lg:px-8">
+                <div className="text-center">
+                    <h2 className="text-4xl font-bold text-white md:text-5xl lg:text-6xl">
+                        Why Choose <span className="text-yellow-300">COC Education</span>
+                    </h2>
+                    <p className="max-w-2xl mx-auto mt-4 text-lg text-white/90 md:text-xl">
+                        Discover the premium learning experience that sets us apart from the rest
+                    </p>
+                </div>
 
-            {/* <div className="grid grid-flow-row grid-cols-1 gap-2 px-10 py-10 auto-rows-auto sm:grid-cols-2" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))" }}> */}
-            <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
-                {features.map((feature, index) => (
-                    <div
-                        key={index}
-                        className="bg-white text-[#282828]  w-sm rounded-xl shadow-lg p-6 flex flex-col items-center space-y-4"
-                    >
-                        <img src={feature.icon} className="w-20 h-20 bg-center bg-cover" />
-                        <h3 className="text-center text-small">{feature.title}</h3>
-                    </div>
-                ))}
+                <div className="grid grid-cols-1 gap-8 mt-16 sm:grid-cols-2 lg:grid-cols-3">
+                    {features.map((feature, index) => (
+                        <div 
+                            key={index}
+                            className="relative overflow-hidden transition-all duration-300 transform bg-white rounded-xl hover:shadow-2xl hover:-translate-y-2 group"
+                        >
+                            <div className={`absolute top-0 left-0 w-full h-1 ${feature.accentColor}`}></div>
+                            <div className="p-8">
+                                <div className="flex items-center mb-6">
+                                    <div className={`p-3 rounded-lg ${feature.accentColor}`}>
+                                        <img 
+                                            src={feature.icon} 
+                                            className="w-12 h-12" 
+                                            alt={feature.title}
+                                        />
+                                    </div>
+                                </div>
+                                <h3 className="mb-3 text-xl font-bold text-gray-900">{feature.title}</h3>
+                                <p className="text-gray-600">{feature.description}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Floating CTA */}
+                <div className="mt-16 text-center">
+                    <button className="px-8 py-4 text-lg font-semibold text-white transition-all duration-300 transform bg-yellow-500 rounded-lg shadow-lg hover:bg-yellow-600 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50">
+                        Start Learning Today
+                        <svg 
+                            xmlns="http://www.w3.org/2000/svg" 
+                            className="inline-block w-5 h-5 ml-2" 
+                            viewBox="0 0 20 20" 
+                            fill="currentColor"
+                        >
+                            <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
             </div>
-        </div>
+        </section>
     );
 };
 

@@ -238,9 +238,8 @@ const Header = () => {
           {/* Login Button */}
           {!isLoggedIn && (
             <button
-              style={{ backgroundColor: '#101C36' }}
               onClick={() => dispatch(toggleLoginPopup())}
-              className="mr-4 text-white btn hover:bg-[#0a1425]"
+              className="bg-theme1 mr-4 text-white btn hover:bg-[white],color-[white]"
             >
               Login
             </button>
@@ -314,7 +313,7 @@ const Header = () => {
       </div>
 
       {/* Navigation Bar */}
-      <div style={{ backgroundColor: "#101C36" }} className="h-16 text-white navbar">
+      <div className="h-16 text-white bg-blue-500 navbar">
         {/* Mobile Menu Button */}
         <div className="lg:hidden">
           <button onClick={toggleMenu} className="text-white">

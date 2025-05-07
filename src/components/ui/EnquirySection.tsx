@@ -9,9 +9,9 @@ import {
 } from "react-icons/fa";
 const EnquirySection = () => {
     return (
-        <div className="w-full h-auto md:h-[664px] grid md:grid-cols-7 grid-cols-1">
+        <div className="w-full h-auto md:h-[664px]">
             <div
-                className="flex-col justify-center hidden h-full col-span-5 gap-8 bg-center bg-cover md:flex opacity-90"
+                className="flex-col justify-center hidden h-full gap-8 bg-center bg-cover md:flex opacity-90"
                 style={{
                     backgroundImage: "url('woman-working-in-office.jpg')",
                 }}
@@ -32,9 +32,9 @@ const EnquirySection = () => {
                     <FaInstagram className="text-5xl text-white" />
                 </div>
             </div>
-            <div className="flex items-center justify-center w-full col-span-1 md:col-span-2">
+            {/* <div className="flex items-center justify-center w-full col-span-1 md:col-span-2">
                 <EnquiryForm />
-            </div>
+            </div> */}
         </div>
     );
 };

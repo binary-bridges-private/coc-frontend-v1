@@ -9,6 +9,7 @@ module.exports = {
                 primary: "#FFFFFF40", // Example primary color
                 secondary: "#F59E0B", // Example secondary color
                 accent: "#10B981", // Example accent color
+                theme1: "rgb(63, 97, 217)"
             },
             fontFamily: {
                 sans: ['"SF Pro Display"', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],

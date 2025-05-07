@@ -1,3 +1,7 @@
+:root {
+  --theme1: rgb(63, 97, 217); 
+}
+
 .carousel-container {
     width: 100%;
     overflow: hidden;
@@ -22,7 +26,7 @@
   }
   
   .card.center {
-    background: #101C36;
+    background: var(--theme1);
     transition: background-color 0.5s ease-in-out, opacity 0.5s ease-in-out; 
     color: white;
     transform: scale(1);
