@@ -72,7 +72,7 @@ const Carousel = () => {
                                 </div>
                                 <div className="flex flex-col">
                                     <span className={` ${position === "center" && "text-white"} ${position !== "center" && "text-black"} font-bold`}>{card.userName}</span>
-                                    <span className="text-gray-400 text-n2">{card.userRole}</span>
+                                    <span className="text-white text-n2">{card.userRole}</span>
                                 </div>
                             </div>
                         </div>

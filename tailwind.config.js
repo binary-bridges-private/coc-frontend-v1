@@ -34,7 +34,18 @@ module.exports = {
             screens: {
                 'laptop1': { 'min': '1022px', 'max': '1200px' }, // Custom range
             },
+            keyframes: {
+                scrollLeft: {
+                    '0%': { transform: 'translateX(100%)' },
+                    '100%': { transform: 'translateX(-115%)' },
+                },
+            },
+            animation: {
+                scrollLeft: 'scrollLeft 10s linear infinite',
+            },
         },
     },
     plugins: [require("daisyui")],
 };
+
+

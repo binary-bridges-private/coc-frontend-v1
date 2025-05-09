@@ -71,29 +71,31 @@ import { FaBullhorn, FaQuoteLeft, FaArrowRight, FaRegCalendarAlt } from 'react-i
 
 const NoticeCard = ({ info, date, isNew = false }) => {
     return (
-        <tr className="transition-all duration-200 bg-white text-blue hover:bg-white/10">
-            <td className="px-6 py-4 border-b border-white/20">
+        <tr className="transition-all duration-200 bg-white hover:bg-white/10 group">
+            <td className="px-4 py-4 border-b border-white/20 sm:px-6">
                 <div className="flex items-center">
                     {isNew && (
-                        <span className="px-2 py-1 mr-3 text-xs font-bold text-white bg-red-500 rounded-full">
+                        <span className="px-2 py-1 mr-3 text-xs font-bold text-white bg-red-500 rounded-full whitespace-nowrap">
                             NEW
                         </span>
                     )}
-                    <FaBullhorn className="text-yellow-300" />
+                    <FaBullhorn className="flex-shrink-0 text-yellow-300" />
                 </div>
             </td>
-            <td className="px-6 py-4 text-blue-500 border-b text-bold text-md medium border-white/20 hover:text-white">
-                {info}
+            <td className="px-4 py-4 border-b border-white/20 sm:px-6">
+                <p className="font-medium text-blue-500 group-hover:text-white line-clamp-2">
+                    {info}
+                </p>
             </td>
-            <td className="px-6 py-4 text-sm border-b text-white/80 border-white/20">
-                <div className="flex items-center">
-                    <FaRegCalendarAlt className="mr-2 text-white/60" />
+            <td className="px-4 py-4 border-b border-white/20 sm:px-6">
+                <div className="flex items-center text-sm text-white/80 whitespace-nowrap">
+                    <FaRegCalendarAlt className="flex-shrink-0 mr-2 text-white/60" />
                     {date}
                 </div>
             </td>
-            <td className="px-6 py-4 text-sm font-medium text-right border-b border-white/20">
-                <button className="p-1 text-white transition-all duration-200 rounded-full hover:bg-white/20 hover:scale-110">
-                    <FaArrowRight />
+            <td className="px-4 py-4 text-sm font-medium text-right border-b border-white/20 sm:px-6">
+                <button className="p-1.5 text-white transition-all duration-200 rounded-full hover:bg-white/20 hover:scale-110">
+                    <FaArrowRight className="text-sm" />
                 </button>
             </td>
         </tr>
@@ -138,7 +140,7 @@ const NoticeBoardHome = () => {
             
             <div className="container relative px-4 mx-auto sm:px-6 lg:px-8">
                 <div className="flex flex-col gap-8 lg:flex-row">
-                    {/* Notice Board Section - Left Side (larger) */}
+                    {/* Notice Board Section - Left Side */}
                     <div className="w-full lg:w-8/12">
                         <div className="flex items-center mb-8">
                             <div className="w-4 h-10 bg-yellow-300 rounded-md"></div>
@@ -152,13 +154,13 @@ const NoticeBoardHome = () => {
                                 <table className="min-w-full divide-y divide-white/20">
                                     <thead className="bg-white/10">
                                         <tr>
-                                            <th scope="col" className="px-6 py-4 text-xs font-medium tracking-wider text-left uppercase text-white/80"></th>
-                                            <th scope="col" className="px-6 py-4 text-xs font-medium tracking-wider text-left uppercase text-white/80">Notice</th>
-                                            <th scope="col" className="px-6 py-4 text-xs font-medium tracking-wider text-left uppercase text-white/80">Date</th>
-                                            <th scope="col" className="px-6 py-4 text-xs font-medium tracking-wider text-right uppercase text-white/80">Action</th>
+                                            <th scope="col" className="w-32 px-4 py-3 text-xs font-medium tracking-wider text-left uppercase text-white/80 sm:px-6"></th>
+                                            <th scope="col" className="px-4 py-3 text-xs font-medium tracking-wider text-left uppercase text-white/80 sm:px-6">Notice</th>
+                                            <th scope="col" className="w-40 px-4 py-3 text-xs font-medium tracking-wider text-left uppercase text-white/80 sm:px-6">Date</th>
+                                            <th scope="col" className="w-16 px-4 py-3 text-xs font-medium tracking-wider text-right uppercase text-white/80 sm:px-6">Action</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody className="divide-y divide-white/20">
                                         {notices.map((notice, index) => (
                                             <NoticeCard 
                                                 key={index}
@@ -173,14 +175,14 @@ const NoticeBoardHome = () => {
                         </div>
 
                         <div className="mt-8 text-center">
-                            <button className="flex items-center justify-center px-8 py-3 mx-auto text-sm font-medium text-white transition-all duration-300 bg-yellow-500 rounded-lg hover:bg-yellow-600 hover:shadow-lg">
+                            <button className="flex items-center justify-center px-6 py-3 mx-auto text-sm font-medium text-white transition-all duration-300 bg-yellow-500 rounded-lg hover:bg-yellow-600 hover:shadow-lg group">
                                 View All Notices
                                 <FaArrowRight className="ml-3 transition-transform duration-300 group-hover:translate-x-1" />
                             </button>
                         </div>
                     </div>
 
-                    {/* Quote Section - Right Side (enhanced) */}
+                    {/* Quote Section - Right Side */}
                     <div className="w-full lg:w-4/12">
                         <div className="relative h-full p-8 overflow-hidden shadow-2xl bg-gradient-to-br from-blue-700/90 to-purple-700/90 rounded-xl">
                             <div className="absolute inset-0 opacity-10 mix-blend-overlay"></div>
@@ -189,12 +191,12 @@ const NoticeBoardHome = () => {
                             <div className="relative flex flex-col justify-between h-full">
                                 <div>
                                     <FaQuoteLeft className="mb-6 text-4xl text-white/30" />
-                                    <blockquote className="mb-6 text-2xl font-medium leading-relaxed text-white md:text-3xl">
+                                    <blockquote className="mb-6 text-2xl font-medium leading-relaxed text-white md:text-2xl xl:text-3xl">
                                         "Education is the most powerful weapon which you can use to change the world."
                                     </blockquote>
-                                    <p className="text-xl italic text-white/70">- Nelson Mandela</p>
+                                    <p className="text-lg italic text-white/70">- Nelson Mandela</p>
                                 </div>
-                                <div className="mt-12">
+                                <div className="mt-8">
                                     <div className="flex items-center">
                                         <div className="w-16 h-1 bg-gradient-to-r from-yellow-400 to-yellow-300"></div>
                                         <span className="ml-4 text-sm font-medium tracking-wider uppercase text-white/70">COC Education Philosophy</span>
