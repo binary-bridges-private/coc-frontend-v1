@@ -14,7 +14,7 @@ const LandingPage = () => {
         <div>
             <EnquirySection />
             <TopBanner />
-            <NoticeBoardHome />
+            {/* <NoticeBoardHome /> */}
             <VisitCoursesHome />
             <WhyChooseCOC />
             <ProductSectionLandingPage />

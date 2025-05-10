@@ -52,7 +52,7 @@ import { FaYoutube, FaPlay, FaExternalLinkAlt } from 'react-icons/fa';
 
 const FreeVideo = () => {
     return (
-        <section className="w-full bg-gradient-to-r from-[#FFF0F0] to-[#FFFAFA] py-16 px-4 sm:px-6 lg:px-8">
+        <section className="w-full px-4 py-10 bg-gradient-to-br from-theme3 to-theme4 sm:px-6 lg:px-8">
             <div className="grid items-center grid-cols-1 gap-12 mx-auto max-w-7xl lg:grid-cols-2">
                 {/* Content Section */}
                 <div className="space-y-6 lg:space-y-8">

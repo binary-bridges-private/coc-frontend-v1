@@ -1,109 +1,138 @@
 import React from "react";
 import { FaFacebook, FaInstagram, FaTelegram, FaYoutube } from "react-icons/fa";
-// TODO: add links to important navigation
+import { SiPaytm, SiPaypal, SiGooglepay, SiPhonepe, SiRazorpay } from "react-icons/si";
+import { PiCurrencyInrBold } from "react-icons/pi";
+
 const Footer = () => {
     return (
-        <div className="">
+        <div className="bg-white">
+            {/* Newsletter Component */}
             <NewsletterSignup />
-            <footer className="flex flex-col items-start justify-between w-full gap-4 px-5 py-10 bg-white lg:px-20 md:px-20 md:flex-row ">
-                {/* Group Section */}
-                <div className="flex flex-col justify-between items-start w-full md:w-[520px] gap-8">
-                    {/* Frame 255 */}
-                    <div className="flex flex-col items-start gap-8">
-                        {/* Frame 254 */}
-                        <div className="flex flex-col items-start gap-3">
-                            {/* Logo */}
+            
+            {/* Main Footer */}
+            <footer className="container px-4 py-10 mx-auto sm:px-6 lg:px-8 xl:px-20">
+                <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
+                    {/* Expanded Company Info Section */}
+                    <div className="space-y-8 lg:pr-8">
+                        <div className="space-y-4">
                             <img
-                                src={"icon-wide.svg"}
+                                src="icon-wide.svg"
                                 alt="COC Logo"
-                                className="w-[271px] h-[93px]"
+                                className="w-64 h-auto max-w-full"
                             />
-                            {/* Address */}
-                            <p className="font-semibold leading-6 text-gray-800 lg:text-pm md:text-pm text-ps ">
-                                COC Education Pvt. Ltd. Office No-132 Ithum
-                                Tower-B Sector-62, Noida, Uttar Pradesh
+                            <p className="text-sm font-medium text-gray-800 sm:text-base">
+                                COC Education Pvt. Ltd. Office No-132 Ithum Tower-B 
+                                Sector-62, Noida, Uttar Pradesh
                             </p>
+                        </div>
+
+                        <div className="space-y-6">
+                            <div>
+                                <h4 className="text-sm font-semibold text-gray-800 sm:text-base">
+                                    For Purchase Related
+                                </h4>
+                                <p className="mt-2 text-sm text-gray-600 sm:text-base">
+                                    Call/WhatsApp: 9999631597 / 8448322142 / 7303445575 / 7011668629
+                                    <br />
+                                    E-mail: enquiry.coceducation@gmail.com
+                                </p>
+                            </div>
+
+                            <div>
+                                <h4 className="text-sm font-semibold text-gray-800 sm:text-base">
+                                    For Technical Support
+                                </h4>
+                                <p className="mt-2 text-sm text-gray-600 sm:text-base">
+                                    Call/WhatsApp: 9811455109, 9311281468
+                                    <br />
+                                    E-mail: coceducation.technical@gmail.com
+                                </p>
+                            </div>
+
+                            <div>
+                                <h4 className="text-sm font-semibold text-gray-800 sm:text-base">
+                                    For Courier Related Enquiry
+                                </h4>
+                                <p className="mt-2 text-sm text-gray-600 sm:text-base">
+                                    Call/WhatsApp: 8595539968, 7042664033
+                                    <br />
+                                    E-mail: coceducation.logistics@gmail.com
+                                </p>
+                            </div>
                         </div>
                     </div>
 
-                    {/* Contact Section */}
-                    <div className="flex flex-col items-start gap-4">
-                        {/* Section */}
-                        <div className="flex flex-col">
-                            <h4 className="font-semibold text-gray-800 lg:text-pm md:text-pm text-ps">
-                                For Purchase Related
-                            </h4>
-                            <p className="text-base leading-7 text-gray-600 text-n">
-                                Call/WhatsApp: 9999631597 / 8448322142 /
-                                7303445575 / 7011668629
-                                <br />
-                                E-mail: enquiry.coceducation@gmail.com
-                            </p>
-                        </div>
-                        <div className="flex flex-col">
-                            <h4 className="font-semibold text-gray-800 lg:text-pm md:text-pm text-ps">
-                                For Technical Support
-                            </h4>
-                            <p className="text-base leading-7 text-gray-600 text-n">
-                                Call/WhatsApp: 9811455109, 9311281468
-                                <br />
-                                E-mail: coceducation.technical@gmail.com
-                            </p>
-                        </div>
-                        <div className="flex flex-col">
-                            <h4 className="font-semibold text-gray-800 lg:text-pm md:text-pm text-ps">
-                                For Courier Related Enquiry
-                            </h4>
-                            <p className="text-base leading-7 text-gray-600 text-n">
-                                Call/WhatsApp: 8595539968, 7042664033
-                                <br />
-                                E-mail: coceducation.logistics@gmail.com
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Navigation Section */}
-                <div className="flex flex-col items-start justify-between w-full gap-8 md:flex-row md:w-auto">
-                    {/* Navigation Links */}
-                    <div className="flex flex-col gap-4">
-                        <h5 className="font-semibold text-blue-900 lg:text-pl md:text-pm text-ps">
-                            Important
+                    {/* Narrower Navigation Links */}
+                    <div className="space-y-6 lg:pl-4">
+                        <h5 className="text-sm font-semibold text-blue-900 sm:text-base">
+                            Important Links
                         </h5>
-                        <ul className="flex flex-col gap-4 text-base text-gray-800 text-n">
-                            <li>Home</li>
-                            <li>About us</li>
-                            <li>Video Lectures</li>
-                            <li>Faculties</li>
-                            <li>Quiz</li>
-                            <li>Blogs</li>
-                            <li>FAQs</li>
+                        <ul className="space-y-3">
+                            {['Home', 'About us', 'Video Lectures', 'Faculties', 'Quiz', 'Blogs', 'FAQs'].map((item) => (
+                                <li key={item} className="text-sm text-gray-800 transition-colors hover:text-blue-600 sm:text-base">
+                                    <a href="#" className="block py-1">{item}</a>
+                                </li>
+                            ))}
                         </ul>
                     </div>
-                </div>
-                {/* Links Section */}
-                <div className="flex flex-col items-start justify-between w-full h-full md:flex-row md:w-auto">
-                    {/* Navigation Links */}
-                    <div className="flex flex-col w-full gap-4">
-                        <h5 className="font-semibold text-blue-900 lg:text-pl md:text-pm text-ps">
+
+                    {/* Social Media Links */}
+                    <div className="space-y-6">
+                        <h5 className="text-sm font-semibold text-blue-900 sm:text-base">
                             Follow Us
                         </h5>
                         <div className="flex space-x-4">
-                        <button className="flex items-center justify-center w-10 h-10 text-white bg-blue-600 rounded-full">
-                            <FaFacebook className="text-xl" />
-                        </button>
-                        <button className="flex items-center justify-center w-10 h-10 text-white bg-pink-600 rounded-full">
-                            <FaInstagram className="text-xl" />
-                        </button>
-                        <button className="flex items-center justify-center w-10 h-10 text-white bg-blue-400 rounded-full">
-                            <FaTelegram className="text-xl" />
-                        </button>
-                        <button className="flex items-center justify-center w-10 h-10 text-white bg-red-600 rounded-full">
-                            <FaYoutube className="text-xl" />
-                        </button>
+                            {[
+                                { icon: <FaFacebook className="text-xl" />, color: "bg-blue-600" },
+                                { icon: <FaInstagram className="text-xl" />, color: "bg-pink-600" },
+                                { icon: <FaTelegram className="text-xl" />, color: "bg-blue-400" },
+                                { icon: <FaYoutube className="text-xl" />, color: "bg-red-600" }
+                            ].map((social, index) => (
+                                <button 
+                                    key={index}
+                                    className={`flex items-center justify-center w-10 h-10 text-white rounded-full transition-transform hover:scale-110 ${social.color}`}
+                                >
+                                    {social.icon}
+                                </button>
+                            ))}
+                        </div>
+                        
+                        {/* YouTube Embed */}
+                        <div className="w-full max-w-xs mt-4 aspect-video">
+                            <YouTube />
+                        </div>
                     </div>
-                        <YouTube />
+
+                    {/* Payment Partners */}
+                    <div className="space-y-6">
+                        <h5 className="text-sm font-semibold text-blue-900 sm:text-base">
+                            Payment Partners
+                        </h5>
+                        <div className="grid grid-cols-3 gap-4">
+                            {[
+                                { icon: <PiCurrencyInrBold className="text-2xl" />, name: "PayUMoney" },
+                                { icon: <SiPaytm className="text-2xl text-blue-600" />, name: "Paytm" },
+                                { icon: <SiPaypal className="text-2xl text-blue-600" />, name: "PayPal" },
+                                { icon: <SiGooglepay className="text-2xl text-blue-500" />, name: "GPay" },
+                                { icon: <SiPhonepe className="text-2xl text-purple-600" />, name: "PhonePe" },
+                                { icon: <SiRazorpay className="text-2xl text-blue-700" />, name: "Razorpay" }
+                            ].map((payment, index) => (
+                                <div key={index} className="flex flex-col items-center space-y-2">
+                                    <div className="flex items-center justify-center w-12 h-12 p-2 bg-white rounded-lg shadow-md">
+                                        {payment.icon}
+                                    </div>
+                                    <span className="text-xs text-gray-600">{payment.name}</span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
+                </div>
+
+                {/* Copyright Section */}
+                <div className="pt-6 mt-12 border-t border-gray-200">
+                    <p className="text-xs text-center text-gray-500 sm:text-sm">
+                        © {new Date().getFullYear()} COC Education Pvt. Ltd. All rights reserved.
+                    </p>
                 </div>
             </footer>
         </div>

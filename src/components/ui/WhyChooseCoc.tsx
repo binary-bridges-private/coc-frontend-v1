@@ -41,7 +41,7 @@ const WhyChooseCOC = () => {
     ];
 
     return (
-        <section className="relative w-full py-20 overflow-hidden bg-gradient-to-br from-theme1 to-theme2">
+        <section className="relative w-full py-10 overflow-hidden bg-gradient-to-br from-theme1 to-theme2">
             {/* Decorative elements */}
             <div className="absolute top-0 left-0 w-32 h-32 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/10"></div>
             <div className="absolute bottom-0 right-0 w-64 h-64 translate-x-1/2 translate-y-1/2 rounded-full bg-white/10"></div>

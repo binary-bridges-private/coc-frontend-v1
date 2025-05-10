@@ -5,7 +5,7 @@ const WhatOurStudentSays = () => {
 
 
   return (
-    <div className="flex flex-col items-center h-full max-w-full gap-4 px-10 py-20 bg-white">
+    <div className="flex flex-col items-center h-full max-w-full gap-4 px-10 py-10 bg-white">
       {/* Header Section */}
       <div className="flex flex-col items-center gap-4">
         <h1 className="font-semibold text-gray-800 lg:text-hl md:text-hm text-hs">What our Student Says</h1>

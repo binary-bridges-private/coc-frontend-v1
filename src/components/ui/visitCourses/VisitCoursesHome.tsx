@@ -4,7 +4,7 @@ import VisitCoursesCard from "./VisitComponentCard.tsx";
 const VisitCoursesHome = () => {
     return (
         <>
-            <div className="flex flex-col items-center w-full h-full gap-10 px-4 py-10 bg-white border top-44 md:px-8">
+            <div className="flex flex-col items-center w-full h-full gap-10 px-4 py-10 bg-white top-44 md:px-8">
                 <div className="flex flex-col items-center w-full h-auto max-w-4xl gap-2">
                     <h1 className="font-semibold text-center text-black lg:text-hl md:text-hm text-hs">
                         Click and Visit Our Different Courses
