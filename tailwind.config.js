@@ -10,7 +10,7 @@ module.exports = {
                 secondary: "#F59E0B", 
                 accent: "#10B981", 
                 theme1: "rgb(63, 97, 217)",
-                theme2: "rgb(194, 204, 241)",
+                theme2: "rgb(152, 173, 248)",
                 theme3: "rgb(231, 255, 124)",
                 theme4: "rgb(252, 252, 192)"
             },

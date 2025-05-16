@@ -180,31 +180,90 @@ const YouTube = () => {
     );
 };
 
+// const NewsletterSignup = () => {
+//     return (
+//         <div className="flex flex-col items-center justify-center w-full max-w-full p-6 text-white md:p-6 bg-gradient-to-br from-theme1 to-theme2">
+//             {/* Title */}
+//             <h2 className="font-semibold text-center lg:text-hl md:text-hm text-hs">
+//                 Signup to Newsletter
+//             </h2>
+
+//             {/* Subtitle */}
+//             <p className="mt-2 text-center lg:text-pl md:text-pm text-ps">
+//                 You will receive every news and recent update on your email!!!
+//             </p>
+
+//             {/* Input Form */}
+//             <div className="flex w-full max-w-md mt-6">
+//                 {/* Email Input */}
+//                 <input
+//                     type="email"
+//                     placeholder="Enter your email address here"
+//                     className="flex-1 px-4 py-2 text-black bg-gray-200 border-none rounded-l-lg focus:outline-none"
+//                 />
+//                 {/* Subscribe Button */}
+//                 <button className="px-4 py-2 bg-[#101C36] text-white rounded-r-lg hover:bg-[#0c162a]">
+//                     SUBSCRIBE
+//                 </button>
+//             </div>
+//         </div>
+//     );
+// };
+
+
 const NewsletterSignup = () => {
     return (
-        <div className="flex flex-col items-center justify-center p-6 md:p-6 w-full bg-gradient-to-b from-[#D30031] to-[#db1d49] text-white max-w-full">
-            {/* Title */}
-            <h2 className="font-semibold text-center lg:text-hl md:text-hm text-hs">
-                Signup to Newsletter
-            </h2>
+        <div className="relative w-full p-8 overflow-hidden text-white bg-theme1">
+            {/* Decorative elements */}
+            <div className="absolute top-0 left-0 w-32 h-32 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/10 blur-xl"></div>
+            <div className="absolute bottom-0 right-0 w-40 h-40 translate-x-1/2 translate-y-1/2 rounded-full bg-white/10 blur-xl"></div>
+            
+            <div className="relative z-10 flex flex-col items-center justify-center w-full max-w-6xl mx-auto">
+                {/* Title with subtle animation */}
+                <h2 className="mb-3 text-3xl font-bold text-center md:text-4xl lg:text-5xl animate-fade-in-up">
+                    Stay Updated With Our Newsletter
+                </h2>
 
-            {/* Subtitle */}
-            <p className="mt-2 text-center lg:text-pl md:text-pm text-ps">
-                You will receive every news and recent update on your email!!!
-            </p>
+                {/* Subtitle */}
+                <p className="max-w-2xl text-lg text-center text-white/80 md:text-xl">
+                    Get the latest news, updates, and exclusive offers delivered straight to your inbox.
+                </p>
 
-            {/* Input Form */}
-            <div className="flex w-full max-w-md mt-6">
-                {/* Email Input */}
-                <input
-                    type="email"
-                    placeholder="Enter your email address here"
-                    className="flex-1 px-4 py-2 text-black bg-gray-200 border-none rounded-l-lg focus:outline-none"
-                />
-                {/* Subscribe Button */}
-                <button className="px-4 py-2 bg-[#101C36] text-white rounded-r-lg hover:bg-[#0c162a]">
-                    SUBSCRIBE
-                </button>
+                {/* Input Form with modern styling */}
+                <div className="flex flex-col w-full max-w-xl mt-8 space-y-4 sm:flex-row sm:space-y-0 sm:space-x-2">
+                    <div className="relative flex-1">
+                        <input
+                            type="email"
+                            placeholder="Your email address"
+                            className="w-full px-5 py-4 text-gray-900 transition-all duration-300 bg-white border-none rounded-lg shadow-lg focus:ring-2 focus:ring-theme1/50 focus:outline-none placeholder-gray-400/80 hover:shadow-xl"
+                            required
+                        />
+                        <svg
+                            className="absolute w-6 h-6 text-gray-400 -translate-y-1/2 right-3 top-1/2"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
+                            />
+                        </svg>
+                    </div>
+                    
+                    <button className="px-8 py-4 text-lg font-semibold text-white transition-all duration-300 transform bg-theme3 rounded-lg hover:bg-theme3/90 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-white/50 whitespace-nowrap">
+                        Subscribe Now
+                        <span className="ml-2">→</span>
+                    </button>
+                </div>
+
+                {/* Privacy assurance text */}
+                <p className="mt-4 text-sm text-center text-white/60">
+                    We respect your privacy. Unsubscribe at any time.
+                </p>
             </div>
         </div>
     );

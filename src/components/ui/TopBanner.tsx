@@ -52,7 +52,7 @@ const TopBanner = () => {
   }, [isVisible]);
 
   return (
-    <section className="relative flex flex-col items-center gap-6 px-6 py-10 overflow-hidden bg-gradient-to-br from-theme3 to-theme4">
+    <section className="relative flex flex-col items-center gap-6 px-6 py-10 overflow-hidden bg-gradient-to-br from-theme1 to-theme2">
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -60,9 +60,9 @@ const TopBanner = () => {
         viewport={{ once: true }}
         className="text-center max-w-[1006px] z-10"
       >
-        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1E1E1E] leading-tight">
+        <h1 className="text-3xl font-bold leading-tight text-white md:text-4xl lg:text-5xl">
           Start your studies with
-          <span ref={spanRef} className="ml-2 font-extrabold text-theme1 drop-shadow-md">
+          <span ref={spanRef} className="ml-2 font-extrabold text-pink-600 drop-shadow-md">
             {count.toLocaleString()}+
           </span>{" "}
           enrolled students of COC Education.
@@ -74,7 +74,7 @@ const TopBanner = () => {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.6 }}
         viewport={{ once: true }}
-        className="text-center max-w-[880px] text-[#444] text-base md:text-lg font-medium z-10"
+        className="text-center max-w-[880px] text-[white] text-base md:text-lg font-medium z-10"
       >
         Experienced Faculties, Daily Doubt sessions, Ready to counsel any enquiry, supportive technical team and empowering staff is which differentiate
         {/* Learn from expert mentors, clear doubts every day, and grow your skills with full support from our experienced, caring team. */}

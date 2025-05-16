@@ -35,14 +35,14 @@ const Header = () => {
   return (
     <>
       {/* Top Banner */}
-      <div className="flex items-center justify-center h-auto p-2 text-white bg-gradient-to-br from-theme3 to-theme4">
+      {/* <div className="flex items-center justify-center h-[10vh] text-lg font-bold text-white bg-theme3">
         <span className="text-md text-theme1">
           NEED ASSISTANCE IN BUYING/ORDERING? CALL 7303445575, 8448322142, 9999631597, 7011668629 NOW [Office Timing 10AM to 7PM]
         </span>
-      </div>
+      </div> */}
 
       {/* Main Header */}
-      <div className="bg-white min-h-14 navbar">
+      <div className="bg-white h-[10vh] navbar">
         <div className="flex-none ml-8">
           <Link to="/home" className="flex items-center">
             <img className="h-12" src='/assets/logo.svg' alt="Company Logo" />
@@ -57,14 +57,14 @@ const Header = () => {
           </div>
         </div> */}
 
-        <div className="flex items-center justify-center flex-1 ml-8 overflow-hidden">
+        <div className="flex items-center justify-center flex-1 ml-8 mr-8 overflow-hidden">
           <div className="flex gap-4 px-20 overflow-hidden whitespace-nowrap">
-            <div className='flex items-center justify-center animate-scrollLeft'>
-              <h1 className="mr-2 text-lg font-bold text-theme1">"Be Skilled Be Pro"</h1>
-              <h1 className="p-2 mr-2 text-lg font-bold text-white rounded-md bg-theme1 mr2">
-                CFM(Chartered Financial Management)
+            <div className='flex items-center justify-center animate-[scrollLeft_40s_linear_infinite]'>
+              <h1 className="mr-2 text-lg font-bold text-theme1">
+                PURCHASE ENQUIRY: 7303445575, 8448322142, 9999631597, 7011668629 |
+                TRACKING ID RELATED: 8595539968 |
+                TECHNICAL SUPPORT OR LOGIN ID RELATED ISSUE: 9811455109, 9319493165
               </h1>
-              <img className="h-12" src="/cfmLogo.jpg" alt="Logo" />
             </div>
           </div>
         </div>
@@ -149,7 +149,7 @@ const Header = () => {
       </div>
 
       {/* Navigation Bar */}
-      <div className="flex items-center h-12 text-white min-h-12 bg-theme1 navbar">
+      <div className="flex items-center h-[10vh] text-white bg-theme1 navbar">
         {/* Mobile Menu Button */}
         <div className="lg:hidden">
           <button onClick={toggleMenu} className="p-2 text-white">
@@ -166,7 +166,7 @@ const Header = () => {
               <li key={index} className="flex items-center h-full ">
                 <Link
                   to={item.path}
-                  className="flex items-center h-full px-4 text-lg hover:text-xl hover:bg-transparent" 
+                  className="flex items-center h-full px-4 text-lg hover:text-xl hover:bg-transparent"
                 >
                   {item.name}
                 </Link>

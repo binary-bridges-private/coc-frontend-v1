@@ -11,7 +11,7 @@ import NoticeBoardHome from "../ui/noticeBoard/NoticeBoardHome.tsx";
 
 const LandingPage = () => {
     return (
-        <div>
+        <div >
             <EnquirySection />
             <TopBanner />
             {/* <NoticeBoardHome /> */}

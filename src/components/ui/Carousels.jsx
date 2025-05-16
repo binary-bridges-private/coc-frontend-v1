@@ -26,12 +26,12 @@ const cards = [
         userName: "Emma",
         userRole: "CA Foundation Student"
     },
-    {
-        id: 5,
-        text: "I passed my CA Intermediate exams on the first attempt, thanks to the excellent guidance from this course.",
-        userName: "Jack",
-        userRole: "CA Intermediate Student"
-    }
+    // {
+    //     id: 5,
+    //     text: "I passed my CA Intermediate exams on the first attempt, thanks to the excellent guidance from this course.",
+    //     userName: "Jack",
+    //     userRole: "CA Intermediate Student"
+    // }
 ];
 
 
