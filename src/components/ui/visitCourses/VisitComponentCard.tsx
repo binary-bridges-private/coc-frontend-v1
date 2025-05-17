@@ -25,10 +25,12 @@ const VisitComponentCard = ({ title, label1, label2, label3, iconUrl, iconBgColo
             </div>
 
             <div className="absolute flex items-center gap-2 bottom-8 left-8">
-                <span className="text-lg font-semibold text-[#101C36]">Explore Courses</span>
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-[#101C36]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5-5 5M6 7l5 5-5 5"></path>
-                </svg>
+                <a href="https://www.coceducation.com/new-course/skill-courses" target="_blank" rel="noopener noreferrer">
+                    <span className="text-lg font-semibold text-[#101C36] cursor-pointer">Explore Courses</span>
+                </a>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-[#101C36]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5-5 5M6 7l5 5-5 5"></path>
+                    </svg>
             </div>
         </div>
 

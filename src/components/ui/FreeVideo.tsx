@@ -66,14 +66,18 @@ const FreeVideo = () => {
                     </div>
 
                     <div className="flex flex-col gap-4 sm:flex-row">
-                        <button className="flex items-center justify-center gap-2 bg-[#FF0000] hover:bg-[#CC0000] text-white font-medium rounded-lg px-6 py-3 transition-all duration-300 transform hover:scale-105 shadow-lg">
-                            <FaYoutube className="text-xl" />
-                            Watch on YouTube
-                        </button>
-                        <button className="flex items-center justify-center gap-2 bg-[#101C36] hover:bg-[#0A1226] text-white font-medium rounded-lg px-6 py-3 transition-all duration-300 border border-gray-300 hover:shadow-md">
-                            <FaPlay className="text-lg" />
-                            Browse Courses
-                        </button>
+                        <a href='https://youtube.com/@cfmcoceducation?si=vhRbpsOvVbrh1k5Y' target='_'>
+                            <button className="flex items-center justify-center gap-2 bg-[#FF0000] hover:bg-[#CC0000] text-white font-medium rounded-lg px-6 py-3 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                <FaYoutube className="text-xl" />
+                                Watch on YouTube
+                            </button>
+                        </a>
+                        <a href="https://www.coceducation.com/new-course/skill-courses" target="_blank" rel="noopener noreferrer">
+                            <button className="flex items-center justify-center gap-2 bg-[#101C36] hover:bg-[#0A1226] text-white font-medium rounded-lg px-6 py-3 transition-all duration-300 border border-gray-300 hover:shadow-md">
+                                <FaPlay className="text-lg" />
+                                Browse Courses
+                            </button>
+                        </a>
                     </div>
 
                     <div className="flex items-center gap-2 text-gray-500">
@@ -110,7 +114,7 @@ const FreeVideo = () => {
                             <span className="text-sm text-gray-600">Sample Lecture Preview</span>
                             <div className="flex gap-2">
                                 <span className="px-2 py-1 text-xs text-red-600 bg-red-100 rounded-md">FREE</span>
-                                <span className="px-2 py-1 text-xs text-blue-600 bg-blue-100 rounded-md">10:24</span>
+                                <span className="px-2 py-1 text-xs text-blue-600 bg-blue-100 rounded-md">7:26</span>
                             </div>
                         </div>
                     </div>

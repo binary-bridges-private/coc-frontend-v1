@@ -113,12 +113,11 @@ const ProductCard = ({ name, byline, photo, priceRange, rating, students, tag, d
             {/* Tag Badge */}
             {tag && (
                 <div className="absolute z-10 top-3 left-3 sm:top-4 sm:left-4">
-                    <span className={`px-2 py-1 text-[10px] sm:text-xs font-bold tracking-wider text-white uppercase rounded-full ${
-                        tag === "BEST SELLER" ? "bg-purple-600" :
-                        tag === "NEW" ? "bg-blue-600" :
-                        tag === "POPULAR" ? "bg-orange-500" :
-                        tag === "HOT" ? "bg-red-600" : "bg-gray-800"
-                    }`}>
+                    <span className={`px-2 py-1 text-[10px] sm:text-xs font-bold tracking-wider text-white uppercase rounded-full ${tag === "BEST SELLER" ? "bg-purple-600" :
+                            tag === "NEW" ? "bg-blue-600" :
+                                tag === "POPULAR" ? "bg-orange-500" :
+                                    tag === "HOT" ? "bg-red-600" : "bg-gray-800"
+                        }`}>
                         {tag}
                     </span>
                 </div>
@@ -192,9 +191,11 @@ const ProductCard = ({ name, byline, photo, priceRange, rating, students, tag, d
                             <MdPhoneInTalk className="text-sm sm:text-base" />
                         </button>
                     </div>
-                    <button className="px-2.5 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-medium text-white transition-colors duration-300 bg-gray-900 rounded-lg hover:bg-gray-800">
-                        View Details
-                    </button>
+                    <a href="https://www.coceducation.com/new-course/skill-courses" target="_blank" rel="noopener noreferrer">
+                        <button className="px-2.5 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-medium text-white transition-colors duration-300 bg-gray-900 rounded-lg hover:bg-gray-800">
+                            View Details
+                        </button>
+                    </a>
                 </div>
             </div>
         </div>

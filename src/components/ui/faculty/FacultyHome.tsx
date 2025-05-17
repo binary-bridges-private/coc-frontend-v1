@@ -245,7 +245,7 @@
 //           <Slider {...settings} className="px-2 pb-12 -mx-2">
 //             {facultiesList.map(renderFacultyCard)}
 //           </Slider>
-          
+
 //           {/* Custom dots styling */}
 //           <style jsx global>{`
 //             .slick-dots {
@@ -311,7 +311,7 @@ const FACULTIES = [
 const FacultyHome = () => {
   // Custom arrows with better visibility
   const NextArrow = ({ onClick }: { onClick: () => void }) => (
-    <div 
+    <div
       className="absolute right-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-lg cursor-pointer top-1/2 hover:bg-gray-100 sm:p-3"
       onClick={onClick}
     >
@@ -320,7 +320,7 @@ const FacultyHome = () => {
   );
 
   const PrevArrow = ({ onClick }: { onClick: () => void }) => (
-    <div 
+    <div
       className="absolute left-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-lg cursor-pointer top-1/2 hover:bg-gray-100 sm:p-3"
       onClick={onClick}
     >
@@ -345,66 +345,66 @@ const FacultyHome = () => {
     centerPadding: "60px", // Creates the peeking effect
     responsive: [
       {
-          breakpoint: 1536, // Extra large screens
-          settings: {
-              slidesToShow: 3,
-              centerMode: true,
-              centerPadding: "100px",
-          },
+        breakpoint: 1536, // Extra large screens
+        settings: {
+          slidesToShow: 3,
+          centerMode: true,
+          centerPadding: "100px",
+        },
       },
       {
-          breakpoint: 1280, // Large desktops
-          settings: {
-              slidesToShow: 2,
-              centerMode: true,
-              centerPadding: "150px",
-          },
+        breakpoint: 1280, // Large desktops
+        settings: {
+          slidesToShow: 2,
+          centerMode: true,
+          centerPadding: "150px",
+        },
       },
       {
-          breakpoint: 1024, // Tablets landscape
-          settings: {
-              slidesToShow: 2,
-              centerMode: true,
-              centerPadding: "100px",
-          },
+        breakpoint: 1024, // Tablets landscape
+        settings: {
+          slidesToShow: 2,
+          centerMode: true,
+          centerPadding: "100px",
+        },
       },
       {
-          breakpoint: 868, // Tablets portrait
-          settings: {
-              slidesToShow: 1,
-              centerMode: true,
-              centerPadding: "80px",
-              // arrows: false,
-          },
+        breakpoint: 868, // Tablets portrait
+        settings: {
+          slidesToShow: 1,
+          centerMode: true,
+          centerPadding: "80px",
+          // arrows: false,
+        },
       },
       {
-          breakpoint: 768, // Tablets portrait
-          settings: {
-              slidesToShow: 1,
-              centerMode: true,
-              centerPadding: "60px",
-              arrows: false,
-          },
+        breakpoint: 768, // Tablets portrait
+        settings: {
+          slidesToShow: 1,
+          centerMode: true,
+          centerPadding: "60px",
+          arrows: false,
+        },
       },
       {
-          breakpoint: 640, // Large mobile devices
-          settings: {
-              slidesToShow: 1,
-              centerMode: true,
-              centerPadding: "40px",
-              arrows: false,
-          },
+        breakpoint: 640, // Large mobile devices
+        settings: {
+          slidesToShow: 1,
+          centerMode: true,
+          centerPadding: "40px",
+          arrows: false,
+        },
       },
       {
-          breakpoint: 480, // Small mobile devices
-          settings: {
-              slidesToShow: 1,
-              centerMode: true,
-              centerPadding: "20px",
-              arrows: false,
-          },
+        breakpoint: 480, // Small mobile devices
+        settings: {
+          slidesToShow: 1,
+          centerMode: true,
+          centerPadding: "20px",
+          arrows: false,
+        },
       },
-  ],
+    ],
   };
 
   return (
@@ -428,7 +428,7 @@ const FacultyHome = () => {
               </div>
             ))}
           </Slider>
-          
+
           {/* Custom dots styling */}
           <style jsx global>{`
             .slick-dots {
@@ -449,10 +449,12 @@ const FacultyHome = () => {
         </div>
 
         <div className="flex justify-center mt-14 sm:mt-16">
-          <button className="flex items-center px-8 py-3 text-lg font-semibold text-white transition-all duration-300 transform bg-red-600 rounded-full hover:bg-red-700 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
-            Explore All Faculty
-            <FaArrowRight className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
-          </button>
+          <a href="https://www.coceducation.com/faculties" target="_blank" rel="noopener noreferrer">
+            <button className="flex items-center px-8 py-3 text-lg font-semibold text-white transition-all duration-300 transform bg-red-600 rounded-full hover:bg-red-700 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+              Explore All Faculty
+              <FaArrowRight className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
+            </button>
+          </a>
         </div>
       </div>
     </section>

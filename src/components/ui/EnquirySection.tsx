@@ -177,11 +177,11 @@ const EnquirySection = () => {
                 animate="visible"
             >
                 {[
-                    { icon: <FaYoutube className="text-3xl text-white" />, color: "#FF0000", name: "YouTube" },
-                    { icon: <FaFacebook className="text-3xl text-white" />, color: "#1877F2", name: "Facebook" },
-                    { icon: <FaWhatsapp className="text-3xl text-white" />, color: "#25D366", name: "WhatsApp" },
-                    { icon: <FaTelegram className="text-3xl text-white" />, color: "#0088CC", name: "Telegram" },
-                    { icon: <FaInstagram className="text-3xl text-white" />, color: "from-[#F58529] via-[#DD2A7B] to-[#8134AF]", name: "Instagram" }
+                    { icon: <FaYoutube className="text-3xl text-white" />, color: "#FF0000", name: "YouTube", link: "https://youtube.com/@cfmcoceducation?si=vhRbpsOvVbrh1k5Y" },
+                    { icon: <FaFacebook className="text-3xl text-white" />, color: "#1877F2", name: "Facebook", link: "https://www.facebook.com/share/1ATktFboCS/" },
+                    { icon: <FaWhatsapp className="text-3xl text-white" />, color: "#25D366", name: "WhatsApp", link: "http://whatsapp.coceducation.com/" },
+                    { icon: <FaTelegram className="text-3xl text-white" />, color: "#0088CC", name: "Telegram", link: "https://t.me/cfmbycoceducation" },
+                    { icon: <FaInstagram className="text-3xl text-white" />, color: "from-[#F58529] via-[#DD2A7B] to-[#8134AF]", name: "Instagram", link: "https://www.instagram.com/cfmcoceducation?igsh=MTN2OXF3Z2ZsdzRnMw==" }
                 ].map((social, index) => (
                     <motion.div
                         key={index}
@@ -198,10 +198,12 @@ const EnquirySection = () => {
                         }}
                         whileTap={{ scale: 0.95 }}
                     >
-                        {social.icon}
-                        <span className="absolute px-2 py-1 ml-2 text-xs text-white transition-opacity bg-black rounded opacity-0 left-full group-hover:opacity-100 whitespace-nowrap">
-                            {social.name}
-                        </span>
+                        <a href={social.link} target="_">
+                            {social.icon}
+                            <span className="absolute px-2 py-1 ml-2 text-xs text-white transition-opacity bg-black rounded opacity-0 left-full group-hover:opacity-100 whitespace-nowrap">
+                                {social.name}
+                            </span>
+                        </a>
                     </motion.div>
                 ))}
             </motion.div>

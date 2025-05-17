@@ -45,7 +45,7 @@ const WhyChooseCOC = () => {
             {/* Decorative elements */}
             <div className="absolute top-0 left-0 w-32 h-32 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/10"></div>
             <div className="absolute bottom-0 right-0 w-64 h-64 translate-x-1/2 translate-y-1/2 rounded-full bg-white/10"></div>
-            
+
             <div className="relative px-5 mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div className="text-center">
                     <h2 className="text-4xl font-bold text-white md:text-5xl lg:text-6xl">
@@ -58,7 +58,7 @@ const WhyChooseCOC = () => {
 
                 <div className="grid grid-cols-1 gap-8 mt-16 sm:grid-cols-2 lg:grid-cols-3">
                     {features.map((feature, index) => (
-                        <div 
+                        <div
                             key={index}
                             className="relative overflow-hidden transition-all duration-300 transform bg-white rounded-xl hover:shadow-2xl hover:-translate-y-2 group"
                         >
@@ -66,9 +66,9 @@ const WhyChooseCOC = () => {
                             <div className="p-8">
                                 <div className="flex items-center mb-6">
                                     <div className={`p-3 rounded-lg ${feature.accentColor}`}>
-                                        <img 
-                                            src={feature.icon} 
-                                            className="w-12 h-12" 
+                                        <img
+                                            src={feature.icon}
+                                            className="w-12 h-12"
                                             alt={feature.title}
                                         />
                                     </div>
@@ -83,15 +83,17 @@ const WhyChooseCOC = () => {
                 {/* Floating CTA */}
                 <div className="mt-16 text-center">
                     <button className="px-8 py-4 text-lg font-semibold text-white transition-all duration-300 transform bg-yellow-500 rounded-lg shadow-lg hover:bg-yellow-600 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50">
-                        Start Learning Today
-                        <svg 
-                            xmlns="http://www.w3.org/2000/svg" 
-                            className="inline-block w-5 h-5 ml-2" 
-                            viewBox="0 0 20 20" 
-                            fill="currentColor"
-                        >
-                            <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                        </svg>
+                        <a href="https://www.coceducation.com/new-course/skill-courses" target="_blank" rel="noopener noreferrer">
+                            Start Learning Today
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="inline-block w-5 h-5 ml-2"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                            </svg>
+                        </a>
                     </button>
                 </div>
             </div>

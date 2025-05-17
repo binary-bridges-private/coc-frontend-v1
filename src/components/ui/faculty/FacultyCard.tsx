@@ -23,7 +23,7 @@ const FacultyCard = ({ image, label, name, bio }) => {
             </div>
 
             <div className="flex items-center mt-4">
-                <a href="#" className="text-sm font-semibold text-blue-500 underline">
+                <a href="https://www.coceducation.com/faculties"  target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-blue-500 underline">
                     Learn More
                 </a>
                 <div className="flex items-center justify-center w-6 h-6 ml-2 border-2 border-blue-500 rounded-full">

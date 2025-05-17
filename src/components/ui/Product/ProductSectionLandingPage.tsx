@@ -391,10 +391,13 @@ const ProductSectionLandingPage = () => {
                 {/* Enhanced CTA Button */}
 
                 <div className="flex justify-center mt-14 sm:mt-16">
+                        <a href="https://www.coceducation.com/new-course/skill-courses" target="_blank" rel="noopener noreferrer">
                     <button className="flex items-center px-8 py-3 text-lg font-semibold text-white transition-all duration-300 transform bg-red-600 rounded-full hover:bg-red-700 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
-                        Explore All Courses
+
+                            Explore All Courses
                         <FaArrowRight className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
                     </button>
+                        </a>
                 </div>
             </div>
         </section>
