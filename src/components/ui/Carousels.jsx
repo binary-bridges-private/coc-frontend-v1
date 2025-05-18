@@ -4,26 +4,26 @@ import "./Carousel.css";
 const cards = [
     {
         id: 1,
-        text: "The course material is well-structured and easy to follow. It helped me understand complex topics with ease.",
-        userName: "Alice",
+        text: "Taken CFM module classes and it was a great experience and quality learning. The course helps with providing necessary knowledge and practical skills regarding real life work. Even for the candidates who are already working, the course helps adding on new bits of skills and boosts confidence.",
+        userName: "Ujwal Sharma",
         userRole: "CA Aspirant"
     },
     {
         id: 2,
-        text: "The conceptual clarity provided in this course is unmatched. It made the hardest topics so much simpler.",
-        userName: "Bob",
+        text: "It is a great experience to join COC Education as I’ve enrolled for CFM course. I’ve gained so much practical knowledge from CFM Course. It really helpful for personal and professional growth.",
+        userName: "Dhara Patel",
         userRole: "CA Final Student"
     },
     {
         id: 3,
-        text: "The mentorship program was outstanding. It gave me personalized feedback and tips for improvement.",
-        userName: "Charlie",
+        text: "I would like to express my sincere gratitude for offering the Certified Financial Management (CFM) course through digital media platforms. This initiative is truly commendable, providing valuable learning opportunities in finance-related subjects from the comfort of one's own home.",
+        userName: "Siddique Mohd Shahjan",
         userRole: "CA Intermediate Student"
     },
     {
         id: 4,
-        text: "The comprehensive study notes and revision material were a lifesaver during exam prep. Thank you!",
-        userName: "Emma",
+        text: "According to me CFM is outstanding skill training course with a affordable price till now because it is the combination of various subject like Ms Office , Tally, stock market, Tax return and many others , in a word, all skills under one roof which is required for selection in corporate . Thank you Amarjeet Ma'am, Raghav Sir for such great effort.",
+        userName: "SK Khan",
         userRole: "CA Foundation Student"
     },
     // {

@@ -8,10 +8,12 @@ import VisitCoursesHome from "../ui/visitCourses/VisitCoursesHome.tsx";
 import Faculties from "../ui/faculty/FacultyHome.tsx";
 import TopBanner from "../ui/TopBanner.tsx";
 import NoticeBoardHome from "../ui/noticeBoard/NoticeBoardHome.tsx";
+import EnquiryForm from "../ui/EnquiryForm.tsx";
 
 const LandingPage = () => {
     return (
         <div >
+            <EnquiryForm />
             <EnquirySection />
             <TopBanner />
             {/* <NoticeBoardHome /> */}
