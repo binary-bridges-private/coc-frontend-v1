@@ -46,6 +46,7 @@ interface SignupCredentials {
   phoneNumber: string;
   enrollmentNumber: string;
   password: string;
+  userType: string;
 }
 
 interface UserData {

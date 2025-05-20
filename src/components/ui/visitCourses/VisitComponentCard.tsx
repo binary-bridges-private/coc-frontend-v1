@@ -1,40 +1,27 @@
 import React from 'react'
+import { motion } from "framer-motion";
 
-const VisitComponentCard = ({ title, label1, label2, label3, iconUrl, iconBgColor }) => {
+const VisitCoursesCard = ({ iconUrl, iconBgColor, title, labels }) => {
     return (
-        <div className="relative w-sm h-[250px] bg-white border border-[#F5F5F5] shadow-lg rounded-lg p-4 flex flex-col items-start overflow-hidden">
-
-            <div className="absolute top-6 left-8 text-2xl font-bold text-[#282828]">
-                {title}
+        <motion.div
+            whileHover={{ y: -5 }}
+            className="p-6 transition-shadow bg-white shadow-lg rounded-xl hover:shadow-xl"
+        >
+            <div className="flex flex-col items-center">
+                <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-lg"
+                    style={{ backgroundColor: iconBgColor }}>
+                    <img src={iconUrl} alt={title} className="w-10 h-10" />
+                </div>
+                <h3 className="mb-4 text-2xl font-semibold text-gray-900">{title}</h3>
+                <div className="flex flex-wrap justify-center gap-2">
+                    {labels.map((label, index) => (
+                        <span key={index} className="px-3 py-1 text-blue-800 rounded-full text-md bg-blue-50">
+                            {label}
+                        </span>
+                    ))}
+                </div>
             </div>
-
-            <div className={`absolute top-0 right-[-125px] w-[250px] h-[250px] rounded-full`} style={{ backgroundColor: iconBgColor }} />
-
-            <img className="absolute right-8 top-[calc(50%-24px)] w-12 h-12 bg-cover bg-center" src={iconUrl} />
-
-            <div className="absolute top-20 left-8 flex items-center justify-center gap-2 border border-[#545454] rounded-md p-2 text-[#545454] text-n2">
-                {label1}
-            </div>
-
-            <div className="absolute top-20 left-32 mx-2 flex items-center justify-center gap-2 border border-[#545454] rounded-md p-2 text-[#545454] text-n2">
-                {label2}
-            </div>
-
-            <div className="absolute top-32 left-8 flex items-center justify-center gap-2 border border-[#545454] rounded-md p-2 text-[#545454] text-n2">
-                {label3}
-            </div>
-
-            <div className="absolute flex items-center gap-2 bottom-8 left-8">
-                <a href="https://www.coceducation.com/new-course/skill-courses" target="_blank" rel="noopener noreferrer">
-                    <span className="text-lg font-semibold text-[#101C36] cursor-pointer">Explore Courses</span>
-                </a>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-[#101C36]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5-5 5M6 7l5 5-5 5"></path>
-                    </svg>
-            </div>
-        </div>
-
+        </motion.div>
     )
-}
-
-export default VisitComponentCard
+};
+export default VisitCoursesCard;

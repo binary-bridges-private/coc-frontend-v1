@@ -547,7 +547,7 @@ const Signup = () => {
                 phoneNumber: inputValues.phoneNumber,
                 password: inputValues.password,
                 enrollmentNumber: userType === "cfm" ? inputValues.enrollmentNumber : "",
-                // userType,
+                userType: userType === "cfm" ? "cfm" : "new",
             }));
 
             if (signupUser.fulfilled.match(resultAction)) {

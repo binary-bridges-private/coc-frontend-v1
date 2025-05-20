@@ -279,10 +279,9 @@
 
 // export default React.memo(FacultyHome);
 
-import React, { useCallback } from "react";
+import { motion } from "framer-motion";
 import Slider from "react-slick";
-import FacultyCard from "./FacultyCard.tsx";
-import { FaArrowRight, FaArrowLeft } from "react-icons/fa";
+import { FaArrowRight, FaArrowLeft, FaStar } from "react-icons/fa";
 
 const FACULTIES = [
   {
@@ -308,27 +307,74 @@ const FACULTIES = [
   }
 ];
 
+const FacultyCard = ({ image, label, name, bio, rating }) => (
+  <motion.div
+    className="h-full mx-2 overflow-hidden transition-all duration-300 bg-white shadow-lg rounded-xl hover:shadow-xl"
+    whileHover={{ y: -10 }}
+  >
+    {/* Image Section */}
+    <div className="relative bg-gray-100 aspect-square">
+      <img
+        src={image}
+        alt={name}
+        className="object-cover object-center w-full h-full"
+        onError={(e) => {
+          e.target.src = 'https://via.placeholder.com/400x400?text=Faculty+Image';
+          e.target.className = "object-contain p-4 bg-gray-200";
+        }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-transparent" />
+    </div>
+
+    {/* Details Section */}
+    <div className="p-6 space-y-4">
+      {/* Label & Rating */}
+      <div className="flex items-center justify-between">
+        <span className="px-3 py-1 text-sm font-medium text-orange-700 bg-orange-100 rounded-full">
+          {label}
+        </span>
+        <div className="flex items-center space-x-1.5">
+          <FaStar className="w-5 h-5 text-yellow-400" />
+          <span className="font-semibold text-gray-800">{rating}</span>
+        </div>
+      </div>
+
+      {/* Name & Bio */}
+      <div className="space-y-3">
+        <h3 className="text-2xl font-bold text-gray-900 transition-colors hover:text-orange-600">
+          {name}
+        </h3>
+        <p className="leading-relaxed text-gray-700 line-clamp-4">
+          {bio}
+        </p>
+      </div>
+
+      {/* View Profile Button */}
+      <button className="w-full py-2.5 text-sm font-medium text-orange-600 hover:text-white rounded-lg bg-orange-50 hover:bg-orange-600 transition-colors duration-300">
+        View Full Profile
+      </button>
+    </div>
+  </motion.div>
+);
+
 const FacultyHome = () => {
-  // Custom arrows with better visibility
-  const NextArrow = ({ onClick }: { onClick: () => void }) => (
-    <div
-      className="absolute right-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-lg cursor-pointer top-1/2 hover:bg-gray-100 sm:p-3"
+
+  const CustomArrow = ({ direction, onClick }) => (
+    <motion.div
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.9 }}
+      className={`absolute top-1/2 -translate-y-1/2 z-20 cursor-pointer p-3 rounded-full bg-white shadow-lg hover:shadow-xl ${direction === 'next' ? '-right-12' : '-left-12'
+        }`}
       onClick={onClick}
     >
-      <FaArrowRight className="text-sm text-gray-700 sm:text-base" />
-    </div>
+      {direction === 'next' ? (
+        <FaArrowRight className="text-2xl text-gray-700 hover:text-red-600" />
+      ) : (
+        <FaArrowLeft className="text-2xl text-gray-700 hover:text-red-600" />
+      )}
+    </motion.div>
   );
 
-  const PrevArrow = ({ onClick }: { onClick: () => void }) => (
-    <div
-      className="absolute left-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-lg cursor-pointer top-1/2 hover:bg-gray-100 sm:p-3"
-      onClick={onClick}
-    >
-      <FaArrowLeft className="text-sm text-gray-700 sm:text-base" />
-    </div>
-  );
-
-  // Enhanced carousel settings with peeking effect
   const settings = {
     dots: true,
     infinite: true,
@@ -336,129 +382,120 @@ const FacultyHome = () => {
     slidesToShow: 3,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 3000,
+    autoplaySpeed: 4000,
     pauseOnHover: true,
     arrows: true,
-    // nextArrow: <NextArrow />,
-    // prevArrow: <PrevArrow />,
-    centerMode: true,
-    centerPadding: "60px", // Creates the peeking effect
+    nextArrow: <CustomArrow direction="next" onClick={undefined} />,
+    prevArrow: <CustomArrow direction="prev" onClick={undefined} />,
     responsive: [
       {
-        breakpoint: 1536, // Extra large screens
-        settings: {
-          slidesToShow: 3,
-          centerMode: true,
-          centerPadding: "100px",
-        },
-      },
-      {
-        breakpoint: 1280, // Large desktops
+        breakpoint: 1280,
         settings: {
           slidesToShow: 2,
-          centerMode: true,
-          centerPadding: "150px",
-        },
+          centerMode: false
+        }
       },
       {
-        breakpoint: 1024, // Tablets landscape
+        breakpoint: 1024,
         settings: {
           slidesToShow: 2,
-          centerMode: true,
-          centerPadding: "100px",
-        },
+          arrows: false
+        }
       },
       {
-        breakpoint: 868, // Tablets portrait
+        breakpoint: 768,
         settings: {
           slidesToShow: 1,
-          centerMode: true,
-          centerPadding: "80px",
-          // arrows: false,
-        },
-      },
-      {
-        breakpoint: 768, // Tablets portrait
-        settings: {
-          slidesToShow: 1,
-          centerMode: true,
-          centerPadding: "60px",
-          arrows: false,
-        },
-      },
-      {
-        breakpoint: 640, // Large mobile devices
-        settings: {
-          slidesToShow: 1,
-          centerMode: true,
-          centerPadding: "40px",
-          arrows: false,
-        },
-      },
-      {
-        breakpoint: 480, // Small mobile devices
-        settings: {
-          slidesToShow: 1,
-          centerMode: true,
-          centerPadding: "20px",
-          arrows: false,
-        },
-      },
-    ],
+          arrows: false
+        }
+      }
+    ]
   };
 
   return (
-    <section className="w-full py-10 bg-gradient-to-br from-theme1 to-theme2 sm:py-10 lg:py-10">
-      <div className="container px-4 mx-auto sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto mb-12 text-center sm:mb-16">
-          <h2 className="text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
-            Guiding You to <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-600">Success</span>
-          </h2>
-          <p className="mt-4 text-lg text-gray-200 sm:text-xl">
-            Learn from industry experts and academic leaders
-          </p>
-        </div>
+    <section className="w-full min-h-screen py-10 overflow-x-hidden bg-gradient-to-br from-theme1 to-theme2 ">
+      {/* Background Elements */}
+      <div className="absolute inset-0 pointer-events-none">
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-64 h-64 rounded-full bg-red-500/10 blur-3xl"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{
+              duration: 2 + Math.random() * 2,
+              repeat: Infinity,
+              repeatType: "reverse"
+            }}
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              zIndex: 0
+            }}
+          />
+        ))}
+      </div>
 
-        {/* Carousel with peeking effect */}
-        <div className="relative px-6 sm:px-8 md:px-10">
-          <Slider {...settings} className="px-2 -mx-2">
-            {[...FACULTIES, ...FACULTIES].map((faculty, index) => (
-              <div key={`${faculty.name}-${index}`} className="px-2 transition-transform duration-300 hover:scale-[1.02]">
+      <div className="relative z-10 px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+        {/* Header */}
+        <motion.div
+          initial={{ y: 40, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.6 }}
+          className="max-w-4xl mx-auto mb-16 text-center"
+        >
+          <h2 className="text-4xl font-bold text-white" >
+            Guiding You to Excellence
+          </h2>
+          <p className="mt-6 text-xl text-red-100 sm:text-2xl">
+            Learn from industry experts and academic pioneers
+          </p>
+        </motion.div>
+
+        {/* Carousel */}
+        <div className="relative w-full">
+          <Slider {...settings}>
+            {FACULTIES.map((faculty, index) => (
+              <div key={faculty.name} className="!block h-full">
                 <FacultyCard {...faculty} />
               </div>
             ))}
           </Slider>
-
-          {/* Custom dots styling */}
-          <style jsx global>{`
-            .slick-dots {
-              bottom: -30px !important;
-            }
-            .slick-dots li {
-              margin: 0 5px !important;
-            }
-            .slick-dots li button:before {
-              color: rgba(255,255,255,0.5) !important;
-              font-size: 10px !important;
-              opacity: 1 !important;
-            }
-            .slick-dots li.slick-active button:before {
-              color: white !important;
-            }
-          `}</style>
         </div>
 
-        <div className="flex justify-center mt-14 sm:mt-16">
-          <a href="https://www.coceducation.com/faculties" target="_blank" rel="noopener noreferrer">
-            <button className="flex items-center px-8 py-3 text-lg font-semibold text-white transition-all duration-300 transform bg-red-600 rounded-full hover:bg-red-700 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
-              Explore All Faculty
-              <FaArrowRight className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
-            </button>
-          </a>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.4 }}
+          viewport={{ once: true }}
+          className="flex justify-center mt-12 sm:mt-16"
+        >
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="flex items-center gap-2 px-8 py-4 mx-auto text-lg font-semibold text-white transition-colors duration-300 bg-orange-600 rounded-lg shadow-lg hover:bg-orange-700 focus:outline-none"
+          >
+            <a
+              href="https://www.coceducation.com/faculties"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center"
+            >
+              Explore All Courses
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-5 h-5 ml-2"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </a>
+          </motion.button>
+        </motion.div>
       </div>
     </section>
   );
 };
 
-export default React.memo(FacultyHome);
+export default FacultyHome;
