@@ -163,7 +163,7 @@ const YouTube = () => {
 
                 {/* Payment Method Icon Section */}
                 <div className="relative w-[143px] h-[32px] bg-[#FF0000] border rounded-[2px] cursor-pointer">
-                    <a href="https://youtube.com/@cfmcoceducation?si=vhRbpsOvVbrh1k5Y" target="_blank" rel="noopener noreferrer">
+                    <a href="https://youtube.com/@santoshkumarcoceducation?si=p_15YUNfWtWNFD4X" target="_blank" rel="noopener noreferrer">
                         {/* YouTube Logo */}
                         <img
                             src={"youtube.svg"}
@@ -174,7 +174,7 @@ const YouTube = () => {
                         {/* Subscriber Count */}
                         <div className="border absolute w-[49px] h-[32px] left-[94px] top-0 bg-[#FFFFFF] flex items-center justify-center">
                             <span className="text-[14px] font-normal leading-[140%] text-[#737373]">
-                                329K
+                                334K
                             </span>
                         </div>
                     </a>
