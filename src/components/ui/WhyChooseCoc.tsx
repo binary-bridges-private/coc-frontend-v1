@@ -172,7 +172,7 @@ const WhyChooseCOC = () => {
     return (
         <section className="relative w-full py-10 overflow-hidden bg-gradient-to-br from-theme1 to-theme2">
             {/* Animated background elements */}
-            <motion.div 
+            {/* <motion.div 
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 className="absolute inset-0 opacity-10"
@@ -183,7 +183,7 @@ const WhyChooseCOC = () => {
                 <div className="absolute rounded-full w-96 h-96 bg-amber-400 -bottom-38 -right-28 mix-blend-multiply blur-3xl"></div>
                 <div className="absolute w-64 h-64 bg-orange-400 rounded-full -top-22 -left-27 mix-blend-multiply blur-3xl"></div>
                 <div className="absolute rounded-full w-96 h-96 bg-amber-400 -bottom-38 -right-31 mix-blend-multiply blur-3xl"></div>
-            </motion.div>
+            </motion.div> */}
 
             
 

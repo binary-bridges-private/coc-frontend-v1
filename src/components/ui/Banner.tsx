@@ -12,7 +12,7 @@ const Banner: React.FC = () => {
     <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black bg-opacity-50 px-4">
       <div className="relative w-full max-w-5xl overflow-hidden bg-white rounded-lg shadow-lg">
         {/* <img src={imageUrl} alt="Banner" className="object-cover w-full h-auto" /> */}
-        <a href="https://www.coceducation.com/new-course/skill-courses" target="_blank" rel="noopener noreferrer">
+        <a href="https://www.coceducation.com/new-course/skill-courses/chartered-financial-management" target="_blank" rel="noopener noreferrer">
           <img src={imageUrl} alt="Banner" className="object-cover w-full h-auto cursor-pointer" />
         </a>
         <button

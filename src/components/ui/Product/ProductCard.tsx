@@ -101,7 +101,7 @@ import { FaWhatsapp, FaYoutube, FaStar } from "react-icons/fa";
 import { MdPhoneInTalk, MdOutlineGroups } from "react-icons/md";
 import { RiFlashlightFill } from "react-icons/ri";
 
-const ProductCard = ({ name, byline, photo, priceRange, rating, students, tag, discount }) => {
+const ProductCard = ({ name, byline, photo, priceRange, rating, students, tag, discount, link }) => {
     const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
         const target = e.target as HTMLImageElement;
         target.src = 'https://via.placeholder.com/800x450?text=Course+Image';
@@ -191,7 +191,7 @@ const ProductCard = ({ name, byline, photo, priceRange, rating, students, tag, d
                             <MdPhoneInTalk className="text-sm sm:text-base" />
                         </button>
                     </div>
-                    <a href="https://www.coceducation.com/new-course/skill-courses" target="_blank" rel="noopener noreferrer">
+                    <a href={link} target="_blank" rel="noopener noreferrer">
                         <button className="px-2.5 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-medium text-white transition-colors duration-300 bg-gray-900 rounded-lg hover:bg-gray-800">
                             View Details
                         </button>

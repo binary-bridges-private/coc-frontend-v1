@@ -289,25 +289,28 @@ const FACULTIES = [
     label: "Professor, CA",
     name: "Raghav Goel",
     bio: "Qualified Chartered Accountant with MBA from Birla Institute of Technology.",
-    rating: 4.9
+    rating: 4.7,
+    link: "https://www.coceducation.com/faculty/ca-raghav-goel"
   },
   {
     image: "/assets/faculties/second.svg",
     label: "Instructor, ACCA",
     name: "Amarjit Kaur",
     bio: "ACCA certified with 10+ years experience teaching Tally & IT software.",
-    rating: 4.8
+    rating: 4.6,
+    link: "https://www.coceducation.com/faculty/ca-acca--amarjit-kaur"
   },
   {
     image: "/assets/faculties/third.svg",
     label: "Professor",
     name: "Nitin Bhardwaj",
     bio: "University topper in Commerce with specialization in Business Law.",
-    rating: 4.7
+    rating: 4.6,
+    link: "https://www.coceducation.com/faculty/professor-nitin-bhardwaj"
   }
 ];
 
-const FacultyCard = ({ image, label, name, bio, rating }) => (
+const FacultyCard = ({ image, label, name, bio, rating, link }) => (
   <motion.div
     className="h-full mx-2 overflow-hidden transition-all duration-300 bg-white shadow-lg rounded-xl hover:shadow-xl"
     whileHover={{ y: -10 }}
@@ -350,9 +353,11 @@ const FacultyCard = ({ image, label, name, bio, rating }) => (
       </div>
 
       {/* View Profile Button */}
-      <button className="w-full py-2.5 text-sm font-medium text-orange-600 hover:text-white rounded-lg bg-orange-50 hover:bg-orange-600 transition-colors duration-300">
-        View Full Profile
-      </button>
+      <a href={link} target="_blank" rel="noopener noreferrer">
+        <button className="w-full py-2.5 text-sm font-medium text-orange-600 hover:text-white rounded-lg bg-orange-50 hover:bg-orange-600 transition-colors duration-300">
+          View Full Profile
+        </button>
+      </a>
     </div>
   </motion.div>
 );
@@ -481,7 +486,7 @@ const FacultyHome = () => {
               rel="noopener noreferrer"
               className="flex items-center"
             >
-              Explore All Courses
+              Explore ALL Faculties
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="w-5 h-5 ml-2"

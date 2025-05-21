@@ -417,68 +417,40 @@ const ProductSectionLandingPage = () => {
     const courses = [
         {
             id: 1,
-            name: "CMA Inter Group-2 Full Course (Combo)",
-            byline: "CA/CMA Santosh Kumar, CA/CS Amit Bachhawat, CMA Sumit Rastogi, CA Satish Jalan",
-            photo: "course-example.png",
-            priceRange: "₹22,500 - ₹31,000",
+            name: "CFM (SAP ID Included)",
+            byline: "By CA/CMA Santosh Kumar , CA/ACCA Amarjit Kaur , CA Raghav Goel",
+            photo: "./assets/courses/first.png",
+            priceRange: "9,299",
             rating: 4.8,
             students: 1250,
             tag: "BEST SELLER",
-            discount: "15% OFF",
+            discount: "81% OFF",
+            link: "https://www.coceducation.com/course/sap-id-cfm-course"
         },
         {
             id: 2,
-            name: "CMA Final Group-1 Full Course",
-            byline: "CA/CMA Santosh Kumar, CA/CS Amit Bachhawat, CMA Sumit Rastogi, CA Satish Jalan",
-            photo: "course-example.png",
-            priceRange: "₹30,000 - ₹40,000",
+            name: "CFM (Chartered Financial Management)",
+            byline: "By CA/CMA Santosh Kumar , CA/ACCA Amarjit Kaur , CA Raghav Goel",
+            photo: "./assets/courses/second.png",
+            priceRange: "₹7,999",
             rating: 4.9,
             students: 980,
             tag: "NEW",
-            discount: "20% OFF",
+            discount: "83.34% OFF",
+            link: "https://www.coceducation.com/course/chartered-financial-management-cfm"
         },
         {
             id: 3,
             name: "CMA Foundation Complete Course",
-            byline: "CA/CMA Santosh Kumar, CA/CS Amit Bachhawat, CMA Sumit Rastogi, CA Satish Jalan",
-            photo: "course-example.png",
-            priceRange: "₹18,000 - ₹25,000",
+            byline: "By CA/ACCA Amarjit Kaur",
+            photo: "./assets/courses/first.png",
+            priceRange: "₹13,000",
             rating: 4.7,
             students: 2150,
             tag: "POPULAR",
-            discount: "10% OFF",
-        },
-        {
-            id: 4,
-            name: "CMA Inter Group-1 Full Course",
-            byline: "CA/CMA Santosh Kumar, CA/CS Amit Bachhawat, CMA Sumit Rastogi, CA Satish Jalan",
-            photo: "course-example.png",
-            priceRange: "₹20,000 - ₹28,000",
-            rating: 4.6,
-            students: 1750,
-            discount: "12% OFF",
-        },
-        {
-            id: 5,
-            name: "CA Foundation Accounts Mastery",
-            byline: "CA/CMA Santosh Kumar, CA/CS Amit Bachhawat",
-            photo: "course-example.png",
-            priceRange: "₹15,000 - ₹22,000",
-            rating: 4.9,
-            students: 3200,
-            tag: "HOT",
-            discount: "18% OFF",
-        },
-        {
-            id: 6,
-            name: "CS Executive Law Special",
-            byline: "CA/CS Amit Bachhawat, CMA Sumit Rastogi",
-            photo: "course-example.png",
-            priceRange: "₹25,000 - ₹32,000",
-            rating: 4.7,
-            students: 890,
-            discount: "25% OFF",
-        },
+            discount: "45.83% OFF",
+            link: "https://www.coceducation.com/course/sap-id-cfm"
+        }
     ];
 
     const CustomArrow = ({ direction, onClick }) => (
@@ -624,6 +596,7 @@ const ProductSectionLandingPage = () => {
                                         students={course.students}
                                         tag={course.tag}
                                         discount={course.discount}
+                                        link={course.link}
                                     />
                                 </motion.div>
                             </motion.div>
@@ -642,7 +615,7 @@ const ProductSectionLandingPage = () => {
                             className="flex items-center gap-2 px-8 py-4 mx-auto text-lg font-semibold text-white transition-colors duration-300 bg-blue-600 rounded-lg shadow-lg hover:bg-blue-700 focus:outline-none"
                         >
                             <a
-                                href="https://www.coceducation.com/new-course/skill-courses"
+                                href="https://www.coceducation.com/new-course/skill-courses/chartered-financial-management"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex items-center"

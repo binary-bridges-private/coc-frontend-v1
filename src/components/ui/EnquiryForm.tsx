@@ -337,7 +337,7 @@ const EnquiryForm = () => {
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: 'rgba(30, 64, 175, 0.05)',
+      backgroundColor: 'rgba(13, 16, 27, 0.08)',
       backdropFilter: 'blur(4px)',
       zIndex: 50,
       display: 'flex',
@@ -347,7 +347,7 @@ const EnquiryForm = () => {
     modalBox: {
       width: '28rem',
       padding: '2rem',
-      background: 'linear-gradient(to bottom right, #f0f9ff, #e0f2fe)',
+      backgroundColor: 'white',
       borderRadius: '0.75rem',
       boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
       border: '1px solid #93c5fd',
@@ -481,7 +481,7 @@ const EnquiryForm = () => {
                   name="mobileNumber"
                   value={formData.mobileNumber}
                   onChange={handleChange}
-                  placeholder="+1 (123) 456-7890"
+                  placeholder="+91 7893945679"
                   style={styles.inputField}
                   onFocus={(e) => {
                     e.target.style.borderColor = '#60a5fa';
