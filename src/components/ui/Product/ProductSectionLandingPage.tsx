@@ -441,9 +441,9 @@ const ProductSectionLandingPage = () => {
         },
         {
             id: 3,
-            name: "CMA Foundation Complete Course",
+            name: "SAP ID Validity For 3 Months",
             byline: "By CA/ACCA Amarjit Kaur",
-            photo: "./assets/courses/first.png",
+            photo: "./assets/courses/third.png",
             priceRange: "₹13,000",
             rating: 4.7,
             students: 2150,

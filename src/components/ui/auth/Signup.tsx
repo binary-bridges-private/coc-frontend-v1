@@ -402,7 +402,7 @@ import { signupUser } from "../../../store/slices/AuthSlice.ts";
 
 const Signup = () => {
     const [selectedOption, setSelectedOption] = useState("");
-    const [userType, setUserType] = useState<"new" | "cfm">("new");
+    const [userType, setUserType] = useState("");
     const [inputValues, setInputValues] = useState({
         firstName: "",
         lastName: "",
@@ -431,6 +431,7 @@ const Signup = () => {
     const isOpen = useAppSelector((state) => state.popup.isSignupPopupOpen);
 
     const userTypes = [
+        // { value: "", label: "Select" },
         { value: "new", label: "New User" },
         { value: "cfm", label: "CFM Registered User" }
     ];
@@ -470,6 +471,11 @@ const Signup = () => {
     const validateForm = () => {
         let valid = true;
         const newErrors: typeof errors = {};
+
+        if (userType === "") {
+            setUserType("select");
+            valid = false;
+        }
 
         // First Name validation
         if (!inputValues.firstName.trim()) {
@@ -609,7 +615,7 @@ const Signup = () => {
                                 <div className="relative">
                                     <button
                                         type="button"
-                                        className={`flex items-center justify-between w-full px-4 py-3 text-left input input-bordered ${errors.enrollmentNumber ? "input-error" : ""}`}
+                                        className={`flex items-center justify-between w-full px-4 py-3 text-left input input-bordered ${userType === "select" ? "input-error" : ""}`}
                                         onClick={() => setShowUserTypeDropdown(!showUserTypeDropdown)}
                                     >
                                         {userTypes.find(type => type.value === userType)?.label || "Select user type"}
@@ -629,6 +635,11 @@ const Signup = () => {
                                         </div>
                                     )}
                                 </div>
+                                {userType === "select" && (
+                                    <span className="mt-1 text-sm text-red-500">
+                                        UserType is required!
+                                    </span>
+                                )}
                             </div>
 
                             {/* First Name */}

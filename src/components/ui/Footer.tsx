@@ -175,7 +175,7 @@ const YouTube = () => {
                         {/* Subscriber Count */}
                         <div className="border absolute w-[49px] h-[32px] left-[94px] top-0 bg-[#FFFFFF] flex items-center justify-center">
                             <span className="text-[14px] font-normal leading-[140%] text-[#737373]">
-                                334K
+                                2.48K
                             </span>
                         </div>
                     </a>
