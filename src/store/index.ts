@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import popupReducer, { openLoginPopup } from './slices/PopupSlice.ts';
-import authReducer, { logout } from './slices/AuthSlice.ts';
+import authReducer, { logout, logoutUser } from './slices/AuthSlice.ts';
 import gstAuthReducer from './slices/gstAuthSlice.ts';
 import gstr1Reducer from "./slices/gstr1Slice.ts";
 import gstr3bReducer from "./slices/gstr3bSlice.ts";
@@ -29,10 +29,10 @@ apiRestricted.interceptors.response.use(
     if (status === 401 || status === 403) {
       console.log(":( not login");
 
-      store.dispatch(logout());
+      store.dispatch(logoutUser());
       store.dispatch(openLoginPopup());
 
-      window.location.href = '/';
+      // window.location.href = '/';
     }
 
     return Promise.reject(error);

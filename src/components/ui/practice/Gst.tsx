@@ -46,6 +46,7 @@ const Gst = () => {
                                         // ? "/dashboard"
                                     `/practice/gst/${option.slug}`
                                 );
+                                // console.log(`/practice/gst/${option.slug}`);
                             }}
                             onMouseEnter={() => setHovered(option.name)}
                             onMouseLeave={() => setHovered(null)}

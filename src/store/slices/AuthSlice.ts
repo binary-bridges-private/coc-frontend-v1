@@ -1,11 +1,11 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { api } from '../api.ts';
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { api } from "../api.ts";
 
 interface AuthState {
   isAuthenticated: boolean;
-  status: 'idle' | 'loading' | 'succeeded' | 'failed';
+  status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
   userData: {
     email: string | null;
@@ -16,17 +16,17 @@ interface AuthState {
 }
 
 const loadInitialState = (): AuthState => {
-  const persistedAuth = localStorage.getItem('auth');
+  const persistedAuth = localStorage.getItem("auth");
   if (persistedAuth) {
     try {
       return JSON.parse(persistedAuth);
     } catch (e) {
-      console.error('Failed to parse persisted auth state', e);
+      console.error("Failed to parse persisted auth state", e);
     }
   }
   return {
     isAuthenticated: false,
-    status: 'idle',
+    status: "idle",
     error: null,
     userData: null,
   };
@@ -57,11 +57,11 @@ interface UserData {
 }
 
 export const loginUser = createAsyncThunk(
-  'auth/loginUser',
+  "auth/loginUser",
   async (credentials: LoginCredentials, { rejectWithValue }) => {
     try {
-      const response = await api.post('/auth/login', credentials);
-      toast.success('Login successful!');
+      const response = await api.post("/auth/login", credentials);
+      toast.success("Login successful!");
       console.log("login successful :", response.data);
       return {
         userData: {
@@ -69,61 +69,61 @@ export const loginUser = createAsyncThunk(
           firstName: response.data?.data?.user?.firstName,
           lastName: response.data?.data?.user?.lastName,
           enrollmentType: response.data?.data?.user?.enrollmentType,
-        }
+        },
       };
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || 'Login failed';
+      const errorMessage = error.response?.data?.message || "Login failed";
       toast.error(errorMessage);
-      return rejectWithValue(error.response?.data?.message || 'Login failed');
+      return rejectWithValue(error.response?.data?.message || "Login failed");
     }
   }
 );
 
 export const signupUser = createAsyncThunk(
-  'auth/signupUser',
+  "auth/signupUser",
   async (credentials: SignupCredentials, { rejectWithValue }) => {
     try {
-      const response = await api.post('/auth/signup', credentials);
-      toast.success('Signup successful! Welcome!');
+      const response = await api.post("/auth/signup", credentials);
+      toast.success("Signup successful! Welcome!");
       return {
         userData: {
           email: response.data?.data?.user?.emailAddress,
           firstName: response.data?.data?.user?.firstName,
           lastName: response.data?.data?.user?.lastName,
           enrollmentType: response.data?.data?.user?.enrollmentType,
-        }
+        },
       };
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || 'Signup failed';
+      const errorMessage = error.response?.data?.message || "Signup failed";
       toast.error(errorMessage);
-      return rejectWithValue(error.response?.data?.message || 'Signup failed');
+      return rejectWithValue(error.response?.data?.message || "Signup failed");
     }
   }
 );
 
 export const logoutUser = createAsyncThunk(
-  'auth/logoutUser',
+  "auth/logoutUser",
   async (_, { rejectWithValue }) => {
     try {
-      await api.post('/auth/logout');
+      await api.post("/auth/logout");
       return true;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Logout failed');
+      return rejectWithValue(error.response?.data?.message || "Logout failed");
     }
   }
 );
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {
     logout(state) {
       state.isAuthenticated = false;
       state.userData = null;
-      state.status = 'idle';
+      state.status = "idle";
       state.error = null;
-      localStorage.removeItem('auth');
-      localStorage.removeItem('gstAuth');
+      localStorage.removeItem("auth");
+      localStorage.removeItem("gstAuth");
     },
     clearAuthError(state) {
       state.error = null;
@@ -133,18 +133,21 @@ const authSlice = createSlice({
     builder
       // Login cases
       .addCase(loginUser.pending, (state) => {
-        state.status = 'loading';
+        state.status = "loading";
         state.error = null;
       })
-      .addCase(loginUser.fulfilled, (state, action: PayloadAction<{ userData: UserData }>) => {
-        state.status = 'succeeded';
-        state.isAuthenticated = true;
-        console.log("from redux :", action.payload.userData);
-        state.userData = action.payload.userData;
-        persistAuthState(state);
-      })
+      .addCase(
+        loginUser.fulfilled,
+        (state, action: PayloadAction<{ userData: UserData }>) => {
+          state.status = "succeeded";
+          state.isAuthenticated = true;
+          console.log("from redux :", action.payload.userData);
+          state.userData = action.payload.userData;
+          persistAuthState(state);
+        }
+      )
       .addCase(loginUser.rejected, (state, action) => {
-        state.status = 'failed';
+        state.status = "failed";
         state.error = action.payload as string;
         state.isAuthenticated = false;
         state.userData = null;
@@ -152,40 +155,43 @@ const authSlice = createSlice({
 
       // Signup cases
       .addCase(signupUser.pending, (state) => {
-        state.status = 'loading';
+        state.status = "loading";
         state.error = null;
       })
-      .addCase(signupUser.fulfilled, (state, action: PayloadAction<{ userData: UserData }>) => {
-        state.status = 'succeeded';
-        // state.isAuthenticated = true;
-        // state.userData = action.payload.userData;
-        // persistAuthState(state);
-      })
+      .addCase(
+        signupUser.fulfilled,
+        (state, action: PayloadAction<{ userData: UserData }>) => {
+          state.status = "succeeded";
+          // state.isAuthenticated = true;
+          // state.userData = action.payload.userData;
+          // persistAuthState(state);
+        }
+      )
       .addCase(signupUser.rejected, (state, action) => {
-        state.status = 'failed';
+        state.status = "failed";
         state.error = action.payload as string;
       })
 
       // Logout cases
       .addCase(logoutUser.pending, (state) => {
-        state.status = 'loading';
+        state.status = "loading";
         state.error = null;
       })
       .addCase(logoutUser.fulfilled, (state) => {
-        state.status = 'idle';
+        state.status = "idle";
         state.isAuthenticated = false;
         state.userData = null;
-        localStorage.removeItem('auth');
-        localStorage.removeItem('gstAuth');
+        localStorage.removeItem("auth");
+        localStorage.removeItem("gstAuth");
       })
       .addCase(logoutUser.rejected, (state, action) => {
-        state.status = 'failed';
+        state.status = "failed";
         state.error = action.payload as string;
         // Still clear local state even if server logout failed
         state.isAuthenticated = false;
         state.userData = null;
-        localStorage.removeItem('auth');
-        localStorage.removeItem('gstAuth');
+        localStorage.removeItem("auth");
+        localStorage.removeItem("gstAuth");
       });
   },
 });
@@ -196,10 +202,10 @@ function persistAuthState(state: AuthState) {
     isAuthenticated: state.isAuthenticated,
     userData: state.userData,
     // You might want to persist status as 'idle' instead of the current status
-    status: 'idle' as const,
+    status: "idle" as const,
     error: null,
   };
-  localStorage.setItem('auth', JSON.stringify(authStateToPersist));
+  localStorage.setItem("auth", JSON.stringify(authStateToPersist));
 }
 
 export const { logout, clearAuthError } = authSlice.actions;
