@@ -11,7 +11,7 @@ import {
 
 const SkeletonLoader = () => (
     <motion.div
-        className="relative w-full h-[70vh] opacity-90 my-10"
+        className="relative w-full h-[70vh] opacity-90"
         initial="hidden"
         animate="visible"
     >
@@ -24,8 +24,8 @@ const SkeletonLoader = () => (
                 <div className="w-48 h-12 bg-orange-200 rounded-lg shimmer-animation"></div>
             </div>
 
-            {/* Right Side Image Skeleton */}
-            <div className="w-[50%] h-auto bg-gray-200 hidden lg:block shimmer-animation"></div>
+            {/* Right Side Image Skeleton
+            <div className="w-[50%] h-auto bg-gray-200 hidden lg:block shimmer-animation"></div> */}
         </div>
 
         {/* Social Media Skeleton */}
@@ -104,7 +104,7 @@ const EnquirySection = () => {
 
     return (
         <motion.div
-            className="relative w-full h-[70vh] opacity-90 my-10"
+            className="relative w-full h-[70vh] opacity-90"
             initial="hidden"
             animate="visible"
             variants={containerVariants}
