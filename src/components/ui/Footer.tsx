@@ -1,15 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaFacebook, FaInstagram, FaTelegram, FaYoutube } from "react-icons/fa";
 import { SiPaytm, SiPaypal, SiGooglepay, SiPhonepe, SiRazorpay } from "react-icons/si";
 import { PiCurrencyInrBold } from "react-icons/pi";
-import {motion} from 'framer-motion';
+import { motion } from 'framer-motion';
+import { apiRestricted } from "../../store/api"
 
 const Footer = () => {
     return (
         <div className="bg-white">
-            {/* Newsletter Component */}
+            
             <NewsletterSignup />
-
             {/* Main Footer */}
             <footer className="container px-4 py-10 mx-auto sm:px-6 lg:px-8 xl:px-20">
                 <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
@@ -185,75 +185,49 @@ const YouTube = () => {
     );
 };
 
-// const NewsletterSignup = () => {
-//     return (
-//         <div className="relative w-full p-8 overflow-hidden text-white bg-theme1">
-//             {/* Decorative elements */}
-//             <div className="absolute top-0 left-0 w-32 h-32 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/10 blur-xl"></div>
-//             <div className="absolute bottom-0 right-0 w-40 h-40 translate-x-1/2 translate-y-1/2 rounded-full bg-white/10 blur-xl"></div>
-
-//             <div className="relative z-10 flex flex-col items-center justify-center w-full max-w-6xl mx-auto">
-//                 {/* Title with subtle animation */}
-//                 <h2 className="mb-3 text-3xl font-bold text-center md:text-4xl lg:text-5xl animate-fade-in-up">
-//                     Stay Updated With Our Newsletter
-//                 </h2>
-
-//                 {/* Subtitle */}
-//                 <p className="max-w-2xl text-lg text-center text-white/80 md:text-xl">
-//                     Get the latest news, updates, and exclusive offers delivered straight to your inbox.
-//                 </p>
-
-//                 {/* Input Form with modern styling */}
-//                 <div className="flex flex-col w-full max-w-xl mt-8 space-y-4 sm:flex-row sm:space-y-0 sm:space-x-2">
-//                     <div className="relative flex-1">
-//                         <input
-//                             type="email"
-//                             placeholder="Your email address"
-//                             className="w-full px-5 py-4 text-gray-900 transition-all duration-300 bg-white border-none rounded-lg shadow-lg focus:ring-2 focus:ring-theme1/50 focus:outline-none placeholder-gray-400/80 hover:shadow-xl"
-//                             required
-//                         />
-//                         <svg
-//                             className="absolute w-6 h-6 text-gray-400 -translate-y-1/2 right-3 top-1/2"
-//                             fill="none"
-//                             stroke="currentColor"
-//                             viewBox="0 0 24 24"
-//                             xmlns="http://www.w3.org/2000/svg"
-//                         >
-//                             <path
-//                                 strokeLinecap="round"
-//                                 strokeLinejoin="round"
-//                                 strokeWidth={2}
-//                                 d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
-//                             />
-//                         </svg>
-//                     </div>
-
-//                     <button className="px-8 py-4 text-lg font-semibold text-theme1 transition-all duration-300 transform bg-white  rounded-lg hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-white/50 whitespace-nowrap">
-//                         Subscribe Now
-//                         <span className="ml-2">→</span>
-//                     </button>
-//                 </div>
-
-//                 {/* Privacy assurance text */}
-//                 <p className="mt-4 text-sm text-center text-white/60">
-//                     We respect your privacy. Unsubscribe at any time.
-//                 </p>
-//             </div>
-//         </div>
-//     );
-// };
-
 const NewsletterSignup = () => {
+
+    const [email, setEmail] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [isSuccess, setIsSuccess] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        setErrorMessage(null);
+
+        try {
+            const response = await apiRestricted.post('/news-letter', {
+                emailAddress: email
+            });
+
+            if (response.data.status === 'success') {
+                setIsSuccess(true);
+                setEmail('');
+                setTimeout(() => setIsSuccess(false), 3000);
+            } else {
+                setErrorMessage(response.data.message || 'Subscription failed');
+            }
+        } catch (error) {
+            setErrorMessage(
+                error.response?.data?.message ? error.response?.data?.message : 'Failed to subscribe'
+            );
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
     return (
         <div className="relative w-full py-10 overflow-hidden bg-gray-500">
             {/* Animated decorative elements */}
-            <motion.div 
+            <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ duration: 1.5, repeat: Infinity, repeatType: "reverse" }}
                 className="absolute top-0 left-0 w-64 h-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-700/20 blur-3xl"
             ></motion.div>
-            <motion.div 
+            <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ duration: 1.5, repeat: Infinity, repeatType: "reverse", delay: 0.5 }}
@@ -262,7 +236,7 @@ const NewsletterSignup = () => {
 
             <div className="relative z-10 flex flex-col items-center justify-center w-full max-w-3xl gap-6 px-4 mx-auto text-center">
                 {/* Title */}
-                <motion.h2 
+                <motion.h2
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="text-4xl font-bold text-gray-100"
@@ -271,7 +245,7 @@ const NewsletterSignup = () => {
                 </motion.h2>
 
                 {/* Subtitle */}
-                <motion.p 
+                <motion.p
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.2 }}
@@ -281,39 +255,69 @@ const NewsletterSignup = () => {
                 </motion.p>
 
                 {/* Input Form */}
-                <motion.div 
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.4 }}
-                    className="flex flex-col w-full max-w-md gap-4 mt-6 sm:flex-row"
-                >
-                    <div className="relative flex-1">
-                        <input
-                            type="email"
-                            placeholder="Enter your email"
-                            className="w-full px-6 py-4 text-gray-900 placeholder-gray-500 transition-all bg-white border-2 border-transparent rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:outline-none"
-                            required
-                        />
-                        <svg
-                            className="absolute w-6 h-6 text-gray-400 -translate-y-1/2 right-4 top-1/2"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                <form onSubmit={handleSubmit} className="w-full">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.4 }}
+                        className="flex flex-col w-full max-w-md gap-4 mx-auto mt-6 sm:flex-row"
+                    >
+                        <div className="relative flex-1">
+                            <input
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="Enter your email"
+                                className="w-full px-6 py-4 text-gray-900 placeholder-gray-500 transition-all bg-white border-2 border-transparent rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:outline-none"
+                                required
+                                disabled={isSubmitting}
                             />
-                        </svg>
-                    </div>
+                            <svg
+                                className="absolute w-6 h-6 text-gray-400 -translate-y-1/2 right-4 top-1/2"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                                />
+                            </svg>
+                        </div>
 
-                    <button className="px-8 py-4 font-medium text-white transition-all transform bg-blue-600 rounded-xl hover:bg-blue-700 hover:shadow-lg active:scale-95 focus:outline-none focus:ring-4 focus:ring-blue-500/30 whitespace-nowrap">
-                        Subscribe Now
-                        <span className="ml-2">→</span>
-                    </button>
-                </motion.div>
+                        <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="px-8 py-4 font-medium text-white transition-all transform bg-blue-600 rounded-xl hover:bg-blue-700 hover:shadow-lg active:scale-95 focus:outline-none focus:ring-4 focus:ring-blue-500/30 whitespace-nowrap disabled:opacity-70 disabled:cursor-not-allowed"
+                        >
+                            {isSubmitting ? 'Subscribing...' : 'Subscribe Now'}
+                            <span className="ml-2">→</span>
+                        </button>
+                    </motion.div>
+                </form>
+
+                {/* Status Messages */}
+                {errorMessage && (
+                    <motion.p
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-red-200"
+                    >
+                        ⚠️ {errorMessage}
+                    </motion.p>
+                )}
+
+                {isSuccess && (
+                    <motion.p
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-green-200"
+                    >
+                        🎉 Success! Thank you for subscribing
+                    </motion.p>
+                )}
 
                 {/* Privacy text */}
                 <motion.p
