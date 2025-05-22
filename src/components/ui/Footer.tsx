@@ -3,12 +3,12 @@ import { FaFacebook, FaInstagram, FaTelegram, FaYoutube } from "react-icons/fa";
 import { SiPaytm, SiPaypal, SiGooglepay, SiPhonepe, SiRazorpay } from "react-icons/si";
 import { PiCurrencyInrBold } from "react-icons/pi";
 import { motion } from 'framer-motion';
-import { apiRestricted } from "../../store/api"
+import { apiRestricted } from "../../store/api.ts"
 
 const Footer = () => {
     return (
         <div className="bg-white">
-            
+
             <NewsletterSignup />
             {/* Main Footer */}
             <footer className="container px-4 py-10 mx-auto sm:px-6 lg:px-8 xl:px-20">
@@ -150,7 +150,7 @@ const YouTube = () => {
             {/* Image */}
 
             <img
-                src={"santosh.svg"}
+                src={"./cfmLogo.jpg"}
                 alt="Youtube"
                 className="w-[66px] h-[66px] rounded-[2px] bg-cover"
             />
@@ -175,7 +175,7 @@ const YouTube = () => {
                         {/* Subscriber Count */}
                         <div className="border absolute w-[49px] h-[32px] left-[94px] top-0 bg-[#FFFFFF] flex items-center justify-center">
                             <span className="text-[14px] font-normal leading-[140%] text-[#737373]">
-                                2.48K
+                                2.49K
                             </span>
                         </div>
                     </a>
@@ -192,30 +192,42 @@ const NewsletterSignup = () => {
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [isSuccess, setIsSuccess] = useState(false);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = async () => {
         setIsSubmitting(true);
         setErrorMessage(null);
 
-        try {
-            const response = await apiRestricted.post('/news-letter', {
-                emailAddress: email
-            });
-
-            if (response.data.status === 'success') {
-                setIsSuccess(true);
-                setEmail('');
-                setTimeout(() => setIsSuccess(false), 3000);
-            } else {
-                setErrorMessage(response.data.message || 'Subscription failed');
-            }
-        } catch (error) {
-            setErrorMessage(
-                error.response?.data?.message ? error.response?.data?.message : 'Failed to subscribe'
-            );
-        } finally {
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+            setErrorMessage("Please enter a valid email address.");
             setIsSubmitting(false);
+            return;
         }
+
+        setTimeout(() => {
+            setIsSubmitting(false);
+            setIsSuccess(true);
+            setEmail('');
+            setTimeout(() => setIsSuccess(false), 3000);
+        }, 1000);
+
+        // try {
+        //     const response = await apiRestricted.post('/users/news-letter', {
+        //         emailAddress: email
+        //     });
+
+        //     if (response.data.status === 'success') {
+        //         setIsSuccess(true);
+        //         setEmail('');
+        //         setTimeout(() => setIsSuccess(false), 3000);
+        //     } else {
+        //         setErrorMessage(response.data.message || 'Subscription failed');
+        //     }
+        // } catch (error) {
+        //     setErrorMessage(
+        //         error.response?.data?.message ? error.response?.data?.message : 'Failed to subscribe'
+        //     );
+        // } finally {
+        //     setIsSubmitting(false);
+        // }
     };
 
     return (
@@ -255,48 +267,48 @@ const NewsletterSignup = () => {
                 </motion.p>
 
                 {/* Input Form */}
-                <form onSubmit={handleSubmit} className="w-full">
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.4 }}
-                        className="flex flex-col w-full max-w-md gap-4 mx-auto mt-6 sm:flex-row"
-                    >
-                        <div className="relative flex-1">
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder="Enter your email"
-                                className="w-full px-6 py-4 text-gray-900 placeholder-gray-500 transition-all bg-white border-2 border-transparent rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:outline-none"
-                                required
-                                disabled={isSubmitting}
-                            />
-                            <svg
-                                className="absolute w-6 h-6 text-gray-400 -translate-y-1/2 right-4 top-1/2"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                                />
-                            </svg>
-                        </div>
-
-                        <button
-                            type="submit"
+                {/* <form onSubmit={handleSubmit} className="w-full"> */}
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.4 }}
+                    className="flex flex-col w-full max-w-md gap-4 mx-auto mt-6 sm:flex-row"
+                >
+                    <div className="relative flex-1">
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="Enter your email"
+                            className="w-full px-6 py-4 text-gray-900 placeholder-gray-500 transition-all bg-white border-2 border-transparent rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:outline-none"
+                            required
                             disabled={isSubmitting}
-                            className="px-8 py-4 font-medium text-white transition-all transform bg-blue-600 rounded-xl hover:bg-blue-700 hover:shadow-lg active:scale-95 focus:outline-none focus:ring-4 focus:ring-blue-500/30 whitespace-nowrap disabled:opacity-70 disabled:cursor-not-allowed"
+                        />
+                        <svg
+                            className="absolute w-6 h-6 text-gray-400 -translate-y-1/2 right-4 top-1/2"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
                         >
-                            {isSubmitting ? 'Subscribing...' : 'Subscribe Now'}
-                            <span className="ml-2">→</span>
-                        </button>
-                    </motion.div>
-                </form>
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                            />
+                        </svg>
+                    </div>
+
+                    <button
+                        onClick={handleSubmit}
+                        disabled={isSubmitting}
+                        className="px-8 py-4 font-medium text-white transition-all transform bg-blue-600 rounded-xl hover:bg-blue-700 hover:shadow-lg active:scale-95 focus:outline-none focus:ring-4 focus:ring-blue-500/30 whitespace-nowrap disabled:opacity-70 disabled:cursor-not-allowed"
+                    >
+                        {isSubmitting ? 'Subscribing...' : 'Subscribe Now'}
+                        <span className="ml-2">→</span>
+                    </button>
+                </motion.div>
+                {/* </form> */}
 
                 {/* Status Messages */}
                 {errorMessage && (
