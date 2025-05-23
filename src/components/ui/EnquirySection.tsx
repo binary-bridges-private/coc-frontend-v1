@@ -115,16 +115,17 @@ const EnquirySection = () => {
                     variants={containerVariants}
                 >
                     <motion.h1
-                        className="mb-4 text-6xl font-bold text-gray-600"
+                        className="mb-4 text-7xl leading-[55px] font-bold text-gray-600"
                         variants={itemVariants}
                     >
-                        COC <span className="text-orange-600">Education</span>
+                       CFM <br /><span className="text-orange-600 text-5xl">CHARTERED FINANCIAL MANAGEMENT</span>
                     </motion.h1>
                     <motion.p
-                        className="text-4xl text-gray-600"
+                        className="text-3xl leading-10 text-gray-600"
                         variants={itemVariants}
                     >
-                        Empowering minds through innovative <br /> learning solutions for a brighter future.
+                        Not Just a Degree. <br /> The Future is Practical — Unlock It with CFM
+                        {/* Empowering minds through innovative <br /> learning solutions for a brighter future. */}
                     </motion.p>
                     <motion.button
                         className="px-6 py-3 mt-8 text-white transition-all bg-orange-600 rounded-lg w-fit hover:shadow-lg"
