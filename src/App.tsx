@@ -42,7 +42,7 @@ function App() {
       <div className="flex flex-col w-screen h-screen min-h-screen overflow-auto">
         <Login />
         <Signup />
-        {/* <Banner /> */}
+        <Banner />
         <Header />
         <main className="flex-grow">
           <Routes>
