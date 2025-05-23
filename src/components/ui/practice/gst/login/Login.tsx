@@ -14,8 +14,33 @@ const Login = () => {
     const [error, setError] = useState('');
     const [showRegistrationPrompt, setShowRegistrationPrompt] = useState(false);
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const hasFetchedRef = useRef(false);
 
     const dispatch = useAppDispatch();
+
+    const fetchGstins = async () => {
+        if (hasFetchedRef.current) return;
+        hasFetchedRef.current = true;
+        
+        try {
+            setIsLoading(true);
+            const res = await apiRestricted.get("/gst/gstIns");
+            console.log(res);
+            if (res?.data?.data?.gstIns?.length > 0) {
+                setGstins(res.data?.data?.gstIns);
+            } else {
+                setShowRegistrationPrompt(true);
+            }
+        } catch (err) {
+            setError('Failed to fetch GSTINs. Please try again.');
+        } finally {
+            setIsLoading(false);
+            generateNewCaptcha();
+        }
+    };
+
+    // Call fetchGstins directly
+    fetchGstins();
 
     const generateCaptchaText = () => {
         const chars = '0123456789ABCDEFGHJKLMNPQRSTUVWXYZ';
@@ -100,31 +125,6 @@ const Login = () => {
         setCaptcha(newCaptcha);
         drawCaptcha(newCaptcha);
     };
-
-    useEffect(() => {
-        const fetchGstins = async () => {
-            try {
-                setIsLoading(true);
-
-                const res = await apiRestricted.get("/gst/gstIns");
-
-                console.log(res);
-                if (res?.data?.data?.gstIns?.length > 0) {
-                    setGstins(res.data?.data?.gstIns);
-                } else {
-                    setShowRegistrationPrompt(true);
-                }
-            } catch (err) {
-                setError('Failed to fetch GSTINs. Please try again.');
-            } finally {
-                setIsLoading(false);
-                // Generate initial captcha after component mounts
-                generateNewCaptcha();
-            }
-        };
-
-        fetchGstins();
-    }, []);
 
     const handleSave = async () => {
         try {

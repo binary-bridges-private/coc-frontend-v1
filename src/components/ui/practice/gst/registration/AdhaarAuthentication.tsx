@@ -27,6 +27,7 @@ const AdhaarAuth: React.FC<Props> = ({ setStep, promoterData, authorizedSign, gs
     const [isLoading, setIsLoading] = useState(false);
     const [saveError, setSaveError] = useState<string | null>(null);
 
+
     const handleToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
         setIsAadhaarAuth(e.target.value === "yes");
         setSelectedPromoter(null);
@@ -205,12 +206,12 @@ const AdhaarAuth: React.FC<Props> = ({ setStep, promoterData, authorizedSign, gs
                                     <td className="p-3 border">
                                         <input
                                             type="checkbox"
-                                            checked={selectedPromoter === index}
-                                            onChange={() => handlePromoterSelection(index)}
+                                            checked={selectedPromoter === promoterData.length + index+1}
+                                            onChange={() => handlePromoterSelection(promoterData.length + index+1)}
                                             className="checkbox checkbox-primary"
                                         />
                                     </td>
-                                    <td className="p-3 text-sm text-gray-700 border">{index + 1}</td>
+                                    <td className="p-3 text-sm text-gray-700 border">{promoterData.length + index+1}</td>
                                     <td className="p-3 text-sm text-gray-700 border">{authS.isIndianCitizen ? "Yes" : "No"}</td>
                                     <td className="p-3 text-sm text-gray-700 border">{authS.isPromoter ? "Yes" : "No"}</td>
                                     <td className="p-3 text-sm text-gray-700 border">{authS.isAuthorizedSignatory ? "Yes" : "No"}</td>

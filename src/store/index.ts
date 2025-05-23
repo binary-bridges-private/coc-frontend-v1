@@ -8,6 +8,7 @@ import gstRegistrationReducer from "./slices/gstSlice.ts";
 import bannerReducer from "./slices/BannerSlice.ts";
 
 import { apiRestricted } from './api.ts';
+import { toast } from 'react-toastify';
 
 export const store = configureStore({
   reducer: {
@@ -28,8 +29,8 @@ apiRestricted.interceptors.response.use(
 
     if (status === 401 || status === 403) {
       console.log(":( not login");
-
-      store.dispatch(logoutUser());
+      toast.error("Session expired. Please login to continue");
+      store.dispatch(logout());
       store.dispatch(openLoginPopup());
 
       // window.location.href = '/';

@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { api } from "../api.ts";
+import { resetGstAuth } from "./gstAuthSlice.ts";
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -103,9 +104,10 @@ export const signupUser = createAsyncThunk(
 
 export const logoutUser = createAsyncThunk(
   "auth/logoutUser",
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue, dispatch }) => {
     try {
       await api.post("/auth/logout");
+      dispatch(resetGstAuth());
       return true;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Logout failed");
