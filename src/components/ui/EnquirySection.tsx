@@ -143,7 +143,7 @@ const EnquirySection = () => {
 
                 <motion.img
                     className="w-[50%] h-auto object-cover hidden lg:block"
-                    src="./homeRight.jpg"
+                    src="./ilustrator.jpg"
                     alt="Education illustration"
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
