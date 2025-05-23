@@ -32,8 +32,8 @@ const Header = () => {
   const navItems = [
     { name: "Home", path: "/home" },
     { name: "Practice", path: "/practice" },
-    { name: "Courses", path: "/courses" },
-    { name: "About Us", path: "/about" },
+    // { name: "Courses", path: "/courses" },
+    // { name: "About Us", path: "/about" },
   ];
 
   return (
@@ -75,7 +75,7 @@ const Header = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="flex-1 hidden mx-4 overflow-hidden md:block md:mx-8"
           >
-            <div className="flex items-center h-full px-4 rounded-lg bg-gray-50/80 backdrop-blur-sm border border-gray-100">
+            <div className="flex items-center h-full px-4 border border-gray-100 rounded-lg bg-gray-50/80 backdrop-blur-sm">
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-gray-800 to-gray-700">
                   <motion.svg 
@@ -142,7 +142,7 @@ const Header = () => {
                   className="flex items-center gap-2 p-1.5 pr-3 rounded-full border border-gray-200 shadow-sm
                              transition-all duration-200 cursor-pointer bg-white hover:shadow-md"
                 >
-                  <div className="flex items-center justify-center font-semibold text-white bg-gradient-to-br from-gray-700 to-gray-900 rounded-full w-9 h-9">
+                  <div className="flex items-center justify-center font-semibold text-white rounded-full bg-gradient-to-br from-gray-700 to-gray-900 w-9 h-9">
                     {userData?.firstName?.charAt(0) || 'U'}
                   </div>
                   <span className="hidden font-medium text-gray-700 md:inline-block">
@@ -168,7 +168,7 @@ const Header = () => {
                 >
                   <li className="px-4 py-3 border-b border-gray-100">
                     <div className="flex items-center gap-3">
-                      <div className="flex items-center justify-center w-10 h-10 font-semibold text-white bg-gradient-to-br from-gray-700 to-gray-900 rounded-full">
+                      <div className="flex items-center justify-center w-10 h-10 font-semibold text-white rounded-full bg-gradient-to-br from-gray-700 to-gray-900">
                         {userData?.firstName?.charAt(0) || 'U'}
                       </div>
                       <div>
@@ -181,7 +181,7 @@ const Header = () => {
                       </div>
                     </div>
                   </li>
-                  <li className="mt-1">
+                  {/* <li className="mt-1">
                     <Link to="/profile" className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700
                           hover:bg-gray-100/80 rounded-lg transition-all duration-200 hover:pl-5">
                       <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -200,7 +200,7 @@ const Header = () => {
                       </svg>
                       My Courses
                     </Link>
-                  </li>
+                  </li> */}
                   <li className="mt-1">
                     <button
                       onClick={() => dispatch(logoutUser())}
@@ -249,7 +249,7 @@ const Header = () => {
                     {isActive && (
                       <motion.span
                         layoutId="activeNavIndicator"
-                        className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-orange-600/10 rounded-md"
+                        className="absolute inset-0 rounded-md bg-gradient-to-r from-orange-500/20 to-orange-600/10"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.3 }}
@@ -345,9 +345,9 @@ const Header = () => {
                   hidden: { opacity: 0, y: 20 },
                   visible: { opacity: 1, y: 0 }
                 }}
-                className="mt-6 pt-4 border-t border-gray-100"
+                className="pt-4 mt-6 border-t border-gray-100"
               >
-                <div className="p-4 mb-2 text-sm font-medium text-gray-700 bg-gray-50/80 backdrop-blur-sm rounded-xl shadow-sm">
+                <div className="p-4 mb-2 text-sm font-medium text-gray-700 shadow-sm bg-gray-50/80 backdrop-blur-sm rounded-xl">
                   <div className="flex items-center gap-2 mb-3">
                     <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-gray-800 to-gray-700">
                       <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -357,15 +357,15 @@ const Header = () => {
                     <span>Contact Information</span>
                   </div>
                   <p className="flex items-center gap-2 py-1.5 text-sm text-gray-600">
-                    <span className="text-xs px-2 py-1 rounded bg-gray-100">PURCHASE</span>
+                    <span className="px-2 py-1 text-xs bg-gray-100 rounded">PURCHASE</span>
                     <span className="text-orange-600">7303445575, 8448322142</span>
                   </p>
                   <p className="flex items-center gap-2 py-1.5 text-sm text-gray-600">
-                    <span className="text-xs px-2 py-1 rounded bg-gray-100">TRACKING</span>
+                    <span className="px-2 py-1 text-xs bg-gray-100 rounded">TRACKING</span>
                     <span className="text-orange-600">8595539968</span>
                   </p>
                   <p className="flex items-center gap-2 py-1.5 text-sm text-gray-600">
-                    <span className="text-xs px-2 py-1 rounded bg-gray-100">SUPPORT</span>
+                    <span className="px-2 py-1 text-xs bg-gray-100 rounded">SUPPORT</span>
                     <span className="text-orange-600">9811455109</span>
                   </p>
                 </div>

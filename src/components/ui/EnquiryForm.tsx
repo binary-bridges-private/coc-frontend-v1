@@ -162,7 +162,7 @@ const EnquiryForm = () => {
                     <input
                       type="text"
                       id="name"
-                      name="name"
+                      name="fullName"
                       value={formData.fullName}
                       onChange={handleChange}
                       className="w-full px-4 py-2 transition-colors border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
@@ -177,7 +177,7 @@ const EnquiryForm = () => {
                     <input
                       type="email"
                       id="email"
-                      name="email"
+                      name="emailAddress"
                       value={formData.emailAddress}
                       onChange={handleChange}
                       className="w-full px-4 py-2 transition-colors border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
