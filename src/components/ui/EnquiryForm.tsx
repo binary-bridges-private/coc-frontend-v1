@@ -8,9 +8,9 @@ const EnquiryForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [formData, setFormData] = useState({
-    name: "",
+    fullName: "",
     mobileNumber: "",
-    email: "",
+    emailAddress: "",
     query: "",
   });
 
@@ -26,15 +26,15 @@ const EnquiryForm = () => {
 
   const validateForm = () => {
     const trimmedData = {
-      name: formData.name.trim(),
+      fullName: formData.fullName.trim(),
       mobileNumber: formData.mobileNumber.trim(),
-      email: formData.email.trim(),
+      emailAddress: formData.emailAddress.trim(),
       query: formData.query.trim(),
     };
 
     if (
-      !trimmedData.name ||
-      !trimmedData.email ||
+      !trimmedData.fullName ||
+      !trimmedData.emailAddress ||
       !trimmedData.mobileNumber ||
       !trimmedData.query
     ) {
@@ -42,7 +42,7 @@ const EnquiryForm = () => {
       return false;
     }
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedData.email)) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedData.emailAddress)) {
       setErrorMessage("Please enter a valid email address.");
       return false;
     }
@@ -62,15 +62,15 @@ const EnquiryForm = () => {
 
     try {
       const response = await apiRestricted.post("/users/enquiry", {
-        name: formData.name.trim(),
+        fullName: formData.fullName.trim(),
         mobileNumber: formData.mobileNumber.trim(),
-        email: formData.email.trim(),
+        emailAddress: formData.emailAddress.trim(),
         query: formData.query.trim(),
       });
 
       if (response.data.status === "success") {
         setIsOpen(false);
-        setFormData({ name: "", mobileNumber: "", email: "", query: "" });
+        setFormData({ fullName: "", mobileNumber: "", emailAddress: "", query: "" });
       }
     } catch (error) {
       setErrorMessage("Submission failed. Please try again.");
@@ -84,7 +84,7 @@ const EnquiryForm = () => {
       {/* Floating Action Button */}
       <motion.button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center z-50"
+        className="fixed z-50 flex items-center justify-center text-white transition-all duration-300 shadow-lg bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl hover:shadow-xl"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
         aria-label="Open enquiry form"
@@ -110,14 +110,14 @@ const EnquiryForm = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm"
             onClick={() => setIsOpen(false)}
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+              className="w-full max-w-md overflow-hidden bg-white shadow-2xl rounded-2xl"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-6">
@@ -125,11 +125,11 @@ const EnquiryForm = () => {
                   <h2 className="text-2xl font-bold text-gray-800">Get in Touch</h2>
                   <button
                     onClick={() => setIsOpen(false)}
-                    className="text-gray-500 hover:text-gray-700 transition-colors"
+                    className="text-gray-500 transition-colors hover:text-gray-700"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6"
+                      className="w-6 h-6"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -148,7 +148,7 @@ const EnquiryForm = () => {
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm"
+                    className="p-3 mb-4 text-sm text-red-600 rounded-lg bg-red-50"
                   >
                     {errorMessage}
                   </motion.div>
@@ -156,37 +156,37 @@ const EnquiryForm = () => {
 
                 <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="space-y-4">
                   <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="name" className="block mb-1 text-sm font-medium text-gray-700">
                       Full Name
                     </label>
                     <input
                       type="text"
                       id="name"
                       name="name"
-                      value={formData.name}
+                      value={formData.fullName}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                      className="w-full px-4 py-2 transition-colors border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                       placeholder="Enter your name"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="email" className="block mb-1 text-sm font-medium text-gray-700">
                       Email Address
                     </label>
                     <input
                       type="email"
                       id="email"
                       name="email"
-                      value={formData.email}
+                      value={formData.emailAddress}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                      className="w-full px-4 py-2 transition-colors border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                       placeholder="Enter your email"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="mobileNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="mobileNumber" className="block mb-1 text-sm font-medium text-gray-700">
                       Mobile Number
                     </label>
                     <input
@@ -195,13 +195,13 @@ const EnquiryForm = () => {
                       name="mobileNumber"
                       value={formData.mobileNumber}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                      className="w-full px-4 py-2 transition-colors border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                       placeholder="Enter your mobile number"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="query" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="query" className="block mb-1 text-sm font-medium text-gray-700">
                       Your Message
                     </label>
                     <textarea
@@ -210,7 +210,7 @@ const EnquiryForm = () => {
                       value={formData.query}
                       onChange={handleChange}
                       rows={4}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors resize-none"
+                      className="w-full px-4 py-2 transition-colors border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                       placeholder="How can we help you?"
                     />
                   </div>
@@ -219,13 +219,13 @@ const EnquiryForm = () => {
                     <motion.button
                       type="submit"
                       disabled={isSubmitting}
-                      className="flex-1 bg-gradient-to-r from-orange-500 to-orange-600 text-white py-3 rounded-lg font-medium hover:shadow-lg transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
+                      className="flex-1 py-3 font-medium text-white transition-all duration-300 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
                       {isSubmitting ? (
                         <span className="flex items-center justify-center">
-                          <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <svg className="w-5 h-5 mr-3 -ml-1 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                           </svg>
@@ -238,7 +238,7 @@ const EnquiryForm = () => {
                     <motion.button
                       type="button"
                       onClick={() => setIsOpen(false)}
-                      className="px-6 py-3 text-gray-600 hover:text-gray-800 font-medium transition-colors"
+                      className="px-6 py-3 font-medium text-gray-600 transition-colors hover:text-gray-800"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >

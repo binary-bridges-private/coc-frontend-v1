@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const devUrl = 'http://localhost:8080/practice/v1';
-const prodUrl = 'http://65.2.81.17/api/practice/v1';
+const prodUrl = 'http://3.109.207.167/api/practice/v1';
 
 export const api = axios.create({
   baseURL: prodUrl,

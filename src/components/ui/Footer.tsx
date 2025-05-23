@@ -216,7 +216,7 @@ const YouTube = () => {
       <div className="flex flex-col items-start gap-3 w-[226px] h-[66px]">
         {/* Title */}
         <div className="text-[14px] font-medium leading-[140%] text-[#282828]">
-          Santosh Kumar - COC Education
+          CFM COC Education
         </div>
 
         {/* Payment Method Icon Section */}
@@ -236,7 +236,7 @@ const YouTube = () => {
             {/* Subscriber Count */}
             <div className="border absolute w-[49px] h-[32px] left-[94px] top-0 bg-[#FFFFFF] flex items-center justify-center">
               <span className="text-[14px] font-normal leading-[140%] text-[#737373]">
-                2.49K
+                2.5K
               </span>
             </div>
           </a>
