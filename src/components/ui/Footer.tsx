@@ -286,7 +286,7 @@ const NewsletterSignup = () => {
   };
 
   return (
-    <div className="relative w-full py-10 overflow-hidden bg-gray-500">
+    <div className="relative w-full py-10 overflow-hidden bg-gray-900">
       {/* Animated decorative elements */}
       <motion.div
         initial={{ scale: 0 }}

@@ -55,7 +55,7 @@ function App() {
             <Route path="/practice/gst/registration" element={<ProtectedRoutes isFree={true} children={<Registration />} />} />
             <Route path="/practice/gst/dashboard" element={<GstProtectedRoutes children={<GstLogin />} />} />
             <Route path="/practice/gst/gstr-1" element={<GstProtectedRoutes children={< Gstr1 />} />} />
-            <Route path="/practice/gst/gstr-2a" element={<GstProtectedRoutes children={<Gstr2a />} />} />
+            <Route path="/practice/gst/gstr-2a" element={<GstProtectedRoutes children={<ComingSoon />} />} />
             <Route path="/practice/gst/gstr-2b" element={<GstProtectedRoutes children={<ComingSoon />} />} />
             <Route path="/practice/gst/gstr-3b" element={<GstProtectedRoutes children={<Gstr3b />} />} />
             <Route path="/practice/gst/gstr-4" element={<GstProtectedRoutes children={<ComingSoon />} />} />
