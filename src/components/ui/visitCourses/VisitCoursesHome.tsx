@@ -83,7 +83,7 @@ const VisitCoursesHome = () => {
                             iconUrl={"/assets/visitCourses/cs.svg"}
                             iconBgColor={"#FEF2F2"}
                             title={"CFM"}
-                            labels={["Government-Recognised Dual Certification", "Life Changing"]}
+                            labels={["Government-Recognised Dual Certification", "Life Changing Program"]}
                             link={"https://www.coceducation.com/new-course/skill-courses/chartered-financial-management"}
                         />
                     </motion.div>

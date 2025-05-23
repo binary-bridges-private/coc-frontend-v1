@@ -4,39 +4,39 @@ import React from 'react';
 const WhyChooseCOC = () => {
     const features = [
         {
-            title: 'Studio Recorded Sessions',
+            title: 'Updated Studio Recorded Lectures',
             icon: '/assets/whyChooseCoc/first.svg',
-            description: 'High-quality HD recordings with professional production values for optimal learning',
+            description: 'Learn anytime, anywhere with updated studio-recorded lectures designed for flexible and effective learning.',
             gradient: 'from-blue-500 to-blue-600'
         },
         {
-            title: 'Excellent Supportive Team',
+            title: 'Best Technical Support',
             icon: '/assets/whyChooseCoc/second.svg',
-            description: '24/7 dedicated support team ready to assist with any queries or technical issues',
+            description: 'Our technical support team is always on call, ready to resolve your problems anytime.',
             gradient: 'from-purple-500 to-purple-600'
         },
         {
             title: 'Academic Instructor Team',
             icon: '/assets/whyChooseCoc/third.svg',
-            description: 'Learn from industry experts and certified professionals with years of experience',
+            description: 'Lazy to study? Our team will keep you accountable and on track until you finish.',
             gradient: 'from-amber-500 to-amber-600'
         },
         {
-            title: 'Material Covering all MTR/RTP',
+            title: 'Job Assistance & Interview Preparation',
             icon: '/assets/whyChooseCoc/fourth.svg',
-            description: 'Comprehensive study materials aligned with exam patterns and syllabus',
+            description: 'From Resume to Offer Letter — Complete Job & Interview Guidance.',
             gradient: 'from-green-500 to-green-600'
         },
         {
             title: 'Daily Doubt Sessions',
             icon: '/assets/whyChooseCoc/fifth.svg',
-            description: 'Regular interactive sessions to clarify concepts and strengthen understanding',
+            description: 'Your doubts are no longer doubts — our expert faculty is ready and waiting to solve them.',
             gradient: 'from-red-500 to-red-600'
         },
         {
-            title: 'Unlimited Views Available',
+            title: 'Unlimited Views on Classes',
             icon: '/assets/whyChooseCoc/sixth.svg',
-            description: 'Watch lectures as many times as you need with lifetime access to course content',
+            description: 'Revisit lessons unlimited times, anytime, throughout the entire duration of your course access.',
             gradient: 'from-indigo-500 to-indigo-600'
         },
     ];
