@@ -23,13 +23,13 @@ const FACULTIES = [
     link: "https://www.coceducation.com/faculty/ca-acca--amarjit-kaur"
   },
   {
-    image: "/assets/faculties/third.svg",
-    label: "Professor",
-    name: "Nitin Bhardwaj",
-    bio: "University topper in Commerce with specialization in Business Law. Known for simplifying complex legal concepts.",
+    image: "https://www.coceducation.com/Content/images/users/1122_63825535255816.png",
+    label: "CA/CMA",
+    name: "Santosh Kumar",
+    bio: "Santosh Kumar is a Qualified CA/CMA By Profession. He Has Vast Experience Of Teaching Accounts To CA,CMA,CS, B.Com And Academic Students For Last 15 Years. He Has Taught More Than 50,000 Students In His Career. He Has Vast Experience In Practical Working Of Accounting Standards. He Is Also Associated With Many Companies For Providing Practical Training In Accounting Fields.",
     rating: 4.7,
-    subjects: ["Business Law", "Economics", "Commerce"],
-    link: "https://www.coceducation.com/faculty/professor-nitin-bhardwaj"
+    subjects: ["CA", "CMA", "CS", "B.Com"],
+    link: "https://www.coceducation.com/faculty/ca-cma-santosh-kumar"
   }
 ];
 

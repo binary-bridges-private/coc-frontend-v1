@@ -113,7 +113,7 @@ const VisitCoursesHome = () => {
                             iconUrl={"/assets/visitCourses/bcom.svg"}
                             iconBgColor={"#FFF7ED"}
                             title={"B.Com"}
-                            labels={["Full Course", "Accounts", "Post Graduation"]}
+                            labels={["Full Course", "Accounts"]}
                             link={"https://www.coceducation.com/new-course/b-com/graduation"}
                         />
                     </motion.div>

@@ -141,11 +141,12 @@ const EnquirySection = () => {
                         </a>
                     </motion.button>
                 </motion.div>
-
+                {/* mix-blend-mode: multiply; */}
                 <motion.img
-                    className="w-[50%] h-auto object-cover hidden lg:block"
+                    className="w-[50%] h-auto object-cover  hidden lg:block mix-blend-multiply"
                     src="./ilustrator.jpg"
                     alt="Education illustration"
+
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.8, delay: 0.2 }}
