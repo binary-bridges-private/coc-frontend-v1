@@ -24,8 +24,10 @@ import LoginGst from "./components/ui/practice/gst/login/Login.tsx";
 import Login from "./components/ui/auth/Login.tsx";
 import Signup from "./components/ui/auth/Signup.tsx";
 import Banner from "./components/ui/Banner.tsx";
-// import EWayBill from "./components/ui/practice/gst/eway-bill/index.tsx";
-// import EInvoice from "./components/ui/practice/gst/e-invoice/index.tsx";
+import EWayBill from "./components/ui/practice/gst/eway-bill/index.tsx";
+import EInvoice from "./components/ui/practice/gst/e-invoice/index.tsx";
+import GSTR4Form from "./components/ui/practice/gst/gstr4/index.tsx";
+import GSTR10Form from "./components/ui/practice/gst/gtr10/index.tsx";
 
 function App() {
   return (
@@ -57,7 +59,7 @@ function App() {
             <Route path="/practice/gst/registration" element={<ProtectedRoutes isFree={true} children={<Registration />} />} />
             <Route path="/practice/gst/dashboard" element={<GstProtectedRoutes children={<GstLogin />} />} />
             <Route path="/practice/gst/gstr-1" element={<GstProtectedRoutes children={< Gstr1 />} />} />
-            <Route path="/practice/gst/eway-bill" element={<GstProtectedRoutes children={<ComingSoon />} />} />
+            <Route path="/practice/gst/eway-bill" element={<GstProtectedRoutes children={<EWayBill />} />} />
             <Route path="/practice/gst/e-invoice" element={<GstProtectedRoutes children={<ComingSoon />} />} />
             <Route path="/practice/gst/gstr-2a" element={<GstProtectedRoutes children={<ComingSoon />} />} />
             <Route path="/practice/gst/gstr-2b" element={<GstProtectedRoutes children={<ComingSoon />} />} />
