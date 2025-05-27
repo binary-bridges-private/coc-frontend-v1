@@ -29,6 +29,7 @@ import EWayBill from "./components/ui/practice/gst/eway-bill/index.tsx";
 import EInvoice from "./components/ui/practice/gst/e-invoice/index.tsx";
 import GSTR4Form from "./components/ui/practice/gst/gstr4/index.tsx";
 import GSTR10Form from "./components/ui/practice/gst/gtr10/index.tsx";
+import VerifyForgetPassword from "./components/ui/auth/VerifyForgetPassword.tsx";
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<Navigate to="/home" replace />} />
+            <Route path="/reset-password" element={<VerifyForgetPassword />} />
             <Route path="/home" element={<LandingPage />} />
             <Route path="/practice" element={<Practice />} />
 
