@@ -3,11 +3,13 @@ import { createSlice } from '@reduxjs/toolkit';
 interface PopupState {
   isLoginPopupOpen: boolean;
   isSignupPopupOpen: boolean;
+  isForgetPasswordPopupOpen: boolean;
 }
 
 const initialState: PopupState = {
   isLoginPopupOpen: false,
   isSignupPopupOpen: false,
+  isForgetPasswordPopupOpen: false,
 };
 
 const popupSlice = createSlice({
@@ -19,6 +21,9 @@ const popupSlice = createSlice({
     },
     toggleLoginPopup(state) {
       state.isLoginPopupOpen = !state.isLoginPopupOpen;
+    },
+    toggleForgetPasswordPopup(state) {
+      state.isForgetPasswordPopupOpen = !state.isForgetPasswordPopupOpen;
     },
     openLoginPopup(state) {
       state.isLoginPopupOpen = true;
@@ -39,6 +44,20 @@ const popupSlice = createSlice({
     switchSignupToLogin(state) {
       state.isSignupPopupOpen = false;
       state.isLoginPopupOpen = true;
+    },
+    openForgetPasswordPopup(state) {
+      state.isForgetPasswordPopupOpen = true;
+    },
+    closeForgetPasswordPopup(state) {
+      state.isForgetPasswordPopupOpen = false;
+    },
+    switchLoginToForgetPassword(state) {
+      state.isLoginPopupOpen = false;
+      state.isForgetPasswordPopupOpen = true;
+    },
+    switchForgetPasswordToLogin(state) {
+      state.isForgetPasswordPopupOpen = false;
+      state.isLoginPopupOpen = true;
     }
   },
 });
@@ -46,12 +65,17 @@ const popupSlice = createSlice({
 export const {
   toggleSignupPopup,
   toggleLoginPopup,
+  toggleForgetPasswordPopup,
   openLoginPopup,
   closeLoginPopup,
   openSignupPopup,
   closeSignupPopup,
   switchLoginToSignup,
-  switchSignupToLogin
+  switchSignupToLogin,
+  openForgetPasswordPopup,
+  closeForgetPasswordPopup,
+  switchLoginToForgetPassword,
+  switchForgetPasswordToLogin
 } = popupSlice.actions;
 
 export default popupSlice.reducer;

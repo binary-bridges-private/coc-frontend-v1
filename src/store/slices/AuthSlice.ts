@@ -57,6 +57,16 @@ interface UserData {
   enrollmentType: string;
 }
 
+interface ResetPasswordRequest {
+  email: string;
+  resetLink: string;
+}
+
+interface VerifyResetPasswordRequest {
+  token: string;
+  password: string;
+}
+
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async (credentials: LoginCredentials, { rejectWithValue }) => {
@@ -111,6 +121,46 @@ export const logoutUser = createAsyncThunk(
       return true;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Logout failed");
+    }
+  }
+);
+
+export const requestPasswordReset = createAsyncThunk(
+  "auth/requestPasswordReset",
+  async (data: ResetPasswordRequest, { rejectWithValue }) => {
+    try {
+      const response = await api.post("/auth/reset-pass-req", {
+        toEmail: data.email,
+        resetLink: data.resetLink
+      });
+      toast.success("Password reset link sent to your email!");
+      return response.data;
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || "Failed to send reset password email";
+      toast.error(errorMessage);
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+export const verifyPasswordReset = createAsyncThunk(
+  "auth/verifyPasswordReset",
+  async (data: VerifyResetPasswordRequest, { rejectWithValue }) => {
+    try {
+      const response = await api.post("/auth/reset-pass", {
+        token: data.token,
+        newPassword: data.password
+      }, {
+        headers: {
+          Authorization: `Bearer ${data.token}`
+        }
+      });
+      toast.success("Password reset successful!");
+      return response.data;
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || "Failed to reset password";
+      toast.error(errorMessage);
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -194,6 +244,34 @@ const authSlice = createSlice({
         state.userData = null;
         localStorage.removeItem("auth");
         localStorage.removeItem("gstAuth");
+      })
+
+      // Request Password Reset cases
+      .addCase(requestPasswordReset.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(requestPasswordReset.fulfilled, (state) => {
+        state.status = "succeeded";
+        state.error = null;
+      })
+      .addCase(requestPasswordReset.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload as string;
+      })
+
+      // Verify Password Reset cases
+      .addCase(verifyPasswordReset.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(verifyPasswordReset.fulfilled, (state) => {
+        state.status = "succeeded";
+        state.error = null;
+      })
+      .addCase(verifyPasswordReset.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload as string;
       });
   },
 });

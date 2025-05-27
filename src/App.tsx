@@ -23,6 +23,7 @@ import ItrLogin from "./components/ui/practice/itr/Login.tsx";
 import LoginGst from "./components/ui/practice/gst/login/Login.tsx";
 import Login from "./components/ui/auth/Login.tsx";
 import Signup from "./components/ui/auth/Signup.tsx";
+import ForgetPassword from "./components/ui/auth/ForgetPassword.tsx";
 import Banner from "./components/ui/Banner.tsx";
 import EWayBill from "./components/ui/practice/gst/eway-bill/index.tsx";
 import EInvoice from "./components/ui/practice/gst/e-invoice/index.tsx";
@@ -46,6 +47,7 @@ function App() {
       <div className="flex flex-col w-screen h-screen min-h-screen overflow-auto">
         <Login />
         <Signup />
+        <ForgetPassword />
         <Banner />
         <Header />
         <main className="flex-grow">
@@ -64,7 +66,7 @@ function App() {
             <Route path="/practice/gst/gstr-2a" element={<GstProtectedRoutes children={<ComingSoon />} />} />
             <Route path="/practice/gst/gstr-2b" element={<GstProtectedRoutes children={<ComingSoon />} />} />
             <Route path="/practice/gst/gstr-3b" element={<GstProtectedRoutes children={<Gstr3b />} />} />
-            <Route path="/practice/gst/gstr-4" element={<GstProtectedRoutes children={<ComingSoon />} />} />
+            <Route path="/practice/gst/gstr-4" element={<GstProtectedRoutes children={<GSTR4Form />} />} />
             <Route path="/practice/gst/gstr-9" element={<GstProtectedRoutes children={<ComingSoon />} />} />
             <Route path="/practice/gst/gstr-9c" element={<GstProtectedRoutes children={<ComingSoon />} />} />
             <Route path="/practice/gst/gstr-10" element={<GstProtectedRoutes children={<ComingSoon />} />} />
