@@ -22,7 +22,7 @@ const LandingPage = () => {
       {/* Main Content Sections */}
       <main className="">
         {/* Hero Section */}
-        <div className="mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="">
           <EnquirySection />
         </div>
 

@@ -66,7 +66,7 @@ function App() {
             <Route path="/practice/gst/gstr-2a" element={<GstProtectedRoutes children={<ComingSoon />} />} />
             <Route path="/practice/gst/gstr-2b" element={<GstProtectedRoutes children={<ComingSoon />} />} />
             <Route path="/practice/gst/gstr-3b" element={<GstProtectedRoutes children={<Gstr3b />} />} />
-            <Route path="/practice/gst/gstr-4" element={<GstProtectedRoutes children={<GSTR4Form />} />} />
+            <Route path="/practice/gst/gstr-4" element={<GstProtectedRoutes children={<ComingSoon />} />} />
             <Route path="/practice/gst/gstr-9" element={<GstProtectedRoutes children={<ComingSoon />} />} />
             <Route path="/practice/gst/gstr-9c" element={<GstProtectedRoutes children={<ComingSoon />} />} />
             <Route path="/practice/gst/gstr-10" element={<GstProtectedRoutes children={<ComingSoon />} />} />
