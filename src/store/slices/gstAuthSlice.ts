@@ -18,7 +18,7 @@ const loadInitialState = (): GstAuthState => {
         }
     }
     return {
-        isGstAuthenticated: true,
+        isGstAuthenticated: false,
         status: 'idle',
         error: null,
     };

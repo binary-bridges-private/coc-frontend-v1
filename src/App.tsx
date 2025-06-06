@@ -19,7 +19,7 @@ import GstLogin from "./components/ui/practice/GstLogin.tsx";
 import Gstr1 from "./components/ui/practice/gst/gsrt1/Gstr1.tsx";
 import Gstr3b from "./components/ui/practice/gst/gstr3b/Gstr3b.tsx";
 import Gstr2a from "./components/ui/practice/gst/gstr2a/Gstr2a.tsx";
-import ItrLogin from "./components/ui/practice/itr/Login.tsx";
+// import ItrLogin from "./components/ui/practice/itr/Login.tsx";
 import LoginGst from "./components/ui/practice/gst/login/Login.tsx";
 import Login from "./components/ui/auth/Login.tsx";
 import Signup from "./components/ui/auth/Signup.tsx";
@@ -30,6 +30,11 @@ import EInvoice from "./components/ui/practice/gst/e-invoice/index.tsx";
 import GSTR4Form from "./components/ui/practice/gst/gstr4/index.tsx";
 import GSTR10Form from "./components/ui/practice/gst/gtr10/index.tsx";
 import VerifyForgetPassword from "./components/ui/auth/VerifyForgetPassword.tsx";
+import ItrLogin from "./components/ui/practice/ItrLogin.tsx";
+
+// itr
+// import LoginItr from "./components/ui/practice/itr/Login.tsx";
+import ItrRegistration from "./components/ui/practice/itr/Registration.tsx";
 
 function App() {
   return (
@@ -74,7 +79,9 @@ function App() {
             <Route path="/practice/gst/gstr-10" element={<GstProtectedRoutes children={<ComingSoon />} />} />
 
             <Route path="/practice/itr" element={<ProtectedRoutes isFree={false} children={<Itr />} />} />
-            <Route path="/practice/itr/login" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
+            {/* <Route path="/practice/itr/login" element={<ProtectedRoutes isFree={false} children={<LoginItr />} />} /> */}
+            <Route path="/practice/itr/registration" element={<ProtectedRoutes isFree={false} children={<ItrRegistration />} />} />
+            <Route path="/practice/itr/login" element={<ProtectedRoutes isFree={false} children={<ItrLogin />} />} />
             <Route path="/practice/itr/itr-1" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
             <Route path="/practice/itr/itr-2" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
             <Route path="/practice/itr/itr-3" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
@@ -82,7 +89,6 @@ function App() {
             <Route path="/practice/itr/itr-5" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
             <Route path="/practice/itr/itr-6" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
             <Route path="/practice/itr/itr-7" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
-            <Route path="/practice/itr/registration" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
 
             <Route path="/practice/tds" element={<ProtectedRoutes isFree={false} children={<Tds />} />} />
             <Route path="/practice/tds/registration" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
