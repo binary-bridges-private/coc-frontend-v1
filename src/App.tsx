@@ -35,6 +35,7 @@ import ItrLogin from "./components/ui/practice/ItrLogin.tsx";
 // itr
 // import LoginItr from "./components/ui/practice/itr/Login.tsx";
 import ItrRegistration from "./components/ui/practice/itr/Registration.tsx";
+import ItrOne from "./components/ui/practice/itr/ItrOne.tsx";
 
 function App() {
   return (
@@ -82,7 +83,7 @@ function App() {
             {/* <Route path="/practice/itr/login" element={<ProtectedRoutes isFree={false} children={<LoginItr />} />} /> */}
             <Route path="/practice/itr/registration" element={<ProtectedRoutes isFree={false} children={<ItrRegistration />} />} />
             <Route path="/practice/itr/login" element={<ProtectedRoutes isFree={false} children={<ItrLogin />} />} />
-            <Route path="/practice/itr/itr-1" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
+            <Route path="/practice/itr/itr-1" element={<ProtectedRoutes isFree={false} children={<ItrOne />} />} />
             <Route path="/practice/itr/itr-2" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
             <Route path="/practice/itr/itr-3" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
             <Route path="/practice/itr/itr-4" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
