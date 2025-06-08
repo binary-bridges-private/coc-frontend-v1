@@ -528,7 +528,7 @@ const initialErrors: FormErrors = {
 
 const ItrOne = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState(5);
+  const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [showOtpVerification, setShowOtpVerification] = useState(false);
