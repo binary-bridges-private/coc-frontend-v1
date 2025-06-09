@@ -38,6 +38,9 @@ import ItrRegistration from "./components/ui/practice/itr/Registration.tsx";
 import ItrOne from "./components/ui/practice/itr/ItrOne.tsx";
 import ItrFour from "./components/ui/practice/itr/ItrFour.tsx";
 
+//tds
+import TdsLogin from "./components/ui/practice/tds/Login.tsx";
+
 function App() {
   return (
     <>
@@ -94,6 +97,7 @@ function App() {
 
             <Route path="/practice/tds" element={<ProtectedRoutes isFree={false} children={<Tds />} />} />
             <Route path="/practice/tds/registration" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
+          <Route path="/practice/tds/login" element={<ProtectedRoutes isFree={false} children={<TdsLogin/>}/>}/>
             <Route path="/practice/tds/pay-tds" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
             <Route path="/practice/tds/tds-return" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
 
