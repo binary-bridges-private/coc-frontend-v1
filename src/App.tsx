@@ -40,6 +40,8 @@ import ItrFour from "./components/ui/practice/itr/ItrFour.tsx";
 
 //tds
 import TdsLogin from "./components/ui/practice/tds/Login.tsx";
+import TdsRegister from "./components/ui/practice/tds/Register.tsx";
+import PayTds from "./components/ui/practice/tds/PayTds.tsx";
 
 function App() {
   return (
@@ -96,9 +98,9 @@ function App() {
             <Route path="/practice/itr/itr-7" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
 
             <Route path="/practice/tds" element={<ProtectedRoutes isFree={false} children={<Tds />} />} />
-            <Route path="/practice/tds/registration" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
+            <Route path="/practice/tds/registration" element={<ProtectedRoutes isFree={false} children={<TdsRegister />} />} />
           <Route path="/practice/tds/login" element={<ProtectedRoutes isFree={false} children={<TdsLogin/>}/>}/>
-            <Route path="/practice/tds/pay-tds" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
+            <Route path="/practice/tds/pay-tds" element={<ProtectedRoutes isFree={false} children={<PayTds />} />} />
             <Route path="/practice/tds/tds-return" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
 
             <Route path="/practice/pf-esi" element={<ProtectedRoutes isFree={false} children={<PfEsi />} />} />
