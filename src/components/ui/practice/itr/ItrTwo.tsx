@@ -3,286 +3,412 @@ import { useNavigate } from 'react-router-dom';
 
 const ItrTwo = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(() => {
+    const savedStep = localStorage.getItem('itr2-current-step');
+    return savedStep ? parseInt(savedStep) : 1;
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(() => {
+    const savedFormData = localStorage.getItem('itr2-form-data');
+    return savedFormData ? JSON.parse(savedFormData) : {
     // Step 1: Personal Information
-    pan: "",
-    aadhar: "",
     firstName: "",
     middleName: "",
     lastName: "",
-    dateOfBirth: "",
-    gender: "",
-    residentialStatus: "",
-    
-    // Step 2: Business/Professional Income
-    businessName: "",
-    businessType: "",
-    businessAddress: "",
-    businessPincode: "",
-    businessState: "",
-    grossReceipts: "",
-    totalExpenses: "",
-    netProfit: "",
-    
-    // Step 3: Other Income Sources
-    salaryIncome: "",
-    housePropertyIncome: "",
-    capitalGains: "",
-    otherSourcesIncome: "",
-    agriculturalIncome: "",
-    
-    // Step 4: Deductions and Tax Details
-    section80C: "",
-    section80D: "",
-    section80G: "",
-    section80TTA: "",
-    advanceTaxPaid: "",
-    tdsPaid: "",
-    selfAssessmentTax: "",
-    
-    // Step 5: Bank Details
-    bankName: "",
-    accountNumber: "",
-    ifscCode: "",
-    accountType: "",
-  });
-
-  const [errors, setErrors] = useState({
     pan: "",
-    aadhar: "",
-    firstName: "",
-    lastName: "",
+    status: "",
     dateOfBirth: "",
-    gender: "",
-    residentialStatus: "",
-    businessName: "",
-    businessType: "",
-    businessAddress: "",
-    businessPincode: "",
-    businessState: "",
-    grossReceipts: "",
-    totalExpenses: "",
-    netProfit: "",
-    salaryIncome: "",
-    housePropertyIncome: "",
-    capitalGains: "",
-    otherSourcesIncome: "",
-    agriculturalIncome: "",
-    section80C: "",
-    section80D: "",
-    section80G: "",
-    section80TTA: "",
-    advanceTaxPaid: "",
-    tdsPaid: "",
-    selfAssessmentTax: "",
+    aadharNumber: "",
+    
+    // Address
+    flatDoorBlock: "",
+    buildingVillage: "",
+    roadStreetPostOffice: "",
+    areaLocality: "",
+    townCityDistrict: "",
+    state: "",
+    pinZip: "",
+    country: "India",
+    phone1: "",
+    phone2: "",
+    
+    // Step 2: Filing Status
+    email1: "",
+    email2: "",
+    filedUnder: "",
+    filedInResponseTo: [] as string[],
+    optingOut115BAC: "",
+    filingUnder7thProviso: "",
+    depositedOver1Cr: "",
+    depositedAmount: "",
+    spentOver2LakhForeign: "",
+    foreignTravelAmount: "",
+    spentOver1LakhElectricity: "",
+    electricityAmount: "",
+    otherConditions: "",
+    
+    // Step 3: Revised/Defective/Modified Return
+    receiptNumber: "",
+    originalFilingDate: "",
+    
+    // Step 4: Residential Status
+    residentialStatus: [] as string[],
+    countryOfResidence: "",
+    daysInIndia: "",
+    
+    // Step 5: Additional Declarations
+    claimBenefit115H: "",
+    governedByPortugueseCivilCode: "",
+    isFPI: "",
+    sebiRegnNo: "",
+    filedByRepresentative: "",
+    representativeName: "",
+    representativeCapacity: "",
+    representativeAddress: "",
+    representativePAN: "",
+    
+    // Step 6: Company Involvement
+    isDirector: "",
+    din: "",
+    directorPAN: "",
+    companyName: "",
+    isListed: "",
+    heldUnlistedShares: "",
+    unlistedShares: [],
+    
+    // Step 7: Bank Details
+    ifscCode: "",
     bankName: "",
     accountNumber: "",
-    ifscCode: "",
     accountType: "",
+    primaryRefundAccount: false,
+    
+    // Step 8: Schedule S - Income from Salary
+    employerName: "",
+    employerType: "",
+    employerTAN: "",
+    employerAddress: "",
+    salaryUnder17_1: "",
+    perquisitesUnder17_2: "",
+    profitInLieuOfSalary: "",
+    retirementIncome: "",
+    reliefUnder89A: "",
+    standardDeduction: "",
+    entertainmentAllowance: "",
+    professionalTax: "",
+    
+    // Step 9: Schedule HP - Income from House Property
+    propertyAddress: "",
+    propertyCity: "",
+    propertyState: "",
+    propertyCountry: "",
+    propertyPIN: "",
+    isCoOwned: "",
+    coOwners: [],
+    propertyType: "",
+    tenantName: "",
+    tenantPAN: "",
+    grossRent: "",
+    unrealizedRent: "",
+    localTaxes: "",
+    loanInterest: "",
+    netPropertyIncome: "",
+  };
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+    if (type === 'checkbox') {
+      const checked = (e.target as HTMLInputElement).checked;
+      setFormData(prev => {
+        const newData = { ...prev, [name]: checked };
+        localStorage.setItem('itr2-form-data', JSON.stringify(newData));
+        return newData;
+      });
+    } else {
+      setFormData(prev => {
+        const newData = { ...prev, [name]: value };
+        localStorage.setItem('itr2-form-data', JSON.stringify(newData));
+        return newData;
+      });
+    }
     setErrors(prev => ({ ...prev, [name]: "" }));
   };
 
-  const validatePan = (pan: string) => {
-    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
-    return panRegex.test(pan.toUpperCase());
-  };
-
-  const validateAadhar = (aadhar: string) => {
-    const aadharRegex = /^[0-9]{12}$/;
-    return aadharRegex.test(aadhar);
-  };
-
-  const validatePincode = (pincode: string) => {
-    const pincodeRegex = /^[0-9]{6}$/;
-    return pincodeRegex.test(pincode);
+  const handleCheckboxChange = (name: string, value: string) => {
+    setFormData(prev => {
+      const newData = {
+        ...prev,
+        [name]: prev[name].includes(value) 
+          ? prev[name].filter(item => item !== value)
+          : [...prev[name], value]
+      };
+      localStorage.setItem('itr2-form-data', JSON.stringify(newData));
+      return newData;
+    });
   };
 
   const validateStep = (stepNumber: number) => {
-    const newErrors = { ...errors };
+    const newErrors: Record<string, string> = {};
     let isValid = true;
 
     switch (stepNumber) {
       case 1:
-        if (!formData.pan) {
-          newErrors.pan = "PAN is required";
-          isValid = false;
-        } else if (!validatePan(formData.pan)) {
-          newErrors.pan = "Invalid PAN format";
-          isValid = false;
-        }
-
-        if (!formData.aadhar) {
-          newErrors.aadhar = "Aadhar is required";
-          isValid = false;
-        } else if (!validateAadhar(formData.aadhar)) {
-          newErrors.aadhar = "Invalid Aadhar format";
-          isValid = false;
-        }
-
         if (!formData.firstName.trim()) {
           newErrors.firstName = "First name is required";
           isValid = false;
         }
-
         if (!formData.lastName.trim()) {
           newErrors.lastName = "Last name is required";
           isValid = false;
         }
-
+        if (!formData.pan) {
+          newErrors.pan = "PAN is required";
+          isValid = false;
+        }
+        if (!formData.status) {
+          newErrors.status = "Status is required";
+          isValid = false;
+        }
         if (!formData.dateOfBirth) {
           newErrors.dateOfBirth = "Date of birth is required";
           isValid = false;
         }
-
-        if (!formData.gender) {
-          newErrors.gender = "Gender is required";
-          isValid = false;
-        }
-
-        if (!formData.residentialStatus) {
-          newErrors.residentialStatus = "Residential status is required";
+        if (!formData.aadharNumber) {
+          newErrors.aadharNumber = "Aadhar number is required";
           isValid = false;
         }
         break;
-
       case 2:
-        if (!formData.businessName) {
-          newErrors.businessName = "Business name is required";
+        if (!formData.email1) {
+          newErrors.email1 = "Email address is required";
+          isValid = false;
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email1)) {
+          newErrors.email1 = "Please enter a valid email address";
           isValid = false;
         }
-
-        if (!formData.businessType) {
-          newErrors.businessType = "Business type is required";
+        if (!formData.filedUnder) {
+          newErrors.filedUnder = "Filed u/s is required";
           isValid = false;
         }
-
-        if (!formData.businessAddress) {
-          newErrors.businessAddress = "Business address is required";
+        if (formData.filingUnder7thProviso === "yes") {
+          if (!formData.depositedOver1Cr) {
+            newErrors.depositedOver1Cr = "Please specify if deposited over ₹1 Cr";
           isValid = false;
         }
-
-        if (!formData.businessPincode) {
-          newErrors.businessPincode = "Business pincode is required";
-          isValid = false;
-        } else if (!validatePincode(formData.businessPincode)) {
-          newErrors.businessPincode = "Invalid pincode format";
+          if (formData.depositedOver1Cr === "yes" && !formData.depositedAmount) {
+            newErrors.depositedAmount = "Please enter deposited amount";
           isValid = false;
         }
-
-        if (!formData.businessState) {
-          newErrors.businessState = "Business state is required";
+          if (!formData.spentOver2LakhForeign) {
+            newErrors.spentOver2LakhForeign = "Please specify foreign travel expenses";
           isValid = false;
         }
-
-        if (!formData.grossReceipts) {
-          newErrors.grossReceipts = "Gross receipts is required";
+          if (formData.spentOver2LakhForeign === "yes" && !formData.foreignTravelAmount) {
+            newErrors.foreignTravelAmount = "Please enter foreign travel amount";
           isValid = false;
         }
-
-        if (!formData.totalExpenses) {
-          newErrors.totalExpenses = "Total expenses is required";
+          if (!formData.spentOver1LakhElectricity) {
+            newErrors.spentOver1LakhElectricity = "Please specify electricity expenses";
           isValid = false;
         }
-
-        if (!formData.netProfit) {
-          newErrors.netProfit = "Net profit is required";
+          if (formData.spentOver1LakhElectricity === "yes" && !formData.electricityAmount) {
+            newErrors.electricityAmount = "Please enter electricity amount";
           isValid = false;
+        }
         }
         break;
-
       case 3:
-        if (!formData.salaryIncome) {
-          newErrors.salaryIncome = "Salary income is required";
-          isValid = false;
-        }
-
-        if (!formData.housePropertyIncome) {
-          newErrors.housePropertyIncome = "House property income is required";
-          isValid = false;
-        }
-
-        if (!formData.capitalGains) {
-          newErrors.capitalGains = "Capital gains is required";
-          isValid = false;
-        }
-
-        if (!formData.otherSourcesIncome) {
-          newErrors.otherSourcesIncome = "Other sources income is required";
-          isValid = false;
-        }
-
-        if (!formData.agriculturalIncome) {
-          newErrors.agriculturalIncome = "Agricultural income is required";
-          isValid = false;
-        }
+        // Step 3 is optional, no validation required
         break;
-
       case 4:
-        if (!formData.section80C) {
-          newErrors.section80C = "Section 80C deduction is required";
+        if (formData.residentialStatus.length === 0) {
+          newErrors.residentialStatus = "Please select at least one residential status";
           isValid = false;
         }
-
-        if (!formData.section80D) {
-          newErrors.section80D = "Section 80D deduction is required";
+        if (!formData.countryOfResidence) {
+          newErrors.countryOfResidence = "Country of residence is required";
           isValid = false;
         }
-
-        if (!formData.section80G) {
-          newErrors.section80G = "Section 80G deduction is required";
+        if (!formData.daysInIndia) {
+          newErrors.daysInIndia = "Days in India is required";
           isValid = false;
-        }
-
-        if (!formData.section80TTA) {
-          newErrors.section80TTA = "Section 80TTA deduction is required";
-          isValid = false;
-        }
-
-        if (!formData.advanceTaxPaid) {
-          newErrors.advanceTaxPaid = "Advance tax paid is required";
-          isValid = false;
-        }
-
-        if (!formData.tdsPaid) {
-          newErrors.tdsPaid = "TDS paid is required";
-          isValid = false;
-        }
-
-        if (!formData.selfAssessmentTax) {
-          newErrors.selfAssessmentTax = "Self assessment tax is required";
+        } else if (parseInt(formData.daysInIndia) < 0 || parseInt(formData.daysInIndia) > 3650) {
+          newErrors.daysInIndia = "Please enter valid days (0-3650)";
           isValid = false;
         }
         break;
-
       case 5:
+        if (!formData.claimBenefit115H) {
+          newErrors.claimBenefit115H = "Please specify if claiming benefit under 115H";
+          isValid = false;
+        }
+        if (!formData.governedByPortugueseCivilCode) {
+          newErrors.governedByPortugueseCivilCode = "Please specify Portuguese Civil Code status";
+          isValid = false;
+        }
+        if (!formData.isFPI) {
+          newErrors.isFPI = "Please specify FPI status";
+          isValid = false;
+        }
+        if (formData.isFPI === "yes" && !formData.sebiRegnNo) {
+          newErrors.sebiRegnNo = "SEBI registration number is required for FPI";
+          isValid = false;
+        }
+        if (!formData.filedByRepresentative) {
+          newErrors.filedByRepresentative = "Please specify if filed by representative";
+          isValid = false;
+        }
+        if (formData.filedByRepresentative === "yes") {
+          if (!formData.representativeName) {
+            newErrors.representativeName = "Representative name is required";
+          isValid = false;
+        }
+          if (!formData.representativeCapacity) {
+            newErrors.representativeCapacity = "Representative capacity is required";
+          isValid = false;
+        }
+          if (!formData.representativeAddress) {
+            newErrors.representativeAddress = "Representative address is required";
+          isValid = false;
+        }
+          if (!formData.representativePAN) {
+            newErrors.representativePAN = "Representative PAN/Aadhaar is required";
+          isValid = false;
+        }
+        }
+        break;
+      case 6:
+        if (!formData.isDirector) {
+          newErrors.isDirector = "Please specify if you are a director";
+          isValid = false;
+        }
+        if (formData.isDirector === "yes") {
+          if (!formData.din) {
+            newErrors.din = "DIN is required for directors";
+          isValid = false;
+        }
+          if (!formData.directorPAN) {
+            newErrors.directorPAN = "Director PAN is required";
+          isValid = false;
+        }
+          if (!formData.companyName) {
+            newErrors.companyName = "Company name is required";
+          isValid = false;
+        }
+          if (!formData.isListed) {
+            newErrors.isListed = "Please specify if company is listed/unlisted";
+          isValid = false;
+        }
+        }
+        if (!formData.heldUnlistedShares) {
+          newErrors.heldUnlistedShares = "Please specify if held unlisted shares";
+          isValid = false;
+        }
+        break;
+      case 7:
+        if (!formData.ifscCode) {
+          newErrors.ifscCode = "IFSC code is required";
+          isValid = false;
+        } else if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(formData.ifscCode.toUpperCase())) {
+          newErrors.ifscCode = "Please enter a valid IFSC code";
+          isValid = false;
+        }
         if (!formData.bankName) {
           newErrors.bankName = "Bank name is required";
           isValid = false;
         }
-
         if (!formData.accountNumber) {
           newErrors.accountNumber = "Account number is required";
           isValid = false;
-        }
-
-        if (!formData.ifscCode) {
-          newErrors.ifscCode = "IFSC code is required";
+        } else if (formData.accountNumber.length < 9 || formData.accountNumber.length > 18) {
+          newErrors.accountNumber = "Account number should be 9-18 digits";
           isValid = false;
         }
-
         if (!formData.accountType) {
           newErrors.accountType = "Account type is required";
           isValid = false;
         }
+        break;
+      case 8:
+        if (!formData.employerName) {
+          newErrors.employerName = "Employer name is required";
+          isValid = false;
+        }
+        if (!formData.employerType) {
+          newErrors.employerType = "Employer type is required";
+          isValid = false;
+        }
+        if (!formData.employerTAN) {
+          newErrors.employerTAN = "Employer TAN is required";
+          isValid = false;
+        } else if (!/^[A-Z]{4}[A-Z0-9]{5}[A-Z]$/.test(formData.employerTAN.toUpperCase())) {
+          newErrors.employerTAN = "Please enter a valid TAN";
+          isValid = false;
+        }
+        if (!formData.employerAddress) {
+          newErrors.employerAddress = "Employer address is required";
+          isValid = false;
+        }
+        // Validate numeric fields
+        const salaryFields = [
+          'salaryUnder17_1', 'perquisitesUnder17_2', 'profitInLieuOfSalary',
+          'retirementIncome', 'reliefUnder89A', 'standardDeduction',
+          'entertainmentAllowance', 'professionalTax'
+        ];
+        salaryFields.forEach(field => {
+          if (formData[field] && isNaN(parseFloat(formData[field]))) {
+            newErrors[field] = "Please enter a valid amount";
+            isValid = false;
+          }
+        });
+        break;
+      case 9:
+        if (!formData.propertyAddress) {
+          newErrors.propertyAddress = "Property address is required";
+          isValid = false;
+        }
+        if (!formData.propertyCity) {
+          newErrors.propertyCity = "Property city is required";
+          isValid = false;
+        }
+        if (!formData.propertyState) {
+          newErrors.propertyState = "Property state is required";
+          isValid = false;
+        }
+        if (!formData.propertyCountry) {
+          newErrors.propertyCountry = "Property country is required";
+          isValid = false;
+        }
+        if (!formData.propertyPIN) {
+          newErrors.propertyPIN = "Property PIN is required";
+          isValid = false;
+        } else if (!/^[0-9]{6}$/.test(formData.propertyPIN)) {
+          newErrors.propertyPIN = "Please enter a valid 6-digit PIN";
+          isValid = false;
+        }
+        if (!formData.isCoOwned) {
+          newErrors.isCoOwned = "Please specify if property is co-owned";
+          isValid = false;
+        }
+        if (!formData.propertyType) {
+          newErrors.propertyType = "Property type is required";
+          isValid = false;
+        }
+        // Validate numeric fields
+        const propertyFields = [
+          'grossRent', 'unrealizedRent', 'localTaxes', 'loanInterest'
+        ];
+        propertyFields.forEach(field => {
+          if (formData[field] && isNaN(parseFloat(formData[field]))) {
+            newErrors[field] = "Please enter a valid amount";
+            isValid = false;
+          }
+        });
         break;
     }
 
@@ -292,11 +418,12 @@ const ItrTwo = () => {
 
   const handleNextStep = async () => {
     if (validateStep(step)) {
-      if (step === 5) {
+      if (step === 9) {
         setIsLoading(true);
         try {
-          // API call to save ITR-2 would go here
-          await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated API call
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          localStorage.removeItem('itr2-current-step'); // Clear step on completion
+          localStorage.removeItem('itr2-form-data'); // Clear form data on completion
           navigate("/practice/itr/success");
         } catch (error) {
           setSaveError("Failed to save ITR-2. Please try again.");
@@ -304,13 +431,32 @@ const ItrTwo = () => {
           setIsLoading(false);
         }
       } else {
-        setStep(step + 1);
+        const nextStep = step + 1;
+        setStep(nextStep);
+        localStorage.setItem('itr2-current-step', nextStep.toString());
       }
     }
   };
 
   const handlePreviousStep = () => {
-    setStep(step - 1);
+    const prevStep = step - 1;
+    setStep(prevStep);
+    localStorage.setItem('itr2-current-step', prevStep.toString());
+  };
+
+  const getStepTitle = (stepNumber: number) => {
+    const titles = {
+      1: "Personal Information",
+      2: "Filing Status",
+      3: "Revised/Defective/Modified Return",
+      4: "Residential Status",
+      5: "Additional Declarations",
+      6: "Company Involvement",
+      7: "Bank Details",
+      8: "Schedule S - Income from Salary",
+      9: "Schedule HP - Income from House Property"
+    };
+    return titles[stepNumber] || "";
   };
 
   return (
@@ -340,50 +486,16 @@ const ItrTwo = () => {
 
       <div className="w-[60%] mx-auto mt-8 p-6 bg-blue-500 shadow-lg rounded-lg">
         <h2 className="text-xl font-extrabold text-white">
-          {`Step ${step} of 5: ${step === 1 ? "Personal Information" : 
-                                step === 2 ? "Business/Professional Income" : 
-                                step === 3 ? "Other Income Sources" : 
-                                step === 4 ? "Deductions and Tax Details" :
-                                "Bank Details"}`
-          }
+          {`Step ${step} of 9: ${getStepTitle(step)}`}
         </h2>
       </div>
 
       <div className="w-[60%] mb-20 p-6 mx-auto bg-white rounded-lg shadow-lg">
+        {/* Step 1: Personal Information */}
         {step === 1 && (
           <div className="p-4 bg-gray-50 rounded-lg">
             <h3 className="mb-4 text-lg font-semibold text-gray-700">Personal Information</h3>
-            <div className="space-y-6">
-              <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  PAN <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="pan"
-                  value={formData.pan}
-                  onChange={handleChange}
-                  placeholder="Enter PAN number"
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.pan ? "border-red-500" : "border-gray-300"}`}
-                />
-                {errors.pan && <p className="mt-1 text-sm text-red-500">{errors.pan}</p>}
-              </div>
-
-              <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Aadhar Number <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="aadhar"
-                  value={formData.aadhar}
-                  onChange={handleChange}
-                  placeholder="Enter Aadhar number"
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.aadhar ? "border-red-500" : "border-gray-300"}`}
-                />
-                {errors.aadhar && <p className="mt-1 text-sm text-red-500">{errors.aadhar}</p>}
-              </div>
-
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
                   First Name <span className="text-red-500">*</span>
@@ -393,9 +505,8 @@ const ItrTwo = () => {
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleChange}
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.firstName ? "border-red-500" : "border-gray-300"}`}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 />
-                {errors.firstName && <p className="mt-1 text-sm text-red-500">{errors.firstName}</p>}
               </div>
 
               <div>
@@ -407,7 +518,7 @@ const ItrTwo = () => {
                   name="middleName"
                   value={formData.middleName}
                   onChange={handleChange}
-                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -420,504 +531,1676 @@ const ItrTwo = () => {
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleChange}
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.lastName ? "border-red-500" : "border-gray-300"}`}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 />
-                {errors.lastName && <p className="mt-1 text-sm text-red-500">{errors.lastName}</p>}
               </div>
 
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Date of Birth <span className="text-red-500">*</span>
+                  PAN <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="pan"
+                  maxLength={10}
+                  placeholder="ABCDE1234F"
+                  value={formData.pan}
+                  onChange={handleChange}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Status <span className="text-red-500">*</span>
+                </label>
+                <div className="space-y-2">
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                      id="individual"
+                      name="status"
+                      value="individual"
+                      checked={formData.status === "individual"}
+                      onChange={handleChange}
+                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                    />
+                    <label htmlFor="individual" className="ml-2 text-sm font-medium text-gray-700">
+                      Individual
+                    </label>
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                      id="huf"
+                      name="status"
+                      value="huf"
+                      checked={formData.status === "huf"}
+                      onChange={handleChange}
+                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                    />
+                    <label htmlFor="huf" className="ml-2 text-sm font-medium text-gray-700">
+                      HUF
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Date of Birth / Formation <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="date"
                   name="dateOfBirth"
                   value={formData.dateOfBirth}
                   onChange={handleChange}
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.dateOfBirth ? "border-red-500" : "border-gray-300"}`}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 />
-                {errors.dateOfBirth && <p className="mt-1 text-sm text-red-500">{errors.dateOfBirth}</p>}
               </div>
 
               <div>
-                <label className="block mb-4 text-lg font-medium text-gray-700">
-                  Gender <span className="text-red-500">*</span>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Aadhaar Number <span className="text-red-500">*</span>
                 </label>
-                <div className="space-y-4">
-                  <div className="flex items-center">
-                    <input
-                      type="radio"
-                      id="male"
-                      name="gender"
-                      value="male"
-                      checked={formData.gender === "male"}
-                      onChange={handleChange}
-                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                    />
-                    <label htmlFor="male" className="ml-2 text-sm font-medium text-gray-700">
-                      Male
-                    </label>
-                  </div>
-                  <div className="flex items-center">
-                    <input
-                      type="radio"
-                      id="female"
-                      name="gender"
-                      value="female"
-                      checked={formData.gender === "female"}
-                      onChange={handleChange}
-                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                    />
-                    <label htmlFor="female" className="ml-2 text-sm font-medium text-gray-700">
-                      Female
-                    </label>
-                  </div>
-                  <div className="flex items-center">
-                    <input
-                      type="radio"
-                      id="other"
-                      name="gender"
-                      value="other"
-                      checked={formData.gender === "other"}
-                      onChange={handleChange}
-                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                    />
-                    <label htmlFor="other" className="ml-2 text-sm font-medium text-gray-700">
-                      Other
-                    </label>
-                  </div>
-                </div>
-                {errors.gender && <p className="mt-1 text-sm text-red-500">{errors.gender}</p>}
+                <input
+                  type="text"
+                  name="aadharNumber"
+                  maxLength={12}
+                  value={formData.aadharNumber}
+                  onChange={handleChange}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              </div>
+
+            {/* Address Subsection */}
+            <div className="mt-8">
+              <h4 className="mb-4 text-md font-semibold text-gray-700">Address</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Flat/Door/Block No.
+                </label>
+                <input
+                  type="text"
+                    name="flatDoorBlock"
+                    value={formData.flatDoorBlock}
+                  onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
               </div>
 
               <div>
-                <label className="block mb-4 text-lg font-medium text-gray-700">
-                  Residential Status <span className="text-red-500">*</span>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Building/Village
                 </label>
-                <div className="space-y-4">
-                  <div className="flex items-center">
-                    <input
-                      type="radio"
-                      id="resident"
-                      name="residentialStatus"
-                      value="resident"
-                      checked={formData.residentialStatus === "resident"}
-                      onChange={handleChange}
-                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                    />
-                    <label htmlFor="resident" className="ml-2 text-sm font-medium text-gray-700">
-                      Resident
-                    </label>
-                  </div>
-                  <div className="flex items-center">
-                    <input
-                      type="radio"
-                      id="nonResident"
-                      name="residentialStatus"
-                      value="nonResident"
-                      checked={formData.residentialStatus === "nonResident"}
-                      onChange={handleChange}
-                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                    />
-                    <label htmlFor="nonResident" className="ml-2 text-sm font-medium text-gray-700">
-                      Non-Resident
-                    </label>
-                  </div>
+                <input
+                  type="text"
+                    name="buildingVillage"
+                    value={formData.buildingVillage}
+                  onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Road/Street/Post Office
+                </label>
+                <input
+                  type="text"
+                    name="roadStreetPostOffice"
+                    value={formData.roadStreetPostOffice}
+                  onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Area/Locality
+                </label>
+                <input
+                    type="text"
+                    name="areaLocality"
+                    value={formData.areaLocality}
+                  onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Town/City/District
+                </label>
+                  <input
+                    type="text"
+                    name="townCityDistrict"
+                    value={formData.townCityDistrict}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
                 </div>
-                {errors.residentialStatus && <p className="mt-1 text-sm text-red-500">{errors.residentialStatus}</p>}
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    State
+                  </label>
+                  <select
+                    name="state"
+                    value={formData.state}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Select State</option>
+                    <option value="andhra-pradesh">Andhra Pradesh</option>
+                    <option value="arunachal-pradesh">Arunachal Pradesh</option>
+                    <option value="assam">Assam</option>
+                    <option value="bihar">Bihar</option>
+                    <option value="chhattisgarh">Chhattisgarh</option>
+                    <option value="goa">Goa</option>
+                    <option value="gujarat">Gujarat</option>
+                    <option value="haryana">Haryana</option>
+                    <option value="himachal-pradesh">Himachal Pradesh</option>
+                    <option value="jharkhand">Jharkhand</option>
+                    <option value="karnataka">Karnataka</option>
+                    <option value="kerala">Kerala</option>
+                    <option value="madhya-pradesh">Madhya Pradesh</option>
+                    <option value="maharashtra">Maharashtra</option>
+                    <option value="manipur">Manipur</option>
+                    <option value="meghalaya">Meghalaya</option>
+                    <option value="mizoram">Mizoram</option>
+                    <option value="nagaland">Nagaland</option>
+                    <option value="odisha">Odisha</option>
+                    <option value="punjab">Punjab</option>
+                    <option value="rajasthan">Rajasthan</option>
+                    <option value="sikkim">Sikkim</option>
+                    <option value="tamil-nadu">Tamil Nadu</option>
+                    <option value="telangana">Telangana</option>
+                    <option value="tripura">Tripura</option>
+                    <option value="uttar-pradesh">Uttar Pradesh</option>
+                    <option value="uttarakhand">Uttarakhand</option>
+                    <option value="west-bengal">West Bengal</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    PIN/ZIP
+                  </label>
+                  <input
+                    type="number"
+                    name="pinZip"
+                    maxLength={6}
+                    value={formData.pinZip}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Country
+                  </label>
+                  <input
+                    type="text"
+                    name="country"
+                    value={formData.country}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Phone No. 1
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone1"
+                    value={formData.phone1}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Phone No. 2
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone2"
+                    value={formData.phone2}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
               </div>
             </div>
           </div>
         )}
 
+        {/* Step 2: Filing Status */}
         {step === 2 && (
           <div className="p-4 bg-gray-50 rounded-lg">
-            <h3 className="mb-4 text-lg font-semibold text-gray-700">Business/Professional Income</h3>
+            <h3 className="mb-4 text-lg font-semibold text-gray-700">Filing Status</h3>
             <div className="space-y-6">
-              <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Business Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="businessName"
-                  value={formData.businessName}
-                  onChange={handleChange}
-                  placeholder="Enter business name"
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.businessName ? "border-red-500" : "border-gray-300"}`}
-                />
-                {errors.businessName && <p className="mt-1 text-sm text-red-500">{errors.businessName}</p>}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Email Address-1 <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    name="email1"
+                    value={formData.email1}
+                    onChange={handleChange}
+                    className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.email1 ? "border-red-500" : "border-gray-300"}`}
+                  />
+                  {errors.email1 && <p className="mt-1 text-sm text-red-500">{errors.email1}</p>}
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Email Address-2
+                  </label>
+                  <input
+                    type="email"
+                    name="email2"
+                    value={formData.email2}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
               </div>
 
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Business Type <span className="text-red-500">*</span>
+                  Filed u/s <span className="text-red-500">*</span>
                 </label>
-                <select
-                  name="businessType"
-                  value={formData.businessType}
-                  onChange={handleChange}
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.businessType ? "border-red-500" : "border-gray-300"}`}
-                >
-                  <option value="">Select business type</option>
-                  <option value="proprietorship">Proprietorship</option>
-                  <option value="partnership">Partnership</option>
-                  <option value="huf">HUF</option>
-                </select>
-                {errors.businessType && <p className="mt-1 text-sm text-red-500">{errors.businessType}</p>}
+                <div className="space-y-2">
+                  {['139(1)', '139(4)', '139(5)', '92CD', '119(2)(b)'].map((option) => (
+                    <div key={option} className="flex items-center">
+                      <input
+                        type="radio"
+                        id={option}
+                        name="filedUnder"
+                        value={option}
+                        checked={formData.filedUnder === option}
+                        onChange={handleChange}
+                        className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                      />
+                      <label htmlFor={option} className="ml-2 text-sm font-medium text-gray-700">
+                        {option}
+                      </label>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Business Address <span className="text-red-500">*</span>
+                  Filed in response to notice u/s
                 </label>
-                <input
-                  type="text"
-                  name="businessAddress"
-                  value={formData.businessAddress}
-                  onChange={handleChange}
-                  placeholder="Enter business address"
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.businessAddress ? "border-red-500" : "border-gray-300"}`}
-                />
-                {errors.businessAddress && <p className="mt-1 text-sm text-red-500">{errors.businessAddress}</p>}
+                <div className="space-y-2">
+                  {['139(9)', '142(1)', '148', '153C'].map((option) => (
+                    <div key={option} className="flex items-center">
+                      <input
+                        type="checkbox"
+                        id={option}
+                        checked={formData.filedInResponseTo.includes(option)}
+                        onChange={() => handleCheckboxChange('filedInResponseTo', option)}
+                        className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                      />
+                      <label htmlFor={option} className="ml-2 text-sm font-medium text-gray-700">
+                        {option}
+                      </label>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Business Pincode <span className="text-red-500">*</span>
+                  Opting out of 115BAC?
                 </label>
-                <input
-                  type="text"
-                  name="businessPincode"
-                  value={formData.businessPincode}
-                  onChange={handleChange}
-                  placeholder="Enter business pincode"
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.businessPincode ? "border-red-500" : "border-gray-300"}`}
-                />
-                {errors.businessPincode && <p className="mt-1 text-sm text-red-500">{errors.businessPincode}</p>}
+                <div className="space-y-2">
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                      id="optingOutYes"
+                      name="optingOut115BAC"
+                      value="yes"
+                      checked={formData.optingOut115BAC === "yes"}
+                      onChange={handleChange}
+                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                    />
+                    <label htmlFor="optingOutYes" className="ml-2 text-sm font-medium text-gray-700">
+                      Yes
+                    </label>
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                      id="optingOutNo"
+                      name="optingOut115BAC"
+                      value="no"
+                      checked={formData.optingOut115BAC === "no"}
+                      onChange={handleChange}
+                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                    />
+                    <label htmlFor="optingOutNo" className="ml-2 text-sm font-medium text-gray-700">
+                      No
+                    </label>
+                  </div>
+                </div>
               </div>
 
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Business State <span className="text-red-500">*</span>
+                  Filing under 7th proviso?
                 </label>
-                <input
-                  type="text"
-                  name="businessState"
-                  value={formData.businessState}
-                  onChange={handleChange}
-                  placeholder="Enter business state"
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.businessState ? "border-red-500" : "border-gray-300"}`}
-                />
-                {errors.businessState && <p className="mt-1 text-sm text-red-500">{errors.businessState}</p>}
+                <div className="space-y-2">
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                      id="filingUnder7thYes"
+                      name="filingUnder7thProviso"
+                      value="yes"
+                      checked={formData.filingUnder7thProviso === "yes"}
+                      onChange={handleChange}
+                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                    />
+                    <label htmlFor="filingUnder7thYes" className="ml-2 text-sm font-medium text-gray-700">
+                      Yes
+                    </label>
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                      id="filingUnder7thNo"
+                      name="filingUnder7thProviso"
+                      value="no"
+                      checked={formData.filingUnder7thProviso === "no"}
+                      onChange={handleChange}
+                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                    />
+                    <label htmlFor="filingUnder7thNo" className="ml-2 text-sm font-medium text-gray-700">
+                      No
+                    </label>
+                </div>
+                </div>
               </div>
 
+              {/* Conditional fields */}
+              {formData.filingUnder7thProviso === "yes" && (
+                <div className="space-y-4 p-4 bg-blue-50 rounded-lg">
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Gross Receipts <span className="text-red-500">*</span>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Deposited &gt; ₹1 Cr?
                 </label>
-                <input
-                  type="number"
-                  name="grossReceipts"
-                  value={formData.grossReceipts}
-                  onChange={handleChange}
-                  placeholder="Enter gross receipts"
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.grossReceipts ? "border-red-500" : "border-gray-300"}`}
-                />
-                {errors.grossReceipts && <p className="mt-1 text-sm text-red-500">{errors.grossReceipts}</p>}
+                    <div className="space-y-2">
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                          id="depositedYes"
+                          name="depositedOver1Cr"
+                          value="yes"
+                          checked={formData.depositedOver1Cr === "yes"}
+                      onChange={handleChange}
+                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                    />
+                        <label htmlFor="depositedYes" className="ml-2 text-sm font-medium text-gray-700">
+                          Yes
+                    </label>
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                          id="depositedNo"
+                          name="depositedOver1Cr"
+                          value="no"
+                          checked={formData.depositedOver1Cr === "no"}
+                      onChange={handleChange}
+                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                    />
+                        <label htmlFor="depositedNo" className="ml-2 text-sm font-medium text-gray-700">
+                          No
+                    </label>
+                  </div>
+                </div>
+                    {formData.depositedOver1Cr === "yes" && (
+                      <input
+                        type="number"
+                        name="depositedAmount"
+                        placeholder="Enter amount"
+                        value={formData.depositedAmount}
+                        onChange={handleChange}
+                        className="mt-2 w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                      />
+                    )}
               </div>
 
-              <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Total Expenses <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="totalExpenses"
-                  value={formData.totalExpenses}
-                  onChange={handleChange}
-                  placeholder="Enter total expenses"
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.totalExpenses ? "border-red-500" : "border-gray-300"}`}
-                />
-                {errors.totalExpenses && <p className="mt-1 text-sm text-red-500">{errors.totalExpenses}</p>}
-              </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Spent &gt; ₹2 Lakh on foreign travel?
+                    </label>
+                    <div className="space-y-2">
+                      <div className="flex items-center">
+                        <input
+                          type="radio"
+                          id="foreignTravelYes"
+                          name="spentOver2LakhForeign"
+                          value="yes"
+                          checked={formData.spentOver2LakhForeign === "yes"}
+                          onChange={handleChange}
+                          className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                        />
+                        <label htmlFor="foreignTravelYes" className="ml-2 text-sm font-medium text-gray-700">
+                          Yes
+                        </label>
+            </div>
+                      <div className="flex items-center">
+                        <input
+                          type="radio"
+                          id="foreignTravelNo"
+                          name="spentOver2LakhForeign"
+                          value="no"
+                          checked={formData.spentOver2LakhForeign === "no"}
+                          onChange={handleChange}
+                          className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                        />
+                        <label htmlFor="foreignTravelNo" className="ml-2 text-sm font-medium text-gray-700">
+                          No
+                        </label>
+          </div>
+                    </div>
+                    {formData.spentOver2LakhForeign === "yes" && (
+                      <input
+                        type="number"
+                        name="foreignTravelAmount"
+                        placeholder="Enter amount"
+                        value={formData.foreignTravelAmount}
+                        onChange={handleChange}
+                        className="mt-2 w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                      />
+                    )}
+                  </div>
 
-              <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Net Profit <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="netProfit"
-                  value={formData.netProfit}
-                  onChange={handleChange}
-                  placeholder="Enter net profit"
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.netProfit ? "border-red-500" : "border-gray-300"}`}
-                />
-                {errors.netProfit && <p className="mt-1 text-sm text-red-500">{errors.netProfit}</p>}
-              </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Spent&gt; ₹1 Lakh on electricity?
+                    </label>
+                    <div className="space-y-2">
+                      <div className="flex items-center">
+                        <input
+                          type="radio"
+                          id="electricityYes"
+                          name="spentOver1LakhElectricity"
+                          value="yes"
+                          checked={formData.spentOver1LakhElectricity === "yes"}
+                          onChange={handleChange}
+                          className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                        />
+                        <label htmlFor="electricityYes" className="ml-2 text-sm font-medium text-gray-700">
+                          Yes
+                        </label>
+                      </div>
+                      <div className="flex items-center">
+                        <input
+                          type="radio"
+                          id="electricityNo"
+                          name="spentOver1LakhElectricity"
+                          value="no"
+                          checked={formData.spentOver1LakhElectricity === "no"}
+                          onChange={handleChange}
+                          className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                        />
+                        <label htmlFor="electricityNo" className="ml-2 text-sm font-medium text-gray-700">
+                          No
+                        </label>
+                      </div>
+                    </div>
+                    {formData.spentOver1LakhElectricity === "yes" && (
+                      <input
+                        type="number"
+                        name="electricityAmount"
+                        placeholder="Enter amount"
+                        value={formData.electricityAmount}
+                        onChange={handleChange}
+                        className="mt-2 w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                      />
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
 
+        {/* Step 3: Revised/Defective/Modified Return */}
         {step === 3 && (
           <div className="p-4 bg-gray-50 rounded-lg">
-            <h3 className="mb-4 text-lg font-semibold text-gray-700">Other Income Sources</h3>
+            <h3 className="mb-4 text-lg font-semibold text-gray-700">Revised/Defective/Modified Return</h3>
             <div className="space-y-6">
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Salary Income <span className="text-red-500">*</span>
+                  Receipt Number
                 </label>
                 <input
-                  type="number"
-                  name="salaryIncome"
-                  value={formData.salaryIncome}
+                  type="text"
+                  name="receiptNumber"
+                  value={formData.receiptNumber}
                   onChange={handleChange}
-                  placeholder="Enter salary income"
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.salaryIncome ? "border-red-500" : "border-gray-300"}`}
+                  placeholder="Enter receipt number"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 />
-                {errors.salaryIncome && <p className="mt-1 text-sm text-red-500">{errors.salaryIncome}</p>}
               </div>
 
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
-                  House Property Income <span className="text-red-500">*</span>
+                  Original Filing Date
                 </label>
                 <input
-                  type="number"
-                  name="housePropertyIncome"
-                  value={formData.housePropertyIncome}
+                  type="date"
+                  name="originalFilingDate"
+                  value={formData.originalFilingDate}
                   onChange={handleChange}
-                  placeholder="Enter house property income"
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.housePropertyIncome ? "border-red-500" : "border-gray-300"}`}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 />
-                {errors.housePropertyIncome && <p className="mt-1 text-sm text-red-500">{errors.housePropertyIncome}</p>}
-              </div>
-
-              <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Capital Gains <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="capitalGains"
-                  value={formData.capitalGains}
-                  onChange={handleChange}
-                  placeholder="Enter capital gains"
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.capitalGains ? "border-red-500" : "border-gray-300"}`}
-                />
-                {errors.capitalGains && <p className="mt-1 text-sm text-red-500">{errors.capitalGains}</p>}
-              </div>
-
-              <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Other Sources Income <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="otherSourcesIncome"
-                  value={formData.otherSourcesIncome}
-                  onChange={handleChange}
-                  placeholder="Enter other sources income"
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.otherSourcesIncome ? "border-red-500" : "border-gray-300"}`}
-                />
-                {errors.otherSourcesIncome && <p className="mt-1 text-sm text-red-500">{errors.otherSourcesIncome}</p>}
-              </div>
-
-              <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Agricultural Income <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="agriculturalIncome"
-                  value={formData.agriculturalIncome}
-                  onChange={handleChange}
-                  placeholder="Enter agricultural income"
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.agriculturalIncome ? "border-red-500" : "border-gray-300"}`}
-                />
-                {errors.agriculturalIncome && <p className="mt-1 text-sm text-red-500">{errors.agriculturalIncome}</p>}
               </div>
             </div>
           </div>
         )}
 
+        {/* Step 4: Residential Status */}
         {step === 4 && (
           <div className="p-4 bg-gray-50 rounded-lg">
-            <h3 className="mb-4 text-lg font-semibold text-gray-700">Deductions and Tax Details</h3>
+            <h3 className="mb-4 text-lg font-semibold text-gray-700">Residential Status</h3>
             <div className="space-y-6">
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Section 80C Deduction <span className="text-red-500">*</span>
+                  Residential Status
                 </label>
-                <input
-                  type="number"
-                  name="section80C"
-                  value={formData.section80C}
-                  onChange={handleChange}
-                  placeholder="Enter Section 80C deduction"
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.section80C ? "border-red-500" : "border-gray-300"}`}
-                />
-                {errors.section80C && <p className="mt-1 text-sm text-red-500">{errors.section80C}</p>}
+                <div className="space-y-2">
+                  {[
+                    'Resident (182+ days)',
+                    'Resident (60+ days + 365 in 4 years)',
+                    'Non-resident',
+                    'Resident but Not Ordinarily Resident'
+                  ].map((option) => (
+                    <div key={option} className="flex items-center">
+                      <input
+                        type="checkbox"
+                        id={option}
+                        checked={formData.residentialStatus.includes(option)}
+                        onChange={() => handleCheckboxChange('residentialStatus', option)}
+                        className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                      />
+                      <label htmlFor={option} className="ml-2 text-sm font-medium text-gray-700">
+                        {option}
+                      </label>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Section 80D Deduction <span className="text-red-500">*</span>
+                  Country of Residence
                 </label>
-                <input
-                  type="number"
-                  name="section80D"
-                  value={formData.section80D}
+                <select
+                  name="countryOfResidence"
+                  value={formData.countryOfResidence}
                   onChange={handleChange}
-                  placeholder="Enter Section 80D deduction"
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.section80D ? "border-red-500" : "border-gray-300"}`}
-                />
-                {errors.section80D && <p className="mt-1 text-sm text-red-500">{errors.section80D}</p>}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Select Country</option>
+                  <option value="india">India</option>
+                  <option value="usa">United States</option>
+                  <option value="uk">United Kingdom</option>
+                  <option value="canada">Canada</option>
+                  <option value="australia">Australia</option>
+                  <option value="germany">Germany</option>
+                  <option value="france">France</option>
+                  <option value="singapore">Singapore</option>
+                  <option value="uae">UAE</option>
+                  <option value="other">Other</option>
+                </select>
               </div>
 
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Section 80G Deduction <span className="text-red-500">*</span>
+                  Days in India (this + last 4 yrs)
                 </label>
                 <input
                   type="number"
-                  name="section80G"
-                  value={formData.section80G}
+                  name="daysInIndia"
+                  value={formData.daysInIndia}
                   onChange={handleChange}
-                  placeholder="Enter Section 80G deduction"
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.section80G ? "border-red-500" : "border-gray-300"}`}
+                  placeholder="Enter number of days"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 />
-                {errors.section80G && <p className="mt-1 text-sm text-red-500">{errors.section80G}</p>}
-              </div>
-
-              <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Section 80TTA Deduction <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="section80TTA"
-                  value={formData.section80TTA}
-                  onChange={handleChange}
-                  placeholder="Enter Section 80TTA deduction"
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.section80TTA ? "border-red-500" : "border-gray-300"}`}
-                />
-                {errors.section80TTA && <p className="mt-1 text-sm text-red-500">{errors.section80TTA}</p>}
-              </div>
-
-              <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Advance Tax Paid <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="advanceTaxPaid"
-                  value={formData.advanceTaxPaid}
-                  onChange={handleChange}
-                  placeholder="Enter advance tax paid"
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.advanceTaxPaid ? "border-red-500" : "border-gray-300"}`}
-                />
-                {errors.advanceTaxPaid && <p className="mt-1 text-sm text-red-500">{errors.advanceTaxPaid}</p>}
-              </div>
-
-              <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  TDS Paid <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="tdsPaid"
-                  value={formData.tdsPaid}
-                  onChange={handleChange}
-                  placeholder="Enter TDS paid"
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.tdsPaid ? "border-red-500" : "border-gray-300"}`}
-                />
-                {errors.tdsPaid && <p className="mt-1 text-sm text-red-500">{errors.tdsPaid}</p>}
-              </div>
-
-              <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Self Assessment Tax <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="selfAssessmentTax"
-                  value={formData.selfAssessmentTax}
-                  onChange={handleChange}
-                  placeholder="Enter self assessment tax"
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.selfAssessmentTax ? "border-red-500" : "border-gray-300"}`}
-                />
-                {errors.selfAssessmentTax && <p className="mt-1 text-sm text-red-500">{errors.selfAssessmentTax}</p>}
               </div>
             </div>
           </div>
         )}
 
+        {/* Step 5: Additional Declarations */}
         {step === 5 && (
+          <div className="p-4 bg-gray-50 rounded-lg">
+            <h3 className="mb-4 text-lg font-semibold text-gray-700">Additional Declarations</h3>
+            <div className="space-y-6">
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Claim benefit under 115H?
+                </label>
+                <div className="space-y-2">
+                  <div className="flex items-center">
+                <input
+                      type="radio"
+                      id="claimBenefitYes"
+                      name="claimBenefit115H"
+                      value="yes"
+                      checked={formData.claimBenefit115H === "yes"}
+                  onChange={handleChange}
+                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                    />
+                    <label htmlFor="claimBenefitYes" className="ml-2 text-sm font-medium text-gray-700">
+                      Yes
+                    </label>
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                      id="claimBenefitNo"
+                      name="claimBenefit115H"
+                      value="no"
+                      checked={formData.claimBenefit115H === "no"}
+                      onChange={handleChange}
+                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                    />
+                    <label htmlFor="claimBenefitNo" className="ml-2 text-sm font-medium text-gray-700">
+                      No
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Governed by Portuguese Civil Code?
+                </label>
+                <div className="space-y-2">
+                  <div className="flex items-center">
+                <input
+                      type="radio"
+                      id="portugueseYes"
+                      name="governedByPortugueseCivilCode"
+                      value="yes"
+                      checked={formData.governedByPortugueseCivilCode === "yes"}
+                  onChange={handleChange}
+                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                    />
+                    <label htmlFor="portugueseYes" className="ml-2 text-sm font-medium text-gray-700">
+                      Yes
+                    </label>
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                      id="portugueseNo"
+                      name="governedByPortugueseCivilCode"
+                      value="no"
+                      checked={formData.governedByPortugueseCivilCode === "no"}
+                      onChange={handleChange}
+                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                    />
+                    <label htmlFor="portugueseNo" className="ml-2 text-sm font-medium text-gray-700">
+                      No
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Are you FPI?
+                </label>
+                <div className="space-y-2">
+                  <div className="flex items-center">
+                <input
+                      type="radio"
+                      id="fpiYes"
+                      name="isFPI"
+                      value="yes"
+                      checked={formData.isFPI === "yes"}
+                  onChange={handleChange}
+                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                    />
+                    <label htmlFor="fpiYes" className="ml-2 text-sm font-medium text-gray-700">
+                      Yes
+                    </label>
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                      id="fpiNo"
+                      name="isFPI"
+                      value="no"
+                      checked={formData.isFPI === "no"}
+                      onChange={handleChange}
+                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                    />
+                    <label htmlFor="fpiNo" className="ml-2 text-sm font-medium text-gray-700">
+                      No
+                    </label>
+                  </div>
+                </div>
+                {formData.isFPI === "yes" && (
+                  <input
+                    type="text"
+                    name="sebiRegnNo"
+                    placeholder="SEBI Registration Number"
+                    value={formData.sebiRegnNo}
+                    onChange={handleChange}
+                    className="mt-2 w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                )}
+              </div>
+
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Filed by Representative?
+                </label>
+                <div className="space-y-2">
+                  <div className="flex items-center">
+                <input
+                      type="radio"
+                      id="representativeYes"
+                      name="filedByRepresentative"
+                      value="yes"
+                      checked={formData.filedByRepresentative === "yes"}
+                  onChange={handleChange}
+                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                />
+                    <label htmlFor="representativeYes" className="ml-2 text-sm font-medium text-gray-700">
+                      Yes
+                    </label>
+              </div>
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                      id="representativeNo"
+                      name="filedByRepresentative"
+                      value="no"
+                      checked={formData.filedByRepresentative === "no"}
+                      onChange={handleChange}
+                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                    />
+                    <label htmlFor="representativeNo" className="ml-2 text-sm font-medium text-gray-700">
+                      No
+                    </label>
+                  </div>
+                </div>
+                {formData.filedByRepresentative === "yes" && (
+                  <div className="mt-4 space-y-4 p-4 bg-blue-50 rounded-lg">
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                        Representative Name
+                </label>
+                <input
+                        type="text"
+                        name="representativeName"
+                        value={formData.representativeName}
+                  onChange={handleChange}
+                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+                    <div>
+                      <label className="block mb-2 text-sm font-medium text-gray-700">
+                        Capacity
+                      </label>
+                      <select
+                        name="representativeCapacity"
+                        value={formData.representativeCapacity}
+                        onChange={handleChange}
+                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="">Select Capacity</option>
+                        <option value="authorized-representative">Authorized Representative</option>
+                        <option value="legal-heir">Legal Heir</option>
+                        <option value="guardian">Guardian</option>
+                        <option value="power-of-attorney">Power of Attorney</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block mb-2 text-sm font-medium text-gray-700">
+                        Representative Address
+                      </label>
+                      <input
+                        type="text"
+                        name="representativeAddress"
+                        value={formData.representativeAddress}
+                        onChange={handleChange}
+                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-2 text-sm font-medium text-gray-700">
+                        Representative PAN/Aadhaar
+                      </label>
+                      <input
+                        type="text"
+                        name="representativePAN"
+                        value={formData.representativePAN}
+                        onChange={handleChange}
+                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 6: Company Involvement */}
+        {step === 6 && (
+          <div className="p-4 bg-gray-50 rounded-lg">
+            <h3 className="mb-4 text-lg font-semibold text-gray-700">Company Involvement</h3>
+            <div className="space-y-6">
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Are you a Director?
+                </label>
+                <div className="space-y-2">
+                  <div className="flex items-center">
+                <input
+                      type="radio"
+                      id="directorYes"
+                      name="isDirector"
+                      value="yes"
+                      checked={formData.isDirector === "yes"}
+                  onChange={handleChange}
+                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                    />
+                    <label htmlFor="directorYes" className="ml-2 text-sm font-medium text-gray-700">
+                      Yes
+                    </label>
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                      id="directorNo"
+                      name="isDirector"
+                      value="no"
+                      checked={formData.isDirector === "no"}
+                      onChange={handleChange}
+                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                    />
+                    <label htmlFor="directorNo" className="ml-2 text-sm font-medium text-gray-700">
+                      No
+                    </label>
+                  </div>
+                </div>
+                {formData.isDirector === "yes" && (
+                  <div className="mt-4 space-y-4 p-4 bg-blue-50 rounded-lg">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          DIN
+                        </label>
+                        <input
+                          type="text"
+                          name="din"
+                          value={formData.din}
+                          onChange={handleChange}
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Director PAN
+                        </label>
+                        <input
+                          type="text"
+                          name="directorPAN"
+                          value={formData.directorPAN}
+                          onChange={handleChange}
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Company Name
+                        </label>
+                        <input
+                          type="text"
+                          name="companyName"
+                          value={formData.companyName}
+                          onChange={handleChange}
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Listed/Unlisted
+                        </label>
+                        <select
+                          name="isListed"
+                          value={formData.isListed}
+                          onChange={handleChange}
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="">Select</option>
+                          <option value="listed">Listed</option>
+                          <option value="unlisted">Unlisted</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Held unlisted equity shares?
+                </label>
+                <div className="space-y-2">
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                      id="unlistedSharesYes"
+                      name="heldUnlistedShares"
+                      value="yes"
+                      checked={formData.heldUnlistedShares === "yes"}
+                      onChange={handleChange}
+                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                    />
+                    <label htmlFor="unlistedSharesYes" className="ml-2 text-sm font-medium text-gray-700">
+                      Yes
+                    </label>
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                      id="unlistedSharesNo"
+                      name="heldUnlistedShares"
+                      value="no"
+                      checked={formData.heldUnlistedShares === "no"}
+                      onChange={handleChange}
+                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                    />
+                    <label htmlFor="unlistedSharesNo" className="ml-2 text-sm font-medium text-gray-700">
+                      No
+                    </label>
+                  </div>
+                </div>
+                {formData.heldUnlistedShares === "yes" && (
+                  <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+                    <h4 className="mb-4 text-md font-semibold text-gray-700">Unlisted Equity Shares Details</h4>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block mb-2 text-sm font-medium text-gray-700">
+                            Company Name
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="Enter company name"
+                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block mb-2 text-sm font-medium text-gray-700">
+                            PAN
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="Enter PAN"
+                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block mb-2 text-sm font-medium text-gray-700">
+                            No. of shares
+                </label>
+                <input
+                  type="number"
+                            placeholder="Enter number of shares"
+                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block mb-2 text-sm font-medium text-gray-700">
+                            Cost of acquisition
+                          </label>
+                          <input
+                            type="number"
+                            placeholder="Enter cost"
+                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block mb-2 text-sm font-medium text-gray-700">
+                            Purchase Date
+                          </label>
+                          <input
+                            type="date"
+                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block mb-2 text-sm font-medium text-gray-700">
+                            Sale Date
+                          </label>
+                          <input
+                            type="date"
+                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                          />
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        className="px-4 py-2 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50"
+                      >
+                        + Add Another Company
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 7: Bank Details */}
+        {step === 7 && (
           <div className="p-4 bg-gray-50 rounded-lg">
             <h3 className="mb-4 text-lg font-semibold text-gray-700">Bank Details</h3>
             <div className="space-y-6">
-              <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Bank Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="bankName"
-                  value={formData.bankName}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    IFS Code <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="ifscCode"
+                    maxLength={11}
+                    value={formData.ifscCode}
                   onChange={handleChange}
-                  placeholder="Enter bank name"
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.bankName ? "border-red-500" : "border-gray-300"}`}
+                    placeholder="Enter IFSC code"
+                    className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.ifscCode ? "border-red-500" : "border-gray-300"}`}
                 />
-                {errors.bankName && <p className="mt-1 text-sm text-red-500">{errors.bankName}</p>}
+                  {errors.ifscCode && <p className="mt-1 text-sm text-red-500">{errors.ifscCode}</p>}
               </div>
 
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Account Number <span className="text-red-500">*</span>
+                    Bank Name <span className="text-red-500">*</span>
                 </label>
                 <input
-                  type="text"
-                  name="accountNumber"
-                  value={formData.accountNumber}
+                    type="text"
+                    name="bankName"
+                    value={formData.bankName}
                   onChange={handleChange}
-                  placeholder="Enter account number"
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.accountNumber ? "border-red-500" : "border-gray-300"}`}
+                    placeholder="Enter bank name"
+                    className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.bankName ? "border-red-500" : "border-gray-300"}`}
                 />
-                {errors.accountNumber && <p className="mt-1 text-sm text-red-500">{errors.accountNumber}</p>}
+                  {errors.bankName && <p className="mt-1 text-sm text-red-500">{errors.bankName}</p>}
               </div>
 
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
-                  IFSC Code <span className="text-red-500">*</span>
+                    Account Number <span className="text-red-500">*</span>
                 </label>
                 <input
-                  type="text"
-                  name="ifscCode"
-                  value={formData.ifscCode}
+                    type="text"
+                    name="accountNumber"
+                    value={formData.accountNumber}
                   onChange={handleChange}
-                  placeholder="Enter IFSC code"
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.ifscCode ? "border-red-500" : "border-gray-300"}`}
+                    placeholder="Enter account number"
+                    className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.accountNumber ? "border-red-500" : "border-gray-300"}`}
                 />
-                {errors.ifscCode && <p className="mt-1 text-sm text-red-500">{errors.ifscCode}</p>}
+                  {errors.accountNumber && <p className="mt-1 text-sm text-red-500">{errors.accountNumber}</p>}
               </div>
 
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Account Type <span className="text-red-500">*</span>
+                    Account Type <span className="text-red-500">*</span>
+                </label>
+                  <select
+                    name="accountType"
+                    value={formData.accountType}
+                    onChange={handleChange}
+                    className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.accountType ? "border-red-500" : "border-gray-300"}`}
+                  >
+                    <option value="">Select account type</option>
+                    <option value="savings">Savings</option>
+                    <option value="current">Current</option>
+                    <option value="fixed-deposit">Fixed Deposit</option>
+                    <option value="recurring-deposit">Recurring Deposit</option>
+                  </select>
+                  {errors.accountType && <p className="mt-1 text-sm text-red-500">{errors.accountType}</p>}
+                </div>
+              </div>
+
+              <div>
+                <div className="flex items-center">
+                <input
+                    type="checkbox"
+                    id="primaryRefundAccount"
+                    name="primaryRefundAccount"
+                    checked={formData.primaryRefundAccount}
+                  onChange={handleChange}
+                    className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                />
+                  <label htmlFor="primaryRefundAccount" className="ml-2 text-sm font-medium text-gray-700">
+                    Primary Refund Account
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 8: Schedule S - Income from Salary */}
+        {step === 8 && (
+          <div className="p-4 bg-gray-50 rounded-lg">
+            <h3 className="mb-4 text-lg font-semibold text-gray-700">Schedule S - Income from Salary</h3>
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Employer Name
+                  </label>
+                  <input
+                    type="text"
+                    name="employerName"
+                    value={formData.employerName}
+                    onChange={handleChange}
+                    placeholder="Enter employer name"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Employer Type
+                  </label>
+                  <select
+                    name="employerType"
+                    value={formData.employerType}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Select employer type</option>
+                    <option value="government">Government</option>
+                    <option value="private">Private</option>
+                    <option value="public-sector">Public Sector</option>
+                    <option value="multinational">Multinational</option>
+                    <option value="startup">Startup</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Employer TAN
+                  </label>
+                  <input
+                    type="text"
+                    name="employerTAN"
+                    value={formData.employerTAN}
+                    onChange={handleChange}
+                    placeholder="Enter employer TAN"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Employer Address
+                  </label>
+                  <input
+                    type="text"
+                    name="employerAddress"
+                    value={formData.employerAddress}
+                    onChange={handleChange}
+                    placeholder="Enter employer address"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-6">
+                <h4 className="mb-4 text-md font-semibold text-gray-700">Income Fields</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Salary u/s 17(1)
+                </label>
+                <input
+                  type="number"
+                      name="salaryUnder17_1"
+                      value={formData.salaryUnder17_1}
+                  onChange={handleChange}
+                      placeholder="Enter amount"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Perquisites u/s 17(2)
+                </label>
+                <input
+                  type="number"
+                      name="perquisitesUnder17_2"
+                      value={formData.perquisitesUnder17_2}
+                  onChange={handleChange}
+                      placeholder="Enter amount"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Profit in lieu of salary u/s 17(3)
+                </label>
+                <input
+                  type="number"
+                      name="profitInLieuOfSalary"
+                      value={formData.profitInLieuOfSalary}
+                  onChange={handleChange}
+                      placeholder="Enter amount"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Retirement income (notified/other)
+                </label>
+                <input
+                  type="number"
+                      name="retirementIncome"
+                      value={formData.retirementIncome}
+                  onChange={handleChange}
+                      placeholder="Enter amount"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Relief u/s 89A
+                </label>
+                <input
+                  type="number"
+                      name="reliefUnder89A"
+                      value={formData.reliefUnder89A}
+                  onChange={handleChange}
+                      placeholder="Enter amount"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Standard Deduction u/s 16
+                </label>
+                <input
+                  type="number"
+                      name="standardDeduction"
+                      value={formData.standardDeduction}
+                  onChange={handleChange}
+                      placeholder="Enter amount"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Entertainment Allowance u/s 16
+                </label>
+                <input
+                  type="number"
+                      name="entertainmentAllowance"
+                      value={formData.entertainmentAllowance}
+                  onChange={handleChange}
+                      placeholder="Enter amount"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Professional Tax u/s 16
+                    </label>
+                    <input
+                      type="number"
+                      name="professionalTax"
+                      value={formData.professionalTax}
+                      onChange={handleChange}
+                      placeholder="Enter amount"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 9: Schedule HP - Income from House Property */}
+        {step === 9 && (
+          <div className="p-4 bg-gray-50 rounded-lg">
+            <h3 className="mb-4 text-lg font-semibold text-gray-700">Schedule HP - Income from House Property</h3>
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Property Address
+                </label>
+                <input
+                  type="text"
+                    name="propertyAddress"
+                    value={formData.propertyAddress}
+                  onChange={handleChange}
+                    placeholder="Enter property address"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Property City
+                </label>
+                <input
+                  type="text"
+                    name="propertyCity"
+                    value={formData.propertyCity}
+                  onChange={handleChange}
+                    placeholder="Enter city"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Property State
+                  </label>
+                  <select
+                    name="propertyState"
+                    value={formData.propertyState}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Select State</option>
+                    <option value="andhra-pradesh">Andhra Pradesh</option>
+                    <option value="arunachal-pradesh">Arunachal Pradesh</option>
+                    <option value="assam">Assam</option>
+                    <option value="bihar">Bihar</option>
+                    <option value="chhattisgarh">Chhattisgarh</option>
+                    <option value="goa">Goa</option>
+                    <option value="gujarat">Gujarat</option>
+                    <option value="haryana">Haryana</option>
+                    <option value="himachal-pradesh">Himachal Pradesh</option>
+                    <option value="jharkhand">Jharkhand</option>
+                    <option value="karnataka">Karnataka</option>
+                    <option value="kerala">Kerala</option>
+                    <option value="madhya-pradesh">Madhya Pradesh</option>
+                    <option value="maharashtra">Maharashtra</option>
+                    <option value="manipur">Manipur</option>
+                    <option value="meghalaya">Meghalaya</option>
+                    <option value="mizoram">Mizoram</option>
+                    <option value="nagaland">Nagaland</option>
+                    <option value="odisha">Odisha</option>
+                    <option value="punjab">Punjab</option>
+                    <option value="rajasthan">Rajasthan</option>
+                    <option value="sikkim">Sikkim</option>
+                    <option value="tamil-nadu">Tamil Nadu</option>
+                    <option value="telangana">Telangana</option>
+                    <option value="tripura">Tripura</option>
+                    <option value="uttar-pradesh">Uttar Pradesh</option>
+                    <option value="uttarakhand">Uttarakhand</option>
+                    <option value="west-bengal">West Bengal</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Property Country
+                </label>
+                <input
+                  type="text"
+                    name="propertyCountry"
+                    value={formData.propertyCountry}
+                  onChange={handleChange}
+                    placeholder="Enter country"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Property PIN
+                  </label>
+                  <input
+                    type="number"
+                    name="propertyPIN"
+                    maxLength={6}
+                    value={formData.propertyPIN}
+                    onChange={handleChange}
+                    placeholder="Enter PIN"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Co-owned?
+                  </label>
+                  <div className="space-y-2">
+                    <div className="flex items-center">
+                      <input
+                        type="radio"
+                        id="coOwnedYes"
+                        name="isCoOwned"
+                        value="yes"
+                        checked={formData.isCoOwned === "yes"}
+                        onChange={handleChange}
+                        className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                      />
+                      <label htmlFor="coOwnedYes" className="ml-2 text-sm font-medium text-gray-700">
+                        Yes
+                      </label>
+                    </div>
+                    <div className="flex items-center">
+                      <input
+                        type="radio"
+                        id="coOwnedNo"
+                        name="isCoOwned"
+                        value="no"
+                        checked={formData.isCoOwned === "no"}
+                        onChange={handleChange}
+                        className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                      />
+                      <label htmlFor="coOwnedNo" className="ml-2 text-sm font-medium text-gray-700">
+                        No
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {formData.isCoOwned === "yes" && (
+                <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+                  <h4 className="mb-4 text-md font-semibold text-gray-700">Co-owners Details</h4>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Co-owner Name
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Enter co-owner name"
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Co-owner PAN
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Enter co-owner PAN"
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Share %
+                        </label>
+                        <input
+                          type="number"
+                          placeholder="Enter share percentage"
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      className="px-4 py-2 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50"
+                    >
+                      + Add Another Co-owner
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Property Type
                 </label>
                 <select
-                  name="accountType"
-                  value={formData.accountType}
+                    name="propertyType"
+                    value={formData.propertyType}
                   onChange={handleChange}
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.accountType ? "border-red-500" : "border-gray-300"}`}
-                >
-                  <option value="">Select account type</option>
-                  <option value="savings">Savings</option>
-                  <option value="current">Current</option>
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Select property type</option>
+                    <option value="let-out">Let out</option>
+                    <option value="self-occupied">Self-occupied</option>
+                    <option value="deemed-let-out">Deemed let out</option>
                 </select>
-                {errors.accountType && <p className="mt-1 text-sm text-red-500">{errors.accountType}</p>}
+              </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Tenant Name
+                  </label>
+                  <input
+                    type="text"
+                    name="tenantName"
+                    value={formData.tenantName}
+                    onChange={handleChange}
+                    placeholder="Enter tenant name"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Tenant PAN
+                  </label>
+                  <input
+                    type="text"
+                    name="tenantPAN"
+                    value={formData.tenantPAN}
+                    onChange={handleChange}
+                    placeholder="Enter tenant PAN"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Gross Rent
+                  </label>
+                  <input
+                    type="number"
+                    name="grossRent"
+                    value={formData.grossRent}
+                    onChange={handleChange}
+                    placeholder="Enter gross rent"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Unrealized Rent
+                  </label>
+                  <input
+                    type="number"
+                    name="unrealizedRent"
+                    value={formData.unrealizedRent}
+                    onChange={handleChange}
+                    placeholder="Enter unrealized rent"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Local Taxes
+                  </label>
+                  <input
+                    type="number"
+                    name="localTaxes"
+                    value={formData.localTaxes}
+                    onChange={handleChange}
+                    placeholder="Enter local taxes"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Loan Interest
+                  </label>
+                  <input
+                    type="number"
+                    name="loanInterest"
+                    value={formData.loanInterest}
+                    onChange={handleChange}
+                    placeholder="Enter loan interest"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Net Property Income (auto-calculated)
+                  </label>
+                  <input
+                    type="number"
+                    name="netPropertyIncome"
+                    value={formData.netPropertyIncome}
+                    onChange={handleChange}
+                    placeholder="Auto-calculated"
+                    className="w-full p-2 border border-gray-300 rounded-md bg-gray-100"
+                    readOnly
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -948,7 +2231,7 @@ const ItrTwo = () => {
                 Processing...
               </div>
             ) : (
-              step === 5 ? "Submit" : "Next"
+              step === 9 ? "Submit" : "Next"
             )}
           </button>
         </div>
