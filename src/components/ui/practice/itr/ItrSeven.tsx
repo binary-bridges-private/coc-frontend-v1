@@ -1205,15 +1205,15 @@ const ItrSeven = () => {
                   <div>
                     <label className="block mb-2 text-sm font-medium text-gray-700">Notice Number</label>
                     <input type="text" name="noticeNumber" value={formData.noticeNumber} onChange={handleChange} placeholder="Enter notice number" className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" />
-                  </div>
-                  <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-700">DIN / Unique Number</label>
-                    <input type="text" name="din" value={formData.din} onChange={handleChange} placeholder="Enter DIN/Unique number" className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" />
-                  </div>
-                  <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-700">DIN Date</label>
-                    <input type="date" name="dinDate" value={formData.dinDate} onChange={handleChange} className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" />
-                  </div>
+              </div>
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">DIN / Unique Number</label>
+                <input type="text" name="din" value={formData.din} onChange={handleChange} placeholder="Enter DIN/Unique number" className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" />
+              </div>
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">DIN Date</label>
+                <input type="date" name="dinDate" value={formData.dinDate} onChange={handleChange} className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" />
+              </div>
                 </>
               )}
             </div>
@@ -1239,20 +1239,20 @@ const ItrSeven = () => {
                 <label className="ml-2 text-sm font-medium text-gray-700">Has Project</label>
               </div>
               {formData.hasProject && (
-                  <div>
+                <div>
                   <label className="block mb-2 text-sm font-medium text-gray-700">Project/Institution Name</label>
                   <input type="text" name="projectName" value={formData.projectName} onChange={handleChange} placeholder="Enter project/institution name" className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.projectName ? "border-red-500" : "border-gray-300"}`} />
                   {errors.projectName && <p className="mt-1 text-sm text-red-500">{errors.projectName}</p>}
-                  </div>
+                </div>
               )}
-                  <div>
+              <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">Nature of Activity</label>
                 <input type="text" name="activityNature" value={formData.activityNature} onChange={handleChange} placeholder="Enter nature of activity" className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" />
-                  </div>
-                  <div>
+              </div>
+              <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">Classification</label>
                 <input type="text" name="classification" value={formData.classification} onChange={handleChange} placeholder="Enter classification" className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" />
-                  </div>
+              </div>
             </div>
           </div>
         )}
@@ -2007,11 +2007,11 @@ const ItrSeven = () => {
               "Next"
             )}
           </button>
-              </div>
+        </div>
         {saveError && (
           <div className="mt-2 text-sm text-red-500">{saveError}</div>
         )}
-              </div>
+      </div>
     </>
   );
 };
