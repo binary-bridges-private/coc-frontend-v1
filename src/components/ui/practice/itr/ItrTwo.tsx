@@ -18,27 +18,29 @@ const ItrTwo = () => {
     middleName: "",
     lastName: "",
     pan: "",
+    name: "", // Combined name field
     status: "",
     dateOfBirth: "",
     aadharNumber: "",
     
     // Address
     flatDoorBlock: "",
-    buildingVillage: "",
-    roadStreetPostOffice: "",
-    areaLocality: "",
-    townCityDistrict: "",
+    buildingName: "",
+    roadStreet: "",
+    localityArea: "",
+    cityDistrict: "",
     state: "",
-    pinZip: "",
+    pinCode: "",
     country: "India",
-    phone1: "",
-    phone2: "",
+    mobile1: "",
+    mobile2: "",
     
     // Step 2: Filing Status
     email1: "",
     email2: "",
-    filedUnder: "",
-    filedInResponseTo: [] as string[],
+    filingSection: "", // natureOfFiling in specification
+    returnFileSectionReason: "", // Reason for filing
+    filedInResponseTo: [] as string[], // noticeSection in specification
     optingOut115BAC: "",
     filingUnder7thProviso: "",
     depositedOver1Cr: "",
@@ -50,20 +52,28 @@ const ItrTwo = () => {
     otherConditions: "",
     
     // Step 3: Revised/Defective/Modified Return
-    receiptNumber: "",
+    isRevisedReturn: false, // Boolean flag for revised return
+    originalAckNumber: "", // originalAckNumber from specification
     originalFilingDate: "",
+    receiptNumber: "",
+    noticeDIN: "", // Document Identification Number of notice
+    noticeDate: "", // Date of notice/order
     
     // Step 4: Residential Status
     residentialStatus: [] as string[],
-    countryOfResidence: "",
-    daysInIndia: "",
+    jurisdiction: "", // countryOfResidence renamed
+    daysInIndiaCurrentYear: "", // daysInIndia renamed and split
+    daysInIndiaLast4Years: "", // Separate field for last 4 years
+    passportNumber: "",
+    issuedByCountry: "",
+    tin: "",
     
     // Step 5: Additional Declarations
     claimBenefit115H: "",
     governedByPortugueseCivilCode: "",
     isFPI: "",
     sebiRegnNo: "",
-    filedByRepresentative: "",
+    filingByRepresentative: "", // filedByRepresentative renamed
     representativeName: "",
     representativeCapacity: "",
     representativeAddress: "",
@@ -71,12 +81,17 @@ const ItrTwo = () => {
     
     // Step 6: Company Involvement
     isDirector: "",
-    din: "",
-    directorPAN: "",
-    companyName: "",
+    directorDIN: "",
+    directorCompanyPAN: "",
+    directorCompanyName: "",
     isListed: "",
     heldUnlistedShares: "",
     unlistedShares: [],
+    
+    // Partner in Firm Details
+    isPartnerInFirm: "", // Are you a partner in a firm?
+    firmName: "", // Name of firm
+    firmPAN: "", // PAN of firm
     
     // Step 7: Bank Details
     ifscCode: "",
@@ -87,34 +102,189 @@ const ItrTwo = () => {
     
     // Step 8: Schedule S - Income from Salary
     employerName: "",
-    employerType: "",
+    employerCategory: "", // employerType renamed to match specification
     employerTAN: "",
     employerAddress: "",
     salaryUnder17_1: "",
     perquisitesUnder17_2: "",
-    profitInLieuOfSalary: "",
-    retirementIncome: "",
-    reliefUnder89A: "",
+    profitsInLieuUnder17_3: "", // profitInLieuOfSalary renamed
+    retirementIncome89A: "", // retirementIncome renamed
+    reliefClaimed89A: "", // reliefUnder89A renamed
+    allowancesUnderSection10: "", // New field from specification
     standardDeduction: "",
     entertainmentAllowance: "",
     professionalTax: "",
     
     // Step 9: Schedule HP - Income from House Property
-    propertyAddress: "",
-    propertyCity: "",
-    propertyState: "",
-    propertyCountry: "",
-    propertyPIN: "",
+    propertyType: "", // Moved to top as per specification
+    propertyAddress: "", // Complete address of property
     isCoOwned: "",
-    coOwners: [],
-    propertyType: "",
+    coOwnerDetails: [], // coOwners renamed to coOwnerDetails
+    ownershipShare: "", // Your share of ownership (%)
     tenantName: "",
     tenantPAN: "",
-    grossRent: "",
+    grossRentReceived: "", // grossRent renamed
     unrealizedRent: "",
-    localTaxes: "",
-    loanInterest: "",
-    netPropertyIncome: "",
+    localTaxesPaid: "", // localTaxes renamed
+    annualValue: "", // New field from specification
+    interestOnBorrowedCapital: "", // loanInterest renamed
+    interestPreConstruction: "",
+    arrearsReceived: "", // New field from specification
+    netIncomeFromProperty: "", // netPropertyIncome renamed
+    
+    // Step 10: Schedule CG - Capital Gains
+    capitalGainsSchedule: [] as Array<{
+      capitalAssetType: string; // Type of capital asset (e.g., land, equity, bonds)
+      isLongTerm: boolean; // Whether gain is long term
+      fullValueConsideration: number; // Sale value
+      costOfAcquisition: number;
+      costOfImprovement: number; // Cost of improvement
+      expensesOnTransfer: number; // Expenses on transfer
+      indexedCost: number; // Indexed cost (for LTCG)
+      exemptionsClaimed: number; // Exemptions claimed (u/s 54, 54EC, etc.)
+      netCapitalGain: number; // Capital gain after exemption
+      foreignCapitalAssets: boolean; // Whether the capital asset is located outside India
+    }>,
+    shortTermGains: "" as string,
+    longTermGains: "" as string,
+    exemptionSection54: "",
+    exemptionSection54EC: "",
+    exemptionSection54F: "",
+    
+    // Step 11: Schedule OS - Income from Other Sources
+    interestIncome: "", // Interest income (savings, FD, etc.)
+    dividendIncome: "", // Dividend income
+    winnings: "", // winningsFromLottery renamed to match specification
+    familyPension: "", // Family pension income
+    incomeFromOthers: "", // otherMiscIncome renamed
+    deductionsAgainstOS: "", // Deductions claimed under section 57
+    
+    // Step 12: Schedule VI-A - Deductions
+    section80C: "", // LIC, PPF, tuition fees, home loan principal etc.
+    section80CCC: "", // Pension fund contributions
+    section80CCD: "", // NPS contributions (self + employer)
+    section80D: "", // Health insurance premiums
+    section80DD: "", // Maintenance for handicapped dependent
+    section80DDB: "", // Medical treatment for specified diseases
+    section80E: "", // Interest on education loan
+    section80EE: "", // Interest on home loan for first-time buyer
+    section80G: "", // Donations to charity
+    section80GGA: "", // Donations for scientific/social research
+    section80TTA: "", // Savings interest (non-senior citizens)
+    section80TTB: "", // Interest (senior citizens)
+    section80U: "", // Disability of self
+    otherDeductions: "", // Other eligible deductions
+    
+    // Step 12A: Schedule CYLA/BFLA/CFL/AMT/AMTC - Loss and AMT Details
+    currentYearLossSetOff: "", // Losses set off against current year income
+    broughtForwardLossSetOff: "", // Losses brought forward from previous years
+    carryForwardLosses: "", // Losses carried forward to future years
+    amtPayable: "", // Alternate Minimum Tax payable
+    amtCreditCarriedForward: "", // AMT credit carried forward
+    
+    // Step 13: Taxes Paid
+    tdsSalary: "", // TDS deducted on salary
+    tdsOthers: "", // TDS deducted on other income
+    tcs: "", // Tax collected at source
+    advanceTax: "", // Advance tax paid
+    selfAssessmentTax: "", // Self-assessment tax paid
+    
+    // Detailed TDS/TCS/Tax Payment Arrays (for comprehensive tracking)
+    tdsSalaryDetails: [] as Array<{
+      employerTAN: string;
+      employerName: string;
+      salaryPaid: number;
+      taxDeducted: number;
+    }>,
+    tdsOtherDetails: [] as Array<{
+      deductorTAN: string;
+      deductorName: string;
+      incomeHead: string;
+      grossAmount: number;
+      taxDeducted: number;
+    }>,
+    tcsDetails: [] as Array<{
+      collectorTAN: string;
+      collectorName: string;
+      amountPaid: number;
+      taxCollected: number;
+    }>,
+    advanceTaxDetails: [] as Array<{
+      paymentDate: string;
+      bsrCode: string;
+      serialNumber: string;
+      amount: number;
+    }>,
+    selfAssessmentTaxDetails: [] as Array<{
+      paymentDate: string;
+      bsrCode: string;
+      serialNumber: string;
+      amount: number;
+    }>,
+    
+    // Step 14: Enhanced Bank Accounts
+    bankAccounts: [] as Array<{
+      ifscCode: string;
+      bankName: string;
+      accountNumber: string;
+      accountType: string;
+      primaryRefundAccount: boolean;
+    }>,
+    
+    // Step 15: Schedule AL - Assets and Liabilities (if total income > ₹50L)
+    immovableAssets: "", // Details of land/buildings with location and cost
+    movableAssets: "", // Vehicles, jewellery, etc.
+    financialAssets: "", // Shares, bonds, etc.
+    totalAssets: "", // Total assets value
+    totalLiabilities: "", // Total loans and liabilities
+    
+    // Detailed Asset & Liability Breakdown
+    immovableAssetsDetails: {
+      landBuildings: "",
+      otherImmovable: "",
+    },
+    movableAssetsDetails: {
+      cashInHand: "",
+      jewelryBullion: "",
+      vehicles: "",
+      bankDeposits: "",
+      sharesSecurities: "",
+      otherMovable: "",
+    },
+    liabilitiesDetails: {
+      securedLoans: "",
+      unsecuredLoans: "",
+      otherLiabilities: "",
+    },
+    
+    // Step 16: Schedule FA - Foreign Assets
+    foreignBankAccounts: "", // Details of foreign bank accounts held
+    foreignDeposits: "", // Foreign deposits/investments
+    foreignImmovableProperty: "", // Property held abroad (address, country)
+    foreignTrusts: "", // Interest in foreign trusts/entities
+    foreignTaxPaid: "", // Tax paid in foreign country
+    
+    // Detailed Foreign Asset Arrays (for comprehensive tracking)
+    foreignBankAccountDetails: [] as Array<{
+      accountNumber: string;
+      bankName: string;
+      country: string;
+      maxBalance: number;
+      interestEarned: number;
+    }>,
+    foreignImmovablePropertyDetails: [] as Array<{
+      address: string;
+      country: string;
+      value: number;
+      income: number;
+    }>,
+    
+    // Step 17: Enhanced Verification
+    verificationName: "",
+    fatherName: "",
+    capacity: "",
+    declarationPlace: "",
+    declarationDate: "",
   };
   });
 
@@ -191,8 +361,8 @@ const ItrTwo = () => {
           newErrors.email1 = "Please enter a valid email address";
           isValid = false;
         }
-        if (!formData.filedUnder) {
-          newErrors.filedUnder = "Filed u/s is required";
+        if (!formData.filingSection) {
+          newErrors.filingSection = "Filing section is required";
           isValid = false;
         }
         if (formData.filingUnder7thProviso === "yes") {
@@ -230,15 +400,15 @@ const ItrTwo = () => {
           newErrors.residentialStatus = "Please select at least one residential status";
           isValid = false;
         }
-        if (!formData.countryOfResidence) {
-          newErrors.countryOfResidence = "Country of residence is required";
+        if (!formData.jurisdiction) {
+          newErrors.jurisdiction = "Country of residence is required";
           isValid = false;
         }
-        if (!formData.daysInIndia) {
-          newErrors.daysInIndia = "Days in India is required";
+        if (!formData.daysInIndiaCurrentYear) {
+          newErrors.daysInIndiaCurrentYear = "Days in India is required";
           isValid = false;
-        } else if (parseInt(formData.daysInIndia) < 0 || parseInt(formData.daysInIndia) > 3650) {
-          newErrors.daysInIndia = "Please enter valid days (0-3650)";
+        } else if (parseInt(formData.daysInIndiaCurrentYear) < 0 || parseInt(formData.daysInIndiaCurrentYear) > 365) {
+          newErrors.daysInIndiaCurrentYear = "Please enter valid days (0-365)";
           isValid = false;
         }
         break;
@@ -288,16 +458,16 @@ const ItrTwo = () => {
           isValid = false;
         }
         if (formData.isDirector === "yes") {
-          if (!formData.din) {
-            newErrors.din = "DIN is required for directors";
+          if (!formData.directorDIN) {
+            newErrors.directorDIN = "DIN is required for directors";
           isValid = false;
         }
-          if (!formData.directorPAN) {
-            newErrors.directorPAN = "Director PAN is required";
+          if (!formData.directorCompanyPAN) {
+            newErrors.directorCompanyPAN = "Company PAN is required";
           isValid = false;
         }
-          if (!formData.companyName) {
-            newErrors.companyName = "Company name is required";
+          if (!formData.directorCompanyName) {
+            newErrors.directorCompanyName = "Company name is required";
           isValid = false;
         }
           if (!formData.isListed) {
@@ -401,7 +571,7 @@ const ItrTwo = () => {
         }
         // Validate numeric fields
         const propertyFields = [
-          'grossRent', 'unrealizedRent', 'localTaxes', 'loanInterest'
+          'grossRent', 'unrealizedRent', 'localTaxes', 'loanInterest', 'interestPreConstruction'
         ];
         propertyFields.forEach(field => {
           if (formData[field] && isNaN(parseFloat(formData[field]))) {
@@ -409,6 +579,76 @@ const ItrTwo = () => {
             isValid = false;
           }
         });
+        break;
+      case 10:
+        // Step 10: Capital Gains - optional but validate if filled
+        const capitalGainsFields = [
+          'shortTermGains', 'longTermGains', 'exemptionSection54', 
+          'exemptionSection54EC', 'exemptionSection54F', 'foreignCapitalAssets'
+        ];
+        capitalGainsFields.forEach(field => {
+          if (formData[field] && isNaN(parseFloat(formData[field]))) {
+            newErrors[field] = "Please enter a valid amount";
+            isValid = false;
+          }
+        });
+        break;
+      case 11:
+        // Step 11: Other Income - validate numeric fields
+        const otherIncomeFields = [
+          'interestIncome', 'dividendIncome', 'familyPension', 
+          'winningsFromLottery', 'giftIncome', 'otherMiscIncome'
+        ];
+        otherIncomeFields.forEach(field => {
+          if (formData[field] && isNaN(parseFloat(formData[field]))) {
+            newErrors[field] = "Please enter a valid amount";
+            isValid = false;
+          }
+        });
+        break;
+      case 12:
+        // Step 12: Deductions - validate numeric fields
+        const deductionFields = [
+          'section80C', 'section80CCC', 'section80CCD', 'section80D', 'section80DD', 
+          'section80DDB', 'section80E', 'section80EE', 'section80G', 'section80GGA',
+          'section80TTA', 'section80TTB', 'section80U', 'otherDeductions'
+        ];
+        deductionFields.forEach(field => {
+          if (formData[field] && isNaN(parseFloat(formData[field]))) {
+            newErrors[field] = "Please enter a valid amount";
+            isValid = false;
+          }
+        });
+        break;
+      case 13:
+        // Step 13: Tax Details - optional validation
+        if (formData.totalTaxPaid && isNaN(parseFloat(formData.totalTaxPaid))) {
+          newErrors.totalTaxPaid = "Please enter a valid amount";
+          isValid = false;
+        }
+        break;
+      case 14:
+        // Step 14: Verification - mandatory fields
+        if (!formData.verificationName.trim()) {
+          newErrors.verificationName = "Verifier name is required";
+          isValid = false;
+        }
+        if (!formData.fatherName.trim()) {
+          newErrors.fatherName = "Father's name is required";
+          isValid = false;
+        }
+        if (!formData.capacity) {
+          newErrors.capacity = "Capacity is required";
+          isValid = false;
+        }
+        if (!formData.declarationPlace.trim()) {
+          newErrors.declarationPlace = "Declaration place is required";
+          isValid = false;
+        }
+        if (!formData.declarationDate) {
+          newErrors.declarationDate = "Declaration date is required";
+          isValid = false;
+        }
         break;
     }
 
@@ -418,7 +658,7 @@ const ItrTwo = () => {
 
   const handleNextStep = async () => {
     if (validateStep(step)) {
-      if (step === 9) {
+      if (step === 14) {
         setIsLoading(true);
         try {
           await new Promise(resolve => setTimeout(resolve, 1000));
@@ -447,14 +687,19 @@ const ItrTwo = () => {
   const getStepTitle = (stepNumber: number) => {
     const titles = {
       1: "Personal Information",
-      2: "Filing Status",
-      3: "Revised/Defective/Modified Return",
-      4: "Residential Status",
+      2: "Contact & Address",
+      3: "Filing Status & Section",
+      4: "Residential Status & Passport Details",
       5: "Additional Declarations",
       6: "Company Involvement",
-      7: "Bank Details",
+      7: "Enhanced Bank Details",
       8: "Schedule S - Income from Salary",
-      9: "Schedule HP - Income from House Property"
+      9: "Schedule HP - Income from House Property",
+      10: "Capital Gains",
+      11: "Other Income",
+      12: "Deductions (Chapter VI-A)",
+      13: "Tax Details & TDS/TCS",
+      14: "Verification"
     };
     return titles[stepNumber] || "";
   };
@@ -486,7 +731,7 @@ const ItrTwo = () => {
 
       <div className="w-[60%] mx-auto mt-8 p-6 bg-blue-500 shadow-lg rounded-lg">
         <h2 className="text-xl font-extrabold text-white">
-          {`Step ${step} of 9: ${getStepTitle(step)}`}
+          {`Step ${step} of 14: ${getStepTitle(step)}`}
         </h2>
       </div>
 
@@ -612,11 +857,76 @@ const ItrTwo = () => {
                   className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 2: Contact & Address */}
+        {step === 2 && (
+          <div className="p-4 bg-gray-50 rounded-lg">
+            <h3 className="mb-4 text-lg font-semibold text-gray-700">Contact & Address</h3>
+            
+            {/* Contact Information */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Primary Email Address <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  name="email1"
+                  value={formData.email1}
+                  onChange={handleChange}
+                  className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.email1 ? "border-red-500" : "border-gray-300"}`}
+                />
+                {errors.email1 && <p className="mt-1 text-sm text-red-500">{errors.email1}</p>}
               </div>
 
-            {/* Address Subsection */}
-            <div className="mt-8">
-              <h4 className="mb-4 text-md font-semibold text-gray-700">Address</h4>
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Alternate Email Address
+                </label>
+                <input
+                  type="email"
+                  name="email2"
+                  value={formData.email2}
+                  onChange={handleChange}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Primary Mobile Number <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="tel"
+                  name="mobile1"
+                  value={formData.mobile1}
+                  onChange={handleChange}
+                  placeholder="Enter mobile number with STD code"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Secondary Mobile Number
+                </label>
+                <input
+                  type="tel"
+                  name="mobile2"
+                  value={formData.mobile2}
+                  onChange={handleChange}
+                  placeholder="Enter alternate mobile number"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
+            {/* Address Information */}
+            <div>
+              <h4 className="mb-4 text-md font-semibold text-gray-700">Address Details</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
@@ -633,12 +943,12 @@ const ItrTwo = () => {
 
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
-                    Building/Village
+                    Building/Premises Name
                 </label>
                 <input
                   type="text"
-                    name="buildingVillage"
-                    value={formData.buildingVillage}
+                    name="buildingName"
+                    value={formData.buildingName}
                   onChange={handleChange}
                     className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 />
@@ -646,12 +956,12 @@ const ItrTwo = () => {
 
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
-                    Road/Street/Post Office
+                    Road/Street
                 </label>
                 <input
                   type="text"
-                    name="roadStreetPostOffice"
-                    value={formData.roadStreetPostOffice}
+                    name="roadStreet"
+                    value={formData.roadStreet}
                   onChange={handleChange}
                     className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 />
@@ -659,12 +969,12 @@ const ItrTwo = () => {
 
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
-                    Area/Locality
+                    Locality/Area
                 </label>
                 <input
                     type="text"
-                    name="areaLocality"
-                    value={formData.areaLocality}
+                    name="localityArea"
+                    value={formData.localityArea}
                   onChange={handleChange}
                     className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 />
@@ -672,12 +982,12 @@ const ItrTwo = () => {
 
               <div>
                   <label className="block mb-2 text-sm font-medium text-gray-700">
-                    Town/City/District
+                    City/District
                 </label>
                   <input
                     type="text"
-                    name="townCityDistrict"
-                    value={formData.townCityDistrict}
+                    name="cityDistrict"
+                    value={formData.cityDistrict}
                     onChange={handleChange}
                     className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                   />
@@ -727,13 +1037,13 @@ const ItrTwo = () => {
 
                 <div>
                   <label className="block mb-2 text-sm font-medium text-gray-700">
-                    PIN/ZIP
+                    PIN Code
                   </label>
                   <input
                     type="number"
-                    name="pinZip"
+                    name="pinCode"
                     maxLength={6}
-                    value={formData.pinZip}
+                    value={formData.pinCode}
                     onChange={handleChange}
                     className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                   />
@@ -754,26 +1064,28 @@ const ItrTwo = () => {
 
                 <div>
                   <label className="block mb-2 text-sm font-medium text-gray-700">
-                    Phone No. 1
+                    Primary Mobile Number
                   </label>
                   <input
                     type="tel"
-                    name="phone1"
-                    value={formData.phone1}
+                    name="mobile1"
+                    value={formData.mobile1}
                     onChange={handleChange}
+                    placeholder="Enter mobile number with STD code"
                     className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
                 <div>
                   <label className="block mb-2 text-sm font-medium text-gray-700">
-                    Phone No. 2
+                    Secondary Mobile Number
                   </label>
                   <input
                     type="tel"
-                    name="phone2"
-                    value={formData.phone2}
+                    name="mobile2"
+                    value={formData.mobile2}
                     onChange={handleChange}
+                    placeholder="Enter alternate mobile number"
                     className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -782,8 +1094,8 @@ const ItrTwo = () => {
           </div>
         )}
 
-        {/* Step 2: Filing Status */}
-        {step === 2 && (
+        {/* Step 3: Filing Status & Section */}
+        {step === 3 && (
           <div className="p-4 bg-gray-50 rounded-lg">
             <h3 className="mb-4 text-lg font-semibold text-gray-700">Filing Status</h3>
             <div className="space-y-6">
@@ -818,7 +1130,7 @@ const ItrTwo = () => {
 
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Filed u/s <span className="text-red-500">*</span>
+                  Filing Section <span className="text-red-500">*</span>
                 </label>
                 <div className="space-y-2">
                   {['139(1)', '139(4)', '139(5)', '92CD', '119(2)(b)'].map((option) => (
@@ -826,9 +1138,9 @@ const ItrTwo = () => {
                       <input
                         type="radio"
                         id={option}
-                        name="filedUnder"
+                        name="filingSection"
                         value={option}
-                        checked={formData.filedUnder === option}
+                        checked={formData.filingSection === option}
                         onChange={handleChange}
                         className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                       />
@@ -837,6 +1149,109 @@ const ItrTwo = () => {
                       </label>
                     </div>
                   ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Reason for Filing
+                </label>
+                <input
+                  type="text"
+                  name="returnFileSectionReason"
+                  value={formData.returnFileSectionReason}
+                  onChange={handleChange}
+                  placeholder="e.g., loss carried forward"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="mt-6">
+                <h4 className="mb-4 text-md font-semibold text-gray-700">Revised Return Details</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Is this a Revised Return?
+                    </label>
+                    <div className="space-y-2">
+                      <div className="flex items-center">
+                        <input
+                          type="radio"
+                          id="revisedYes"
+                          name="isRevisedReturn"
+                          value="true"
+                          checked={formData.isRevisedReturn === true}
+                          onChange={(e) => setFormData(prev => ({ ...prev, isRevisedReturn: e.target.value === 'true' }))}
+                          className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                        />
+                        <label htmlFor="revisedYes" className="ml-2 text-sm font-medium text-gray-700">
+                          Yes
+                        </label>
+                      </div>
+                      <div className="flex items-center">
+                        <input
+                          type="radio"
+                          id="revisedNo"
+                          name="isRevisedReturn"
+                          value="false"
+                          checked={formData.isRevisedReturn === false}
+                          onChange={(e) => setFormData(prev => ({ ...prev, isRevisedReturn: e.target.value === 'true' }))}
+                          className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                        />
+                        <label htmlFor="revisedNo" className="ml-2 text-sm font-medium text-gray-700">
+                          No
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {formData.isRevisedReturn && (
+                    <div>
+                      <label className="block mb-2 text-sm font-medium text-gray-700">
+                        Original Acknowledgment Number
+                      </label>
+                      <input
+                        type="text"
+                        name="originalAckNumber"
+                        value={formData.originalAckNumber}
+                        onChange={handleChange}
+                        placeholder="Enter original ACK number"
+                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-6">
+                <h4 className="mb-4 text-md font-semibold text-gray-700">Notice Details</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Notice DIN
+                    </label>
+                    <input
+                      type="text"
+                      name="noticeDIN"
+                      value={formData.noticeDIN}
+                      onChange={handleChange}
+                      placeholder="Enter DIN of notice"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Notice Date
+                    </label>
+                    <input
+                      type="date"
+                      name="noticeDate"
+                      value={formData.noticeDate}
+                      onChange={handleChange}
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -1080,42 +1495,9 @@ const ItrTwo = () => {
           </div>
         )}
 
-        {/* Step 3: Revised/Defective/Modified Return */}
-        {step === 3 && (
-          <div className="p-4 bg-gray-50 rounded-lg">
-            <h3 className="mb-4 text-lg font-semibold text-gray-700">Revised/Defective/Modified Return</h3>
-            <div className="space-y-6">
-              <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Receipt Number
-                </label>
-                <input
-                  type="text"
-                  name="receiptNumber"
-                  value={formData.receiptNumber}
-                  onChange={handleChange}
-                  placeholder="Enter receipt number"
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
 
-              <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Original Filing Date
-                </label>
-                <input
-                  type="date"
-                  name="originalFilingDate"
-                  value={formData.originalFilingDate}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-          </div>
-        )}
 
-        {/* Step 4: Residential Status */}
+        {/* Step 4: Residential Status & Passport Details */}
         {step === 4 && (
           <div className="p-4 bg-gray-50 rounded-lg">
             <h3 className="mb-4 text-lg font-semibold text-gray-700">Residential Status</h3>
@@ -1149,11 +1531,11 @@ const ItrTwo = () => {
 
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Country of Residence
+                  Country of Residence/Jurisdiction
                 </label>
                 <select
-                  name="countryOfResidence"
-                  value={formData.countryOfResidence}
+                  name="jurisdiction"
+                  value={formData.jurisdiction}
                   onChange={handleChange}
                   className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 >
@@ -1173,14 +1555,70 @@ const ItrTwo = () => {
 
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Days in India (this + last 4 yrs)
+                  Days in India (Current Year)
                 </label>
                 <input
                   type="number"
-                  name="daysInIndia"
-                  value={formData.daysInIndia}
+                  name="daysInIndiaCurrentYear"
+                  value={formData.daysInIndiaCurrentYear}
                   onChange={handleChange}
-                  placeholder="Enter number of days"
+                  placeholder="Enter days in current year"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Days in India (Last 4 Years)
+                </label>
+                <input
+                  type="number"
+                  name="daysInIndiaLast4Years"
+                  value={formData.daysInIndiaLast4Years}
+                  onChange={handleChange}
+                  placeholder="Enter days in last 4 years"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Passport Number
+                </label>
+                <input
+                  type="text"
+                  name="passportNumber"
+                  value={formData.passportNumber}
+                  onChange={handleChange}
+                  placeholder="Enter passport number (if held)"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Passport Issuing Country
+                </label>
+                <input
+                  type="text"
+                  name="issuedByCountry"
+                  value={formData.issuedByCountry}
+                  onChange={handleChange}
+                  placeholder="Enter issuing country"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Tax Identification Number (TIN)
+                </label>
+                <input
+                  type="text"
+                  name="tin"
+                  value={formData.tin}
+                  onChange={handleChange}
+                  placeholder="Enter TIN (if not Indian resident)"
                   className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -1311,18 +1749,82 @@ const ItrTwo = () => {
                 )}
               </div>
 
-              <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Filed by Representative?
-                </label>
-                <div className="space-y-2">
-                  <div className="flex items-center">
+                              <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Are you a Partner in a Firm?
+                  </label>
+                  <div className="space-y-2">
+                    <div className="flex items-center">
+                      <input
+                        type="radio"
+                        id="partnerYes"
+                        name="isPartnerInFirm"
+                        value="yes"
+                        checked={formData.isPartnerInFirm === "yes"}
+                        onChange={handleChange}
+                        className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                      />
+                      <label htmlFor="partnerYes" className="ml-2 text-sm font-medium text-gray-700">
+                        Yes
+                      </label>
+                    </div>
+                    <div className="flex items-center">
+                      <input
+                        type="radio"
+                        id="partnerNo"
+                        name="isPartnerInFirm"
+                        value="no"
+                        checked={formData.isPartnerInFirm === "no"}
+                        onChange={handleChange}
+                        className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                      />
+                      <label htmlFor="partnerNo" className="ml-2 text-sm font-medium text-gray-700">
+                        No
+                      </label>
+                    </div>
+                  </div>
+                  {formData.isPartnerInFirm === "yes" && (
+                    <div className="mt-4 space-y-4 p-4 bg-blue-50 rounded-lg">
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Firm Name
+                        </label>
+                        <input
+                          type="text"
+                          name="firmName"
+                          value={formData.firmName}
+                          onChange={handleChange}
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Firm PAN
+                        </label>
+                        <input
+                          type="text"
+                          name="firmPAN"
+                          value={formData.firmPAN}
+                          onChange={handleChange}
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Filed by Representative?
+                  </label>
+                  <div className="space-y-2">
+                    <div className="flex items-center">
                 <input
                       type="radio"
                       id="representativeYes"
-                      name="filedByRepresentative"
+                      name="filingByRepresentative"
                       value="yes"
-                      checked={formData.filedByRepresentative === "yes"}
+                      checked={formData.filingByRepresentative === "yes"}
                   onChange={handleChange}
                       className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                 />
@@ -1334,9 +1836,9 @@ const ItrTwo = () => {
                     <input
                       type="radio"
                       id="representativeNo"
-                      name="filedByRepresentative"
+                      name="filingByRepresentative"
                       value="no"
-                      checked={formData.filedByRepresentative === "no"}
+                      checked={formData.filingByRepresentative === "no"}
                       onChange={handleChange}
                       className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                     />
@@ -1345,7 +1847,7 @@ const ItrTwo = () => {
                     </label>
                   </div>
                 </div>
-                {formData.filedByRepresentative === "yes" && (
+                {formData.filingByRepresentative === "yes" && (
                   <div className="mt-4 space-y-4 p-4 bg-blue-50 rounded-lg">
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
@@ -1451,25 +1953,27 @@ const ItrTwo = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block mb-2 text-sm font-medium text-gray-700">
-                          DIN
+                          Director Identification Number (DIN)
                         </label>
                         <input
                           type="text"
-                          name="din"
-                          value={formData.din}
+                          name="directorDIN"
+                          value={formData.directorDIN}
                           onChange={handleChange}
+                          placeholder="Enter DIN"
                           className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
                       <div>
                         <label className="block mb-2 text-sm font-medium text-gray-700">
-                          Director PAN
+                          Company PAN
                         </label>
                         <input
                           type="text"
-                          name="directorPAN"
-                          value={formData.directorPAN}
+                          name="directorCompanyPAN"
+                          value={formData.directorCompanyPAN}
                           onChange={handleChange}
+                          placeholder="Enter company PAN"
                           className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
@@ -1479,9 +1983,10 @@ const ItrTwo = () => {
                         </label>
                         <input
                           type="text"
-                          name="companyName"
-                          value={formData.companyName}
+                          name="directorCompanyName"
+                          value={formData.directorCompanyName}
                           onChange={handleChange}
+                          placeholder="Enter company name"
                           className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
@@ -1617,7 +2122,7 @@ const ItrTwo = () => {
           </div>
         )}
 
-        {/* Step 7: Bank Details */}
+        {/* Step 7: Enhanced Bank Details */}
         {step === 7 && (
           <div className="p-4 bg-gray-50 rounded-lg">
             <h3 className="mb-4 text-lg font-semibold text-gray-700">Bank Details</h3>
@@ -2189,6 +2694,20 @@ const ItrTwo = () => {
 
                 <div>
                   <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Pre-construction Interest
+                  </label>
+                  <input
+                    type="number"
+                    name="interestPreConstruction"
+                    value={formData.interestPreConstruction}
+                    onChange={handleChange}
+                    placeholder="Enter pre-construction interest"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
                     Net Property Income (auto-calculated)
                   </label>
                   <input
@@ -2200,6 +2719,601 @@ const ItrTwo = () => {
                     className="w-full p-2 border border-gray-300 rounded-md bg-gray-100"
                     readOnly
                   />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 10: Capital Gains */}
+        {step === 10 && (
+          <div className="p-4 bg-gray-50 rounded-lg">
+            <h3 className="mb-4 text-lg font-semibold text-gray-700">Capital Gains</h3>
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Short Term Capital Gains
+                  </label>
+                  <input
+                    type="number"
+                    name="shortTermGains"
+                    value={formData.shortTermGains}
+                    onChange={handleChange}
+                    placeholder="Enter STCG amount"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Long Term Capital Gains
+                  </label>
+                  <input
+                    type="number"
+                    name="longTermGains"
+                    value={formData.longTermGains}
+                    onChange={handleChange}
+                    placeholder="Enter LTCG amount"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Exemption u/s 54
+                  </label>
+                  <input
+                    type="number"
+                    name="exemptionSection54"
+                    value={formData.exemptionSection54}
+                    onChange={handleChange}
+                    placeholder="Enter exemption amount"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Exemption u/s 54EC
+                  </label>
+                  <input
+                    type="number"
+                    name="exemptionSection54EC"
+                    value={formData.exemptionSection54EC}
+                    onChange={handleChange}
+                    placeholder="Enter exemption amount"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Exemption u/s 54F
+                  </label>
+                  <input
+                    type="number"
+                    name="exemptionSection54F"
+                    value={formData.exemptionSection54F}
+                    onChange={handleChange}
+                    placeholder="Enter exemption amount"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Foreign Capital Assets
+                  </label>
+                  <input
+                    type="number"
+                    name="foreignCapitalAssets"
+                    value={formData.foreignCapitalAssets}
+                    onChange={handleChange}
+                    placeholder="Enter foreign capital gains"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 11: Other Income */}
+        {step === 11 && (
+          <div className="p-4 bg-gray-50 rounded-lg">
+            <h3 className="mb-4 text-lg font-semibold text-gray-700">Other Income</h3>
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Interest Income
+                  </label>
+                  <input
+                    type="number"
+                    name="interestIncome"
+                    value={formData.interestIncome}
+                    onChange={handleChange}
+                    placeholder="Enter interest income"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Dividend Income
+                  </label>
+                  <input
+                    type="number"
+                    name="dividendIncome"
+                    value={formData.dividendIncome}
+                    onChange={handleChange}
+                    placeholder="Enter dividend income"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Family Pension
+                  </label>
+                  <input
+                    type="number"
+                    name="familyPension"
+                    value={formData.familyPension}
+                    onChange={handleChange}
+                    placeholder="Enter family pension"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Winnings from Lottery/Gambling
+                  </label>
+                  <input
+                    type="number"
+                    name="winningsFromLottery"
+                    value={formData.winningsFromLottery}
+                    onChange={handleChange}
+                    placeholder="Enter winnings"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Gift Income
+                  </label>
+                  <input
+                    type="number"
+                    name="giftIncome"
+                    value={formData.giftIncome}
+                    onChange={handleChange}
+                    placeholder="Enter taxable gift income"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Other Miscellaneous Income
+                  </label>
+                  <input
+                    type="number"
+                    name="otherMiscIncome"
+                    value={formData.otherMiscIncome}
+                    onChange={handleChange}
+                    placeholder="Enter other income"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 12: Deductions (Chapter VI-A) */}
+        {step === 12 && (
+          <div className="p-4 bg-gray-50 rounded-lg">
+            <h3 className="mb-4 text-lg font-semibold text-gray-700">Deductions (Chapter VI-A)</h3>
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Section 80C (LIC, PF, NSC, etc.)
+                  </label>
+                  <input
+                    type="number"
+                    name="section80C"
+                    value={formData.section80C}
+                    onChange={handleChange}
+                    placeholder="Enter 80C deduction"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Section 80D (Medical Insurance)
+                  </label>
+                  <input
+                    type="number"
+                    name="section80D"
+                    value={formData.section80D}
+                    onChange={handleChange}
+                    placeholder="Enter 80D deduction"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Section 80CCC (Pension Fund)
+                  </label>
+                  <input
+                    type="number"
+                    name="section80CCC"
+                    value={formData.section80CCC}
+                    onChange={handleChange}
+                    placeholder="Enter 80CCC deduction"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Section 80CCD (NPS)
+                  </label>
+                  <input
+                    type="number"
+                    name="section80CCD"
+                    value={formData.section80CCD}
+                    onChange={handleChange}
+                    placeholder="Enter 80CCD deduction"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Section 80DD (Disability)
+                  </label>
+                  <input
+                    type="number"
+                    name="section80DD"
+                    value={formData.section80DD}
+                    onChange={handleChange}
+                    placeholder="Enter 80DD deduction"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Section 80DDB (Medical Treatment)
+                  </label>
+                  <input
+                    type="number"
+                    name="section80DDB"
+                    value={formData.section80DDB}
+                    onChange={handleChange}
+                    placeholder="Enter 80DDB deduction"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Section 80EE (Home Loan First-time)
+                  </label>
+                  <input
+                    type="number"
+                    name="section80EE"
+                    value={formData.section80EE}
+                    onChange={handleChange}
+                    placeholder="Enter 80EE deduction"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Section 80GGA (Scientific Research)
+                  </label>
+                  <input
+                    type="number"
+                    name="section80GGA"
+                    value={formData.section80GGA}
+                    onChange={handleChange}
+                    placeholder="Enter 80GGA deduction"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Section 80E (Education Loan)
+                  </label>
+                  <input
+                    type="number"
+                    name="section80E"
+                    value={formData.section80E}
+                    onChange={handleChange}
+                    placeholder="Enter 80E deduction"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Section 80G (Donations)
+                  </label>
+                  <input
+                    type="number"
+                    name="section80G"
+                    value={formData.section80G}
+                    onChange={handleChange}
+                    placeholder="Enter 80G deduction"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Section 80TTA (Savings Interest)
+                  </label>
+                  <input
+                    type="number"
+                    name="section80TTA"
+                    value={formData.section80TTA}
+                    onChange={handleChange}
+                    placeholder="Enter 80TTA deduction"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Section 80TTB (Senior Citizens)
+                  </label>
+                  <input
+                    type="number"
+                    name="section80TTB"
+                    value={formData.section80TTB}
+                    onChange={handleChange}
+                    placeholder="Enter 80TTB deduction"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Section 80U (Person with Disability)
+                  </label>
+                  <input
+                    type="number"
+                    name="section80U"
+                    value={formData.section80U}
+                    onChange={handleChange}
+                    placeholder="Enter 80U deduction"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Other Deductions
+                  </label>
+                  <input
+                    type="number"
+                    name="otherDeductions"
+                    value={formData.otherDeductions}
+                    onChange={handleChange}
+                    placeholder="Enter other deductions"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 13: Tax Details & TDS/TCS */}
+        {step === 13 && (
+          <div className="p-4 bg-gray-50 rounded-lg">
+            <h3 className="mb-4 text-lg font-semibold text-gray-700">Tax Details & TDS/TCS</h3>
+            <div className="space-y-6">
+              <div className="p-4 bg-blue-50 rounded-lg">
+                <h4 className="mb-4 text-md font-semibold text-gray-700">TDS on Salary</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Employer TAN
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Enter employer TAN"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Tax Deducted
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="Enter tax deducted"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 bg-green-50 rounded-lg">
+                <h4 className="mb-4 text-md font-semibold text-gray-700">TDS on Other Income</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Deductor TAN
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Enter deductor TAN"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Tax Deducted
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="Enter tax deducted"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 bg-yellow-50 rounded-lg">
+                <h4 className="mb-4 text-md font-semibold text-gray-700">Advance Tax</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      BSR Code
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Enter BSR code"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Amount Paid
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="Enter amount paid"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Total Tax Paid
+                </label>
+                <input
+                  type="number"
+                  name="totalTaxPaid"
+                  value={formData.totalTaxPaid}
+                  onChange={handleChange}
+                  placeholder="Auto-calculated total tax paid"
+                  className="w-full p-2 border border-gray-300 rounded-md bg-gray-100"
+                  readOnly
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 14: Verification */}
+        {step === 14 && (
+          <div className="p-4 bg-gray-50 rounded-lg">
+            <h3 className="mb-4 text-lg font-semibold text-gray-700">Verification</h3>
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Verifier Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="verificationName"
+                    value={formData.verificationName}
+                    onChange={handleChange}
+                    placeholder="Enter name of declarant"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Father's Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="fatherName"
+                    value={formData.fatherName}
+                    onChange={handleChange}
+                    placeholder="Enter father's name"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Capacity <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="capacity"
+                    value={formData.capacity}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Select capacity</option>
+                    <option value="self">Self</option>
+                    <option value="legal-representative">Legal Representative</option>
+                    <option value="authorized-signatory">Authorized Signatory</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Declaration Place <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="declarationPlace"
+                    value={formData.declarationPlace}
+                    onChange={handleChange}
+                    placeholder="Enter place of declaration"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Declaration Date <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    name="declarationDate"
+                    value={formData.declarationDate}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div className="p-4 bg-blue-50 rounded-lg">
+                <h4 className="mb-4 text-md font-semibold text-gray-700">Declaration</h4>
+                <p className="text-sm text-gray-700 mb-4">
+                  I, {formData.verificationName || '[Name]'}, son/daughter of {formData.fatherName || '[Father\'s Name]'}, 
+                  do hereby certify that the particulars given in this return are true and correct to the best of my knowledge and belief.
+                </p>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="declaration"
+                    className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                  />
+                  <label htmlFor="declaration" className="text-sm font-medium text-gray-700">
+                    I agree to the above declaration <span className="text-red-500">*</span>
+                  </label>
                 </div>
               </div>
             </div>
@@ -2231,7 +3345,7 @@ const ItrTwo = () => {
                 Processing...
               </div>
             ) : (
-              step === 9 ? "Submit" : "Next"
+              step === 14 ? "Submit" : "Next"
             )}
           </button>
         </div>
