@@ -53,7 +53,7 @@ const ItrThree = () => {
       electricityAmount: "",
       otherCondition: "",
       
-      // Step 3: Filing Reference & Status
+      // Step 3: Filing Reference & Status + Filing Information
       receiptNumber: "",
       originalFilingDate: "",
       noticeDIN: "",
@@ -63,6 +63,11 @@ const ItrThree = () => {
       tin: "",
       daysInIndia: "",
       daysInIndiaLastYear: "",
+      
+      // Filing Information
+      isRevisedReturn: false,
+      originalAckNumber: "",
+      revisedReturnReason: "",
       
       // Step 4: Additional Declarations
       claimBenefit115H: "",
@@ -81,7 +86,6 @@ const ItrThree = () => {
       partnerName: "",
       partnerPAN: "",
       heldUnlistedShares: "",
-      unlistedShares: [],
       isPE: "",
       peTransactions: "",
       peUsers: "",
@@ -130,6 +134,7 @@ const ItrThree = () => {
       annualValue: "",
       sharePercentage: "",
       loanInterest: "",
+      interestPreConstruction: "",
       arrears: "",
       netPropertyIncome: "",
       
@@ -149,6 +154,13 @@ const ItrThree = () => {
       auditDate: "",
       udin: "",
       auditAck: "",
+      
+      // Enhanced Audit/Compliance Fields
+      isLiableUnder92E: false,
+      auditFirmName: "",
+      auditFirmPAN: "",
+      depreciationAsPerBooks: "",
+      depreciationAsPerIT: "",
       
       // Step 9: Financial Statements
       // Balance Sheet
@@ -180,6 +192,116 @@ const ItrThree = () => {
       directExpenses: "",
       indirectExpenses: "",
       quantitativeDetails: "",
+      
+      // Step 10: Schedule IF - Unlisted Shares
+      unlistedShares: [] as Array<{
+        companyName: string;
+        companyPAN: string;
+        noOfShares: number;
+        faceValue: number;
+        acquisitionDate: string;
+        issuePrice: number;
+        purchasePrice: number;
+      }>,
+      
+      // Step 11: Business Income & Schedules
+      businessIncomeDetails: {
+        section28Income: "",
+        section44ADAdjustments: "",
+        otherBusinessIncome: ""
+      },
+      section44AEVehicles: [] as Array<{
+        vehicleType: string;
+        tonnage: number;
+        monthsOwned: number;
+        presumptiveIncome: number;
+      }>,
+      section44ADAOpted: false,
+      partnersRemuneration: "",
+      
+      // Step 12: Schedule AL - Assets & Liabilities (mandatory if income > ₹50L)
+      movableAssets: {
+        cashInHand: "",
+        jewelryBullion: "",
+        archaeologicalCollections: "",
+        insurancePolicies: "",
+        bankDeposits: "",
+        sharesSecurities: "",
+        otherMovable: ""
+      },
+      immovableAssets: {
+        buildingsLand: "",
+        otherImmovable: ""
+      },
+      liabilities: {
+        liabilitiesToBank: "",
+        liabilitiesToOthers: ""
+      },
+      
+      // Step 13: Foreign Assets & Income
+      foreignBankAccounts: [] as Array<{
+        accountNumber: string;
+        bankName: string;
+        country: string;
+        maxBalance: number;
+        interestEarned: number;
+      }>,
+      foreignProperties: [] as Array<{
+        propertyAddress: string;
+        country: string;
+        zipCode: string;
+        ownershipPercentage: number;
+        incomeFromProperty: number;
+      }>,
+      foreignTaxPaid: "",
+      foreignEmployerDetails: {
+        employerName: "",
+        employerAddress: "",
+        taxIdNumber: "",
+        salaryPaid: ""
+      },
+      
+      // Step 14: Tax Payments & TDS/TCS
+      tdsSalary: [] as Array<{
+        deductorTAN: string;
+        deductorName: string;
+        totalSalaryPaid: number;
+        taxDeducted: number;
+        tdsClaimedBy: string;
+      }>,
+      tdsOther: [] as Array<{
+        deductorTAN: string;
+        deductorName: string;
+        grossAmount: number;
+        taxDeducted: number;
+        natureOfPayment: string;
+      }>,
+      tcsDetails: [] as Array<{
+        collectorTAN: string;
+        collectorName: string;
+        amountPaid: number;
+        taxCollected: number;
+        natureOfCollection: string;
+      }>,
+      advanceTaxPayments: [] as Array<{
+        paymentDate: string;
+        amount: number;
+        bsr: string;
+        serialNumber: string;
+      }>,
+      selfAssessmentTaxPayments: [] as Array<{
+        paymentDate: string;
+        amount: number;
+        bsr: string;
+        serialNumber: string;
+      }>,
+      
+      // Step 15: Declaration & Verification
+      verifierName: "",
+      fatherName: "",
+      capacity: "",
+      verificationPlace: "",
+      verificationDate: "",
     };
   });
 
@@ -306,7 +428,15 @@ const ItrThree = () => {
         }
         break;
       case 3:
-        // Step 3 is optional, no validation required
+        // Filing Information validation
+        if (formData.isRevisedReturn && !formData.originalAckNumber) {
+          newErrors.originalAckNumber = "Original acknowledgment number is required for revised return";
+          isValid = false;
+        }
+        if (formData.isRevisedReturn && !formData.revisedReturnReason) {
+          newErrors.revisedReturnReason = "Reason for revision is required";
+          isValid = false;
+        }
         break;
       case 4:
         if (!formData.claimBenefit115H) {
@@ -498,7 +628,7 @@ const ItrThree = () => {
         // Validate numeric fields
         const propertyFields = [
           'grossRent', 'unrealizedRent', 'localTaxes', 'annualValue',
-          'sharePercentage', 'loanInterest', 'arrears'
+          'sharePercentage', 'loanInterest', 'interestPreConstruction', 'arrears'
         ];
         propertyFields.forEach(field => {
           if (formData[field] && isNaN(parseFloat(formData[field]))) {
@@ -551,7 +681,7 @@ const ItrThree = () => {
           }
         }
         break;
-      case 9:
+              case 9:
         // Validate numeric fields for financial statements
         const financialFields = [
           'fixedAssets', 'currentAssets', 'investments', 'loansAdvances',
@@ -567,6 +697,44 @@ const ItrThree = () => {
           }
         });
         break;
+      case 10:
+        // Step 10: Schedule IF - Unlisted Shares (optional validation)
+        break;
+      case 11:
+        // Step 11: Business Income & Schedules (optional validation)
+        break;
+      case 12:
+        // Step 12: Schedule AL - Assets & Liabilities (optional validation)
+        break;
+      case 13:
+        // Step 13: Foreign Assets & Income (optional validation)
+        break;
+      case 14:
+        // Step 14: Tax Payments & TDS/TCS (optional validation)
+        break;
+      case 15:
+        // Step 15: Declaration & Verification
+        if (!formData.verifierName.trim()) {
+          newErrors.verifierName = "Verifier name is required";
+          isValid = false;
+        }
+        if (!formData.fatherName.trim()) {
+          newErrors.fatherName = "Father's name is required";
+          isValid = false;
+        }
+        if (!formData.capacity) {
+          newErrors.capacity = "Capacity is required";
+          isValid = false;
+        }
+        if (!formData.verificationPlace.trim()) {
+          newErrors.verificationPlace = "Verification place is required";
+          isValid = false;
+        }
+        if (!formData.verificationDate) {
+          newErrors.verificationDate = "Verification date is required";
+          isValid = false;
+        }
+        break;
     }
 
     setErrors(newErrors);
@@ -575,7 +743,7 @@ const ItrThree = () => {
 
   const handleNextStep = async () => {
     if (validateStep(step)) {
-      if (step === 9) {
+      if (step === 15) {
         setIsLoading(true);
         try {
           await new Promise(resolve => setTimeout(resolve, 1000));
@@ -611,7 +779,13 @@ const ItrThree = () => {
       6: "Schedule S - Salary Income",
       7: "Schedule HP - House Property",
       8: "Audit & Financial Info",
-      9: "Financial Statements"
+      9: "Financial Statements",
+      10: "Schedule IF - Unlisted Shares",
+      11: "Business Income & Schedules",
+      12: "Schedule AL - Assets & Liabilities",
+      13: "Foreign Assets & Income",
+      14: "Tax Payments & TDS/TCS",
+      15: "Declaration & Verification"
     };
     return titles[stepNumber] || "";
   };
@@ -643,7 +817,7 @@ const ItrThree = () => {
 
       <div className="w-[60%] mx-auto mt-8 p-6 bg-blue-500 shadow-lg rounded-lg">
         <h2 className="text-xl font-extrabold text-white">
-          {`Step ${step} of 9: ${getStepTitle(step)}`}
+          {`Step ${step} of 15: ${getStepTitle(step)}`}
         </h2>
       </div>
 
@@ -1343,7 +1517,7 @@ const ItrThree = () => {
           </div>
         )}
 
-        {/* Step 3: Filing Reference & Status */}
+        {/* Step 3: Filing Reference & Status + Filing Information */}
         {step === 3 && (
           <div className="p-4 bg-gray-50 rounded-lg">
             <h3 className="mb-4 text-lg font-semibold text-gray-700">Filing Reference & Status</h3>
@@ -1558,6 +1732,87 @@ const ItrThree = () => {
                     placeholder="Enter number of days"
                     className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                   />
+                </div>
+              </div>
+
+              {/* Filing Information Section */}
+              <div className="mt-8 p-4 bg-blue-50 rounded-lg">
+                <h4 className="mb-4 text-md font-semibold text-gray-700">Filing Information</h4>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Is this a Revised Return?
+                    </label>
+                    <div className="space-y-2">
+                      <div className="flex items-center">
+                        <input
+                          type="radio"
+                          id="revisedYes"
+                          name="isRevisedReturn"
+                          value="true"
+                          checked={formData.isRevisedReturn === true}
+                          onChange={(e) => setFormData(prev => ({ ...prev, isRevisedReturn: e.target.value === "true" }))}
+                          className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                        />
+                        <label htmlFor="revisedYes" className="ml-2 text-sm font-medium text-gray-700">
+                          Yes
+                        </label>
+                      </div>
+                      <div className="flex items-center">
+                        <input
+                          type="radio"
+                          id="revisedNo"
+                          name="isRevisedReturn"
+                          value="false"
+                          checked={formData.isRevisedReturn === false}
+                          onChange={(e) => setFormData(prev => ({ ...prev, isRevisedReturn: e.target.value === "true" }))}
+                          className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                        />
+                        <label htmlFor="revisedNo" className="ml-2 text-sm font-medium text-gray-700">
+                          No
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {formData.isRevisedReturn && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Original Acknowledgment Number <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          name="originalAckNumber"
+                          value={formData.originalAckNumber}
+                          onChange={handleChange}
+                          placeholder="Enter original acknowledgment number"
+                          className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.originalAckNumber ? "border-red-500" : "border-gray-300"}`}
+                        />
+                        {errors.originalAckNumber && <p className="mt-1 text-sm text-red-500">{errors.originalAckNumber}</p>}
+                      </div>
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Reason for Revision <span className="text-red-500">*</span>
+                        </label>
+                        <select
+                          name="revisedReturnReason"
+                          value={formData.revisedReturnReason}
+                          onChange={handleChange}
+                          className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.revisedReturnReason ? "border-red-500" : "border-gray-300"}`}
+                        >
+                          <option value="">Select reason</option>
+                          <option value="income-omitted">Income omitted in original return</option>
+                          <option value="incorrect-deductions">Incorrect deductions claimed</option>
+                          <option value="computational-errors">Computational errors</option>
+                          <option value="additional-documents">Additional documents received</option>
+                          <option value="notice-received">Notice received from department</option>
+                          <option value="other">Other reasons</option>
+                        </select>
+                        {errors.revisedReturnReason && <p className="mt-1 text-sm text-red-500">{errors.revisedReturnReason}</p>}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -2722,6 +2977,20 @@ const ItrThree = () => {
 
                 <div>
                   <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Pre-construction Interest
+                  </label>
+                  <input
+                    type="number"
+                    name="interestPreConstruction"
+                    value={formData.interestPreConstruction}
+                    onChange={handleChange}
+                    placeholder="Enter pre-construction interest"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
                     Arrears
                   </label>
                   <input
@@ -3019,6 +3288,103 @@ const ItrThree = () => {
                   </div>
                 </div>
               )}
+
+              {/* Enhanced Audit/Compliance Fields */}
+              <div className="mt-8 p-4 bg-blue-50 rounded-lg">
+                <h4 className="mb-4 text-md font-semibold text-gray-700">Enhanced Audit & Compliance Information</h4>
+                <div className="space-y-6">
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Liable under section 92E (Transfer Pricing)?
+                    </label>
+                    <div className="space-y-2">
+                      <div className="flex items-center">
+                        <input
+                          type="radio"
+                          id="liable92EYes"
+                          name="isLiableUnder92E"
+                          value="true"
+                          checked={formData.isLiableUnder92E === true}
+                          onChange={(e) => setFormData(prev => ({ ...prev, isLiableUnder92E: e.target.value === "true" }))}
+                          className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                        />
+                        <label htmlFor="liable92EYes" className="ml-2 text-sm font-medium text-gray-700">
+                          Yes
+                        </label>
+                      </div>
+                      <div className="flex items-center">
+                        <input
+                          type="radio"
+                          id="liable92ENo"
+                          name="isLiableUnder92E"
+                          value="false"
+                          checked={formData.isLiableUnder92E === false}
+                          onChange={(e) => setFormData(prev => ({ ...prev, isLiableUnder92E: e.target.value === "true" }))}
+                          className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                        />
+                        <label htmlFor="liable92ENo" className="ml-2 text-sm font-medium text-gray-700">
+                          No
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block mb-2 text-sm font-medium text-gray-700">
+                        Audit Firm Name
+                      </label>
+                      <input
+                        type="text"
+                        name="auditFirmName"
+                        value={formData.auditFirmName}
+                        onChange={handleChange}
+                        placeholder="Enter audit firm name"
+                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-2 text-sm font-medium text-gray-700">
+                        Audit Firm PAN
+                      </label>
+                      <input
+                        type="text"
+                        name="auditFirmPAN"
+                        value={formData.auditFirmPAN}
+                        onChange={handleChange}
+                        placeholder="Enter audit firm PAN"
+                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-2 text-sm font-medium text-gray-700">
+                        Depreciation as per Books (₹)
+                      </label>
+                      <input
+                        type="number"
+                        name="depreciationAsPerBooks"
+                        value={formData.depreciationAsPerBooks}
+                        onChange={handleChange}
+                        placeholder="Enter amount"
+                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-2 text-sm font-medium text-gray-700">
+                        Depreciation as per Income Tax (₹)
+                      </label>
+                      <input
+                        type="number"
+                        name="depreciationAsPerIT"
+                        value={formData.depreciationAsPerIT}
+                        onChange={handleChange}
+                        placeholder="Enter amount"
+                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -3345,6 +3711,1673 @@ const ItrThree = () => {
           </div>
         )}
 
+        {/* Step 10: Schedule IF - Unlisted Shares */}
+        {step === 10 && (
+          <div className="p-4 bg-gray-50 rounded-lg">
+            <h3 className="mb-4 text-lg font-semibold text-gray-700">Schedule IF - Unlisted Shares</h3>
+            <div className="space-y-6">
+              <div className="p-4 bg-blue-50 rounded-lg">
+                <p className="text-sm text-blue-800 mb-4">
+                  <strong>Note:</strong> This schedule is mandatory if you have held unlisted equity shares during the financial year.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newShare = {
+                      companyName: "",
+                      companyPAN: "",
+                      noOfShares: 0,
+                      faceValue: 0,
+                      acquisitionDate: "",
+                      issuePrice: 0,
+                      purchasePrice: 0
+                    };
+                    setFormData(prev => ({
+                      ...prev,
+                      unlistedShares: [...prev.unlistedShares, newShare]
+                    }));
+                  }}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
+                  + Add Unlisted Share
+                </button>
+              </div>
+
+              {formData.unlistedShares.map((share, index) => (
+                <div key={index} className="p-4 border border-gray-200 rounded-lg">
+                  <div className="flex justify-between items-center mb-4">
+                    <h4 className="text-md font-semibold text-gray-700">Unlisted Share #{index + 1}</h4>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFormData(prev => ({
+                          ...prev,
+                          unlistedShares: prev.unlistedShares.filter((_, i) => i !== index)
+                        }));
+                      }}
+                      className="px-3 py-1 bg-red-500 text-white text-sm rounded-md hover:bg-red-600"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block mb-2 text-sm font-medium text-gray-700">
+                        Company Name <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={share.companyName}
+                        onChange={(e) => {
+                          const newShares = [...formData.unlistedShares];
+                          newShares[index].companyName = e.target.value;
+                          setFormData(prev => ({ ...prev, unlistedShares: newShares }));
+                        }}
+                        placeholder="Enter company name"
+                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-2 text-sm font-medium text-gray-700">
+                        Company PAN <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={share.companyPAN}
+                        onChange={(e) => {
+                          const newShares = [...formData.unlistedShares];
+                          newShares[index].companyPAN = e.target.value;
+                          setFormData(prev => ({ ...prev, unlistedShares: newShares }));
+                        }}
+                        placeholder="Enter company PAN"
+                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-2 text-sm font-medium text-gray-700">
+                        Number of Shares
+                      </label>
+                      <input
+                        type="number"
+                        value={share.noOfShares}
+                        onChange={(e) => {
+                          const newShares = [...formData.unlistedShares];
+                          newShares[index].noOfShares = parseInt(e.target.value) || 0;
+                          setFormData(prev => ({ ...prev, unlistedShares: newShares }));
+                        }}
+                        placeholder="Enter number of shares"
+                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-2 text-sm font-medium text-gray-700">
+                        Face Value (₹)
+                      </label>
+                      <input
+                        type="number"
+                        value={share.faceValue}
+                        onChange={(e) => {
+                          const newShares = [...formData.unlistedShares];
+                          newShares[index].faceValue = parseFloat(e.target.value) || 0;
+                          setFormData(prev => ({ ...prev, unlistedShares: newShares }));
+                        }}
+                        placeholder="Enter face value"
+                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-2 text-sm font-medium text-gray-700">
+                        Acquisition Date
+                      </label>
+                      <input
+                        type="date"
+                        value={share.acquisitionDate}
+                        onChange={(e) => {
+                          const newShares = [...formData.unlistedShares];
+                          newShares[index].acquisitionDate = e.target.value;
+                          setFormData(prev => ({ ...prev, unlistedShares: newShares }));
+                        }}
+                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-2 text-sm font-medium text-gray-700">
+                        Issue Price (₹)
+                      </label>
+                      <input
+                        type="number"
+                        value={share.issuePrice}
+                        onChange={(e) => {
+                          const newShares = [...formData.unlistedShares];
+                          newShares[index].issuePrice = parseFloat(e.target.value) || 0;
+                          setFormData(prev => ({ ...prev, unlistedShares: newShares }));
+                        }}
+                        placeholder="Enter issue price"
+                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-2 text-sm font-medium text-gray-700">
+                        Purchase Price (₹)
+                      </label>
+                      <input
+                        type="number"
+                        value={share.purchasePrice}
+                        onChange={(e) => {
+                          const newShares = [...formData.unlistedShares];
+                          newShares[index].purchasePrice = parseFloat(e.target.value) || 0;
+                          setFormData(prev => ({ ...prev, unlistedShares: newShares }));
+                        }}
+                        placeholder="Enter purchase price"
+                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {formData.unlistedShares.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  No unlisted shares added yet. Click "Add Unlisted Share" to begin.
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Step 11: Business Income & Schedules */}
+        {step === 11 && (
+          <div className="p-4 bg-gray-50 rounded-lg">
+            <h3 className="mb-4 text-lg font-semibold text-gray-700">Business Income & Schedules</h3>
+            <div className="space-y-8">
+              {/* Business Income Details */}
+              <div className="p-4 bg-blue-50 rounded-lg">
+                <h4 className="mb-4 text-md font-semibold text-gray-700">Business Income Computation</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Income u/s 28 (₹)
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.businessIncomeDetails.section28Income}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        businessIncomeDetails: {
+                          ...prev.businessIncomeDetails,
+                          section28Income: e.target.value
+                        }
+                      }))}
+                      placeholder="Enter section 28 income"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Adjustments u/s 44AD (₹)
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.businessIncomeDetails.section44ADAdjustments}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        businessIncomeDetails: {
+                          ...prev.businessIncomeDetails,
+                          section44ADAdjustments: e.target.value
+                        }
+                      }))}
+                      placeholder="Enter 44AD adjustments"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Other Business Income (₹)
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.businessIncomeDetails.otherBusinessIncome}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        businessIncomeDetails: {
+                          ...prev.businessIncomeDetails,
+                          otherBusinessIncome: e.target.value
+                        }
+                      }))}
+                      placeholder="Enter other business income"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 44AE Vehicles */}
+              <div className="p-4 bg-green-50 rounded-lg">
+                <h4 className="mb-4 text-md font-semibold text-gray-700">Section 44AE - Goods Carriage Vehicles</h4>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newVehicle = {
+                      vehicleType: "",
+                      tonnage: 0,
+                      monthsOwned: 0,
+                      presumptiveIncome: 0
+                    };
+                    setFormData(prev => ({
+                      ...prev,
+                      section44AEVehicles: [...prev.section44AEVehicles, newVehicle]
+                    }));
+                  }}
+                  className="mb-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                >
+                  + Add Vehicle
+                </button>
+
+                {formData.section44AEVehicles.map((vehicle, index) => (
+                  <div key={index} className="p-4 border border-gray-200 rounded-lg mb-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <h5 className="text-sm font-semibold text-gray-700">Vehicle #{index + 1}</h5>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData(prev => ({
+                            ...prev,
+                            section44AEVehicles: prev.section44AEVehicles.filter((_, i) => i !== index)
+                          }));
+                        }}
+                        className="px-3 py-1 bg-red-500 text-white text-sm rounded-md hover:bg-red-600"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Vehicle Type
+                        </label>
+                        <select
+                          value={vehicle.vehicleType}
+                          onChange={(e) => {
+                            const newVehicles = [...formData.section44AEVehicles];
+                            newVehicles[index].vehicleType = e.target.value;
+                            setFormData(prev => ({ ...prev, section44AEVehicles: newVehicles }));
+                          }}
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="">Select vehicle type</option>
+                          <option value="heavy-goods">Heavy Goods Vehicle</option>
+                          <option value="light-goods">Light Goods Vehicle</option>
+                          <option value="three-wheeler">Three Wheeler</option>
+                          <option value="other">Other</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Tonnage
+                        </label>
+                        <input
+                          type="number"
+                          value={vehicle.tonnage}
+                          onChange={(e) => {
+                            const newVehicles = [...formData.section44AEVehicles];
+                            newVehicles[index].tonnage = parseFloat(e.target.value) || 0;
+                            setFormData(prev => ({ ...prev, section44AEVehicles: newVehicles }));
+                          }}
+                          placeholder="Enter tonnage"
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Months Owned
+                        </label>
+                        <input
+                          type="number"
+                          value={vehicle.monthsOwned}
+                          onChange={(e) => {
+                            const newVehicles = [...formData.section44AEVehicles];
+                            newVehicles[index].monthsOwned = parseInt(e.target.value) || 0;
+                            setFormData(prev => ({ ...prev, section44AEVehicles: newVehicles }));
+                          }}
+                          placeholder="Enter months owned"
+                          max="12"
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Presumptive Income (₹)
+                        </label>
+                        <input
+                          type="number"
+                          value={vehicle.presumptiveIncome}
+                          onChange={(e) => {
+                            const newVehicles = [...formData.section44AEVehicles];
+                            newVehicles[index].presumptiveIncome = parseFloat(e.target.value) || 0;
+                            setFormData(prev => ({ ...prev, section44AEVehicles: newVehicles }));
+                          }}
+                          placeholder="Auto-calculated"
+                          className="w-full p-2 border border-gray-300 rounded-md bg-gray-100"
+                          readOnly
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                {formData.section44AEVehicles.length === 0 && (
+                  <div className="text-center py-4 text-gray-500">
+                    No vehicles added yet. Click "Add Vehicle" to begin.
+                  </div>
+                )}
+              </div>
+
+              {/* Section 44ADA & Partners Remuneration */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Opted for Section 44ADA?
+                  </label>
+                  <div className="space-y-2">
+                    <div className="flex items-center">
+                      <input
+                        type="radio"
+                        id="section44ADAYes"
+                        name="section44ADAOpted"
+                        value="true"
+                        checked={formData.section44ADAOpted === true}
+                        onChange={(e) => setFormData(prev => ({ ...prev, section44ADAOpted: e.target.value === "true" }))}
+                        className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                      />
+                      <label htmlFor="section44ADAYes" className="ml-2 text-sm font-medium text-gray-700">
+                        Yes
+                      </label>
+                    </div>
+                    <div className="flex items-center">
+                      <input
+                        type="radio"
+                        id="section44ADANo"
+                        name="section44ADAOpted"
+                        value="false"
+                        checked={formData.section44ADAOpted === false}
+                        onChange={(e) => setFormData(prev => ({ ...prev, section44ADAOpted: e.target.value === "true" }))}
+                        className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                      />
+                      <label htmlFor="section44ADANo" className="ml-2 text-sm font-medium text-gray-700">
+                        No
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Partners Remuneration Received (₹)
+                  </label>
+                  <input
+                    type="number"
+                    name="partnersRemuneration"
+                    value={formData.partnersRemuneration}
+                    onChange={handleChange}
+                    placeholder="Enter partners remuneration"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 12: Schedule AL - Assets & Liabilities */}
+        {step === 12 && (
+          <div className="p-4 bg-gray-50 rounded-lg">
+            <h3 className="mb-4 text-lg font-semibold text-gray-700">Schedule AL - Assets & Liabilities</h3>
+            <div className="p-4 bg-yellow-50 rounded-lg mb-6">
+              <p className="text-sm text-yellow-800">
+                <strong>Note:</strong> This schedule is mandatory if total income exceeds ₹50 lakhs.
+              </p>
+            </div>
+            <div className="space-y-8">
+              {/* Movable Assets */}
+              <div className="p-4 bg-blue-50 rounded-lg">
+                <h4 className="mb-4 text-md font-semibold text-gray-700">Movable Assets</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Cash in Hand (₹)
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.movableAssets.cashInHand}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        movableAssets: { ...prev.movableAssets, cashInHand: e.target.value }
+                      }))}
+                      placeholder="Enter cash in hand"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Jewelry, Bullion etc. (₹)
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.movableAssets.jewelryBullion}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        movableAssets: { ...prev.movableAssets, jewelryBullion: e.target.value }
+                      }))}
+                      placeholder="Enter jewelry & bullion value"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Archaeological Collections (₹)
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.movableAssets.archaeologicalCollections}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        movableAssets: { ...prev.movableAssets, archaeologicalCollections: e.target.value }
+                      }))}
+                      placeholder="Enter archaeological collections value"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Insurance Policies (₹)
+                    </label>
+                    <input
+                      type="number"
+                                        value={formData.movableAssets.insurancePolicies}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    movableAssets: { ...prev.movableAssets, insurancePolicies: e.target.value }
+                  }))}
+                      placeholder="Enter insurance policies value"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Bank Deposits (₹)
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.movableAssets.bankDeposits}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        movableAssets: { ...prev.movableAssets, bankDeposits: e.target.value }
+                      }))}
+                      placeholder="Enter bank deposits"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Shares & Securities (₹)
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.movableAssets.sharesSecurities}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        movableAssets: { ...prev.movableAssets, sharesSecurities: e.target.value }
+                      }))}
+                      placeholder="Enter shares & securities value"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Other Movable Assets (₹)
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.movableAssets.otherMovable}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        movableAssets: { ...prev.movableAssets, otherMovable: e.target.value }
+                      }))}
+                      placeholder="Enter other movable assets"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Immovable Assets */}
+              <div className="p-4 bg-green-50 rounded-lg">
+                <h4 className="mb-4 text-md font-semibold text-gray-700">Immovable Assets</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Buildings & Land (₹)
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.immovableAssets.buildingsLand}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        immovableAssets: { ...prev.immovableAssets, buildingsLand: e.target.value }
+                      }))}
+                      placeholder="Enter buildings & land value"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Other Immovable Assets (₹)
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.immovableAssets.otherImmovable}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        immovableAssets: { ...prev.immovableAssets, otherImmovable: e.target.value }
+                      }))}
+                      placeholder="Enter other immovable assets"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Liabilities */}
+              <div className="p-4 bg-red-50 rounded-lg">
+                <h4 className="mb-4 text-md font-semibold text-gray-700">Liabilities</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Liabilities to Banks (₹)
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.liabilities.liabilitiesToBank}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        liabilities: { ...prev.liabilities, liabilitiesToBank: e.target.value }
+                      }))}
+                      placeholder="Enter liabilities to banks"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Liabilities to Others (₹)
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.liabilities.liabilitiesToOthers}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        liabilities: { ...prev.liabilities, liabilitiesToOthers: e.target.value }
+                      }))}
+                      placeholder="Enter liabilities to others"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Net Worth Summary */}
+              <div className="p-4 bg-gray-100 rounded-lg">
+                <h4 className="mb-4 text-md font-semibold text-gray-700">Net Worth Summary</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+                  <div className="text-center">
+                    <p className="font-medium text-gray-600">Total Assets</p>
+                    <p className="text-lg font-bold text-blue-600">₹ {(
+                      parseFloat(formData.movableAssets.cashInHand || '0') +
+                      parseFloat(formData.movableAssets.jewelryBullion || '0') +
+                      parseFloat(formData.movableAssets.archaeologicalCollections || '0') +
+                      parseFloat(formData.movableAssets.insurancePolicies || '0') +
+                      parseFloat(formData.movableAssets.bankDeposits || '0') +
+                      parseFloat(formData.movableAssets.sharesSecurities || '0') +
+                      parseFloat(formData.movableAssets.otherMovable || '0') +
+                      parseFloat(formData.immovableAssets.buildingsLand || '0') +
+                      parseFloat(formData.immovableAssets.otherImmovable || '0')
+                    ).toLocaleString('en-IN')}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="font-medium text-gray-600">Total Liabilities</p>
+                    <p className="text-lg font-bold text-red-600">₹ {(
+                      parseFloat(formData.liabilities.liabilitiesToBank || '0') +
+                      parseFloat(formData.liabilities.liabilitiesToOthers || '0')
+                    ).toLocaleString('en-IN')}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="font-medium text-gray-600">Net Worth</p>
+                    <p className="text-lg font-bold text-green-600">₹ {(
+                      (parseFloat(formData.movableAssets.cashInHand || '0') +
+                      parseFloat(formData.movableAssets.jewelryBullion || '0') +
+                      parseFloat(formData.movableAssets.archaeologicalCollections || '0') +
+                      parseFloat(formData.movableAssets.insurancePolicies || '0') +
+                      parseFloat(formData.movableAssets.bankDeposits || '0') +
+                      parseFloat(formData.movableAssets.sharesSecurities || '0') +
+                      parseFloat(formData.movableAssets.otherMovable || '0') +
+                      parseFloat(formData.immovableAssets.buildingsLand || '0') +
+                      parseFloat(formData.immovableAssets.otherImmovable || '0')) -
+                      (parseFloat(formData.liabilities.liabilitiesToBank || '0') +
+                      parseFloat(formData.liabilities.liabilitiesToOthers || '0'))
+                    ).toLocaleString('en-IN')}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 13: Foreign Assets & Income */}
+        {step === 13 && (
+          <div className="p-4 bg-gray-50 rounded-lg">
+            <h3 className="mb-4 text-lg font-semibold text-gray-700">Foreign Assets & Income</h3>
+            <div className="p-4 bg-purple-50 rounded-lg mb-6">
+              <p className="text-sm text-purple-800">
+                <strong>Note:</strong> Mandatory for residents having foreign assets or income exceeding specified thresholds.
+              </p>
+            </div>
+            <div className="space-y-8">
+              {/* Foreign Bank Accounts */}
+              <div className="p-4 bg-blue-50 rounded-lg">
+                <h4 className="mb-4 text-md font-semibold text-gray-700">Foreign Bank Accounts</h4>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newAccount = {
+                      accountNumber: "",
+                      bankName: "",
+                      country: "",
+                      maxBalance: 0,
+                      interestEarned: 0
+                    };
+                    setFormData(prev => ({
+                      ...prev,
+                      foreignBankAccounts: [...prev.foreignBankAccounts, newAccount]
+                    }));
+                  }}
+                  className="mb-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
+                  + Add Foreign Bank Account
+                </button>
+
+                {formData.foreignBankAccounts.map((account, index) => (
+                  <div key={index} className="p-4 border border-gray-200 rounded-lg mb-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <h5 className="text-sm font-semibold text-gray-700">Account #{index + 1}</h5>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData(prev => ({
+                            ...prev,
+                            foreignBankAccounts: prev.foreignBankAccounts.filter((_, i) => i !== index)
+                          }));
+                        }}
+                        className="px-3 py-1 bg-red-500 text-white text-sm rounded-md hover:bg-red-600"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Account Number
+                        </label>
+                        <input
+                          type="text"
+                          value={account.accountNumber}
+                          onChange={(e) => {
+                            const newAccounts = [...formData.foreignBankAccounts];
+                            newAccounts[index].accountNumber = e.target.value;
+                            setFormData(prev => ({ ...prev, foreignBankAccounts: newAccounts }));
+                          }}
+                          placeholder="Enter account number"
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Bank Name
+                        </label>
+                        <input
+                          type="text"
+                          value={account.bankName}
+                          onChange={(e) => {
+                            const newAccounts = [...formData.foreignBankAccounts];
+                            newAccounts[index].bankName = e.target.value;
+                            setFormData(prev => ({ ...prev, foreignBankAccounts: newAccounts }));
+                          }}
+                          placeholder="Enter bank name"
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Country
+                        </label>
+                        <input
+                          type="text"
+                          value={account.country}
+                          onChange={(e) => {
+                            const newAccounts = [...formData.foreignBankAccounts];
+                            newAccounts[index].country = e.target.value;
+                            setFormData(prev => ({ ...prev, foreignBankAccounts: newAccounts }));
+                          }}
+                          placeholder="Enter country"
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Maximum Balance (₹)
+                        </label>
+                        <input
+                          type="number"
+                          value={account.maxBalance}
+                          onChange={(e) => {
+                            const newAccounts = [...formData.foreignBankAccounts];
+                            newAccounts[index].maxBalance = parseFloat(e.target.value) || 0;
+                            setFormData(prev => ({ ...prev, foreignBankAccounts: newAccounts }));
+                          }}
+                          placeholder="Enter maximum balance"
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div className="sm:col-span-2">
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Interest Earned (₹)
+                        </label>
+                        <input
+                          type="number"
+                          value={account.interestEarned}
+                          onChange={(e) => {
+                            const newAccounts = [...formData.foreignBankAccounts];
+                            newAccounts[index].interestEarned = parseFloat(e.target.value) || 0;
+                            setFormData(prev => ({ ...prev, foreignBankAccounts: newAccounts }));
+                          }}
+                          placeholder="Enter interest earned"
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                {formData.foreignBankAccounts.length === 0 && (
+                  <div className="text-center py-4 text-gray-500">
+                    No foreign bank accounts added yet.
+                  </div>
+                )}
+              </div>
+
+              {/* Foreign Properties */}
+              <div className="p-4 bg-green-50 rounded-lg">
+                <h4 className="mb-4 text-md font-semibold text-gray-700">Foreign Properties</h4>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newProperty = {
+                      propertyAddress: "",
+                      country: "",
+                      zipCode: "",
+                      ownershipPercentage: 0,
+                      incomeFromProperty: 0
+                    };
+                    setFormData(prev => ({
+                      ...prev,
+                      foreignProperties: [...prev.foreignProperties, newProperty]
+                    }));
+                  }}
+                  className="mb-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                >
+                  + Add Foreign Property
+                </button>
+
+                {formData.foreignProperties.map((property, index) => (
+                  <div key={index} className="p-4 border border-gray-200 rounded-lg mb-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <h5 className="text-sm font-semibold text-gray-700">Property #{index + 1}</h5>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData(prev => ({
+                            ...prev,
+                            foreignProperties: prev.foreignProperties.filter((_, i) => i !== index)
+                          }));
+                        }}
+                        className="px-3 py-1 bg-red-500 text-white text-sm rounded-md hover:bg-red-600"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="sm:col-span-2">
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Property Address
+                        </label>
+                        <input
+                          type="text"
+                          value={property.propertyAddress}
+                          onChange={(e) => {
+                            const newProperties = [...formData.foreignProperties];
+                            newProperties[index].propertyAddress = e.target.value;
+                            setFormData(prev => ({ ...prev, foreignProperties: newProperties }));
+                          }}
+                          placeholder="Enter property address"
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Country
+                        </label>
+                        <input
+                          type="text"
+                          value={property.country}
+                          onChange={(e) => {
+                            const newProperties = [...formData.foreignProperties];
+                            newProperties[index].country = e.target.value;
+                            setFormData(prev => ({ ...prev, foreignProperties: newProperties }));
+                          }}
+                          placeholder="Enter country"
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          ZIP Code
+                        </label>
+                        <input
+                          type="text"
+                          value={property.zipCode}
+                          onChange={(e) => {
+                            const newProperties = [...formData.foreignProperties];
+                            newProperties[index].zipCode = e.target.value;
+                            setFormData(prev => ({ ...prev, foreignProperties: newProperties }));
+                          }}
+                          placeholder="Enter ZIP code"
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Ownership Percentage (%)
+                        </label>
+                        <input
+                          type="number"
+                          value={property.ownershipPercentage}
+                          onChange={(e) => {
+                            const newProperties = [...formData.foreignProperties];
+                            newProperties[index].ownershipPercentage = parseFloat(e.target.value) || 0;
+                            setFormData(prev => ({ ...prev, foreignProperties: newProperties }));
+                          }}
+                          placeholder="Enter ownership %"
+                          max="100"
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Income from Property (₹)
+                        </label>
+                        <input
+                          type="number"
+                          value={property.incomeFromProperty}
+                          onChange={(e) => {
+                            const newProperties = [...formData.foreignProperties];
+                            newProperties[index].incomeFromProperty = parseFloat(e.target.value) || 0;
+                            setFormData(prev => ({ ...prev, foreignProperties: newProperties }));
+                          }}
+                          placeholder="Enter income from property"
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                {formData.foreignProperties.length === 0 && (
+                  <div className="text-center py-4 text-gray-500">
+                    No foreign properties added yet.
+                  </div>
+                )}
+              </div>
+
+              {/* Foreign Employment & Tax */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="p-4 bg-yellow-50 rounded-lg">
+                  <h4 className="mb-4 text-md font-semibold text-gray-700">Foreign Employment Details</h4>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block mb-2 text-sm font-medium text-gray-700">
+                        Employer Name
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.foreignEmployerDetails.employerName}
+                        onChange={(e) => setFormData(prev => ({
+                          ...prev,
+                          foreignEmployerDetails: {
+                            ...prev.foreignEmployerDetails,
+                            employerName: e.target.value
+                          }
+                        }))}
+                        placeholder="Enter employer name"
+                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-2 text-sm font-medium text-gray-700">
+                        Employer Address
+                      </label>
+                      <textarea
+                        value={formData.foreignEmployerDetails.employerAddress}
+                        onChange={(e) => setFormData(prev => ({
+                          ...prev,
+                          foreignEmployerDetails: {
+                            ...prev.foreignEmployerDetails,
+                            employerAddress: e.target.value
+                          }
+                        }))}
+                        placeholder="Enter employer address"
+                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        rows={3}
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-2 text-sm font-medium text-gray-700">
+                        Tax ID Number
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.foreignEmployerDetails.taxIdNumber}
+                        onChange={(e) => setFormData(prev => ({
+                          ...prev,
+                          foreignEmployerDetails: {
+                            ...prev.foreignEmployerDetails,
+                            taxIdNumber: e.target.value
+                          }
+                        }))}
+                        placeholder="Enter tax ID number"
+                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-2 text-sm font-medium text-gray-700">
+                        Salary Paid (₹)
+                      </label>
+                      <input
+                        type="number"
+                        value={formData.foreignEmployerDetails.salaryPaid}
+                        onChange={(e) => setFormData(prev => ({
+                          ...prev,
+                          foreignEmployerDetails: {
+                            ...prev.foreignEmployerDetails,
+                            salaryPaid: e.target.value
+                          }
+                        }))}
+                        placeholder="Enter salary paid"
+                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-4 bg-red-50 rounded-lg">
+                  <h4 className="mb-4 text-md font-semibold text-gray-700">Foreign Tax Paid</h4>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Total Foreign Tax Paid (₹)
+                    </label>
+                    <input
+                      type="number"
+                      name="foreignTaxPaid"
+                      value={formData.foreignTaxPaid}
+                      onChange={handleChange}
+                      placeholder="Enter foreign tax paid"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                    <p className="mt-2 text-sm text-gray-600">
+                      Enter the total amount of tax paid in foreign countries that you wish to claim as credit under DTAA.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 14: Tax Payments & TDS/TCS */}
+        {step === 14 && (
+          <div className="p-4 bg-gray-50 rounded-lg">
+            <h3 className="mb-4 text-lg font-semibold text-gray-700">Tax Payments & TDS/TCS</h3>
+            <div className="space-y-8">
+              {/* TDS on Salary */}
+              <div className="p-4 bg-blue-50 rounded-lg">
+                <h4 className="mb-4 text-md font-semibold text-gray-700">TDS on Salary</h4>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newTDS = {
+                      deductorTAN: "",
+                      deductorName: "",
+                      totalSalaryPaid: 0,
+                      taxDeducted: 0,
+                      tdsClaimedBy: ""
+                    };
+                    setFormData(prev => ({
+                      ...prev,
+                      tdsSalary: [...prev.tdsSalary, newTDS]
+                    }));
+                  }}
+                  className="mb-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
+                  + Add TDS Entry
+                </button>
+
+                {formData.tdsSalary.map((tds, index) => (
+                  <div key={index} className="p-4 border border-gray-200 rounded-lg mb-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <h5 className="text-sm font-semibold text-gray-700">TDS Entry #{index + 1}</h5>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData(prev => ({
+                            ...prev,
+                            tdsSalary: prev.tdsSalary.filter((_, i) => i !== index)
+                          }));
+                        }}
+                        className="px-3 py-1 bg-red-500 text-white text-sm rounded-md hover:bg-red-600"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Deductor TAN
+                        </label>
+                        <input
+                          type="text"
+                          value={tds.deductorTAN}
+                          onChange={(e) => {
+                            const newTDS = [...formData.tdsSalary];
+                            newTDS[index].deductorTAN = e.target.value;
+                            setFormData(prev => ({ ...prev, tdsSalary: newTDS }));
+                          }}
+                          placeholder="Enter deductor TAN"
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Deductor Name
+                        </label>
+                        <input
+                          type="text"
+                          value={tds.deductorName}
+                          onChange={(e) => {
+                            const newTDS = [...formData.tdsSalary];
+                            newTDS[index].deductorName = e.target.value;
+                            setFormData(prev => ({ ...prev, tdsSalary: newTDS }));
+                          }}
+                          placeholder="Enter deductor name"
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Total Salary Paid (₹)
+                        </label>
+                        <input
+                          type="number"
+                          value={tds.totalSalaryPaid}
+                          onChange={(e) => {
+                            const newTDS = [...formData.tdsSalary];
+                            newTDS[index].totalSalaryPaid = parseFloat(e.target.value) || 0;
+                            setFormData(prev => ({ ...prev, tdsSalary: newTDS }));
+                          }}
+                          placeholder="Enter total salary paid"
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Tax Deducted (₹)
+                        </label>
+                        <input
+                          type="number"
+                          value={tds.taxDeducted}
+                          onChange={(e) => {
+                            const newTDS = [...formData.tdsSalary];
+                            newTDS[index].taxDeducted = parseFloat(e.target.value) || 0;
+                            setFormData(prev => ({ ...prev, tdsSalary: newTDS }));
+                          }}
+                          placeholder="Enter tax deducted"
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div className="sm:col-span-2">
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          TDS Claimed By
+                        </label>
+                        <select
+                          value={tds.tdsClaimedBy}
+                          onChange={(e) => {
+                            const newTDS = [...formData.tdsSalary];
+                            newTDS[index].tdsClaimedBy = e.target.value;
+                            setFormData(prev => ({ ...prev, tdsSalary: newTDS }));
+                          }}
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="">Select who claimed TDS</option>
+                          <option value="self">Self</option>
+                          <option value="employer">Employer</option>
+                          <option value="other">Other</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                {formData.tdsSalary.length === 0 && (
+                  <div className="text-center py-4 text-gray-500">
+                    No TDS entries added yet.
+                  </div>
+                )}
+              </div>
+
+              {/* TDS on Other Income */}
+              <div className="p-4 bg-green-50 rounded-lg">
+                <h4 className="mb-4 text-md font-semibold text-gray-700">TDS on Other Income</h4>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newTDS = {
+                      deductorTAN: "",
+                      deductorName: "",
+                      grossAmount: 0,
+                      taxDeducted: 0,
+                      natureOfPayment: ""
+                    };
+                    setFormData(prev => ({
+                      ...prev,
+                      tdsOther: [...prev.tdsOther, newTDS]
+                    }));
+                  }}
+                  className="mb-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                >
+                  + Add TDS Entry
+                </button>
+
+                {formData.tdsOther.map((tds, index) => (
+                  <div key={index} className="p-4 border border-gray-200 rounded-lg mb-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <h5 className="text-sm font-semibold text-gray-700">TDS Entry #{index + 1}</h5>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData(prev => ({
+                            ...prev,
+                            tdsOther: prev.tdsOther.filter((_, i) => i !== index)
+                          }));
+                        }}
+                        className="px-3 py-1 bg-red-500 text-white text-sm rounded-md hover:bg-red-600"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Deductor TAN
+                        </label>
+                        <input
+                          type="text"
+                          value={tds.deductorTAN}
+                          onChange={(e) => {
+                            const newTDS = [...formData.tdsOther];
+                            newTDS[index].deductorTAN = e.target.value;
+                            setFormData(prev => ({ ...prev, tdsOther: newTDS }));
+                          }}
+                          placeholder="Enter deductor TAN"
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Deductor Name
+                        </label>
+                        <input
+                          type="text"
+                          value={tds.deductorName}
+                          onChange={(e) => {
+                            const newTDS = [...formData.tdsOther];
+                            newTDS[index].deductorName = e.target.value;
+                            setFormData(prev => ({ ...prev, tdsOther: newTDS }));
+                          }}
+                          placeholder="Enter deductor name"
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Gross Amount (₹)
+                        </label>
+                        <input
+                          type="number"
+                          value={tds.grossAmount}
+                          onChange={(e) => {
+                            const newTDS = [...formData.tdsOther];
+                            newTDS[index].grossAmount = parseFloat(e.target.value) || 0;
+                            setFormData(prev => ({ ...prev, tdsOther: newTDS }));
+                          }}
+                          placeholder="Enter gross amount"
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Tax Deducted (₹)
+                        </label>
+                        <input
+                          type="number"
+                          value={tds.taxDeducted}
+                          onChange={(e) => {
+                            const newTDS = [...formData.tdsOther];
+                            newTDS[index].taxDeducted = parseFloat(e.target.value) || 0;
+                            setFormData(prev => ({ ...prev, tdsOther: newTDS }));
+                          }}
+                          placeholder="Enter tax deducted"
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div className="sm:col-span-2">
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Nature of Payment
+                        </label>
+                        <select
+                          value={tds.natureOfPayment}
+                          onChange={(e) => {
+                            const newTDS = [...formData.tdsOther];
+                            newTDS[index].natureOfPayment = e.target.value;
+                            setFormData(prev => ({ ...prev, tdsOther: newTDS }));
+                          }}
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="">Select nature of payment</option>
+                          <option value="interest">Interest</option>
+                          <option value="dividend">Dividend</option>
+                          <option value="rent">Rent</option>
+                          <option value="professional-fees">Professional Fees</option>
+                          <option value="commission">Commission</option>
+                          <option value="other">Other</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                {formData.tdsOther.length === 0 && (
+                  <div className="text-center py-4 text-gray-500">
+                    No TDS entries added yet.
+                  </div>
+                )}
+              </div>
+
+              {/* Advance Tax Payments */}
+              <div className="p-4 bg-yellow-50 rounded-lg">
+                <h4 className="mb-4 text-md font-semibold text-gray-700">Advance Tax Payments</h4>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newPayment = {
+                      paymentDate: "",
+                      amount: 0,
+                      bsr: "",
+                      serialNumber: ""
+                    };
+                    setFormData(prev => ({
+                      ...prev,
+                      advanceTaxPayments: [...prev.advanceTaxPayments, newPayment]
+                    }));
+                  }}
+                  className="mb-4 px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700"
+                >
+                  + Add Advance Tax Payment
+                </button>
+
+                {formData.advanceTaxPayments.map((payment, index) => (
+                  <div key={index} className="p-4 border border-gray-200 rounded-lg mb-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <h5 className="text-sm font-semibold text-gray-700">Payment #{index + 1}</h5>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData(prev => ({
+                            ...prev,
+                            advanceTaxPayments: prev.advanceTaxPayments.filter((_, i) => i !== index)
+                          }));
+                        }}
+                        className="px-3 py-1 bg-red-500 text-white text-sm rounded-md hover:bg-red-600"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Payment Date
+                        </label>
+                        <input
+                          type="date"
+                          value={payment.paymentDate}
+                          onChange={(e) => {
+                            const newPayments = [...formData.advanceTaxPayments];
+                            newPayments[index].paymentDate = e.target.value;
+                            setFormData(prev => ({ ...prev, advanceTaxPayments: newPayments }));
+                          }}
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Amount (₹)
+                        </label>
+                        <input
+                          type="number"
+                          value={payment.amount}
+                          onChange={(e) => {
+                            const newPayments = [...formData.advanceTaxPayments];
+                            newPayments[index].amount = parseFloat(e.target.value) || 0;
+                            setFormData(prev => ({ ...prev, advanceTaxPayments: newPayments }));
+                          }}
+                          placeholder="Enter amount"
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          BSR Code
+                        </label>
+                        <input
+                          type="text"
+                          value={payment.bsr}
+                          onChange={(e) => {
+                            const newPayments = [...formData.advanceTaxPayments];
+                            newPayments[index].bsr = e.target.value;
+                            setFormData(prev => ({ ...prev, advanceTaxPayments: newPayments }));
+                          }}
+                          placeholder="Enter BSR code"
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                          Serial Number
+                        </label>
+                        <input
+                          type="text"
+                          value={payment.serialNumber}
+                          onChange={(e) => {
+                            const newPayments = [...formData.advanceTaxPayments];
+                            newPayments[index].serialNumber = e.target.value;
+                            setFormData(prev => ({ ...prev, advanceTaxPayments: newPayments }));
+                          }}
+                          placeholder="Enter serial number"
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                {formData.advanceTaxPayments.length === 0 && (
+                  <div className="text-center py-4 text-gray-500">
+                    No advance tax payments added yet.
+                  </div>
+                )}
+              </div>
+
+              {/* Summary */}
+              <div className="p-4 bg-gray-100 rounded-lg">
+                <h4 className="mb-4 text-md font-semibold text-gray-700">Tax Summary</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+                  <div className="text-center">
+                    <p className="font-medium text-gray-600">Total TDS</p>
+                    <p className="text-lg font-bold text-blue-600">₹ {(
+                      formData.tdsSalary.reduce((sum, tds) => sum + (tds.taxDeducted || 0), 0) +
+                      formData.tdsOther.reduce((sum, tds) => sum + (tds.taxDeducted || 0), 0)
+                    ).toLocaleString('en-IN')}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="font-medium text-gray-600">Advance Tax</p>
+                    <p className="text-lg font-bold text-green-600">₹ {
+                      formData.advanceTaxPayments.reduce((sum, payment) => sum + (payment.amount || 0), 0).toLocaleString('en-IN')
+                    }</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="font-medium text-gray-600">Total Tax Credit</p>
+                    <p className="text-lg font-bold text-purple-600">₹ {(
+                      formData.tdsSalary.reduce((sum, tds) => sum + (tds.taxDeducted || 0), 0) +
+                      formData.tdsOther.reduce((sum, tds) => sum + (tds.taxDeducted || 0), 0) +
+                      formData.advanceTaxPayments.reduce((sum, payment) => sum + (payment.amount || 0), 0)
+                    ).toLocaleString('en-IN')}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 15: Declaration & Verification */}
+        {step === 15 && (
+          <div className="p-4 bg-gray-50 rounded-lg">
+            <h3 className="mb-4 text-lg font-semibold text-gray-700">Declaration & Verification</h3>
+            <div className="space-y-8">
+              {/* Verification Details */}
+              <div className="p-4 bg-blue-50 rounded-lg">
+                <h4 className="mb-4 text-md font-semibold text-gray-700">Verification Details</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Verifier Name <span className="text-red-500">*</span>
+                    </label>
+                                         <input
+                       type="text"
+                       name="verifierName"
+                       value={formData.verifierName}
+                       onChange={handleChange}
+                       placeholder="Enter verifier name"
+                       className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.verifierName ? "border-red-500" : "border-gray-300"}`}
+                     />
+                     {errors.verifierName && <p className="mt-1 text-sm text-red-500">{errors.verifierName}</p>}
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Father's Name <span className="text-red-500">*</span>
+                    </label>
+                                         <input
+                       type="text"
+                       name="fatherName"
+                       value={formData.fatherName}
+                       onChange={handleChange}
+                       placeholder="Enter father's name"
+                       className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.fatherName ? "border-red-500" : "border-gray-300"}`}
+                     />
+                     {errors.fatherName && <p className="mt-1 text-sm text-red-500">{errors.fatherName}</p>}
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Capacity <span className="text-red-500">*</span>
+                    </label>
+                                         <select
+                       name="capacity"
+                       value={formData.capacity}
+                       onChange={handleChange}
+                       className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.capacity ? "border-red-500" : "border-gray-300"}`}
+                     >
+                      <option value="">Select capacity</option>
+                      <option value="self">Self</option>
+                      <option value="authorized-representative">Authorized Representative</option>
+                      <option value="legal-heir">Legal Heir</option>
+                      <option value="guardian">Guardian</option>
+                                             <option value="power-of-attorney">Power of Attorney</option>
+                     </select>
+                     {errors.capacity && <p className="mt-1 text-sm text-red-500">{errors.capacity}</p>}
+                   </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Verification Place <span className="text-red-500">*</span>
+                    </label>
+                                         <input
+                       type="text"
+                       name="verificationPlace"
+                       value={formData.verificationPlace}
+                       onChange={handleChange}
+                       placeholder="Enter verification place"
+                       className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.verificationPlace ? "border-red-500" : "border-gray-300"}`}
+                     />
+                     {errors.verificationPlace && <p className="mt-1 text-sm text-red-500">{errors.verificationPlace}</p>}
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      Verification Date <span className="text-red-500">*</span>
+                    </label>
+                                         <input
+                       type="date"
+                       name="verificationDate"
+                       value={formData.verificationDate}
+                       onChange={handleChange}
+                       className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.verificationDate ? "border-red-500" : "border-gray-300"}`}
+                     />
+                     {errors.verificationDate && <p className="mt-1 text-sm text-red-500">{errors.verificationDate}</p>}
+                  </div>
+                </div>
+              </div>
+
+              {/* Declaration */}
+              <div className="p-4 bg-green-50 rounded-lg">
+                <h4 className="mb-4 text-md font-semibold text-gray-700">Declaration</h4>
+                <div className="space-y-4">
+                  <div className="p-4 bg-white rounded-lg border border-gray-200">
+                    <p className="text-sm text-gray-700 leading-relaxed">
+                      I, <strong>{formData.verifierName || '[Name]'}</strong>, son/daughter of <strong>{formData.fatherName || '[Father\'s Name]'}</strong>, 
+                      solemnly declare that to the best of my knowledge and belief, the information given in this return and the schedules thereto is 
+                      correct and complete and that the amount of tax shown therein as payable is correctly worked out according to the provisions of 
+                      the Income Tax Act, 1961.
+                    </p>
+                    <br />
+                    <p className="text-sm text-gray-700 leading-relaxed">
+                      I further declare that I am making this return in my capacity as <strong>{formData.capacity || '[Capacity]'}</strong> and I am competent to make this 
+                      return and verify it. I am also responsible for the correctness of the return and the schedules.
+                    </p>
+                  </div>
+
+                  <div className="flex items-start space-x-3">
+                    <input
+                      type="checkbox"
+                      id="declarationAccepted"
+                      required
+                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-1"
+                    />
+                    <label htmlFor="declarationAccepted" className="text-sm text-gray-700">
+                      <span className="text-red-500">*</span> I hereby accept the above declaration and certify that the information provided is true and complete to the best of my knowledge.
+                    </label>
+                  </div>
+
+                  <div className="flex items-start space-x-3">
+                    <input
+                      type="checkbox"
+                      id="penaltyAccepted"
+                      required
+                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-1"
+                    />
+                    <label htmlFor="penaltyAccepted" className="text-sm text-gray-700">
+                      <span className="text-red-500">*</span> I understand that if any information furnished above is found to be false, I shall be liable for prosecution under Section 277 of the Income Tax Act, 1961 and penalty under other provisions of the Act.
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Submission Options */}
+              <div className="p-4 bg-yellow-50 rounded-lg">
+                <h4 className="mb-4 text-md font-semibold text-gray-700">Submission Method</h4>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                      How do you want to verify this return?
+                    </label>
+                    <div className="space-y-2">
+                      <div className="flex items-center">
+                        <input
+                          type="radio"
+                          id="verifyDSC"
+                          name="verificationMethod"
+                          value="dsc"
+                          className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                        />
+                        <label htmlFor="verifyDSC" className="ml-2 text-sm font-medium text-gray-700">
+                          Digital Signature Certificate (DSC)
+                        </label>
+                      </div>
+                      <div className="flex items-center">
+                        <input
+                          type="radio"
+                          id="verifyOTP"
+                          name="verificationMethod"
+                          value="otp"
+                          className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                        />
+                        <label htmlFor="verifyOTP" className="ml-2 text-sm font-medium text-gray-700">
+                          Aadhaar OTP
+                        </label>
+                      </div>
+                      <div className="flex items-center">
+                        <input
+                          type="radio"
+                          id="verifyEVC"
+                          name="verificationMethod"
+                          value="evc"
+                          className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                        />
+                        <label htmlFor="verifyEVC" className="ml-2 text-sm font-medium text-gray-700">
+                          Electronic Verification Code (EVC) through Bank Account
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Final Summary */}
+              <div className="p-4 bg-gray-100 rounded-lg">
+                <h4 className="mb-4 text-md font-semibold text-gray-700">Return Summary</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+                  <div className="text-center">
+                    <p className="font-medium text-gray-600">Filing Status</p>
+                    <p className="text-lg font-bold text-blue-600">{formData.isRevisedReturn ? 'Revised' : 'Original'}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="font-medium text-gray-600">Tax Regime</p>
+                    <p className="text-lg font-bold text-green-600">{formData.regimeOption || 'Old Regime'}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="font-medium text-gray-600">Verification</p>
+                    <p className="text-lg font-bold text-purple-600">{formData.verificationPlace || 'Pending'}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="font-medium text-gray-600">Status</p>
+                    <p className="text-lg font-bold text-orange-600">Ready to Submit</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="flex justify-between mt-8">
           {step > 1 && (
             <button
@@ -3370,7 +5403,7 @@ const ItrThree = () => {
                 Processing...
               </div>
             ) : (
-              step === 9 ? "Submit" : "Next"
+              step === 15 ? "Submit" : "Next"
             )}
           </button>
         </div>
