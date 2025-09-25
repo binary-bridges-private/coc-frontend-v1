@@ -1,24 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import B2b from './B2b.tsx';
-import B2ba from './B2ba.tsx';
-import Cdn from './Cdn.tsx';
-import Isd from './Isd.tsx';
-import { getGSTR2AEntries, getSuggestedGSTR2APeriod, saveGSTR2AEntry } from '../../../../../store/slices/gstr2aSlice.ts';
-import { useAppDispatch, useAppSelector } from '../../../../../store/hooks.ts';
-import { getSingleRegistration } from '../../../../../store/slices/gstSlice.ts';
+import FinancialData from './FinancialData.tsx';
+import BalanceSheetData from './BalanceSheetData.tsx';
+import ProfitLossData from './ProfitLossData.tsx';
+import { getAOC4Entries, getSuggestedAOC4Period, saveAOC4Entry } from '../../../../store/slices/aoc4Slice.ts';
+import { useAppDispatch, useAppSelector } from '../../../../store/hooks.ts';
 
-interface GSTPeriod {
+interface ROCPeriod {
     financialYear: string;
-    quarter: string;
-    month: string;
-    monthName: string;
 }
 
-const Gstr2a = () => {
+const FormAOC4 = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const { entries, loading, error, suggestedPeriod } = useAppSelector((state: any) => state.gstr2a);
+    const { entries, loading, error, suggestedPeriod } = useAppSelector((state: any) => state.aoc4);
 
     const [formStates, setFormStates] = useState<Record<string, any>>({});
     const [open, setOpen] = useState(0);
@@ -39,12 +34,12 @@ const Gstr2a = () => {
         const fetchData = async () => {
             try {
                 setIsLoading(true);
-                await dispatch(getGSTR2AEntries()).unwrap();
-                await dispatch(getSuggestedGSTR2APeriod()).unwrap();
+                await dispatch(getAOC4Entries()).unwrap();
+                await dispatch(getSuggestedAOC4Period()).unwrap();
                 setInitialLoadComplete(true);
             } catch (error) {
                 setIsLoading(false);
-                console.error("Failed to fetch GSTR2A data:", error);
+                console.error("Failed to fetch AOC-4 data:", error);
             } finally {
                 setIsLoading(false);
             }
@@ -63,10 +58,7 @@ const Gstr2a = () => {
     };
 
     const handleViewEntry = (entry: any) => {
-        setSelectedEntry({
-            ...entry,
-            monthName: new Date(0, parseInt(entry.month) - 1).toLocaleDateString('en-US', { month: 'long' })
-        });
+        setSelectedEntry(entry);
         setShowNewFiling(true);
         setViewMode(true);
         setFormStates({});
@@ -78,12 +70,10 @@ const Gstr2a = () => {
         if (viewMode && selectedEntry) {
             return selectedEntry[slug];
         }
-        if (!showNewFiling || !suggestedPeriod?.month) return undefined;
+        if (!showNewFiling || !suggestedPeriod?.financialYear) return undefined;
 
         const entry = entries.find((e: any) =>
-            e.financialYear === suggestedPeriod.financialYear &&
-            e.quarter === suggestedPeriod.quarter &&
-            e.month === suggestedPeriod.month
+            e.financialYear === suggestedPeriod.financialYear
         );
 
         return entry ? entry[slug] : undefined;
@@ -94,11 +84,10 @@ const Gstr2a = () => {
         setFormStates((prev) => ({ ...prev, [slug]: data }));
     };
 
-    const gstOptions = [
-        { name: "B2B Invoices", slug: "b2b" },
-        { name: "B2BA Invoices", slug: "b2ba" },
-        { name: "CDN Invoices", slug: "cdn" },
-        { name: "ISD Invoices", slug: "isd" },
+    const rocOptions = [
+        { name: "Financial Data", slug: "financialData" },
+        { name: "Balance Sheet", slug: "balanceSheetData" },
+        { name: "Profit & Loss", slug: "profitLossData" },
     ];
 
     const handleSubmit = async () => {
@@ -116,16 +105,13 @@ const Gstr2a = () => {
             setIsLoading(true);
             const entryData = {
                 financialYear: suggestedPeriod.financialYear,
-                quarter: suggestedPeriod.quarter,
-                month: suggestedPeriod.month,
-                monthName: suggestedPeriod.monthName,
                 ...formStates
             };
 
-            const result = await dispatch(saveGSTR2AEntry(entryData)).unwrap();
+            const result = await dispatch(saveAOC4Entry(entryData)).unwrap();
 
             if (result) {
-                navigate("/practice/gst/dashboard", { state: { success: true } });
+                navigate("/practice/roc-filing", { state: { success: true } });
             }
         } catch (error) {
             alert("Submission failed. Please try again.");
@@ -135,35 +121,31 @@ const Gstr2a = () => {
         }
     };
 
-    useEffect(() => {
-        dispatch(getSingleRegistration());
-    }, [dispatch]);
-
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
                 <div className="flex flex-col items-center">
                     <div className="w-16 h-16 border-t-4 border-blue-500 border-solid rounded-full animate-spin"></div>
-                    <p className="mt-4 text-lg font-medium text-gray-700">Loading GSTR2A data...</p>
+                    <p className="mt-4 text-lg font-medium text-gray-700">Loading AOC-4 data...</p>
                 </div>
             </div>
         );
     }
 
     if (error) {
-        return <div className="flex justify-center p-10 text-red-500">Error loading GSTR2A data: {error}</div>;
+        return <div className="flex justify-center p-10 text-red-500">Error loading AOC-4 data: {error}</div>;
     }
 
     return (
         <div className="flex flex-col items-center pt-5 pb-20">
             {!showNewFiling ? (
                 <div className="w-full max-w-5xl p-4 mx-auto mt-10">
-                    <h1 className="mb-8 text-2xl font-bold text-center text-gray-800">Your GSTR-2A Filings</h1>
+                    <h1 className="mb-8 text-2xl font-bold text-center text-gray-800">Your AOC-4 Filings</h1>
 
                     <div className="p-6 bg-white border border-gray-200 shadow-md rounded-2xl">
                         {entries?.length === 0 ? (
                             <div className="py-12 text-center">
-                                <p className="text-lg text-gray-500">You have not filed any GSTR-2A entries yet.</p>
+                                <p className="text-lg text-gray-500">You have not filed any AOC-4 entries yet.</p>
                             </div>
                         ) : (
                             <div className="overflow-x-auto">
@@ -171,20 +153,18 @@ const Gstr2a = () => {
                                     <thead className="border-b border-gray-200 bg-gray-50">
                                         <tr>
                                             <th className="px-6 py-4 font-semibold tracking-wide uppercase">Financial Year</th>
-                                            <th className="px-6 py-4 font-semibold tracking-wide uppercase">Quarter</th>
-                                            <th className="px-6 py-4 font-semibold tracking-wide uppercase">Month</th>
+                                            <th className="px-6 py-4 font-semibold tracking-wide uppercase">CIN</th>
+                                            <th className="px-6 py-4 font-semibold tracking-wide uppercase">Auditor</th>
                                             <th className="px-6 py-4 font-semibold tracking-wide uppercase">Status</th>
                                             <th className="px-6 py-4 font-semibold tracking-wide uppercase">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100">
                                         {entries?.map((entry: any) => (
-                                            <tr key={`${entry.financialYear}-${entry.quarter}-${entry.month}`} className="transition hover:bg-gray-50">
+                                            <tr key={`${entry.financialYear}`} className="transition hover:bg-gray-50">
                                                 <td className="px-6 py-4">{entry.financialYear}</td>
-                                                <td className="px-6 py-4">{entry.quarter}</td>
-                                                <td className="px-6 py-4">
-                                                    {new Date(0, parseInt(entry.month) - 1).toLocaleDateString('en-US', { month: 'long' })}
-                                                </td>
+                                                <td className="px-6 py-4">{entry.cin}</td>
+                                                <td className="px-6 py-4">{entry.auditorName || 'N/A'}</td>
                                                 <td className="px-6 py-4">
                                                     <span className="inline-block px-3 py-1 text-sm font-medium text-green-800 bg-green-100 rounded-full">
                                                         Filed
@@ -211,7 +191,7 @@ const Gstr2a = () => {
                                     onClick={handleNewFiling}
                                     className="px-6 py-3 text-white transition bg-blue-600 rounded-lg shadow hover:bg-blue-700"
                                 >
-                                    File for {suggestedPeriod.monthName}, {suggestedPeriod.quarter}, FY {suggestedPeriod.financialYear}
+                                    File for FY {suggestedPeriod.financialYear}
                                 </button>
                             ) : (
                                 <div className="inline-block px-6 py-4 text-blue-800 rounded-lg shadow bg-blue-50">
@@ -223,10 +203,10 @@ const Gstr2a = () => {
 
                     <div className="mt-8 text-center">
                         <button
-                            onClick={() => navigate("/practice/gst")}
+                            onClick={() => navigate("/practice/roc-filing")}
                             className="px-5 py-2 text-gray-700 transition bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200"
                         >
-                            ← Back to GST Services
+                            ← Back to ROC Filing
                         </button>
                     </div>
                 </div>
@@ -238,12 +218,12 @@ const Gstr2a = () => {
                     <div className="w-full">
                         <div className="w-full py-10 hero">
                             <div className="text-center">
-                                <h1 className="text-4xl font-bold">GSTR2A</h1>
-                                <p className="mt-2 text-lg">Auto-drafted inward supplies</p>
+                                <h1 className="text-4xl font-bold">Form AOC-4</h1>
+                                <p className="mt-2 text-lg">Annual Return - Financial Statements</p>
                                 {selectedEntry ? (
                                     <div className="p-4 mt-4 bg-blue-100 rounded-lg">
                                         <p className="font-semibold">
-                                            Viewing Filed Return: {selectedEntry.monthName}, {selectedEntry.quarter}, FY {selectedEntry.financialYear}
+                                            Viewing Filed Return: FY {selectedEntry.financialYear}
                                         </p>
                                         <button
                                             onClick={() => {
@@ -259,7 +239,7 @@ const Gstr2a = () => {
                                 ) : suggestedPeriod ? (
                                     <div className="p-4 mt-4 bg-blue-100 rounded-lg">
                                         <p className="font-semibold">
-                                            Filing Period: {suggestedPeriod.monthName}, {suggestedPeriod.quarter}, FY {suggestedPeriod.financialYear}
+                                            Filing Period: FY {suggestedPeriod.financialYear}
                                         </p>
                                         <button
                                             onClick={() => setShowNewFiling(false)}
@@ -274,7 +254,7 @@ const Gstr2a = () => {
 
                         {open === 0 ? (
                             <div className="flex flex-wrap justify-center gap-3">
-                                {gstOptions.map((option, index) => (
+                                {rocOptions.map((option, index) => (
                                     <div
                                         key={index}
                                         className="relative flex flex-col items-center justify-between p-5 mb-4 bg-white border border-gray-300 shadow-xl rounded-xl w-[250px] h-[180px] transition-all duration-300 ease-in-out"
@@ -303,36 +283,27 @@ const Gstr2a = () => {
                             <div className="w-[60%] my-10 p-6 mx-auto bg-white rounded-lg shadow-lg">
                                 
                                 {open === 1 && (
-                                    <B2b
+                                    <FinancialData
                                         setOpen={setOpen}
-                                        formData={getFormData("b2b")}
+                                        formData={getFormData("financialData")}
                                         updateFormState={updateFormState}
                                         period={selectedEntry || suggestedPeriod}
                                         viewMode={viewMode}
                                     />
                                 )}
                                 {open === 2 && (
-                                    <B2ba
+                                    <BalanceSheetData
                                         setOpen={setOpen}
-                                        formData={getFormData("b2ba")}
+                                        formData={getFormData("balanceSheetData")}
                                         updateFormState={updateFormState}
                                         period={selectedEntry || suggestedPeriod}
                                         viewMode={viewMode}
                                     />
                                 )}
                                 {open === 3 && (
-                                    <Cdn
+                                    <ProfitLossData
                                         setOpen={setOpen}
-                                        formData={getFormData("cdn")}
-                                        updateFormState={updateFormState}
-                                        period={selectedEntry || suggestedPeriod}
-                                        viewMode={viewMode}
-                                    />
-                                )}
-                                {open === 4 && (
-                                    <Isd
-                                        setOpen={setOpen}
-                                        formData={getFormData("isd")}
+                                        formData={getFormData("profitLossData")}
                                         updateFormState={updateFormState}
                                         period={selectedEntry || suggestedPeriod}
                                         viewMode={viewMode}
@@ -358,7 +329,7 @@ const Gstr2a = () => {
                                     className="px-4 py-2 ml-4 text-white bg-[#101C36] rounded-md hover:bg-[#0a1427]"
                                     onClick={handleSubmit}
                                 >
-                                    Submit GSTR2A
+                                    Submit AOC-4
                                 </button>
                             )}
                         </div>
@@ -369,4 +340,4 @@ const Gstr2a = () => {
     );
 };
 
-export default Gstr2a;
+export default FormAOC4;

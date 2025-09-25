@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import B2b from './B2b.tsx';
-import B2ba from './B2ba.tsx';
-import Cdn from './Cdn.tsx';
-import Isd from './Isd.tsx';
-import { getGSTR2AEntries, getSuggestedGSTR2APeriod, saveGSTR2AEntry } from '../../../../../store/slices/gstr2aSlice.ts';
+import ItcDetails from './ItcDetails.tsx';
+import { getGSTR2BEntries, getSuggestedGSTR2BPeriod, saveGSTR2BEntry } from '../../../../../store/slices/gstr2bSlice.ts';
 import { useAppDispatch, useAppSelector } from '../../../../../store/hooks.ts';
 import { getSingleRegistration } from '../../../../../store/slices/gstSlice.ts';
 
@@ -15,10 +12,10 @@ interface GSTPeriod {
     monthName: string;
 }
 
-const Gstr2a = () => {
+const Gstr2b = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const { entries, loading, error, suggestedPeriod } = useAppSelector((state: any) => state.gstr2a);
+    const { entries, loading, error, suggestedPeriod } = useAppSelector((state: any) => state.gstr2b);
 
     const [formStates, setFormStates] = useState<Record<string, any>>({});
     const [open, setOpen] = useState(0);
@@ -39,12 +36,12 @@ const Gstr2a = () => {
         const fetchData = async () => {
             try {
                 setIsLoading(true);
-                await dispatch(getGSTR2AEntries()).unwrap();
-                await dispatch(getSuggestedGSTR2APeriod()).unwrap();
+                await dispatch(getGSTR2BEntries()).unwrap();
+                await dispatch(getSuggestedGSTR2BPeriod()).unwrap();
                 setInitialLoadComplete(true);
             } catch (error) {
                 setIsLoading(false);
-                console.error("Failed to fetch GSTR2A data:", error);
+                console.error("Failed to fetch GSTR2B data:", error);
             } finally {
                 setIsLoading(false);
             }
@@ -95,10 +92,7 @@ const Gstr2a = () => {
     };
 
     const gstOptions = [
-        { name: "B2B Invoices", slug: "b2b" },
-        { name: "B2BA Invoices", slug: "b2ba" },
-        { name: "CDN Invoices", slug: "cdn" },
-        { name: "ISD Invoices", slug: "isd" },
+        { name: "ITC Details", slug: "itc" },
     ];
 
     const handleSubmit = async () => {
@@ -122,7 +116,7 @@ const Gstr2a = () => {
                 ...formStates
             };
 
-            const result = await dispatch(saveGSTR2AEntry(entryData)).unwrap();
+            const result = await dispatch(saveGSTR2BEntry(entryData)).unwrap();
 
             if (result) {
                 navigate("/practice/gst/dashboard", { state: { success: true } });
@@ -144,26 +138,26 @@ const Gstr2a = () => {
             <div className="flex items-center justify-center min-h-screen">
                 <div className="flex flex-col items-center">
                     <div className="w-16 h-16 border-t-4 border-blue-500 border-solid rounded-full animate-spin"></div>
-                    <p className="mt-4 text-lg font-medium text-gray-700">Loading GSTR2A data...</p>
+                    <p className="mt-4 text-lg font-medium text-gray-700">Loading GSTR2B data...</p>
                 </div>
             </div>
         );
     }
 
     if (error) {
-        return <div className="flex justify-center p-10 text-red-500">Error loading GSTR2A data: {error}</div>;
+        return <div className="flex justify-center p-10 text-red-500">Error loading GSTR2B data: {error}</div>;
     }
 
     return (
         <div className="flex flex-col items-center pt-5 pb-20">
             {!showNewFiling ? (
                 <div className="w-full max-w-5xl p-4 mx-auto mt-10">
-                    <h1 className="mb-8 text-2xl font-bold text-center text-gray-800">Your GSTR-2A Filings</h1>
+                    <h1 className="mb-8 text-2xl font-bold text-center text-gray-800">Your GSTR-2B Filings</h1>
 
                     <div className="p-6 bg-white border border-gray-200 shadow-md rounded-2xl">
                         {entries?.length === 0 ? (
                             <div className="py-12 text-center">
-                                <p className="text-lg text-gray-500">You have not filed any GSTR-2A entries yet.</p>
+                                <p className="text-lg text-gray-500">You have not filed any GSTR-2B entries yet.</p>
                             </div>
                         ) : (
                             <div className="overflow-x-auto">
@@ -238,8 +232,8 @@ const Gstr2a = () => {
                     <div className="w-full">
                         <div className="w-full py-10 hero">
                             <div className="text-center">
-                                <h1 className="text-4xl font-bold">GSTR2A</h1>
-                                <p className="mt-2 text-lg">Auto-drafted inward supplies</p>
+                                <h1 className="text-4xl font-bold">GSTR2B</h1>
+                                <p className="mt-2 text-lg">Auto-drafted ITC statement</p>
                                 {selectedEntry ? (
                                     <div className="p-4 mt-4 bg-blue-100 rounded-lg">
                                         <p className="font-semibold">
@@ -303,36 +297,9 @@ const Gstr2a = () => {
                             <div className="w-[60%] my-10 p-6 mx-auto bg-white rounded-lg shadow-lg">
                                 
                                 {open === 1 && (
-                                    <B2b
+                                    <ItcDetails
                                         setOpen={setOpen}
-                                        formData={getFormData("b2b")}
-                                        updateFormState={updateFormState}
-                                        period={selectedEntry || suggestedPeriod}
-                                        viewMode={viewMode}
-                                    />
-                                )}
-                                {open === 2 && (
-                                    <B2ba
-                                        setOpen={setOpen}
-                                        formData={getFormData("b2ba")}
-                                        updateFormState={updateFormState}
-                                        period={selectedEntry || suggestedPeriod}
-                                        viewMode={viewMode}
-                                    />
-                                )}
-                                {open === 3 && (
-                                    <Cdn
-                                        setOpen={setOpen}
-                                        formData={getFormData("cdn")}
-                                        updateFormState={updateFormState}
-                                        period={selectedEntry || suggestedPeriod}
-                                        viewMode={viewMode}
-                                    />
-                                )}
-                                {open === 4 && (
-                                    <Isd
-                                        setOpen={setOpen}
-                                        formData={getFormData("isd")}
+                                        formData={getFormData("itc")}
                                         updateFormState={updateFormState}
                                         period={selectedEntry || suggestedPeriod}
                                         viewMode={viewMode}
@@ -358,7 +325,7 @@ const Gstr2a = () => {
                                     className="px-4 py-2 ml-4 text-white bg-[#101C36] rounded-md hover:bg-[#0a1427]"
                                     onClick={handleSubmit}
                                 >
-                                    Submit GSTR2A
+                                    Submit GSTR2B
                                 </button>
                             )}
                         </div>
@@ -369,4 +336,4 @@ const Gstr2a = () => {
     );
 };
 
-export default Gstr2a;
+export default Gstr2b;
