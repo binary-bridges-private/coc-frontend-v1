@@ -74,6 +74,7 @@ export const loginUser = createAsyncThunk(
       const response = await api.post("/auth/login", credentials);
       toast.success("Login successful!");
       console.log("login successful :", response.data);
+      localStorage.setItem('accessToken', response.data?.data?.accessToken);
       return {
         userData: {
           email: response.data?.data?.user?.emailAddress,
@@ -176,6 +177,7 @@ const authSlice = createSlice({
       state.error = null;
       localStorage.removeItem("auth");
       localStorage.removeItem("gstAuth");
+      localStorage.removeItem("accessToken");
     },
     clearAuthError(state) {
       state.error = null;
@@ -235,6 +237,7 @@ const authSlice = createSlice({
         state.userData = null;
         localStorage.removeItem("auth");
         localStorage.removeItem("gstAuth");
+        localStorage.removeItem("accessToken");
       })
       .addCase(logoutUser.rejected, (state, action) => {
         state.status = "failed";
@@ -244,6 +247,7 @@ const authSlice = createSlice({
         state.userData = null;
         localStorage.removeItem("auth");
         localStorage.removeItem("gstAuth");
+        localStorage.removeItem("accessToken");
       })
 
       // Request Password Reset cases

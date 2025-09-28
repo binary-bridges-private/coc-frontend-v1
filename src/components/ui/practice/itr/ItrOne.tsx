@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+// Official ITR-1 (SAHAJ) Form Structure
 interface FormData {
+  // Part A - General Information
   pan: string;
   aadhar: string;
   firstName: string;
@@ -16,6 +18,9 @@ interface FormData {
   city: string;
   state: string;
   pincode: string;
+  
+  // Part B - Gross Total Income
+  // B1 - Salaries
   salarySection17_1: string;
   perquisitesSection17_2: string;
   profitSection17_3: string;
@@ -23,6 +28,8 @@ interface FormData {
   retirementBenefitNotified: string;
   otherCountry: string;
   retirementBenefitOther: string;
+  
+  // B2 - Income from House Property
   propertyType: string;
   grossRent: string;
   localTaxPaid: string;
@@ -31,8 +38,12 @@ interface FormData {
   interestBorrowedCapital: string;
   arrearsRent: string;
   totalHousePropertyIncome: string;
+  
+  // B3 - Income from Other Sources
   incomeOtherSources: string;
   agriculturalIncome: string;
+  
+  // Part C - Deductions
   section80C: string;
   section80D: string;
   section80G: string;
@@ -44,20 +55,30 @@ interface FormData {
   section80GGA: string;
   section80GGC: string;
   section80U: string;
+  
+  // Part D - Total Income
   totalIncome: string;
   totalDeductions: string;
   taxableIncome: string;
+  
+  // Part E - Tax Computation
   taxPayable: string;
   surcharge: string;
   healthAndEducationCess: string;
   totalTaxLiability: string;
+  
+  // Part F - Bank Details
   bankName: string;
   accountNumber: string;
   ifscCode: string;
   accountType: string;
+  
+  // Part G - Verification
   verificationMethod: string;
   verificationDate: string;
   placeOfFiling: string;
+  
+  // Additional fields for calculations
   allowanceType: string;
   allowanceExemptAmount: string;
   reliefUnder89A: string;
@@ -524,6 +545,32 @@ const initialErrors: FormErrors = {
   bankAccounts: "",
   advanceTaxPayments: "",
   tdsDetails: ""
+};
+
+// Official validation functions for ITR-1
+const validatePAN = (pan: string): boolean => {
+  const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+  return panRegex.test(pan);
+};
+
+const validateAadhar = (aadhar: string): boolean => {
+  const aadharRegex = /^[0-9]{12}$/;
+  return aadharRegex.test(aadhar);
+};
+
+const validateMobile = (mobile: string): boolean => {
+  const mobileRegex = /^[6-9]\d{9}$/;
+  return mobileRegex.test(mobile);
+};
+
+const validateEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+const validateIFSC = (ifsc: string): boolean => {
+  const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
+  return ifscRegex.test(ifsc);
 };
 
 const ItrOne = () => {

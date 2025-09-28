@@ -6,9 +6,72 @@ import ProfitLossData from './ProfitLossData.tsx';
 import { getAOC4Entries, getSuggestedAOC4Period, saveAOC4Entry } from '../../../../store/slices/aoc4Slice.ts';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks.ts';
 
+// Official AOC-4 Form Structure (Annual Return)
 interface ROCPeriod {
     financialYear: string;
 }
+
+interface AOC4FormData {
+    // Part I - Company Details
+    companyName: string;
+    cin: string;
+    financialYear: string;
+    reportingDate: string;
+    
+    // Part II - Financial Data
+    financialData: {
+        revenueFromOperations: string;
+        otherIncome: string;
+        totalRevenue: string;
+        costOfMaterialsConsumed: string;
+        purchasesOfStockInTrade: string;
+        changesInInventories: string;
+        employeeBenefitsExpense: string;
+        financeCosts: string;
+        depreciationAndAmortisationExpense: string;
+        otherExpenses: string;
+        totalExpenses: string;
+        profitBeforeTax: string;
+        taxExpense: string;
+        profitAfterTax: string;
+        otherComprehensiveIncome: string;
+        totalComprehensiveIncome: string;
+    };
+    
+    // Part III - Balance Sheet Data
+    balanceSheetData: {
+        shareCapital: string;
+        otherEquity: string;
+        totalEquity: string;
+        nonCurrentLiabilities: string;
+        currentLiabilities: string;
+        totalLiabilities: string;
+        nonCurrentAssets: string;
+        currentAssets: string;
+        totalAssets: string;
+    };
+    
+    // Part IV - Auditor Details
+    auditorDetails: {
+        auditorName: string;
+        auditorFirm: string;
+        auditorReportDate: string;
+        auditorReportType: string;
+    };
+    
+    // Part V - Additional Information
+    additionalInformation: {
+        notesToAccounts: string;
+        boardResolutionDate: string;
+        filingDate: string;
+    };
+}
+
+// Official validation functions
+const validateCIN = (cin: string): boolean => {
+    const cinRegex = /^[A-Z]{1}[0-9]{5}[A-Z]{2}[0-9]{4}[A-Z]{3}[0-9]{6}$/;
+    return cinRegex.test(cin);
+};
 
 const FormAOC4 = () => {
     const navigate = useNavigate();
@@ -85,9 +148,12 @@ const FormAOC4 = () => {
     };
 
     const rocOptions = [
-        { name: "Financial Data", slug: "financialData" },
-        { name: "Balance Sheet", slug: "balanceSheetData" },
-        { name: "Profit & Loss", slug: "profitLossData" },
+        { name: "Part I - Company Details", slug: "companyDetails" },
+        { name: "Part II - Financial Data", slug: "financialData" },
+        { name: "Part III - Balance Sheet", slug: "balanceSheetData" },
+        { name: "Part IV - Profit & Loss", slug: "profitLossData" },
+        { name: "Part V - Auditor Details", slug: "auditorDetails" },
+        { name: "Part VI - Additional Information", slug: "additionalInformation" },
     ];
 
     const handleSubmit = async () => {
@@ -218,8 +284,8 @@ const FormAOC4 = () => {
                     <div className="w-full">
                         <div className="w-full py-10 hero">
                             <div className="text-center">
-                                <h1 className="text-4xl font-bold">Form AOC-4</h1>
-                                <p className="mt-2 text-lg">Annual Return - Financial Statements</p>
+                                <h1 className="text-4xl font-bold">AOC-4 Annual Return</h1>
+                                <p className="mt-2 text-lg">Annual Return under Section 92 of the Companies Act, 2013</p>
                                 {selectedEntry ? (
                                     <div className="p-4 mt-4 bg-blue-100 rounded-lg">
                                         <p className="font-semibold">

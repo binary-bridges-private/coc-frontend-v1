@@ -105,19 +105,19 @@ const Gstr1 = () => {
     };
 
     const gstOptions = [
-        { name: "B2B, SEZ, DE Invoices", slug: "b2b" },
-        { name: "B2C (Large) Invoices", slug: "b2c" },
-        { name: "Exports Invoices", slug: "exports" },
-        { name: "B2C (Others)", slug: "b2cs" },
-        { name: "Nil Rated Supplies", slug: "nilRated" },
-        { name: "Credit/Debit Notes (Registered)", slug: "credit" },
-        { name: "Credit/Debit Notes (Unregistered)", slug: "creditUnregistered" },
-        { name: "Tax Liability (Advances)", slug: "taxLiability" },
-        { name: "Adjustment of Advances", slug: "adjustments" },
-        { name: "HSN Summary", slug: "hsn" },
-        { name: "Documents Issued", slug: "documents" },
-        { name: "ECO Supplies", slug: "suppliesThroughEco" },
-        { name: "Supplies U/s 9(5)", slug: "suppliesB2b" },
+        { name: "4A - B2B, SEZ, DE Invoices", slug: "b2b" },
+        { name: "5A - B2C (Large) Invoices", slug: "b2c" },
+        { name: "6A - Exports Invoices", slug: "exports" },
+        { name: "5B - B2C (Others)", slug: "b2cs" },
+        { name: "8A - Nil Rated Supplies", slug: "nilRated" },
+        { name: "9A - Credit/Debit Notes (Registered)", slug: "credit" },
+        { name: "9B - Credit/Debit Notes (Unregistered)", slug: "creditUnregistered" },
+        { name: "11A - Tax Liability (Advances)", slug: "taxLiability" },
+        { name: "11B - Adjustment of Advances", slug: "adjustments" },
+        { name: "12 - HSN Summary", slug: "hsn" },
+        { name: "13 - Documents Issued", slug: "documents" },
+        { name: "4B - ECO Supplies", slug: "suppliesThroughEco" },
+        { name: "4C - Supplies U/s 9(5)", slug: "suppliesB2b" },
     ];
 
     const handleSubmit = async () => {

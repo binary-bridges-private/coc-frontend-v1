@@ -29,7 +29,9 @@ import Banner from "./components/ui/Banner.tsx";
 import EWayBill from "./components/ui/practice/gst/eway-bill/index.tsx";
 import EInvoice from "./components/ui/practice/gst/e-invoice/index.tsx";
 import GSTR4Form from "./components/ui/practice/gst/gstr4/index.tsx";
-import GSTR10Form from "./components/ui/practice/gst/gtr10/index.tsx";
+import GSTR9Form from "./components/ui/practice/gst/gstr9/index.tsx";
+import GSTR9CForm from "./components/ui/practice/gst/gstr9c/index.tsx";
+import GSTR10Form from "./components/ui/practice/gst/gstr10/index.tsx";
 import VerifyForgetPassword from "./components/ui/auth/VerifyForgetPassword.tsx";
 import ItrLogin from "./components/ui/practice/ItrLogin.tsx";
 
@@ -51,6 +53,8 @@ import Form27Q from "./components/ui/practice/tds/Form27Q.tsx";
 import Form27EQ from "./components/ui/practice/tds/Form27EQ.tsx";
 import FormAOC4 from "./components/ui/practice/roc/FormAOC4.tsx";
 import FormMGT7 from "./components/ui/practice/roc/FormMGT7.tsx";
+import Incorporation from "./components/ui/practice/roc/Incorporation.tsx";
+import RocFilingForm from "./components/ui/practice/roc/RocFilingForm.tsx";
 import ItrThree from "./components/ui/practice/itr/itrThree.tsx";
 import ItrFive from "./components/ui/practice/itr/ItrFive.tsx";
 import ItrSeven from "./components/ui/practice/itr/ItrSeven.tsx";
@@ -87,15 +91,15 @@ function App() {
             <Route path="/practice/gst/registration" element={<ProtectedRoutes isFree={true} children={<Registration />} />} />
             <Route path="/practice/gst/dashboard" element={<GstProtectedRoutes children={<GstLogin />} />} />
             <Route path="/practice/gst/gstr-1" element={<GstProtectedRoutes children={< Gstr1 />} />} />
-            <Route path="/practice/gst/eway-bill" element={<GstProtectedRoutes children={<EWayBill />} />} />
-            <Route path="/practice/gst/e-invoice" element={<GstProtectedRoutes children={<ComingSoon />} />} />
             <Route path="/practice/gst/gstr-2a" element={<GstProtectedRoutes children={<Gstr2a />} />} />
             <Route path="/practice/gst/gstr-2b" element={<GstProtectedRoutes children={<Gstr2b />} />} />
             <Route path="/practice/gst/gstr-3b" element={<GstProtectedRoutes children={<Gstr3b />} />} />
-            <Route path="/practice/gst/gstr-4" element={<GstProtectedRoutes children={<ComingSoon />} />} />
-            <Route path="/practice/gst/gstr-9" element={<GstProtectedRoutes children={<ComingSoon />} />} />
-            <Route path="/practice/gst/gstr-9c" element={<GstProtectedRoutes children={<ComingSoon />} />} />
-            <Route path="/practice/gst/gstr-10" element={<GstProtectedRoutes children={<ComingSoon />} />} />
+            <Route path="/practice/gst/gstr-4" element={<GstProtectedRoutes children={<GSTR4Form />} />} />
+            <Route path="/practice/gst/gstr-9" element={<GstProtectedRoutes children={<GSTR9Form />} />} />
+            <Route path="/practice/gst/gstr-9c" element={<GstProtectedRoutes children={<GSTR9CForm />} />} />
+            <Route path="/practice/gst/gstr-10" element={<GstProtectedRoutes children={<GSTR10Form />} />} />
+            <Route path="/practice/gst/eway-bill" element={<GstProtectedRoutes children={<EWayBill />} />} />
+            <Route path="/practice/gst/e-invoice" element={<GstProtectedRoutes children={<ComingSoon />} />} />
 
             <Route path="/practice/itr" element={<ProtectedRoutes isFree={false} children={<Itr />} />} />
             {/* <Route path="/practice/itr/login" element={<ProtectedRoutes isFree={false} children={<LoginItr />} />} /> */}
@@ -123,8 +127,8 @@ function App() {
             <Route path="/practice/pf-esi/esi-return" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
             <Route path="/practice/pf-esi/registration" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
             <Route path="/practice/roc-filing" element={<ProtectedRoutes isFree={false} children={<RocFiling />} />} />
-            <Route path="/practice/roc-filing/incorporation" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
-            <Route path="/practice/roc-filing/roc-filing" element={<ProtectedRoutes isFree={false} children={<ComingSoon />} />} />
+            <Route path="/practice/roc-filing/incorporation" element={<ProtectedRoutes isFree={false} children={<Incorporation />} />} />
+            <Route path="/practice/roc-filing/roc-filing" element={<ProtectedRoutes isFree={false} children={<RocFilingForm />} />} />
             <Route path="/practice/roc-filing/aoc4" element={<ProtectedRoutes isFree={false} children={<FormAOC4 />} />} />
             <Route path="/practice/roc-filing/mgt7" element={<ProtectedRoutes isFree={false} children={<FormMGT7 />} />} />
 

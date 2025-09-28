@@ -15,6 +15,22 @@ interface Props {
     viewMode?: boolean;
 }
 
+// Official GST validation functions
+const validateGSTIN = (gstin: string): boolean => {
+    const gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+    return gstinRegex.test(gstin);
+};
+
+const validateUIN = (uin: string): boolean => {
+    const uinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+    return uinRegex.test(uin);
+};
+
+const validatePOS = (pos: string): boolean => {
+    const posRegex = /^[0-9]{2}$/;
+    return posRegex.test(pos);
+};
+
 const B2b: React.FC<Props> = ({ setOpen, formData, updateFormState, period, viewMode = false }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const dispatch = useAppDispatch()
@@ -22,25 +38,32 @@ const B2b: React.FC<Props> = ({ setOpen, formData, updateFormState, period, view
     console.log(formData);
 
     const [formState, setFormState] = useState({
+        // Official GSTR-1 B2B Fields
         deemedExports: false,
         sezWithPayment: false,
         sezWithoutPayment: false,
         reverseCharge: false,
         intraStateIGST: false,
         isDifferentialTax: false,
-        recipientGSTIN: '',
-        recipientName: '',
-        masterName: '',
-        invoiceNo: '',
-        invoiceDate: '',
-        totalValue: '',
-        pos: '',
-        supplyType: '',
-        source: '',
-        irn: '',
-        irnDate: '',
-        taxableValues: {},
-        cessValues: {},
+        recipientGSTIN: '', // 15-character GSTIN/UIN
+        recipientName: '', // Legal name of recipient
+        masterName: '', // Name as in master data
+        invoiceNo: '', // Invoice number (max 16 characters)
+        invoiceDate: '', // Invoice date
+        totalValue: '', // Total invoice value
+        pos: '', // Place of Supply (2-digit state code)
+        supplyType: '', // Type of supply
+        source: '', // Source of data
+        irn: '', // Invoice Registration Number
+        irnDate: '', // IRN date
+        // Tax details as per official format
+        taxableValues: {}, // Taxable value for each tax rate
+        cessValues: {}, // Cess amount for each tax rate
+        // Additional official fields
+        documentType: 'INV', // Document type (INV, CRN, DBN, etc.)
+        documentNo: '', // Document number
+        documentDate: '', // Document date
+        invoiceType: 'R', // Invoice type (R- Regular, SEZWP- SEZ with payment, SEZWOP- SEZ without payment, DE- Deemed Export)
         ...formData
     });
 
@@ -53,7 +76,49 @@ const B2b: React.FC<Props> = ({ setOpen, formData, updateFormState, period, view
         pos: ''
     });
 
+    // Official GST tax rates as per GSTR-1
     const taxRates = [0, 0.1, 0.25, 1, 1.5, 3, 5, 6, 7.5, 12, 18, 28];
+    
+    // Official state codes for POS validation
+    const stateCodes = [
+        { code: '01', name: 'Jammu and Kashmir' },
+        { code: '02', name: 'Himachal Pradesh' },
+        { code: '03', name: 'Punjab' },
+        { code: '04', name: 'Chandigarh' },
+        { code: '05', name: 'Uttarakhand' },
+        { code: '06', name: 'Haryana' },
+        { code: '07', name: 'Delhi' },
+        { code: '08', name: 'Rajasthan' },
+        { code: '09', name: 'Uttar Pradesh' },
+        { code: '10', name: 'Bihar' },
+        { code: '11', name: 'Sikkim' },
+        { code: '12', name: 'Arunachal Pradesh' },
+        { code: '13', name: 'Nagaland' },
+        { code: '14', name: 'Manipur' },
+        { code: '15', name: 'Mizoram' },
+        { code: '16', name: 'Tripura' },
+        { code: '17', name: 'Meghalaya' },
+        { code: '18', name: 'Assam' },
+        { code: '19', name: 'West Bengal' },
+        { code: '20', name: 'Jharkhand' },
+        { code: '21', name: 'Odisha' },
+        { code: '22', name: 'Chhattisgarh' },
+        { code: '23', name: 'Madhya Pradesh' },
+        { code: '24', name: 'Gujarat' },
+        { code: '25', name: 'Daman and Diu' },
+        { code: '26', name: 'Dadra and Nagar Haveli' },
+        { code: '27', name: 'Maharashtra' },
+        { code: '28', name: 'Andhra Pradesh' },
+        { code: '29', name: 'Karnataka' },
+        { code: '30', name: 'Goa' },
+        { code: '31', name: 'Lakshadweep' },
+        { code: '32', name: 'Kerala' },
+        { code: '33', name: 'Tamil Nadu' },
+        { code: '34', name: 'Puducherry' },
+        { code: '35', name: 'Andaman and Nicobar Islands' },
+        { code: '36', name: 'Telangana' },
+        { code: '37', name: 'Andhra Pradesh' }
+    ];
 
     const validateField = (name: string, value: string) => {
         if (viewMode) return ''; // Skip validation in view mode
@@ -61,17 +126,46 @@ const B2b: React.FC<Props> = ({ setOpen, formData, updateFormState, period, view
         let error = '';
         if (!value.trim()) {
             error = 'This field is required';
-        } else if (name === 'totalValue' && isNaN(Number(value))) {
-            error = 'Must be a valid number';
-        } else if (name === 'recipientGSTIN' && !/^[0-9A-Z]{15}$/.test(value)) {
-            error = 'Invalid GSTIN format';
-        } else if (name === 'invoiceNo' && value.length > 16) {
-            error = 'Max 16 characters allowed';
+        } else {
+            switch (name) {
+                case 'recipientGSTIN':
+                    if (!validateGSTIN(value) && !validateUIN(value)) {
+                        error = 'Invalid GSTIN/UIN format (15 characters: 2+5+4+1+1+1+1)';
+                    }
+                    break;
+                case 'pos':
+                    if (!validatePOS(value)) {
+                        error = 'Invalid POS code (2-digit state code required)';
+                    }
+                    break;
+                case 'invoiceNo':
+                    if (value.length > 16) {
+                        error = 'Invoice number cannot exceed 16 characters';
+                    }
+                    break;
+                case 'totalValue':
+                    if (isNaN(Number(value)) || Number(value) < 0) {
+                        error = 'Must be a valid positive number';
+                    }
+                    break;
+                case 'recipientName':
+                    if (value.trim().length < 2) {
+                        error = 'Recipient name must be at least 2 characters';
+                    }
+                    break;
+                case 'invoiceDate':
+                    const invoiceDate = new Date(value);
+                    const currentDate = new Date();
+                    if (invoiceDate > currentDate) {
+                        error = 'Invoice date cannot be in the future';
+                    }
+                    break;
+            }
         }
         return error;
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         if (viewMode) return; // Don't allow changes in view mode
 
         const { name, value, type, checked } = e.target;
@@ -117,6 +211,33 @@ const B2b: React.FC<Props> = ({ setOpen, formData, updateFormState, period, view
     const calculateTax = (rate: number, value: number) => {
         const applicableRate = formState.isDifferentialTax ? (rate * 65) / 100 : rate;
         return ((value * applicableRate) / 100).toFixed(2);
+    };
+
+    // Check if it's inter-state supply (IGST applicable)
+    const isInterStateSupply = () => {
+        // This should be determined based on supplier and recipient state codes
+        // For now, using a simple logic based on POS
+        return formState.pos && formState.pos !== '27'; // Assuming 27 is Maharashtra
+    };
+
+    const getTaxBreakdown = (rate: number, value: number) => {
+        const totalTax = calculateTax(rate, value);
+        if (isInterStateSupply()) {
+            // IGST applicable
+            return {
+                igst: totalTax,
+                cgst: '0.00',
+                sgst: '0.00'
+            };
+        } else {
+            // CGST + SGST applicable
+            const cgstSgst = (parseFloat(totalTax) / 2).toFixed(2);
+            return {
+                igst: '0.00',
+                cgst: cgstSgst,
+                sgst: cgstSgst
+            };
+        }
     };
 
     const validateForm = () => {
@@ -167,8 +288,11 @@ const B2b: React.FC<Props> = ({ setOpen, formData, updateFormState, period, view
         <>
             <div className="w-[100%] mx-auto p-6 bg-blue-500 shadow-lg rounded-lg">
                 <h2 className="text-xl font-extrabold text-white">
-                    B2B, SEZ, DE - {viewMode ? 'View' : 'Add'} Invoice
+                    GSTR-1 Table 4A: B2B, SEZ, DE - {viewMode ? 'View' : 'Add'} Invoice
                 </h2>
+                <p className="text-blue-100 mt-2">
+                    Details of outward supplies made to registered persons (including supplies made to SEZ unit/developer)
+                </p>
             </div>
             <div>
                 {/* Checkbox Grid - styled like Place component */}
@@ -359,18 +483,22 @@ const B2b: React.FC<Props> = ({ setOpen, formData, updateFormState, period, view
                 {/* Additional fields */}
                 <div className="grid grid-cols-1 gap-4 mt-4 md:grid-cols-3">
                     <div>
-                        <label className="block mb-2 text-sm font-medium text-gray-700">POS *</label>
-                        <input
-                            type="text"
+                        <label className="block mb-2 text-sm font-medium text-gray-700">Place of Supply (POS) *</label>
+                        <select
                             name="pos"
                             value={formState.pos}
                             onChange={handleChange}
-                            placeholder="POS"
                             className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.pos ? 'border-red-500' : 'border-gray-300'
                                 } ${viewMode ? 'bg-gray-100' : ''}`}
                             disabled={viewMode}
-                            readOnly={viewMode}
-                        />
+                        >
+                            <option value="">Select POS</option>
+                            {stateCodes.map(state => (
+                                <option key={state.code} value={state.code}>
+                                    {state.code} - {state.name}
+                                </option>
+                            ))}
+                        </select>
                         {errors.pos && <p className="mt-1 text-sm text-red-500">{errors.pos}</p>}
                     </div>
                     <div>
@@ -433,49 +561,85 @@ const B2b: React.FC<Props> = ({ setOpen, formData, updateFormState, period, view
                     </div>
                 </div>
 
-                {/* Item Details Table */}
-                <h2 className="pb-2 mt-10 text-lg font-semibold">Item Details</h2>
+                {/* Official GSTR-1 Tax Rate Wise Details Table */}
+                <h2 className="pb-2 mt-10 text-lg font-semibold">Tax Rate Wise Details</h2>
                 <div className="overflow-x-auto">
-                    <table className="w-full border-collapse">
+                    <table className="w-full border-collapse border border-gray-300">
                         <thead>
-                            <tr className="bg-gray-100">
+                            <tr className="bg-blue-50">
                                 <th className="p-3 font-medium text-center border border-gray-300">Rate (%)</th>
                                 <th className="p-3 font-medium text-center border border-gray-300">Taxable Value (₹)</th>
-                                <th className="p-3 font-medium text-center border border-gray-300">Amount of Tax (₹)</th>
+                                <th className="p-3 font-medium text-center border border-gray-300">Integrated Tax (₹)</th>
+                                <th className="p-3 font-medium text-center border border-gray-300">Central Tax (₹)</th>
+                                <th className="p-3 font-medium text-center border border-gray-300">State/UT Tax (₹)</th>
                                 <th className="p-3 font-medium text-center border border-gray-300">Cess (₹)</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {taxRates.map((rate, index) => (
-                                <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                                    <td className="p-3 text-center border border-gray-300">{rate}%</td>
-                                    <td className="p-3 text-center border border-gray-300">
-                                        <input
-                                            type="number"
-                                            value={formState.taxableValues[rate] || ''}
-                                            onChange={(e) => handleTaxableValueChange(rate, e.target.value)}
-                                            className="w-[70%] p-2 text-center border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                                            disabled={viewMode}
-                                            readOnly={viewMode}
-                                        />
-                                    </td>
-                                    <td className="p-3 text-center border border-gray-300">
-                                        {calculateTax(rate, Number(formState.taxableValues[rate]) || 0)}
-                                    </td>
-                                    <td className="p-3 text-center border border-gray-300">
-                                        <input
-                                            type="number"
-                                            value={formState.cessValues[rate] || ''}
-                                            onChange={(e) => handleCessValueChange(rate, e.target.value)}
-                                            className="w-[70%] p-2 text-center border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                                            disabled={viewMode}
-                                            readOnly={viewMode}
-                                        />
-                                    </td>
-                                </tr>
-                            ))}
+                            {taxRates.map((rate, index) => {
+                                const taxableValue = Number(formState.taxableValues[rate]) || 0;
+                                const taxBreakdown = getTaxBreakdown(rate, taxableValue);
+                                
+                                return (
+                                    <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                                        <td className="p-3 text-center border border-gray-300 font-medium">{rate}%</td>
+                                        <td className="p-3 text-center border border-gray-300">
+                                            <input
+                                                type="number"
+                                                step="0.01"
+                                                value={formState.taxableValues[rate] || ''}
+                                                onChange={(e) => handleTaxableValueChange(rate, e.target.value)}
+                                                className="w-[90%] p-2 text-center border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                                                disabled={viewMode}
+                                                readOnly={viewMode}
+                                                placeholder="0.00"
+                                            />
+                                        </td>
+                                        <td className="p-3 text-center border border-gray-300">
+                                            <span className={`font-medium ${taxBreakdown.igst !== '0.00' ? 'text-blue-600' : 'text-gray-400'}`}>
+                                                {taxBreakdown.igst}
+                                            </span>
+                                        </td>
+                                        <td className="p-3 text-center border border-gray-300">
+                                            <span className={`font-medium ${taxBreakdown.cgst !== '0.00' ? 'text-green-600' : 'text-gray-400'}`}>
+                                                {taxBreakdown.cgst}
+                                            </span>
+                                        </td>
+                                        <td className="p-3 text-center border border-gray-300">
+                                            <span className={`font-medium ${taxBreakdown.sgst !== '0.00' ? 'text-green-600' : 'text-gray-400'}`}>
+                                                {taxBreakdown.sgst}
+                                            </span>
+                                        </td>
+                                        <td className="p-3 text-center border border-gray-300">
+                                            <input
+                                                type="number"
+                                                step="0.01"
+                                                value={formState.cessValues[rate] || ''}
+                                                onChange={(e) => handleCessValueChange(rate, e.target.value)}
+                                                className="w-[90%] p-2 text-center border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                                                disabled={viewMode}
+                                                readOnly={viewMode}
+                                                placeholder="0.00"
+                                            />
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
+                </div>
+                
+                {/* Official Instructions */}
+                <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <h3 className="font-semibold text-yellow-800 mb-2">Instructions:</h3>
+                    <ul className="text-sm text-yellow-700 space-y-1">
+                        <li>• GSTIN should be 15 characters long</li>
+                        <li>• Invoice number cannot exceed 16 characters</li>
+                        <li>• Place of Supply should be selected from the dropdown</li>
+                        <li>• Tax amounts are calculated automatically based on taxable value and tax rate</li>
+                        <li>• For SEZ supplies, select appropriate checkbox</li>
+                        <li>• For reverse charge supplies, select the reverse charge checkbox</li>
+                    </ul>
                 </div>
 
                 {/* Action Buttons - matches Place component styling */}
