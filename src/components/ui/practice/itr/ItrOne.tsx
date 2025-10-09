@@ -1,577 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-// Official ITR-1 (SAHAJ) Form Structure
-interface FormData {
-  // Part A - General Information
-  pan: string;
-  aadhar: string;
-  firstName: string;
-  middleName: string;
-  lastName: string;
-  dateOfBirth: string;
-  gender: string;
-  residentialStatus: string;
-  email: string;
-  mobileNumber: string;
-  address: string;
-  city: string;
-  state: string;
-  pincode: string;
-  
-  // Part B - Gross Total Income
-  // B1 - Salaries
-  salarySection17_1: string;
-  perquisitesSection17_2: string;
-  profitSection17_3: string;
-  notifiedCountry: string;
-  retirementBenefitNotified: string;
-  otherCountry: string;
-  retirementBenefitOther: string;
-  
-  // B2 - Income from House Property
-  propertyType: string;
-  grossRent: string;
-  localTaxPaid: string;
-  annualValue: string;
-  standardDeduction: string;
-  interestBorrowedCapital: string;
-  arrearsRent: string;
-  totalHousePropertyIncome: string;
-  
-  // B3 - Income from Other Sources
-  incomeOtherSources: string;
-  agriculturalIncome: string;
-  
-  // Part C - Deductions
-  section80C: string;
-  section80D: string;
-  section80G: string;
-  section80TTA: string;
-  section80E: string;
-  section80EE: string;
-  section80EEA: string;
-  section80EEB: string;
-  section80GGA: string;
-  section80GGC: string;
-  section80U: string;
-  
-  // Part D - Total Income
-  totalIncome: string;
-  totalDeductions: string;
-  taxableIncome: string;
-  
-  // Part E - Tax Computation
-  taxPayable: string;
-  surcharge: string;
-  healthAndEducationCess: string;
-  totalTaxLiability: string;
-  
-  // Part F - Bank Details
-  bankName: string;
-  accountNumber: string;
-  ifscCode: string;
-  accountType: string;
-  
-  // Part G - Verification
-  verificationMethod: string;
-  verificationDate: string;
-  placeOfFiling: string;
-  
-  // Additional fields for calculations
-  allowanceType: string;
-  allowanceExemptAmount: string;
-  reliefUnder89A: string;
-  netSalary: string;
-  standardDeduction16: string;
-  entertainmentAllowance: string;
-  professionalTax: string;
-  totalSalaryIncome: string;
-  otherIncomeType: string;
-  otherIncomeAmount: string;
-  q1Amount: string;
-  q2Amount: string;
-  q3Amount: string;
-  q4Amount: string;
-  familyPensionDeduction: string;
-  otherIncomeRelief89A: string;
-  totalOtherIncome: string;
-  grossTotalSalary: string;
-  grossTotalProperty: string;
-  grossTotalOther: string;
-  grossTotalIncome: string;
-  lifeInsurancePremium: string;
-  elssInvestment: string;
-  ppfContribution: string;
-  nscInvestment: string;
-  sukanyaSamriddhi: string;
-  homeLoanPrincipal: string;
-  total80CDeduction: string;
-  healthInsurancePremium: string;
-  educationLoanInterest: string;
-  donations: string;
-  savingsInterest: string;
-  taxableTotalIncome: string;
-  section80CCD1: string;
-  section80CCD2: string;
-  section80CCH: string;
-  section80DD: string;
-  section80DDB: string;
-  section80GG: string;
-  section80TTB: string;
-  otherDeductionParticulars: string;
-  otherDeductionAmount: string;
-  exemptIncomeType: string;
-  exemptIncomeSection: string;
-  exemptIncomeAmount: string;
-  ltcgSaleConsideration: string;
-  ltcgCostOfAcquisition: string;
-  ltcgAmount: string;
-  rebate87A: string;
-  taxAfterRebate: string;
-  totalTaxAndCess: string;
-  relief89: string;
-  interest234A: string;
-  interest234B: string;
-  interest234C: string;
-  lateFilingFee234F: string;
-  totalTaxFeeAndInterest: string;
-  totalTaxesPaid: string;
-  amountPayable: string;
-  refund: string;
-  bankAccounts: BankAccount[];
-  advanceTaxPayments: AdvanceTaxPayment[];
-  tdsDetails: TDSDetail[];
-}
-
-interface FormErrors {
-  pan: string;
-  aadhar: string;
-  firstName: string;
-  middleName: string;
-  lastName: string;
-  dateOfBirth: string;
-  gender: string;
-  residentialStatus: string;
-  email: string;
-  mobileNumber: string;
-  address: string;
-  city: string;
-  state: string;
-  pincode: string;
-  salarySection17_1: string;
-  perquisitesSection17_2: string;
-  profitSection17_3: string;
-  notifiedCountry: string;
-  retirementBenefitNotified: string;
-  otherCountry: string;
-  retirementBenefitOther: string;
-  propertyType: string;
-  grossRent: string;
-  localTaxPaid: string;
-  annualValue: string;
-  standardDeduction: string;
-  interestBorrowedCapital: string;
-  arrearsRent: string;
-  totalHousePropertyIncome: string;
-  incomeOtherSources: string;
-  agriculturalIncome: string;
-  section80C: string;
-  section80D: string;
-  section80G: string;
-  section80TTA: string;
-  section80E: string;
-  section80EE: string;
-  section80EEA: string;
-  section80EEB: string;
-  section80GGA: string;
-  section80GGC: string;
-  section80U: string;
-  totalIncome: string;
-  totalDeductions: string;
-  taxableIncome: string;
-  taxPayable: string;
-  surcharge: string;
-  healthAndEducationCess: string;
-  totalTaxLiability: string;
-  bankName: string;
-  accountNumber: string;
-  ifscCode: string;
-  accountType: string;
-  verificationMethod: string;
-  verificationDate: string;
-  placeOfFiling: string;
-  allowanceType: string;
-  allowanceExemptAmount: string;
-  reliefUnder89A: string;
-  netSalary: string;
-  standardDeduction16: string;
-  entertainmentAllowance: string;
-  professionalTax: string;
-  totalSalaryIncome: string;
-  otherIncomeType: string;
-  otherIncomeAmount: string;
-  q1Amount: string;
-  q2Amount: string;
-  q3Amount: string;
-  q4Amount: string;
-  familyPensionDeduction: string;
-  otherIncomeRelief89A: string;
-  totalOtherIncome: string;
-  grossTotalSalary: string;
-  grossTotalProperty: string;
-  grossTotalOther: string;
-  grossTotalIncome: string;
-  lifeInsurancePremium: string;
-  elssInvestment: string;
-  ppfContribution: string;
-  nscInvestment: string;
-  sukanyaSamriddhi: string;
-  homeLoanPrincipal: string;
-  total80CDeduction: string;
-  healthInsurancePremium: string;
-  educationLoanInterest: string;
-  donations: string;
-  savingsInterest: string;
-  taxableTotalIncome: string;
-  section80CCD1: string;
-  section80CCD2: string;
-  section80CCH: string;
-  section80DD: string;
-  section80DDB: string;
-  section80GG: string;
-  section80TTB: string;
-  otherDeductionParticulars: string;
-  otherDeductionAmount: string;
-  exemptIncomeType: string;
-  exemptIncomeSection: string;
-  exemptIncomeAmount: string;
-  ltcgSaleConsideration: string;
-  ltcgCostOfAcquisition: string;
-  ltcgAmount: string;
-  rebate87A: string;
-  taxAfterRebate: string;
-  totalTaxAndCess: string;
-  relief89: string;
-  interest234A: string;
-  interest234B: string;
-  interest234C: string;
-  lateFilingFee234F: string;
-  totalTaxFeeAndInterest: string;
-  totalTaxesPaid: string;
-  amountPayable: string;
-  refund: string;
-  bankAccounts: string;
-  advanceTaxPayments: string;
-  tdsDetails: string;
-}
-
-interface BankAccount {
-  ifscCode: string;
-  bankName: string;
-  accountNumber: string;
-  accountType: string;
-  selectForRefund: boolean;
-}
-
-interface AdvanceTaxPayment {
-  bsrCode: string;
-  dateOfDeposit: string;
-  challanSerialNumber: string;
-  amountPaid: string;
-}
-
-interface TDSDetail {
-  tanPanAadhar: string;
-  deductorName: string;
-  section: string;
-  grossAmount: string;
-  yearOfDeduction: string;
-  taxDeducted: string;
-  taxCreditClaimed: string;
-}
-
-const initialFormData: FormData = {
-  pan: "",
-  aadhar: "",
-  firstName: "",
-  middleName: "",
-  lastName: "",
-  dateOfBirth: "",
-  gender: "",
-  residentialStatus: "",
-  email: "",
-  mobileNumber: "",
-  address: "",
-  city: "",
-  state: "",
-  pincode: "",
-  salarySection17_1: "",
-  perquisitesSection17_2: "",
-  profitSection17_3: "",
-  notifiedCountry: "",
-  retirementBenefitNotified: "",
-  otherCountry: "",
-  retirementBenefitOther: "",
-  propertyType: "",
-  grossRent: "",
-  localTaxPaid: "",
-  annualValue: "",
-  standardDeduction: "",
-  interestBorrowedCapital: "",
-  arrearsRent: "",
-  totalHousePropertyIncome: "",
-  incomeOtherSources: "",
-  agriculturalIncome: "",
-  section80C: "",
-  section80D: "",
-  section80G: "",
-  section80TTA: "",
-  section80E: "",
-  section80EE: "",
-  section80EEA: "",
-  section80EEB: "",
-  section80GGA: "",
-  section80GGC: "",
-  section80U: "",
-  totalIncome: "",
-  totalDeductions: "",
-  taxableIncome: "",
-  taxPayable: "",
-  surcharge: "",
-  healthAndEducationCess: "",
-  totalTaxLiability: "",
-  bankName: "",
-  accountNumber: "",
-  ifscCode: "",
-  accountType: "",
-  verificationMethod: "",
-  verificationDate: "",
-  placeOfFiling: "",
-  allowanceType: "",
-  allowanceExemptAmount: "",
-  reliefUnder89A: "",
-  netSalary: "",
-  standardDeduction16: "",
-  entertainmentAllowance: "",
-  professionalTax: "",
-  totalSalaryIncome: "",
-  otherIncomeType: "",
-  otherIncomeAmount: "",
-  q1Amount: "",
-  q2Amount: "",
-  q3Amount: "",
-  q4Amount: "",
-  familyPensionDeduction: "",
-  otherIncomeRelief89A: "",
-  totalOtherIncome: "",
-  grossTotalSalary: "",
-  grossTotalProperty: "",
-  grossTotalOther: "",
-  grossTotalIncome: "",
-  lifeInsurancePremium: "",
-  elssInvestment: "",
-  ppfContribution: "",
-  nscInvestment: "",
-  sukanyaSamriddhi: "",
-  homeLoanPrincipal: "",
-  total80CDeduction: "",
-  healthInsurancePremium: "",
-  educationLoanInterest: "",
-  donations: "",
-  savingsInterest: "",
-  taxableTotalIncome: "",
-  section80CCD1: "",
-  section80CCD2: "",
-  section80CCH: "",
-  section80DD: "",
-  section80DDB: "",
-  section80GG: "",
-  section80TTB: "",
-  otherDeductionParticulars: "",
-  otherDeductionAmount: "",
-  exemptIncomeType: "",
-  exemptIncomeSection: "",
-  exemptIncomeAmount: "",
-  ltcgSaleConsideration: "",
-  ltcgCostOfAcquisition: "",
-  ltcgAmount: "",
-  rebate87A: "",
-  taxAfterRebate: "",
-  totalTaxAndCess: "",
-  relief89: "",
-  interest234A: "",
-  interest234B: "",
-  interest234C: "",
-  lateFilingFee234F: "",
-  totalTaxFeeAndInterest: "",
-  totalTaxesPaid: "",
-  amountPayable: "",
-  refund: "",
-  bankAccounts: [
-    { ifscCode: '', bankName: '', accountNumber: '', accountType: '', selectForRefund: false },
-    { ifscCode: '', bankName: '', accountNumber: '', accountType: '', selectForRefund: false },
-    { ifscCode: '', bankName: '', accountNumber: '', accountType: '', selectForRefund: false }
-  ],
-  advanceTaxPayments: [
-    { bsrCode: '', dateOfDeposit: '', challanSerialNumber: '', amountPaid: '' },
-    { bsrCode: '', dateOfDeposit: '', challanSerialNumber: '', amountPaid: '' },
-    { bsrCode: '', dateOfDeposit: '', challanSerialNumber: '', amountPaid: '' }
-  ],
-  tdsDetails: [
-    { tanPanAadhar: '', deductorName: '', section: '', grossAmount: '', yearOfDeduction: '', taxDeducted: '', taxCreditClaimed: '' },
-    { tanPanAadhar: '', deductorName: '', section: '', grossAmount: '', yearOfDeduction: '', taxDeducted: '', taxCreditClaimed: '' },
-    { tanPanAadhar: '', deductorName: '', section: '', grossAmount: '', yearOfDeduction: '', taxDeducted: '', taxCreditClaimed: '' }
-  ]
-};
-
-const initialErrors: FormErrors = {
-  pan: "",
-  aadhar: "",
-  firstName: "",
-  middleName: "",
-  lastName: "",
-  dateOfBirth: "",
-  gender: "",
-  residentialStatus: "",
-  email: "",
-  mobileNumber: "",
-  address: "",
-  city: "",
-  state: "",
-  pincode: "",
-  salarySection17_1: "",
-  perquisitesSection17_2: "",
-  profitSection17_3: "",
-  notifiedCountry: "",
-  retirementBenefitNotified: "",
-  otherCountry: "",
-  retirementBenefitOther: "",
-  propertyType: "",
-  grossRent: "",
-  localTaxPaid: "",
-  annualValue: "",
-  standardDeduction: "",
-  interestBorrowedCapital: "",
-  arrearsRent: "",
-  totalHousePropertyIncome: "",
-  incomeOtherSources: "",
-  agriculturalIncome: "",
-  section80C: "",
-  section80D: "",
-  section80G: "",
-  section80TTA: "",
-  section80E: "",
-  section80EE: "",
-  section80EEA: "",
-  section80EEB: "",
-  section80GGA: "",
-  section80GGC: "",
-  section80U: "",
-  totalIncome: "",
-  totalDeductions: "",
-  taxableIncome: "",
-  taxPayable: "",
-  surcharge: "",
-  healthAndEducationCess: "",
-  totalTaxLiability: "",
-  bankName: "",
-  accountNumber: "",
-  ifscCode: "",
-  accountType: "",
-  verificationMethod: "",
-  verificationDate: "",
-  placeOfFiling: "",
-  allowanceType: "",
-  allowanceExemptAmount: "",
-  reliefUnder89A: "",
-  netSalary: "",
-  standardDeduction16: "",
-  entertainmentAllowance: "",
-  professionalTax: "",
-  totalSalaryIncome: "",
-  otherIncomeType: "",
-  otherIncomeAmount: "",
-  q1Amount: "",
-  q2Amount: "",
-  q3Amount: "",
-  q4Amount: "",
-  familyPensionDeduction: "",
-  otherIncomeRelief89A: "",
-  totalOtherIncome: "",
-  grossTotalSalary: "",
-  grossTotalProperty: "",
-  grossTotalOther: "",
-  grossTotalIncome: "",
-  lifeInsurancePremium: "",
-  elssInvestment: "",
-  ppfContribution: "",
-  nscInvestment: "",
-  sukanyaSamriddhi: "",
-  homeLoanPrincipal: "",
-  total80CDeduction: "",
-  healthInsurancePremium: "",
-  educationLoanInterest: "",
-  donations: "",
-  savingsInterest: "",
-  taxableTotalIncome: "",
-  section80CCD1: "",
-  section80CCD2: "",
-  section80CCH: "",
-  section80DD: "",
-  section80DDB: "",
-  section80GG: "",
-  section80TTB: "",
-  otherDeductionParticulars: "",
-  otherDeductionAmount: "",
-  exemptIncomeType: "",
-  exemptIncomeSection: "",
-  exemptIncomeAmount: "",
-  ltcgSaleConsideration: "",
-  ltcgCostOfAcquisition: "",
-  ltcgAmount: "",
-  rebate87A: "",
-  taxAfterRebate: "",
-  totalTaxAndCess: "",
-  relief89: "",
-  interest234A: "",
-  interest234B: "",
-  interest234C: "",
-  lateFilingFee234F: "",
-  totalTaxFeeAndInterest: "",
-  totalTaxesPaid: "",
-  amountPayable: "",
-  refund: "",
-  bankAccounts: "",
-  advanceTaxPayments: "",
-  tdsDetails: ""
-};
-
-// Official validation functions for ITR-1
-const validatePAN = (pan: string): boolean => {
-  const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
-  return panRegex.test(pan);
-};
-
-const validateAadhar = (aadhar: string): boolean => {
-  const aadharRegex = /^[0-9]{12}$/;
-  return aadharRegex.test(aadhar);
-};
-
-const validateMobile = (mobile: string): boolean => {
-  const mobileRegex = /^[6-9]\d{9}$/;
-  return mobileRegex.test(mobile);
-};
-
-const validateEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-};
-
-const validateIFSC = (ifsc: string): boolean => {
-  const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
-  return ifscRegex.test(ifsc);
-};
+import { ItrOneFormData, ItrOneFormErrors } from './types/ItrOneTypes';
+import { initialItrOneFormData, initialItrOneFormErrors, ITR_ONE_OPTIONS, ITR_ONE_STEPS } from './constants/ItrOneConstants.ts';
+import { validateItrOneForm, calculateTotalIncome, calculateTotalDeductions, calculateTaxPayable } from './ItrOneValidation.ts';
 
 const ItrOne = () => {
   const navigate = useNavigate();
@@ -580,2727 +11,2530 @@ const ItrOne = () => {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [showOtpVerification, setShowOtpVerification] = useState(false);
 
-  const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [formData, setFormData] = useState<ItrOneFormData>(initialItrOneFormData);
+  const [errors, setErrors] = useState<ItrOneFormErrors>(initialItrOneFormErrors);
 
-  const [errors, setErrors] = useState<FormErrors>({
-    // PART A: General Information
-    pan: "",
-    aadhar: "",
-    firstName: "",
-    middleName: "",
-    lastName: "",
-    dateOfBirth: "",
-    gender: "",
-    residentialStatus: "",
-    email: "",
-    mobileNumber: "",
-    address: "",
-    city: "",
-    state: "",
-    pincode: "",
+  // Handle form field changes
+  const handleInputChange = (field: keyof ItrOneFormData, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
     
-    // PART B: Gross Total Income
-    salarySection17_1: "",
-    perquisitesSection17_2: "",
-    profitSection17_3: "",
-    notifiedCountry: "",
-    retirementBenefitNotified: "",
-    otherCountry: "",
-    retirementBenefitOther: "",
-    propertyType: "",
-    grossRent: "",
-    localTaxPaid: "",
-    annualValue: "",
-    standardDeduction: "",
-    interestBorrowedCapital: "",
-    arrearsRent: "",
-    totalHousePropertyIncome: "",
-    incomeOtherSources: "",
-    agriculturalIncome: "",
-    
-    // PART C: Deductions
-    section80C: "",
-    section80D: "",
-    section80G: "",
-    section80TTA: "",
-    section80E: "",
-    section80EE: "",
-    section80EEA: "",
-    section80EEB: "",
-    section80GGA: "",
-    section80GGC: "",
-    section80U: "",
-    
-    // PART D: Tax Computation
-    totalIncome: "",
-    totalDeductions: "",
-    taxableIncome: "",
-    taxPayable: "",
-    surcharge: "",
-    healthAndEducationCess: "",
-    totalTaxLiability: "",
-    
-    // PART E: Other Information
-    bankName: "",
-    accountNumber: "",
-    ifscCode: "",
-    accountType: "",
-    verificationMethod: "",
-    verificationDate: "",
-    placeOfFiling: "",
-    
-    // B1: Income from Salary
-    allowanceType: "",
-    allowanceExemptAmount: "",
-    reliefUnder89A: "",
-    netSalary: "",
-    standardDeduction16: "",
-    entertainmentAllowance: "",
-    professionalTax: "",
-    totalSalaryIncome: "",
-    
-    // Part B3: Income from Other Sources
-    otherIncomeType: "",
-    otherIncomeAmount: "",
-    q1Amount: "",
-    q2Amount: "",
-    q3Amount: "",
-    q4Amount: "",
-    familyPensionDeduction: "",
-    otherIncomeRelief89A: "",
-    totalOtherIncome: "",
-    // B4: Gross Total Income
-    grossTotalSalary: "",
-    grossTotalProperty: "",
-    grossTotalOther: "",
-    grossTotalIncome: "",
-    lifeInsurancePremium: "",
-    elssInvestment: "",
-    ppfContribution: "",
-    nscInvestment: "",
-    sukanyaSamriddhi: "",
-    homeLoanPrincipal: "",
-    total80CDeduction: "",
-    healthInsurancePremium: "",
-    educationLoanInterest: "",
-    donations: "",
-    savingsInterest: "",
-    taxableTotalIncome: "",
-    section80CCD1: "",
-    section80CCD2: "",
-    section80CCH: "",
-    section80DD: "",
-    section80DDB: "",
-    section80GG: "",
-    // section80GGA: "",
-    // section80GGC: "",
-    // section80TTA: "",
-    section80TTB: "",
-    otherDeductionParticulars: "",
-    otherDeductionAmount: "",
-    exemptIncomeType: "",
-    exemptIncomeSection: "",
-    exemptIncomeAmount: "",
-    ltcgSaleConsideration: "",
-    ltcgCostOfAcquisition: "",
-    ltcgAmount: "",
-    rebate87A: "",
-    taxAfterRebate: "",
-    totalTaxAndCess: "",
-    relief89: "",
-    interest234A: "",
-    interest234B: "",
-    interest234C: "",
-    lateFilingFee234F: "",
-    totalTaxFeeAndInterest: "",
-    totalTaxesPaid: "",
-    amountPayable: "",
-    refund: "",
-    bankAccounts: "",
-    advanceTaxPayments: "",
-    tdsDetails: ""
-  });
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({
+        ...prev,
+        [field]: ""
+      }));
+    }
+  };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
+  // Handle array field changes (for exempt allowances, other sources, etc.)
+  const handleArrayFieldChange = (field: keyof ItrOneFormData, index: number, subField: string, value: string) => {
     setFormData(prev => {
-      const newData = { ...prev, [name]: value };
-      
-      // Calculate totals when relevant fields change
-      if (name === 'totalSalaryIncome') {
-        newData.grossTotalSalary = value;
-      }
-      
-      if (name === 'totalHousePropertyIncome') {
-        newData.grossTotalProperty = value;
-      }
-      
-      if (name === 'totalOtherIncome') {
-        newData.grossTotalOther = value;
-      }
-      
-      // Calculate gross total income whenever any of the components change
-      if (['totalSalaryIncome', 'totalHousePropertyIncome', 'totalOtherIncome'].includes(name)) {
-        const salaryTotal = Number(newData.totalSalaryIncome) || 0;
-        const propertyTotal = Number(newData.totalHousePropertyIncome) || 0;
-        const otherTotal = Number(newData.totalOtherIncome) || 0;
-        newData.grossTotalIncome = (salaryTotal + propertyTotal + otherTotal).toString();
-      }
-      
-      return newData;
+      const arrayField = prev[field] as any[];
+      const updatedArray = [...arrayField];
+      updatedArray[index] = {
+        ...updatedArray[index],
+        [subField]: value
+      };
+      return {
+        ...prev,
+        [field]: updatedArray
+      };
     });
   };
 
-  const validatePan = (pan: string) => {
-    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
-    return panRegex.test(pan.toUpperCase());
+  // Add new item to array field
+  const addArrayItem = (field: keyof ItrOneFormData, newItem: any) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: [...(prev[field] as any[]), newItem]
+    }));
   };
 
-  const validateAadhar = (aadhar: string) => {
-    const aadharRegex = /^[0-9]{12}$/;
-    return aadharRegex.test(aadhar);
+  // Remove item from array field
+  const removeArrayItem = (field: keyof ItrOneFormData, index: number) => {
+    setFormData(prev => {
+      const arrayField = prev[field] as any[];
+      const updatedArray = arrayField.filter((_, i) => i !== index);
+      return {
+        ...prev,
+        [field]: updatedArray
+      };
+    });
   };
 
-  const validateStep = (stepNumber: number) => {
-    console.log('Validating step:', stepNumber);
-    const newErrors = { ...errors };
+  // Validate current step
+  const validateStep = (stepNumber: number): boolean => {
+    const errors: any = {};
     let isValid = true;
 
     switch (stepNumber) {
-      case 1:
+      case 1: // General Information
         if (!formData.pan) {
-          newErrors.pan = "PAN is required";
-          isValid = false;
-        } else if (!validatePan(formData.pan)) {
-          newErrors.pan = "Invalid PAN format";
+          errors.pan = 'PAN is required';
           isValid = false;
         }
-
-        if (!formData.aadhar) {
-          newErrors.aadhar = "Aadhar is required";
-          isValid = false;
-        } else if (!validateAadhar(formData.aadhar)) {
-          newErrors.aadhar = "Invalid Aadhar format";
+        if (!formData.firstName) {
+          errors.firstName = 'First name is required';
           isValid = false;
         }
-
-        if (!formData.firstName.trim()) {
-          newErrors.firstName = "First name is required";
+        if (!formData.lastName) {
+          errors.lastName = 'Last name is required';
           isValid = false;
         }
-
-        if (!formData.lastName.trim()) {
-          newErrors.lastName = "Last name is required";
-          isValid = false;
-        }
-
         if (!formData.dateOfBirth) {
-          newErrors.dateOfBirth = "Date of birth is required";
+          errors.dateOfBirth = 'Date of birth is required';
           isValid = false;
         }
-
         if (!formData.gender) {
-          newErrors.gender = "Gender is required";
+          errors.gender = 'Gender is required';
           isValid = false;
         }
-
         if (!formData.residentialStatus) {
-          newErrors.residentialStatus = "Residential status is required";
+          errors.residentialStatus = 'Residential status is required';
+          isValid = false;
+        }
+        if (!formData.email) {
+          errors.email = 'Email is required';
+          isValid = false;
+        }
+        if (!formData.mobileNumber) {
+          errors.mobileNumber = 'Mobile number is required';
+          isValid = false;
+        }
+        if (!formData.address) {
+          errors.address = 'Address is required';
+          isValid = false;
+        }
+        if (!formData.city) {
+          errors.city = 'City is required';
+          isValid = false;
+        }
+        if (!formData.state) {
+          errors.state = 'State is required';
+          isValid = false;
+        }
+        if (!formData.pincode) {
+          errors.pincode = 'Pincode is required';
           isValid = false;
         }
         break;
-
-      case 2:
-        // B1: Income from Salary
-        if (!formData.salarySection17_1) {
-          console.log('Missing salarySection17_1');
-          newErrors.salarySection17_1 = "Salary as per section 17(1) is required";
+      
+      case 8: // Bank Details & Verification
+        if (!formData.verificationMethod) {
+          errors.verificationMethod = 'Verification method is required';
           isValid = false;
         }
-        if (!formData.perquisitesSection17_2) {
-          console.log('Missing perquisitesSection17_2');
-          newErrors.perquisitesSection17_2 = "Value of perquisites as per section 17(2) is required";
-          isValid = false;
-        }
-        if (!formData.profitSection17_3) {
-          console.log('Missing profitSection17_3');
-          newErrors.profitSection17_3 = "Profit in lieu of salary as per section 17(3) is required";
-          isValid = false;
-        }
-        if (!formData.totalSalaryIncome) {
-          console.log('Missing totalSalaryIncome');
-          newErrors.totalSalaryIncome = "Total salary income is required";
-          isValid = false;
-        }
-
-        // B2: Income from House Property
-        if (!formData.propertyType) {
-          console.log('Missing propertyType');
-          newErrors.propertyType = "Property type is required";
-          isValid = false;
-        }
-        if (!formData.grossRent) {
-          console.log('Missing grossRent');
-          newErrors.grossRent = "Gross rent is required";
-          isValid = false;
-        }
-        if (!formData.localTaxPaid) {
-          console.log('Missing localTaxPaid');
-          newErrors.localTaxPaid = "Local tax paid is required";
-          isValid = false;
-        }
-        if (!formData.annualValue) {
-          console.log('Missing annualValue');
-          newErrors.annualValue = "Annual value is required";
-          isValid = false;
-        }
-        if (!formData.standardDeduction) {
-          console.log('Missing standardDeduction');
-          newErrors.standardDeduction = "Standard deduction is required";
-          isValid = false;
-        }
-        if (!formData.interestBorrowedCapital) {
-          console.log('Missing interestBorrowedCapital');
-          newErrors.interestBorrowedCapital = "Interest on borrowed capital is required";
-          isValid = false;
-        }
-        if (!formData.totalHousePropertyIncome) {
-          console.log('Missing totalHousePropertyIncome');
-          newErrors.totalHousePropertyIncome = "Total house property income is required";
-          isValid = false;
-        }
-
-        // B3: Income from Other Sources
-        if (!formData.otherIncomeType) {
-          console.log('Missing otherIncomeType');
-          newErrors.otherIncomeType = "Income type is required";
-          isValid = false;
-        }
-        if (!formData.otherIncomeAmount) {
-          console.log('Missing otherIncomeAmount');
-          newErrors.otherIncomeAmount = "Income amount is required";
-          isValid = false;
-        }
-        if (!formData.totalOtherIncome) {
-          console.log('Missing totalOtherIncome');
-          newErrors.totalOtherIncome = "Total other income is required";
-          isValid = false;
-        }
-
-        // B4: Gross Total Income
-        if (!formData.grossTotalSalary) {
-          console.log('Missing grossTotalSalary');
-          newErrors.grossTotalSalary = "Gross total salary is required";
-          isValid = false;
-        }
-        if (!formData.grossTotalProperty) {
-          console.log('Missing grossTotalProperty');
-          newErrors.grossTotalProperty = "Gross total property income is required";
-          isValid = false;
-        }
-        if (!formData.grossTotalOther) {
-          console.log('Missing grossTotalOther');
-          newErrors.grossTotalOther = "Gross total other income is required";
-          isValid = false;
-        }
-        if (!formData.grossTotalIncome) {
-          console.log('Missing grossTotalIncome');
-          newErrors.grossTotalIncome = "Gross total income is required";
+        if (!formData.placeOfFiling) {
+          errors.placeOfFiling = 'Place of filing is required';
           isValid = false;
         }
         break;
-
-      case 3:
-        // Only validate the total fields
-        if (!formData.totalDeductions) {
-          newErrors.totalDeductions = "Total deductions is required";
-          isValid = false;
-        }
-        if (!formData.taxableTotalIncome) {
-          newErrors.taxableTotalIncome = "Taxable total income is required";
-          isValid = false;
-        }
-        break;
-
-      case 4:
-        if (!formData.bankName) {
-          newErrors.bankName = "Bank name is required";
-          isValid = false;
-        }
-
-        if (!formData.accountNumber) {
-          newErrors.accountNumber = "Account number is required";
-          isValid = false;
-        }
-
-        if (!formData.ifscCode) {
-          newErrors.ifscCode = "IFSC code is required";
-          isValid = false;
-        }
-
-        if (!formData.accountType) {
-          newErrors.accountType = "Account type is required";
-          isValid = false;
-        }
+      
+      default:
+        // For other steps, no validation required
         break;
     }
 
-    console.log('Validation result:', { isValid, newErrors });
-    setErrors(newErrors);
+    setErrors(errors);
     return isValid;
   };
 
-  const handleNextStep = async () => {
-    console.log('Current step:', step);
-    console.log('Form data:', formData);
-    console.log('Errors:', errors);
-    
+  // Navigate to next step
+  const nextStep = () => {
+    console.log('Next button clicked, current step:', step);
     const isValid = validateStep(step);
-    console.log('Is step valid:', isValid);
+    console.log('Step validation result:', isValid);
+    console.log('Current errors:', errors);
     
     if (isValid) {
-      console.log('Moving to next step...');
-      if (step === 5) {
-        // Final step - submit the form
-        console.log('Submitting form data:', formData);
-        try {
-          // Here you would typically make an API call to submit the form
-          // For now, we'll just log the data and show a success message
-          console.log('Form submitted successfully!');
-          alert('Form submitted successfully!');
-        //   navigate('/practice/itr/success');
-        } catch (error) {
-          console.error('Error submitting form:', error);
-          alert('Error submitting form. Please try again.');
-        }
-      } else if (step === 4) {
-        setShowOtpVerification(true);
-      } else {
-        setStep(step + 1);
-      }
+      setStep(prev => Math.min(prev + 1, ITR_ONE_STEPS.length));
+      console.log('Moving to next step');
+    } else {
+      console.log('Validation failed, staying on current step');
     }
   };
 
-  const handlePreviousStep = () => {
-    setStep(step - 1);
+  // Navigate to previous step
+  const prevStep = () => {
+    setStep(prev => Math.max(prev - 1, 1));
   };
 
-  return (
-    <>
-      <div className="w-[60%] mt-20 p-6 mx-auto bg-white/80 backdrop-blur-lg rounded-xl shadow-xl border border-gray-200">
-        <ul className="flex items-center space-x-4 text-lg font-semibold text-gray-700">
-          <li
-            className="flex items-center transition duration-200 cursor-pointer hover:text-blue-600"
-            onClick={() => navigate("/practice")}
-          >
-            <svg className="w-5 h-5 mr-1 text-blue-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 12h18m-6-6l6 6m-6 6l6-6"></path>
-            </svg>
-            Practice
-          </li>
-          <span className="text-gray-400">›</span>
-          <li
-            className="transition duration-200 cursor-pointer hover:text-blue-600"
-            onClick={() => navigate("/practice/itr")}
-          >
-            ITR
-          </li>
-          <span className="text-gray-400">›</span>
-          <li className="text-gray-500">ITR-1</li>
-        </ul>
+  // Save form data
+  const saveFormData = async () => {
+    setIsLoading(true);
+    setSaveError(null);
+    
+    try {
+      // Validate entire form
+      const { isValid, errors: validationErrors } = validateItrOneForm(formData);
+      if (!isValid) {
+        setErrors(validationErrors);
+        setIsLoading(false);
+        return;
+      }
+
+      // Save to localStorage
+      localStorage.setItem('itr1-form-data', JSON.stringify(formData));
+      localStorage.setItem('itr1-current-step', step.toString());
+      
+      // Here you would typically send to backend
+      console.log('Form data saved:', formData);
+      
+      setIsLoading(false);
+    } catch (error) {
+      setSaveError('Failed to save form data');
+      setIsLoading(false);
+    }
+  };
+
+  // Calculate totals
+  const totalIncome = calculateTotalIncome(formData);
+  const totalDeductions = calculateTotalDeductions(formData);
+  const taxPayable = calculateTaxPayable(totalIncome, totalDeductions);
+
+  // Render step content
+  const renderStepContent = () => {
+    switch (step) {
+      case 1:
+        return renderGeneralInformation();
+      case 2:
+        return renderNewTaxRegimeAndSeventhProviso();
+      case 3:
+        return renderIncomeFromSalary();
+      case 4:
+        return renderIncomeFromHouseProperty();
+      case 5:
+        return renderIncomeFromOtherSources();
+      case 6:
+        return renderDeductions();
+      case 7:
+        return renderTaxComputation();
+      case 8:
+        return renderBankDetailsAndVerification();
+      default:
+        return renderGeneralInformation();
+    }
+  };
+
+  // Step 1: General Information
+  const renderGeneralInformation = () => (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold text-gray-800">General Information</h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            PAN Number *
+          </label>
+          <input
+            type="text"
+            value={formData.pan}
+            onChange={(e) => handleInputChange('pan', e.target.value)}
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.pan ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="ABCDE1234F"
+            maxLength={10}
+          />
+          {errors.pan && <p className="mt-1 text-sm text-red-600">{errors.pan}</p>}
         </div>
 
-      <div className="w-[60%] mx-auto mt-8 p-6 bg-blue-500 shadow-lg rounded-lg">
-        <h2 className="text-xl font-extrabold text-white">
-          {`Step ${step} of 5: ${step === 1 ? "PART A: General Information" : 
-                                step === 2 ? "PART B: Gross Total Income" : 
-                                step === 3 ? "PART C: Deductions and Taxable Total Income" : 
-                                step === 4 ? "PART D: Computation of Tax Payable" :
-                                "PART E: Other Information"}`
-          }
-        </h2>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Aadhar Number *
+          </label>
+          <input
+            type="text"
+            value={formData.aadhar}
+            onChange={(e) => handleInputChange('aadhar', e.target.value)}
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.aadhar ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="123456789012"
+            maxLength={12}
+          />
+          {errors.aadhar && <p className="mt-1 text-sm text-red-600">{errors.aadhar}</p>}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            First Name *
+          </label>
+          <input
+            type="text"
+            value={formData.firstName}
+            onChange={(e) => handleInputChange('firstName', e.target.value)}
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.firstName ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="Enter first name"
+          />
+          {errors.firstName && <p className="mt-1 text-sm text-red-600">{errors.firstName}</p>}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Middle Name
+          </label>
+          <input
+            type="text"
+            value={formData.middleName}
+            onChange={(e) => handleInputChange('middleName', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter middle name"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Last Name *
+          </label>
+          <input
+            type="text"
+            value={formData.lastName}
+            onChange={(e) => handleInputChange('lastName', e.target.value)}
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.lastName ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="Enter last name"
+          />
+          {errors.lastName && <p className="mt-1 text-sm text-red-600">{errors.lastName}</p>}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Date of Birth *
+          </label>
+          <input
+            type="text"
+            value={formData.dateOfBirth}
+            onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.dateOfBirth ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="DD/MM/YYYY"
+          />
+          {errors.dateOfBirth && <p className="mt-1 text-sm text-red-600">{errors.dateOfBirth}</p>}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Gender *
+          </label>
+          <select
+            value={formData.gender}
+            onChange={(e) => handleInputChange('gender', e.target.value)}
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.gender ? 'border-red-500' : 'border-gray-300'
+            }`}
+          >
+            <option value="">Select Gender</option>
+            {ITR_ONE_OPTIONS.gender.map(option => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          {errors.gender && <p className="mt-1 text-sm text-red-600">{errors.gender}</p>}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Residential Status *
+          </label>
+          <select
+            value={formData.residentialStatus}
+            onChange={(e) => handleInputChange('residentialStatus', e.target.value)}
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.residentialStatus ? 'border-red-500' : 'border-gray-300'
+            }`}
+          >
+            <option value="">Select Residential Status</option>
+            {ITR_ONE_OPTIONS.residentialStatus.map(option => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          {errors.residentialStatus && <p className="mt-1 text-sm text-red-600">{errors.residentialStatus}</p>}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Email Address *
+          </label>
+          <input
+            type="email"
+            value={formData.email}
+            onChange={(e) => handleInputChange('email', e.target.value)}
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.email ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="Enter email address"
+          />
+          {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Mobile Number *
+          </label>
+          <input
+            type="text"
+            value={formData.mobileNumber}
+            onChange={(e) => handleInputChange('mobileNumber', e.target.value)}
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.mobileNumber ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="Enter mobile number"
+            maxLength={10}
+          />
+          {errors.mobileNumber && <p className="mt-1 text-sm text-red-600">{errors.mobileNumber}</p>}
+        </div>
+
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Address *
+          </label>
+          <textarea
+            value={formData.address}
+            onChange={(e) => handleInputChange('address', e.target.value)}
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.address ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="Enter complete address"
+            rows={3}
+          />
+          {errors.address && <p className="mt-1 text-sm text-red-600">{errors.address}</p>}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            City *
+          </label>
+          <input
+            type="text"
+            value={formData.city}
+            onChange={(e) => handleInputChange('city', e.target.value)}
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.city ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="Enter city"
+          />
+          {errors.city && <p className="mt-1 text-sm text-red-600">{errors.city}</p>}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            State *
+          </label>
+          <input
+            type="text"
+            value={formData.state}
+            onChange={(e) => handleInputChange('state', e.target.value)}
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.state ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="Enter state"
+          />
+          {errors.state && <p className="mt-1 text-sm text-red-600">{errors.state}</p>}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Pincode *
+          </label>
+          <input
+            type="text"
+            value={formData.pincode}
+            onChange={(e) => handleInputChange('pincode', e.target.value)}
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.pincode ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="Enter pincode"
+            maxLength={6}
+          />
+          {errors.pincode && <p className="mt-1 text-sm text-red-600">{errors.pincode}</p>}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Country
+          </label>
+          <input
+            type="text"
+            value={formData.country}
+            onChange={(e) => handleInputChange('country', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter country"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Nature of Employment
+          </label>
+          <select
+            value={formData.natureOfEmployment}
+            onChange={(e) => handleInputChange('natureOfEmployment', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Select Nature of Employment</option>
+            {ITR_ONE_OPTIONS.natureOfEmployment.map(option => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Step 2: New Tax Regime & Seventh Proviso
+  const renderNewTaxRegimeAndSeventhProviso = () => (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold text-gray-800">New Tax Regime & Seventh Proviso</h2>
+      
+      <div className="bg-blue-50 p-4 rounded-lg">
+        <h3 className="text-lg font-semibold text-blue-800 mb-2">New Tax Regime Options (115BAC)</h3>
+        <p className="text-sm text-blue-700 mb-4">
+          Do you wish to exercise the option u/s 115BAC(6) of Opting out of new tax regime?
+        </p>
+        
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Opting out of New Tax Regime *
+            </label>
+            <select
+              value={formData.optingOut115BAC}
+              onChange={(e) => handleInputChange('optingOut115BAC', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Select Option</option>
+              {ITR_ONE_OPTIONS.optingOut115BAC.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {formData.optingOut115BAC === 'Yes' && (
+            <>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Form 10-IEA Date
+                </label>
+                <input
+                  type="text"
+                  value={formData.form10IEADate}
+                  onChange={(e) => handleInputChange('form10IEADate', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="DD/MM/YYYY"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Form 10-IEA Acknowledgement Number
+                </label>
+                <input
+                  type="text"
+                  value={formData.form10IEAAckNumber}
+                  onChange={(e) => handleInputChange('form10IEAAckNumber', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter acknowledgement number"
+                />
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
-      <div className="w-[60%] mb-20 p-6 mx-auto bg-white rounded-lg shadow-lg">
-        {step === 1 && (
-          <div className="p-4 bg-gray-50 rounded-lg">
-            <h3 className="mb-4 text-lg font-semibold text-gray-700">PART A: General Information</h3>
-            <div className="space-y-6">
+      <div className="bg-yellow-50 p-4 rounded-lg">
+        <h3 className="text-lg font-semibold text-yellow-800 mb-2">Seventh Proviso Conditions</h3>
+        <p className="text-sm text-yellow-700 mb-4">
+          Are you filing return of income under Seventh proviso to section 139(1) but otherwise not required to furnish return of income?
+        </p>
+        
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Filing under Seventh Proviso *
+            </label>
+            <select
+              value={formData.filingUnderSeventhProviso}
+              onChange={(e) => handleInputChange('filingUnderSeventhProviso', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Select Option</option>
+              {ITR_ONE_OPTIONS.seventhProvisoOptions.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {formData.filingUnderSeventhProviso === 'Yes' && (
+            <div className="space-y-4">
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  PAN <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="pan"
-                  value={formData.pan}
-                  onChange={handleChange}
-                  placeholder="Enter PAN number"
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.pan ? "border-red-500" : "border-gray-300"}`}
-                />
-                {errors.pan && <p className="mt-1 text-sm text-red-500">{errors.pan}</p>}
-              </div>
-
-              <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Aadhar Number <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="aadhar"
-                  value={formData.aadhar}
-                  onChange={handleChange}
-                  placeholder="Enter Aadhar number"
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.aadhar ? "border-red-500" : "border-gray-300"}`}
-                />
-                {errors.aadhar && <p className="mt-1 text-sm text-red-500">{errors.aadhar}</p>}
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-gray-700">
-                    First Name <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.firstName ? "border-red-500" : "border-gray-300"}`}
-                  />
-                  {errors.firstName && <p className="mt-1 text-sm text-red-500">{errors.firstName}</p>}
-                </div>
-
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-gray-700">
-                    Middle Name
-                  </label>
-                  <input
-                    type="text"
-                    name="middleName"
-                    value={formData.middleName}
-                    onChange={handleChange}
-                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-gray-700">
-                    Last Name <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.lastName ? "border-red-500" : "border-gray-300"}`}
-                  />
-                  {errors.lastName && <p className="mt-1 text-sm text-red-500">{errors.lastName}</p>}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-gray-700">
-                    Date of Birth <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="date"
-                    name="dateOfBirth"
-                    value={formData.dateOfBirth}
-                    onChange={handleChange}
-                    className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.dateOfBirth ? "border-red-500" : "border-gray-300"}`}
-                  />
-                  {errors.dateOfBirth && <p className="mt-1 text-sm text-red-500">{errors.dateOfBirth}</p>}
-                </div>
-
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-gray-700">
-                    Gender <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    name="gender"
-                    value={formData.gender}
-                    onChange={handleChange}
-                    className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.gender ? "border-red-500" : "border-gray-300"}`}
-                  >
-                    <option value="">Select gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                  </select>
-                  {errors.gender && <p className="mt-1 text-sm text-red-500">{errors.gender}</p>}
-                </div>
-              </div>
-
-              <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Residential Status <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Deposited amount exceeding Rs. 1 Crore in current account?
                 </label>
                 <select
-                  name="residentialStatus"
-                  value={formData.residentialStatus}
-                  onChange={handleChange}
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.residentialStatus ? "border-red-500" : "border-gray-300"}`}
+                  value={formData.depositedOver1Crore}
+                  onChange={(e) => handleInputChange('depositedOver1Crore', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="">Select residential status</option>
-                  <option value="resident">Resident</option>
-                  <option value="nonResident">Non-Resident</option>
-                  <option value="notOrdinaryResident">Not Ordinary Resident</option>
+                  <option value="">Select Option</option>
+                  {ITR_ONE_OPTIONS.seventhProvisoOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
                 </select>
-                {errors.residentialStatus && <p className="mt-1 text-sm text-red-500">{errors.residentialStatus}</p>}
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-gray-700">
-                    Email <span className="text-red-500">*</span>
-                  </label>
+                {formData.depositedOver1Crore === 'Yes' && (
                   <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.email ? "border-red-500" : "border-gray-300"}`}
+                    type="text"
+                    value={formData.depositedAmount}
+                    onChange={(e) => handleInputChange('depositedAmount', e.target.value)}
+                    className="w-full mt-2 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Enter amount"
                   />
-                  {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
-                </div>
-
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-gray-700">
-                    Mobile Number <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="tel"
-                    name="mobileNumber"
-                    value={formData.mobileNumber}
-                    onChange={handleChange}
-                    className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.mobileNumber ? "border-red-500" : "border-gray-300"}`}
-                  />
-                  {errors.mobileNumber && <p className="mt-1 text-sm text-red-500">{errors.mobileNumber}</p>}
-                </div>
+                )}
               </div>
 
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Address <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Foreign travel expenditure exceeding Rs. 2 Lakhs?
                 </label>
-                <textarea
-                  name="address"
-                  value={formData.address}
-                  onChange={handleChange}
-                  rows={3}
-                  className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.address ? "border-red-500" : "border-gray-300"}`}
-                />
-                {errors.address && <p className="mt-1 text-sm text-red-500">{errors.address}</p>}
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-gray-700">
-                    City <span className="text-red-500">*</span>
-                  </label>
+                <select
+                  value={formData.foreignTravelOver2Lakh}
+                  onChange={(e) => handleInputChange('foreignTravelOver2Lakh', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Select Option</option>
+                  {ITR_ONE_OPTIONS.seventhProvisoOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                {formData.foreignTravelOver2Lakh === 'Yes' && (
                   <input
                     type="text"
-                    name="city"
-                    value={formData.city}
-                    onChange={handleChange}
-                    className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.city ? "border-red-500" : "border-gray-300"}`}
+                    value={formData.foreignTravelAmount}
+                    onChange={(e) => handleInputChange('foreignTravelAmount', e.target.value)}
+                    className="w-full mt-2 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Enter amount"
                   />
-                  {errors.city && <p className="mt-1 text-sm text-red-500">{errors.city}</p>}
-                </div>
+                )}
+              </div>
 
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-gray-700">
-                    State <span className="text-red-500">*</span>
-                  </label>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Electricity consumption exceeding Rs. 1 Lakh?
+                </label>
+                <select
+                  value={formData.electricityOver1Lakh}
+                  onChange={(e) => handleInputChange('electricityOver1Lakh', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Select Option</option>
+                  {ITR_ONE_OPTIONS.seventhProvisoOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                {formData.electricityOver1Lakh === 'Yes' && (
                   <input
                     type="text"
-                    name="state"
-                    value={formData.state}
-                    onChange={handleChange}
-                    className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.state ? "border-red-500" : "border-gray-300"}`}
+                    value={formData.electricityAmount}
+                    onChange={(e) => handleInputChange('electricityAmount', e.target.value)}
+                    className="w-full mt-2 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Enter amount"
                   />
-                  {errors.state && <p className="mt-1 text-sm text-red-500">{errors.state}</p>}
-                </div>
-
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-gray-700">
-                    Pincode <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="pincode"
-                    value={formData.pincode}
-                    onChange={handleChange}
-                    className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.pincode ? "border-red-500" : "border-gray-300"}`}
-                  />
-                  {errors.pincode && <p className="mt-1 text-sm text-red-500">{errors.pincode}</p>}
-                </div>
+                )}
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
+      </div>
+    </div>
+  );
 
-        {step === 2 && (
-          <div className="p-4 bg-gray-50 rounded-lg">
-            <h3 className="mb-6 text-xl font-semibold text-gray-700">PART B: Gross Total Income</h3>
-            <div className="space-y-6">
-              {/* B1: Income from Salary */}
-              <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
-                <h4 className="mb-4 text-lg font-semibold text-gray-700">B1: Income from Salary</h4>
-                <div className="space-y-6">
-                  {/* (i) Gross Salary */}
+  // Step 3: Income from Salary
+  const renderIncomeFromSalary = () => (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold text-gray-800">Income from Salary</h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Salary as per section 17(1)
+          </label>
+          <input
+            type="text"
+            value={formData.salarySection17_1}
+            onChange={(e) => handleInputChange('salarySection17_1', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Value of perquisites as per section 17(2)
+          </label>
+          <input
+            type="text"
+            value={formData.perquisitesSection17_2}
+            onChange={(e) => handleInputChange('perquisitesSection17_2', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Profit in lieu of salary as per section 17(3)
+          </label>
+          <input
+            type="text"
+            value={formData.profitSection17_3}
+            onChange={(e) => handleInputChange('profitSection17_3', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            House Rent Allowance u/s 10(13A)
+          </label>
+          <input
+            type="text"
+            value={formData.houseRentAllowance}
+            onChange={(e) => handleInputChange('houseRentAllowance', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Standard Deduction u/s 16(ia)
+          </label>
+          <input
+            type="text"
+            value={formData.standardDeduction16}
+            onChange={(e) => handleInputChange('standardDeduction16', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Entertainment Allowance u/s 16(ii)
+          </label>
+          <input
+            type="text"
+            value={formData.entertainmentAllowance}
+            onChange={(e) => handleInputChange('entertainmentAllowance', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Professional Tax u/s 16(iii)
+          </label>
+          <input
+            type="text"
+            value={formData.professionalTax}
+            onChange={(e) => handleInputChange('professionalTax', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        {/* Retirement Benefit Accounts */}
+        <div className="md:col-span-2">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Retirement Benefit Accounts</h3>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Income from retirement benefit account - Notified Country
+          </label>
+          <select
+            value={formData.retirementBenefitNotifiedCountry}
+            onChange={(e) => handleInputChange('retirementBenefitNotifiedCountry', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Select Country</option>
+            {ITR_ONE_OPTIONS.retirementBenefitCountries.map(option => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Amount - Notified Country
+          </label>
+          <input
+            type="text"
+            value={formData.retirementBenefitNotifiedAmount}
+            onChange={(e) => handleInputChange('retirementBenefitNotifiedAmount', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Income from retirement benefit account - Other Country
+          </label>
+          <input
+            type="text"
+            value={formData.retirementBenefitOtherCountry}
+            onChange={(e) => handleInputChange('retirementBenefitOtherCountry', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter country name"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Amount - Other Country
+          </label>
+          <input
+            type="text"
+            value={formData.retirementBenefitOtherAmount}
+            onChange={(e) => handleInputChange('retirementBenefitOtherAmount', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Relief from taxation u/s 89A
+          </label>
+          <input
+            type="text"
+            value={formData.reliefFromTaxation89A}
+            onChange={(e) => handleInputChange('reliefFromTaxation89A', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Net Salary (Calculated)
+          </label>
+          <input
+            type="text"
+            value={formData.netSalary}
+            readOnly
+            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+            placeholder="Auto-calculated"
+          />
+        </div>
+
+        {/* Exempt Allowances Section */}
+        <div className="md:col-span-2">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Allowances to the extent exempt u/s 10</h3>
+          <div className="space-y-4">
+            {formData.exemptAllowances.map((allowance, index) => (
+              <div key={index} className="border border-gray-200 rounded-lg p-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div>
-                    <label className="block mb-1 text-sm text-gray-600">
-                      (i) Gross Salary (ia + ib + ic + id + ie) <span className="text-red-500">*</span>
-                    </label>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block mb-1 text-sm text-gray-600">
-                          (a) Salary as per section 17(1)
-                        </label>
-                        <input
-                          type="number"
-                          name="salarySection17_1"
-                          value={formData.salarySection17_1}
-                          onChange={handleChange}
-                          placeholder="Enter amount"
-                          className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.salarySection17_1 ? "border-red-500" : "border-gray-300"}`}
-                        />
-                        {errors.salarySection17_1 && <p className="mt-1 text-sm text-red-500">{errors.salarySection17_1}</p>}
-                      </div>
-
-                      <div>
-                        <label className="block mb-1 text-sm text-gray-600">
-                          (b) Value of perquisites as per section 17(2)
-                        </label>
-                        <input
-                          type="number"
-                          name="perquisitesSection17_2"
-                          value={formData.perquisitesSection17_2}
-                          onChange={handleChange}
-                          placeholder="Enter amount"
-                          className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.perquisitesSection17_2 ? "border-red-500" : "border-gray-300"}`}
-                        />
-                        {errors.perquisitesSection17_2 && <p className="mt-1 text-sm text-red-500">{errors.perquisitesSection17_2}</p>}
-                      </div>
-
-                      <div>
-                        <label className="block mb-1 text-sm text-gray-600">
-                          (c) Profit in lieu of salary as per section 17(3)
-                        </label>
-                        <input
-                          type="number"
-                          name="profitSection17_3"
-                          value={formData.profitSection17_3}
-                          onChange={handleChange}
-                          placeholder="Enter amount"
-                          className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.profitSection17_3 ? "border-red-500" : "border-gray-300"}`}
-                        />
-                        {errors.profitSection17_3 && <p className="mt-1 text-sm text-red-500">{errors.profitSection17_3}</p>}
-                      </div>
-
-                      <div>
-                        <label className="block mb-1 text-sm text-gray-600">
-                          (d) Income from retirement benefit account (notified country)
-                        </label>
-                        <div className="grid grid-cols-2 gap-2">
-                          <select
-                            name="notifiedCountry"
-                            value={formData.notifiedCountry}
-                            onChange={handleChange}
-                            className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.notifiedCountry ? "border-red-500" : "border-gray-300"}`}
-                          >
-                            <option value="">Select country</option>
-                            <option value="USA">United States of America</option>
-                            <option value="UK">United Kingdom</option>
-                            <option value="Canada">Canada</option>
-                            <option value="Australia">Australia</option>
-                            <option value="New Zealand">New Zealand</option>
-                          </select>
-                          <input
-                            type="number"
-                            name="retirementBenefitNotified"
-                            value={formData.retirementBenefitNotified}
-                            onChange={handleChange}
-                            placeholder="Amount"
-                            className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.retirementBenefitNotified ? "border-red-500" : "border-gray-300"}`}
-                          />
-                        </div>
-                        {errors.notifiedCountry && <p className="mt-1 text-sm text-red-500">{errors.notifiedCountry}</p>}
-                        {errors.retirementBenefitNotified && <p className="mt-1 text-sm text-red-500">{errors.retirementBenefitNotified}</p>}
-                      </div>
-
-                      <div>
-                        <label className="block mb-1 text-sm text-gray-600">
-                          (e) Income from retirement benefit account (other country)
-                        </label>
-                        <div className="grid grid-cols-2 gap-2">
-                          <select
-                            name="otherCountry"
-                            value={formData.otherCountry}
-                            onChange={handleChange}
-                            className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.otherCountry ? "border-red-500" : "border-gray-300"}`}
-                          >
-                            <option value="">Select country</option>
-                            <option value="Other">Other Country</option>
-                          </select>
-                          <input
-                            type="number"
-                            name="retirementBenefitOther"
-                            value={formData.retirementBenefitOther}
-                            onChange={handleChange}
-                            placeholder="Amount"
-                            className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.retirementBenefitOther ? "border-red-500" : "border-gray-300"}`}
-                          />
-                        </div>
-                        {errors.otherCountry && <p className="mt-1 text-sm text-red-500">{errors.otherCountry}</p>}
-                        {errors.retirementBenefitOther && <p className="mt-1 text-sm text-red-500">{errors.retirementBenefitOther}</p>}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* (ii) Less allowances to the extent exempt u/s 10 */}
-                  <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-700">
-                      (ii) Less allowances to the extent exempt u/s 10 <span className="text-red-500">*</span>
-                    </label>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block mb-1 text-sm text-gray-600">
-                          Select allowance type
-                        </label>
-                        <select
-                          name="allowanceType"
-                          value={formData.allowanceType}
-                          onChange={handleChange}
-                          className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.allowanceType ? "border-red-500" : "border-gray-300"}`}
-                        >
-                          <option value="">Select allowance type</option>
-                          <option value="hra">House Rent Allowance</option>
-                          <option value="travel">Travel Allowance</option>
-                          <option value="medical">Medical Allowance</option>
-                          <option value="other">Other Allowance</option>
-                        </select>
-                        {errors.allowanceType && <p className="mt-1 text-sm text-red-500">{errors.allowanceType}</p>}
-                      </div>
-
-                      <div>
-                        <label className="block mb-1 text-sm text-gray-600">
-                          Exempt amount
-                        </label>
-                        <input
-                          type="number"
-                          name="allowanceExemptAmount"
-                          value={formData.allowanceExemptAmount}
-                          onChange={handleChange}
-                          placeholder="Enter amount"
-                          className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.allowanceExemptAmount ? "border-red-500" : "border-gray-300"}`}
-                        />
-                        {errors.allowanceExemptAmount && <p className="mt-1 text-sm text-red-500">{errors.allowanceExemptAmount}</p>}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* (iia) Less: Income claimed for relief from taxation u/s 89A */}
-                  <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-700">
-                      (iia) Less: Income claimed for relief from taxation u/s 89A <span className="text-red-500">*</span>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Sl. No.
                     </label>
                     <input
-                      type="number"
-                      name="reliefUnder89A"
-                      value={formData.reliefUnder89A}
-                      onChange={handleChange}
-                      placeholder="Enter amount"
-                      className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.reliefUnder89A ? "border-red-500" : "border-gray-300"}`}
+                      type="text"
+                      value={allowance.slNo.toString()}
+                      onChange={(e) => handleArrayFieldChange('exemptAllowances', index, 'slNo', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Serial number"
                     />
-                    {errors.reliefUnder89A && <p className="mt-1 text-sm text-red-500">{errors.reliefUnder89A}</p>}
                   </div>
-
-                  {/* (iii) Net Salary */}
                   <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-700">
-                      (iii) Net Salary (i - ii - iia) <span className="text-red-500">*</span>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Nature of Exempt Allowance
+                    </label>
+                    <select
+                      value={allowance.natureOfExemptAllowance}
+                      onChange={(e) => handleArrayFieldChange('exemptAllowances', index, 'natureOfExemptAllowance', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">Select Type</option>
+                      {ITR_ONE_OPTIONS.exemptAllowanceTypes.map(option => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Description
                     </label>
                     <input
-                      type="number"
-                      name="netSalary"
-                      value={formData.netSalary}
-                      onChange={handleChange}
-                      placeholder="Enter amount"
-                      className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.netSalary ? "border-red-500" : "border-gray-300"}`}
+                      type="text"
+                      value={allowance.description}
+                      onChange={(e) => handleArrayFieldChange('exemptAllowances', index, 'description', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="If 'Any Other' selected"
                     />
-                    {errors.netSalary && <p className="mt-1 text-sm text-red-500">{errors.netSalary}</p>}
                   </div>
-
-                  {/* (iv) Deductions u/s 16 */}
                   <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-700">
-                      (iv) Deductions u/s 16 (iva + ivb + ivc) <span className="text-red-500">*</span>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Amount
                     </label>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div>
-                        <label className="block mb-1 text-sm text-gray-600">
-                          (a) Standard deduction u/s 16(ia)
-                        </label>
-                        <input
-                          type="number"
-                          name="standardDeduction16"
-                          value={formData.standardDeduction16}
-                          onChange={handleChange}
-                          placeholder="Enter amount"
-                          className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.standardDeduction16 ? "border-red-500" : "border-gray-300"}`}
-                        />
-                        {errors.standardDeduction16 && <p className="mt-1 text-sm text-red-500">{errors.standardDeduction16}</p>}
-                      </div>
-
-                      <div>
-                        <label className="block mb-1 text-sm text-gray-600">
-                          (b) Entertainment allowance u/s 16(ii)
-                        </label>
-                        <input
-                          type="number"
-                          name="entertainmentAllowance"
-                          value={formData.entertainmentAllowance}
-                          onChange={handleChange}
-                          placeholder="Enter amount"
-                          className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.entertainmentAllowance ? "border-red-500" : "border-gray-300"}`}
-                        />
-                        {errors.entertainmentAllowance && <p className="mt-1 text-sm text-red-500">{errors.entertainmentAllowance}</p>}
-                      </div>
-
-                      <div>
-                        <label className="block mb-1 text-sm text-gray-600">
-                          (c) Professional tax u/s 16(iii)
-                        </label>
-                        <input
-                          type="number"
-                          name="professionalTax"
-                          value={formData.professionalTax}
-                          onChange={handleChange}
-                          placeholder="Enter amount"
-                          className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.professionalTax ? "border-red-500" : "border-gray-300"}`}
-                        />
-                        {errors.professionalTax && <p className="mt-1 text-sm text-red-500">{errors.professionalTax}</p>}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* (v) Income chargeable under the head 'Salaries' */}
-                  <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-700">
-                      (v) Income chargeable under the head 'Salaries' (iii - iv) <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="number"
-                      name="totalSalaryIncome"
-                      value={formData.totalSalaryIncome}
-                      onChange={handleChange}
-                      placeholder="Enter amount"
-                      className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.totalSalaryIncome ? "border-red-500" : "border-gray-300"}`}
-                    />
-                    {errors.totalSalaryIncome && <p className="mt-1 text-sm text-red-500">{errors.totalSalaryIncome}</p>}
-                  </div>
-                </div>
-              </div>
-
-              {/* B2: Income from House Property */}
-              <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
-                <h4 className="mb-4 text-lg font-semibold text-gray-700">B2: Income from House Property</h4>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-700">
-                      Property Type <span className="text-red-500">*</span>
-                    </label>
-                    <div className="grid grid-cols-3 gap-4">
-                      <div className="flex items-center">
-                        <input
-                          type="radio"
-                          id="selfOccupied"
-                          name="propertyType"
-                          value="selfOccupied"
-                          checked={formData.propertyType === "selfOccupied"}
-                          onChange={handleChange}
-                          className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                        />
-                        <label htmlFor="selfOccupied" className="ml-2 text-sm font-medium text-gray-700">
-                          Self-Occupied
-                        </label>
-                      </div>
-                      <div className="flex items-center">
-                        <input
-                          type="radio"
-                          id="letOut"
-                          name="propertyType"
-                          value="letOut"
-                          checked={formData.propertyType === "letOut"}
-                          onChange={handleChange}
-                          className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                        />
-                        <label htmlFor="letOut" className="ml-2 text-sm font-medium text-gray-700">
-                          Let Out
-                        </label>
-                      </div>
-                      <div className="flex items-center">
-                        <input
-                          type="radio"
-                          id="deemedLetOut"
-                          name="propertyType"
-                          value="deemedLetOut"
-                          checked={formData.propertyType === "deemedLetOut"}
-                          onChange={handleChange}
-                          className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                        />
-                        <label htmlFor="deemedLetOut" className="ml-2 text-sm font-medium text-gray-700">
-                          Deemed Let Out
-                        </label>
-                      </div>
-                    </div>
-                    {errors.propertyType && <p className="mt-1 text-sm text-red-500">{errors.propertyType}</p>}
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block mb-1 text-sm text-gray-600">
-                        (i) Gross rent received/receivable/lettable value
-                      </label>
-                      <input
-                        type="number"
-                        name="grossRent"
-                        value={formData.grossRent}
-                        onChange={handleChange}
-                        placeholder="Enter amount"
-                        className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.grossRent ? "border-red-500" : "border-gray-300"}`}
-                      />
-                      {errors.grossRent && <p className="mt-1 text-sm text-red-500">{errors.grossRent}</p>}
-                    </div>
-
-                    <div>
-                      <label className="block mb-1 text-sm text-gray-600">
-                        (ii) Tax paid to local authorities
-                      </label>
-                      <input
-                        type="number"
-                        name="localTaxPaid"
-                        value={formData.localTaxPaid}
-                        onChange={handleChange}
-                        placeholder="Enter amount"
-                        className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.localTaxPaid ? "border-red-500" : "border-gray-300"}`}
-                      />
-                      {errors.localTaxPaid && <p className="mt-1 text-sm text-red-500">{errors.localTaxPaid}</p>}
-                    </div>
-
-                    <div>
-                      <label className="block mb-1 text-sm text-gray-600">
-                        (iii) Annual Value (i - ii)
-                      </label>
-                      <input
-                        type="number"
-                        name="annualValue"
-                        value={formData.annualValue}
-                        onChange={handleChange}
-                        placeholder="Enter amount"
-                        className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.annualValue ? "border-red-500" : "border-gray-300"}`}
-                      />
-                      {errors.annualValue && <p className="mt-1 text-sm text-red-500">{errors.annualValue}</p>}
-                    </div>
-
-                    <div>
-                      <label className="block mb-1 text-sm text-gray-600">
-                        (iv) 30% of Annual Value
-                      </label>
-                      <input
-                        type="number"
-                        name="standardDeduction"
-                        value={formData.standardDeduction}
-                        onChange={handleChange}
-                        placeholder="Enter amount"
-                        className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.standardDeduction ? "border-red-500" : "border-gray-300"}`}
-                      />
-                      {errors.standardDeduction && <p className="mt-1 text-sm text-red-500">{errors.standardDeduction}</p>}
-                    </div>
-
-                    <div>
-                      <label className="block mb-1 text-sm text-gray-600">
-                        (v) Interest payable on borrowed capital
-                      </label>
-                      <input
-                        type="number"
-                        name="interestBorrowedCapital"
-                        value={formData.interestBorrowedCapital}
-                        onChange={handleChange}
-                        placeholder="Enter amount"
-                        className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.interestBorrowedCapital ? "border-red-500" : "border-gray-300"}`}
-                      />
-                      {errors.interestBorrowedCapital && <p className="mt-1 text-sm text-red-500">{errors.interestBorrowedCapital}</p>}
-                    </div>
-
-                    <div>
-                      <label className="block mb-1 text-sm text-gray-600">
-                        (vi) Arrears/Unrealised rent received less 30%
-                      </label>
-                      <input
-                        type="number"
-                        name="arrearsRent"
-                        value={formData.arrearsRent}
-                        onChange={handleChange}
-                        placeholder="Enter amount"
-                        className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.arrearsRent ? "border-red-500" : "border-gray-300"}`}
-                      />
-                      {errors.arrearsRent && <p className="mt-1 text-sm text-red-500">{errors.arrearsRent}</p>}
-                    </div>
-
-                    <div className="md:col-span-2">
-                      <label className="block mb-1 text-sm text-gray-600">
-                        (vii) Income chargeable under 'House Property' (iii - iv - v) + vi
-                      </label>
-                      <input
-                        type="number"
-                        name="totalHousePropertyIncome"
-                        value={formData.totalHousePropertyIncome}
-                        onChange={handleChange}
-                        placeholder="Enter amount"
-                        className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.totalHousePropertyIncome ? "border-red-500" : "border-gray-300"}`}
-                      />
-                      {errors.totalHousePropertyIncome && <p className="mt-1 text-sm text-red-500">{errors.totalHousePropertyIncome}</p>}
-                    </div>
-                  </div>
-
-                  <div className="p-3 mt-4 text-sm text-gray-600 bg-yellow-50 rounded-md">
-                    <p className="font-medium">Note:</p>
-                    <p>Maximum loss from House Property that can be set-off is INR 2,00,000. To avail the benefit of carry forward and set of loss, please use ITR-2.</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* B3: Income from Other Sources */}
-              <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
-                <h4 className="mb-4 text-lg font-semibold text-gray-700">B3: Income from Other Sources</h4>
-                <div className="space-y-8">
-                  {/* Income Sources */}
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <h5 className="mb-4 text-lg font-medium text-gray-700">Income Details</h5>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block mb-2 text-sm font-medium text-gray-700">
-                          Select Income Source <span className="text-red-500">*</span>
-                        </label>
-                        <select
-                          name="otherIncomeType"
-                          value={formData.otherIncomeType}
-                          onChange={handleChange}
-                          className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.otherIncomeType ? "border-red-500" : "border-gray-300"}`}
-                        >
-                          <option value="">Select income type</option>
-                          <option value="savingsInterest">Interest from Savings Account</option>
-                          <option value="fixedDeposit">Interest from Fixed Deposits</option>
-                          <option value="dividend">Dividend Income</option>
-                          <option value="familyPension">Family Pension</option>
-                          <option value="retirementBenefit">Income from Retirement Benefit Account</option>
-                          <option value="other">Other Income</option>
-                        </select>
-                        {errors.otherIncomeType && <p className="mt-1 text-sm text-red-500">{errors.otherIncomeType}</p>}
-                      </div>
-
-                      <div>
-                        <label className="block mb-2 text-sm font-medium text-gray-700">
-                          Amount <span className="text-red-500">*</span>
-                        </label>
-                        <div className="relative">
-                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                          <input
-                            type="number"
-                            name="otherIncomeAmount"
-                            value={formData.otherIncomeAmount}
-                            onChange={handleChange}
-                            placeholder="Enter amount"
-                            className={`w-full pl-8 pr-3 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.otherIncomeAmount ? "border-red-500" : "border-gray-300"}`}
-                          />
-                        </div>
-                        {errors.otherIncomeAmount && <p className="mt-1 text-sm text-red-500">{errors.otherIncomeAmount}</p>}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Quarterly Breakup for Dividend and Retirement Benefit */}
-                  {(formData.otherIncomeType === "dividend" || formData.otherIncomeType === "retirementBenefit") && (
-                    <div className="p-4 bg-gray-50 rounded-lg">
-                      <div className="flex items-center justify-between mb-4">
-                        <h5 className="text-lg font-medium text-gray-700">Quarterly Breakup</h5>
-                        <span className="text-sm text-gray-500">For relief from section 234C</span>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div className="p-3 bg-white rounded-lg border border-gray-200">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Q1 (April - June)
-                          </label>
-                          <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                            <input
-                              type="number"
-                              name="q1Amount"
-                              value={formData.q1Amount}
-                              onChange={handleChange}
-                              placeholder="Enter amount"
-                              className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                            />
-                          </div>
-                        </div>
-                        <div className="p-3 bg-white rounded-lg border border-gray-200">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Q2 (July - September)
-                          </label>
-                          <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                            <input
-                              type="number"
-                              name="q2Amount"
-                              value={formData.q2Amount}
-                              onChange={handleChange}
-                              placeholder="Enter amount"
-                              className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                            />
-                          </div>
-                        </div>
-                        <div className="p-3 bg-white rounded-lg border border-gray-200">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Q3 (October - December)
-                          </label>
-                          <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                            <input
-                              type="number"
-                              name="q3Amount"
-                              value={formData.q3Amount}
-                              onChange={handleChange}
-                              placeholder="Enter amount"
-                              className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                            />
-                          </div>
-                        </div>
-                        <div className="p-3 bg-white rounded-lg border border-gray-200">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Q4 (January - March)
-                          </label>
-                          <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                            <input
-                              type="number"
-                              name="q4Amount"
-                              value={formData.q4Amount}
-                              onChange={handleChange}
-                              placeholder="Enter amount"
-                              className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Deductions and Relief */}
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <h5 className="mb-4 text-lg font-medium text-gray-700">Deductions and Relief</h5>
-                    <div className="space-y-4">
-                      {/* Deduction for Family Pension */}
-                      {formData.otherIncomeType === "familyPension" && (
-                        <div>
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Less: Deduction u/s 57(iia) (for family pension)
-                          </label>
-                          <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                            <input
-                              type="number"
-                              name="familyPensionDeduction"
-                              value={formData.familyPensionDeduction}
-                              onChange={handleChange}
-                              placeholder="Enter deduction amount"
-                              className={`w-full pl-8 pr-3 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.familyPensionDeduction ? "border-red-500" : "border-gray-300"}`}
-                            />
-                          </div>
-                          {errors.familyPensionDeduction && <p className="mt-1 text-sm text-red-500">{errors.familyPensionDeduction}</p>}
-                        </div>
-                      )}
-
-                      {/* Relief from Taxation u/s 89A */}
-                      <div>
-                        <label className="block mb-2 text-sm font-medium text-gray-700">
-                          Less: Income claimed for relief from taxation u/s 89A
-                        </label>
-                        <div className="relative">
-                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                          <input
-                            type="number"
-                            name="otherIncomeRelief89A"
-                            value={formData.otherIncomeRelief89A}
-                            onChange={handleChange}
-                            placeholder="Enter relief amount"
-                            className={`w-full pl-8 pr-3 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.otherIncomeRelief89A ? "border-red-500" : "border-gray-300"}`}
-                          />
-                        </div>
-                        {errors.otherIncomeRelief89A && <p className="mt-1 text-sm text-red-500">{errors.otherIncomeRelief89A}</p>}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Total Income */}
-                  <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
-                    <label className="block mb-2 text-lg font-medium text-gray-700">
-                      Total Income from Other Sources <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                      <input
-                        type="number"
-                        name="totalOtherIncome"
-                        value={formData.totalOtherIncome}
-                        onChange={handleChange}
-                        placeholder="Enter total amount"
-                        className={`w-full pl-8 pr-3 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.totalOtherIncome ? "border-red-500" : "border-gray-300"}`}
-                      />
-                    </div>
-                    {errors.totalOtherIncome && <p className="mt-1 text-sm text-red-500">{errors.totalOtherIncome}</p>}
-                  </div>
-                </div>
-              </div>
-
-              {/* B4: Gross Total Income */}
-              <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
-                <h4 className="mb-4 text-lg font-semibold text-gray-700">B4: Gross Total Income</h4>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-700">
-                      Gross Total Salary Income <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                      <input
-                        type="number"
-                        name="grossTotalSalary"
-                        value={formData.grossTotalSalary}
-                        onChange={handleChange}
-                        placeholder="Enter gross total salary income"
-                        className={`w-full pl-8 pr-3 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.grossTotalSalary ? "border-red-500" : "border-gray-300"}`}
-                      />
-                    </div>
-                    {errors.grossTotalSalary && <p className="mt-1 text-sm text-red-500">{errors.grossTotalSalary}</p>}
-                  </div>
-
-                  <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-700">
-                      Gross Total Property Income <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                      <input
-                        type="number"
-                        name="grossTotalProperty"
-                        value={formData.grossTotalProperty}
-                        onChange={handleChange}
-                        placeholder="Enter gross total property income"
-                        className={`w-full pl-8 pr-3 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.grossTotalProperty ? "border-red-500" : "border-gray-300"}`}
-                      />
-                    </div>
-                    {errors.grossTotalProperty && <p className="mt-1 text-sm text-red-500">{errors.grossTotalProperty}</p>}
-                  </div>
-
-                  <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-700">
-                      Gross Total Other Income <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                      <input
-                        type="number"
-                        name="grossTotalOther"
-                        value={formData.grossTotalOther}
-                        onChange={handleChange}
-                        placeholder="Enter gross total other income"
-                        className={`w-full pl-8 pr-3 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.grossTotalOther ? "border-red-500" : "border-gray-300"}`}
-                      />
-                    </div>
-                    {errors.grossTotalOther && <p className="mt-1 text-sm text-red-500">{errors.grossTotalOther}</p>}
-                  </div>
-
-                  <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-700">
-                      Gross Total Income <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                      <input
-                        type="number"
-                        name="grossTotalIncome"
-                        value={formData.grossTotalIncome}
-                        onChange={handleChange}
-                        placeholder="Enter gross total income"
-                        className={`w-full pl-8 pr-3 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.grossTotalIncome ? "border-red-500" : "border-gray-300"}`}
-                      />
-                    </div>
-                    {errors.grossTotalIncome && <p className="mt-1 text-sm text-red-500">{errors.grossTotalIncome}</p>}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {step === 3 && (
-          <div className="p-4 bg-gray-50 rounded-lg">
-            <h3 className="mb-6 text-xl font-semibold text-gray-700">PART C: Deductions and Taxable Total Income</h3>
-            <div className="p-4 mb-4 text-sm text-blue-800 bg-blue-50 rounded-lg">
-              <p className="font-medium">Note: Please refer to the Income Tax Act for deduction limits.</p>
-            </div>
-
-            {/* Deductions Table */}
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse">
-                <thead>
-                  <tr className="bg-gray-100">
-                    <th className="p-3 text-left border border-gray-300">Section</th>
-                    <th className="p-3 text-left border border-gray-300">Particulars</th>
-                    <th className="p-3 text-left border border-gray-300">Amount (₹)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {/* 80C */}
-                  <tr>
-                    <td className="p-3 border border-gray-300">80C</td>
-                    <td className="p-3 border border-gray-300">Life Insurance, PPF, ELSS, Tax-saving FD, etc.</td>
-                    <td className="p-3 border border-gray-300">
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                        <input
-                          type="number"
-                          name="section80C"
-                          value={formData.section80C}
-                          onChange={handleChange}
-                          placeholder="Enter amount"
-                          className={`w-full pl-8 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.section80C ? "border-red-500" : "border-gray-300"}`}
-                        />
-                      </div>
-                      {errors.section80C && <p className="mt-1 text-sm text-red-500">{errors.section80C}</p>}
-                    </td>
-                  </tr>
-
-                  {/* 80CCD(1) */}
-                  <tr>
-                    <td className="p-3 border border-gray-300">80CCD(1)</td>
-                    <td className="p-3 border border-gray-300">Employee contribution to NPS</td>
-                    <td className="p-3 border border-gray-300">
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                        <input
-                          type="number"
-                          name="section80CCD1"
-                          value={formData.section80CCD1}
-                          onChange={handleChange}
-                          placeholder="Enter amount"
-                          className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                        />
-                      </div>
-                    </td>
-                  </tr>
-
-                  {/* 80CCD(2) */}
-                  <tr>
-                    <td className="p-3 border border-gray-300">80CCD(2)</td>
-                    <td className="p-3 border border-gray-300">Employer contribution to NPS</td>
-                    <td className="p-3 border border-gray-300">
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                        <input
-                          type="number"
-                          name="section80CCD2"
-                          value={formData.section80CCD2}
-                          onChange={handleChange}
-                          placeholder="Enter amount"
-                          className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                        />
-                      </div>
-                    </td>
-                  </tr>
-
-                  {/* 80CCH */}
-                  <tr>
-                    <td className="p-3 border border-gray-300">80CCH</td>
-                    <td className="p-3 border border-gray-300">Agniveer Corpus Fund contribution</td>
-                    <td className="p-3 border border-gray-300">
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                        <input
-                          type="number"
-                          name="section80CCH"
-                          value={formData.section80CCH}
-                          onChange={handleChange}
-                          placeholder="Enter amount"
-                          className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                        />
-                      </div>
-                    </td>
-                  </tr>
-
-                  {/* 80D */}
-                  <tr>
-                    <td className="p-3 border border-gray-300">80D</td>
-                    <td className="p-3 border border-gray-300">Medical insurance premium (Self/Family/Senior Citizen)</td>
-                    <td className="p-3 border border-gray-300">
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                        <input
-                          type="number"
-                          name="section80D"
-                          value={formData.section80D}
-                          onChange={handleChange}
-                          placeholder="Enter amount"
-                          className={`w-full pl-8 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.section80D ? "border-red-500" : "border-gray-300"}`}
-                        />
-                      </div>
-                      {errors.section80D && <p className="mt-1 text-sm text-red-500">{errors.section80D}</p>}
-                    </td>
-                  </tr>
-
-                  {/* 80DD */}
-                  <tr>
-                    <td className="p-3 border border-gray-300">80DD</td>
-                    <td className="p-3 border border-gray-300">Maintenance for disabled dependent</td>
-                    <td className="p-3 border border-gray-300">
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                        <input
-                          type="number"
-                          name="section80DD"
-                          value={formData.section80DD}
-                          onChange={handleChange}
-                          placeholder="Enter amount"
-                          className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                        />
-                      </div>
-                    </td>
-                  </tr>
-
-                  {/* 80DDB */}
-                  <tr>
-                    <td className="p-3 border border-gray-300">80DDB</td>
-                    <td className="p-3 border border-gray-300">Treatment of specified diseases</td>
-                    <td className="p-3 border border-gray-300">
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                        <input
-                          type="number"
-                          name="section80DDB"
-                          value={formData.section80DDB}
-                          onChange={handleChange}
-                          placeholder="Enter amount"
-                          className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                        />
-                      </div>
-                    </td>
-                  </tr>
-
-                  {/* 80E */}
-                  <tr>
-                    <td className="p-3 border border-gray-300">80E</td>
-                    <td className="p-3 border border-gray-300">Interest on Education Loan</td>
-                    <td className="p-3 border border-gray-300">
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                        <input
-                          type="number"
-                          name="section80E"
-                          value={formData.section80E}
-                          onChange={handleChange}
-                          placeholder="Enter amount"
-                          className={`w-full pl-8 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.section80E ? "border-red-500" : "border-gray-300"}`}
-                        />
-                      </div>
-                      {errors.section80E && <p className="mt-1 text-sm text-red-500">{errors.section80E}</p>}
-                    </td>
-                  </tr>
-
-                  {/* 80EE */}
-                  <tr>
-                    <td className="p-3 border border-gray-300">80EE</td>
-                    <td className="p-3 border border-gray-300">Interest on home loan (first-time buyers – before 31 Mar 2017)</td>
-                    <td className="p-3 border border-gray-300">
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                        <input
-                          type="number"
-                          name="section80EE"
-                          value={formData.section80EE}
-                          onChange={handleChange}
-                          placeholder="Enter amount"
-                          className={`w-full pl-8 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.section80EE ? "border-red-500" : "border-gray-300"}`}
-                        />
-                      </div>
-                      {errors.section80EE && <p className="mt-1 text-sm text-red-500">{errors.section80EE}</p>}
-                    </td>
-                  </tr>
-
-                  {/* 80EEA */}
-                  <tr>
-                    <td className="p-3 border border-gray-300">80EEA</td>
-                    <td className="p-3 border border-gray-300">Interest on home loan for affordable housing (FY 2019–20 onward)</td>
-                    <td className="p-3 border border-gray-300">
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                        <input
-                          type="number"
-                          name="section80EEA"
-                          value={formData.section80EEA}
-                          onChange={handleChange}
-                          placeholder="Enter amount"
-                          className={`w-full pl-8 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.section80EEA ? "border-red-500" : "border-gray-300"}`}
-                        />
-                      </div>
-                      {errors.section80EEA && <p className="mt-1 text-sm text-red-500">{errors.section80EEA}</p>}
-                    </td>
-                  </tr>
-
-                  {/* 80EEB */}
-                  <tr>
-                    <td className="p-3 border border-gray-300">80EEB</td>
-                    <td className="p-3 border border-gray-300">Interest on electric vehicle loan</td>
-                    <td className="p-3 border border-gray-300">
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                        <input
-                          type="number"
-                          name="section80EEB"
-                          value={formData.section80EEB}
-                          onChange={handleChange}
-                          placeholder="Enter amount"
-                          className={`w-full pl-8 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.section80EEB ? "border-red-500" : "border-gray-300"}`}
-                        />
-                      </div>
-                      {errors.section80EEB && <p className="mt-1 text-sm text-red-500">{errors.section80EEB}</p>}
-                    </td>
-                  </tr>
-
-                  {/* 80G */}
-                  <tr>
-                    <td className="p-3 border border-gray-300">80G</td>
-                    <td className="p-3 border border-gray-300">Donations to charitable institutions</td>
-                    <td className="p-3 border border-gray-300">
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                        <input
-                          type="number"
-                          name="section80G"
-                          value={formData.section80G}
-                          onChange={handleChange}
-                          placeholder="Enter amount"
-                          className={`w-full pl-8 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.section80G ? "border-red-500" : "border-gray-300"}`}
-                        />
-                      </div>
-                      {errors.section80G && <p className="mt-1 text-sm text-red-500">{errors.section80G}</p>}
-                    </td>
-                  </tr>
-
-                  {/* 80GG */}
-                  <tr>
-                    <td className="p-3 border border-gray-300">80GG</td>
-                    <td className="p-3 border border-gray-300">Rent paid when HRA is not received</td>
-                    <td className="p-3 border border-gray-300">
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                        <input
-                          type="number"
-                          name="section80GG"
-                          value={formData.section80GG}
-                          onChange={handleChange}
-                          placeholder="Enter amount"
-                          className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                        />
-                      </div>
-                    </td>
-                  </tr>
-
-                  {/* 80GGA */}
-                  <tr>
-                    <td className="p-3 border border-gray-300">80GGA</td>
-                    <td className="p-3 border border-gray-300">Donations for scientific/rural development</td>
-                    <td className="p-3 border border-gray-300">
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                        <input
-                          type="number"
-                          name="section80GGA"
-                          value={formData.section80GGA}
-                          onChange={handleChange}
-                          placeholder="Enter amount"
-                          className={`w-full pl-8 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.section80GGA ? "border-red-500" : "border-gray-300"}`}
-                        />
-                      </div>
-                      {errors.section80GGA && <p className="mt-1 text-sm text-red-500">{errors.section80GGA}</p>}
-                    </td>
-                  </tr>
-
-                  {/* 80GGC */}
-                  <tr>
-                    <td className="p-3 border border-gray-300">80GGC</td>
-                    <td className="p-3 border border-gray-300">Donations to political parties</td>
-                    <td className="p-3 border border-gray-300">
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                        <input
-                          type="number"
-                          name="section80GGC"
-                          value={formData.section80GGC}
-                          onChange={handleChange}
-                          placeholder="Enter amount"
-                          className={`w-full pl-8 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.section80GGC ? "border-red-500" : "border-gray-300"}`}
-                        />
-                      </div>
-                      {errors.section80GGC && <p className="mt-1 text-sm text-red-500">{errors.section80GGC}</p>}
-                    </td>
-                  </tr>
-
-                  {/* 80TTA */}
-                  <tr>
-                    <td className="p-3 border border-gray-300">80TTA</td>
-                    <td className="p-3 border border-gray-300">Interest from savings bank account (non-senior citizens)</td>
-                    <td className="p-3 border border-gray-300">
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                        <input
-                          type="number"
-                          name="section80TTA"
-                          value={formData.section80TTA}
-                          onChange={handleChange}
-                          placeholder="Enter amount"
-                          className={`w-full pl-8 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${errors.section80TTA ? "border-red-500" : "border-gray-300"}`}
-                        />
-                      </div>
-                      {errors.section80TTA && <p className="mt-1 text-sm text-red-500">{errors.section80TTA}</p>}
-                    </td>
-                  </tr>
-
-                  {/* 80TTB */}
-                  <tr>
-                    <td className="p-3 border border-gray-300">80TTB</td>
-                    <td className="p-3 border border-gray-300">Interest from deposits (senior citizens only)</td>
-                    <td className="p-3 border border-gray-300">
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                        <input
-                          type="number"
-                          name="section80TTB"
-                          value={formData.section80TTB}
-                          onChange={handleChange}
-                          placeholder="Enter amount"
-                          className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                        />
-                      </div>
-                    </td>
-                  </tr>
-
-                  {/* Other Deductions */}
-                  <tr>
-                    <td className="p-3 border border-gray-300">Other (Specify)</td>
-                    <td className="p-3 border border-gray-300">
+                    <div className="flex gap-2">
                       <input
                         type="text"
-                        name="otherDeductionParticulars"
-                        value={formData.otherDeductionParticulars}
-                        onChange={handleChange}
-                        placeholder="Specify other deduction"
-                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        value={allowance.amount}
+                        onChange={(e) => handleArrayFieldChange('exemptAllowances', index, 'amount', e.target.value)}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Enter amount"
                       />
-                    </td>
-                    <td className="p-3 border border-gray-300">
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                        <input
-                          type="number"
-                          name="otherDeductionAmount"
-                          value={formData.otherDeductionAmount}
-                          onChange={handleChange}
-                          placeholder="Enter amount"
-                          className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            {/* Summary Section */}
-            <div className="mt-8 p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
-              <h4 className="mb-4 text-lg font-semibold text-gray-700">Summary</h4>
-              <div className="space-y-4">
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-gray-700">
-                    C1 – Total Deductions <span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                    <input
-                      type="number"
-                      name="totalDeductions"
-                      value={formData.totalDeductions}
-                      onChange={handleChange}
-                      placeholder="Enter total deductions"
-                      className={`w-full pl-8 pr-3 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.totalDeductions ? "border-red-500" : "border-gray-300"}`}
-                    />
+                      <button
+                        type="button"
+                        onClick={() => removeArrayItem('exemptAllowances', index)}
+                        className="px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                      >
+                        Remove
+                      </button>
+                    </div>
                   </div>
-                  {errors.totalDeductions && <p className="mt-1 text-sm text-red-500">{errors.totalDeductions}</p>}
-                </div>
-
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-gray-700">
-                    C2 – Taxable Total Income <span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                    <input
-                      type="number"
-                      name="taxableTotalIncome"
-                      value={formData.taxableTotalIncome}
-                      onChange={handleChange}
-                      placeholder="Enter taxable total income"
-                      className={`w-full pl-8 pr-3 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.taxableTotalIncome ? "border-red-500" : "border-gray-300"}`}
-                    />
-                  </div>
-                  {errors.taxableTotalIncome && <p className="mt-1 text-sm text-red-500">{errors.taxableTotalIncome}</p>}
                 </div>
               </div>
-            </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => addArrayItem('exemptAllowances', { slNo: formData.exemptAllowances.length + 1, natureOfExemptAllowance: '', description: '', amount: '' })}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              Add Exempt Allowance
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
-            {/* Exempt Income Section */}
-            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-              <h3 className="text-lg font-semibold mb-4">Exempt Income For Reporting Purpose</h3>
-              <div className="space-y-4">
+  // Step 4: Income from House Property
+  const renderIncomeFromHouseProperty = () => (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold text-gray-800">Income from House Property</h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Type of House Property
+          </label>
+          <select
+            value={formData.propertyType}
+            onChange={(e) => handleInputChange('propertyType', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Select Property Type</option>
+            {ITR_ONE_OPTIONS.propertyType.map(option => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Gross rent received/receivable
+          </label>
+          <input
+            type="text"
+            value={formData.grossRent}
+            onChange={(e) => handleInputChange('grossRent', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Tax paid to local authorities
+          </label>
+          <input
+            type="text"
+            value={formData.localTaxPaid}
+            onChange={(e) => handleInputChange('localTaxPaid', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Interest payable on borrowed capital
+          </label>
+          <input
+            type="text"
+            value={formData.interestBorrowedCapital}
+            onChange={(e) => handleInputChange('interestBorrowedCapital', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Arrears/Unrealised Rent received
+          </label>
+          <input
+            type="text"
+            value={formData.arrearsRent}
+            onChange={(e) => handleInputChange('arrearsRent', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Annual Value (Calculated)
+          </label>
+          <input
+            type="text"
+            value={formData.annualValue}
+            readOnly
+            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+            placeholder="Auto-calculated"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            30% of Annual Value (Calculated)
+          </label>
+          <input
+            type="text"
+            value={formData.standardDeduction}
+            readOnly
+            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+            placeholder="Auto-calculated"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Total House Property Income (Calculated)
+          </label>
+          <input
+            type="text"
+            value={formData.totalHousePropertyIncome}
+            readOnly
+            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+            placeholder="Auto-calculated"
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  // Step 5: Income from Other Sources
+  const renderIncomeFromOtherSources = () => (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold text-gray-800">Income from Other Sources</h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Agricultural Income
+          </label>
+          <input
+            type="text"
+            value={formData.agriculturalIncome}
+            onChange={(e) => handleInputChange('agriculturalIncome', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Total Dividend Income
+          </label>
+          <input
+            type="text"
+            value={formData.totalDividendIncome}
+            onChange={(e) => handleInputChange('totalDividendIncome', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        {/* Other Sources Income Array */}
+        <div className="md:col-span-2">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Other Sources Income</h3>
+          <div className="space-y-4">
+            {formData.otherSourcesIncome.map((income, index) => (
+              <div key={index} className="border border-gray-200 rounded-lg p-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Sl. No.
+                    </label>
+                    <input
+                      type="text"
+                      value={income.slNo.toString()}
+                      onChange={(e) => handleArrayFieldChange('otherSourcesIncome', index, 'slNo', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Serial number"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Nature of Income
+                    </label>
+                    <select
+                      value={income.natureOfIncome}
+                      onChange={(e) => handleArrayFieldChange('otherSourcesIncome', index, 'natureOfIncome', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">Select Type</option>
+                      {ITR_ONE_OPTIONS.otherSourceIncomeTypes.map(option => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Description
+                    </label>
+                    <input
+                      type="text"
+                      value={income.description}
+                      onChange={(e) => handleArrayFieldChange('otherSourcesIncome', index, 'description', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="If 'Any Other' selected"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Amount
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={income.amount}
+                        onChange={(e) => handleArrayFieldChange('otherSourcesIncome', index, 'amount', e.target.value)}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Enter amount"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeArrayItem('otherSourcesIncome', index)}
+                        className="px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => addArrayItem('otherSourcesIncome', { slNo: formData.otherSourcesIncome.length + 1, natureOfIncome: '', description: '', amount: '' })}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              Add Other Source Income
+            </button>
+          </div>
+        </div>
+
+        {/* Retirement Benefit Details */}
+        <div className="md:col-span-2">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Retirement Benefit Details</h3>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Income from retirement benefit account - Other Country u/s 89A
+          </label>
+          <input
+            type="text"
+            value={formData.retirementBenefitOtherCountry89A}
+            onChange={(e) => handleInputChange('retirementBenefitOtherCountry89A', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Relief from taxation u/s 89A - Other Sources
+          </label>
+          <input
+            type="text"
+            value={formData.reliefFromTaxation89AOtherSources}
+            onChange={(e) => handleInputChange('reliefFromTaxation89AOtherSources', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Deduction u/s 57(iia) - Family pension only
+          </label>
+          <input
+            type="text"
+            value={formData.familyPensionDeduction57}
+            onChange={(e) => handleInputChange('familyPensionDeduction57', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        {/* Dividend Income Quarterly Breakup */}
+        <div className="md:col-span-2">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Dividend Income Quarterly Breakup</h3>
+          <div className="space-y-4">
+            {formData.dividendIncomeQuarterly.map((dividend, index) => (
+              <div key={index} className="border border-gray-200 rounded-lg p-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Period
+                    </label>
+                    <input
+                      type="text"
+                      value={dividend.period}
+                      onChange={(e) => handleArrayFieldChange('dividendIncomeQuarterly', index, 'period', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="e.g., Upto 15-Jun-2024"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Amount
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={dividend.amount}
+                        onChange={(e) => handleArrayFieldChange('dividendIncomeQuarterly', index, 'amount', e.target.value)}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Enter amount"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeArrayItem('dividendIncomeQuarterly', index)}
+                        className="px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => addArrayItem('dividendIncomeQuarterly', { period: '', amount: '' })}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              Add Dividend Period
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Step 6: Deductions
+  const renderDeductions = () => (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold text-gray-800">Deductions under Chapter VI-A</h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Section 80C - Life insurance, PPF, etc.
+          </label>
+          <input
+            type="text"
+            value={formData.section80C}
+            onChange={(e) => handleInputChange('section80C', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Section 80D - Health Insurance Premium
+          </label>
+          <input
+            type="text"
+            value={formData.section80D}
+            onChange={(e) => handleInputChange('section80D', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Section 80G - Donations
+          </label>
+          <input
+            type="text"
+            value={formData.section80G}
+            onChange={(e) => handleInputChange('section80G', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Section 80TTA - Interest on Savings Account
+          </label>
+          <input
+            type="text"
+            value={formData.section80TTA}
+            onChange={(e) => handleInputChange('section80TTA', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Section 80E - Education Loan Interest
+          </label>
+          <input
+            type="text"
+            value={formData.section80E}
+            onChange={(e) => handleInputChange('section80E', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Section 80U - Person with Disability
+          </label>
+          <input
+            type="text"
+            value={formData.section80U}
+            onChange={(e) => handleInputChange('section80U', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        {/* Advanced Deductions */}
+        <div className="md:col-span-2">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Advanced Deductions</h3>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Section 80CCC - Payment in respect Pension Fund
+          </label>
+          <input
+            type="text"
+            value={formData.section80CCC}
+            onChange={(e) => handleInputChange('section80CCC', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Section 80CCD(1) - Contribution to pension scheme of Central Government
+          </label>
+          <input
+            type="text"
+            value={formData.section80CCD1}
+            onChange={(e) => handleInputChange('section80CCD1', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Section 80CCD(1B) - Additional contribution to pension scheme
+          </label>
+          <input
+            type="text"
+            value={formData.section80CCD1B}
+            onChange={(e) => handleInputChange('section80CCD1B', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            PRAN of the taxpayer
+          </label>
+          <input
+            type="text"
+            value={formData.pranTaxpayer}
+            onChange={(e) => handleInputChange('pranTaxpayer', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter PRAN number"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Section 80CCD(2) - Contribution by employer
+          </label>
+          <input
+            type="text"
+            value={formData.section80CCD2}
+            onChange={(e) => handleInputChange('section80CCD2', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Section 80CCG - Investment under equity savings scheme
+          </label>
+          <input
+            type="text"
+            value={formData.section80CCG}
+            onChange={(e) => handleInputChange('section80CCG', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            PRAN for 80CCG
+          </label>
+          <input
+            type="text"
+            value={formData.pranTaxpayer80CCG}
+            onChange={(e) => handleInputChange('pranTaxpayer80CCG', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter PRAN number"
+          />
+        </div>
+
+        {/* Section 80D Sub-sections */}
+        <div className="md:col-span-2">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Section 80D - Health Insurance Details</h3>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Health insurance premium
+          </label>
+          <input
+            type="text"
+            value={formData.section80DHealthInsurance}
+            onChange={(e) => handleInputChange('section80DHealthInsurance', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Medical expenditure
+          </label>
+          <input
+            type="text"
+            value={formData.section80DMedicalExpenditure}
+            onChange={(e) => handleInputChange('section80DMedicalExpenditure', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Preventive health check-up
+          </label>
+          <input
+            type="text"
+            value={formData.section80DPreventiveCheckup}
+            onChange={(e) => handleInputChange('section80DPreventiveCheckup', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Section 80DD - Maintenance of dependent with disability
+          </label>
+          <input
+            type="text"
+            value={formData.section80DD}
+            onChange={(e) => handleInputChange('section80DD', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Section 80DDB - Medical treatment of specified disease
+          </label>
+          <input
+            type="text"
+            value={formData.section80DDB}
+            onChange={(e) => handleInputChange('section80DDB', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Name of specified disease
+          </label>
+          <input
+            type="text"
+            value={formData.specifiedDiseaseName}
+            onChange={(e) => handleInputChange('specifiedDiseaseName', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter disease name"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Section 80EE - Interest on loan for residential house property
+          </label>
+          <input
+            type="text"
+            value={formData.section80EE}
+            onChange={(e) => handleInputChange('section80EE', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Section 80EEA - Interest on loan for certain house property
+          </label>
+          <input
+            type="text"
+            value={formData.section80EEA}
+            onChange={(e) => handleInputChange('section80EEA', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Section 80EEB - Purchase of electric vehicle
+          </label>
+          <input
+            type="text"
+            value={formData.section80EEB}
+            onChange={(e) => handleInputChange('section80EEB', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Section 80GG - Rent paid
+          </label>
+          <input
+            type="text"
+            value={formData.section80GG}
+            onChange={(e) => handleInputChange('section80GG', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Acknowledgement number of Form 10BA
+          </label>
+          <input
+            type="text"
+            value={formData.form10BAAckNumber}
+            onChange={(e) => handleInputChange('form10BAAckNumber', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter acknowledgement number"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Section 80GGA - Donations for scientific research
+          </label>
+          <input
+            type="text"
+            value={formData.section80GGA}
+            onChange={(e) => handleInputChange('section80GGA', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Section 80GGC - Contribution to Political party
+          </label>
+          <input
+            type="text"
+            value={formData.section80GGC}
+            onChange={(e) => handleInputChange('section80GGC', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Section 80QQB - Royalty income of authors
+          </label>
+          <input
+            type="text"
+            value={formData.section80QQB}
+            onChange={(e) => handleInputChange('section80QQB', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Section 80RRB - Royalty on patents
+          </label>
+          <input
+            type="text"
+            value={formData.section80RRB}
+            onChange={(e) => handleInputChange('section80RRB', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Section 80TTB - Interest on deposits (senior citizens)
+          </label>
+          <input
+            type="text"
+            value={formData.section80TTB}
+            onChange={(e) => handleInputChange('section80TTB', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Section 80CCH - Contribution to Agnipath Scheme
+          </label>
+          <input
+            type="text"
+            value={formData.section80CCH}
+            onChange={(e) => handleInputChange('section80CCH', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Any Other deductions
+          </label>
+          <input
+            type="text"
+            value={formData.anyOtherDeductions}
+            onChange={(e) => handleInputChange('anyOtherDeductions', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  // Step 7: Tax Computation
+  const renderTaxComputation = () => (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold text-gray-800">Tax Computation</h2>
+      
+      <div className="bg-gray-50 p-6 rounded-lg">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Gross Total Income (1+2+3)
+            </label>
+            <input
+              type="text"
+              value={formData.grossTotalIncome}
+              readOnly
+              className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+              placeholder="Auto-calculated"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Gross Total Income (1+2+3+7a(iii))
+            </label>
+            <input
+              type="text"
+              value={formData.grossTotalIncomeWith112A}
+              readOnly
+              className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+              placeholder="Auto-calculated"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Total Deductions
+            </label>
+            <input
+              type="text"
+              value={formData.totalDeductions}
+              readOnly
+              className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+              placeholder="Auto-calculated"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Total Income (4 - 6)
+            </label>
+            <input
+              type="text"
+              value={formData.totalIncome}
+              readOnly
+              className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+              placeholder="Auto-calculated"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Exempt Income Section */}
+      <div className="bg-blue-50 p-6 rounded-lg">
+        <h3 className="text-lg font-semibold text-blue-800 mb-4">Exempt Income</h3>
+        <div className="space-y-4">
+          {formData.exemptIncome.map((income, index) => (
+            <div key={index} className="border border-blue-200 rounded-lg p-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Nature of Exempt Income
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Sl. No.
+                  </label>
+                  <input
+                    type="text"
+                    value={income.slNo.toString()}
+                    onChange={(e) => handleArrayFieldChange('exemptIncome', index, 'slNo', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Serial number"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Nature of Income
                   </label>
                   <select
-                    name="exemptIncomeType"
-                    value={formData.exemptIncomeType}
-                    onChange={handleChange}
+                    value={income.natureOfIncome}
+                    onChange={(e) => handleArrayFieldChange('exemptIncome', index, 'natureOfIncome', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="">Select Type</option>
-                    <option value="agricultural">Agricultural Income</option>
-                    <option value="dividend">Dividend Income</option>
-                    <option value="interest">Interest Income</option>
-                    <option value="other">Other Exempt Income</option>
+                    {ITR_ONE_OPTIONS.exemptIncomeTypes.map(option => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
                   </select>
-                  {errors.exemptIncomeType && (
-                    <p className="text-red-500 text-sm mt-1">{errors.exemptIncomeType}</p>
-                  )}
                 </div>
-
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Relevant Section/Clause
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Description
                   </label>
                   <input
                     type="text"
-                    name="exemptIncomeSection"
-                    value={formData.exemptIncomeSection}
-                    onChange={handleChange}
+                    value={income.description}
+                    onChange={(e) => handleArrayFieldChange('exemptIncome', index, 'description', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Enter section/clause"
+                    placeholder="If 'Any Other' selected"
                   />
-                  {errors.exemptIncomeSection && (
-                    <p className="text-red-500 text-sm mt-1">{errors.exemptIncomeSection}</p>
-                  )}
                 </div>
-
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Amount
                   </label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-2 text-gray-500">₹</span>
+                  <div className="flex gap-2">
                     <input
-                      type="number"
-                      name="exemptIncomeAmount"
-                      value={formData.exemptIncomeAmount}
-                      onChange={handleChange}
-                      className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="0.00"
+                      type="text"
+                      value={income.amount}
+                      onChange={(e) => handleArrayFieldChange('exemptIncome', index, 'amount', e.target.value)}
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter amount"
                     />
+                    <button
+                      type="button"
+                      onClick={() => removeArrayItem('exemptIncome', index)}
+                      className="px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                    >
+                      Remove
+                    </button>
                   </div>
-                  {errors.exemptIncomeAmount && (
-                    <p className="text-red-500 text-sm mt-1">{errors.exemptIncomeAmount}</p>
-                  )}
                 </div>
               </div>
             </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => addArrayItem('exemptIncome', { slNo: formData.exemptIncome.length + 1, natureOfIncome: '', description: '', amount: '' })}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          >
+            Add Exempt Income
+          </button>
+        </div>
+        
+        <div className="mt-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Total Exempt Income
+          </label>
+          <input
+            type="text"
+            value={formData.totalExemptIncome}
+            readOnly
+            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+            placeholder="Auto-calculated"
+          />
+        </div>
+      </div>
 
-            {/* Long Term Capital Gains Section */}
-            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-              <h3 className="text-lg font-semibold mb-4">Long Term Capital Gains u/s 112A</h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Total Sale Consideration
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-2 text-gray-500">₹</span>
-                    <input
-                      type="number"
-                      name="ltcgSaleConsideration"
-                      value={formData.ltcgSaleConsideration}
-                      onChange={handleChange}
-                      className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="0.00"
-                    />
-                  </div>
-                  {errors.ltcgSaleConsideration && (
-                    <p className="text-red-500 text-sm mt-1">{errors.ltcgSaleConsideration}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Total Cost of Acquisition
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-2 text-gray-500">₹</span>
-                    <input
-                      type="number"
-                      name="ltcgCostOfAcquisition"
-                      value={formData.ltcgCostOfAcquisition}
-                      onChange={handleChange}
-                      className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="0.00"
-                    />
-                  </div>
-                  {errors.ltcgCostOfAcquisition && (
-                    <p className="text-red-500 text-sm mt-1">{errors.ltcgCostOfAcquisition}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Long Term Capital Gains (u/s 112A)
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-2 text-gray-500">₹</span>
-                    <input
-                      type="number"
-                      name="ltcgAmount"
-                      value={formData.ltcgAmount}
-                      onChange={handleChange}
-                      className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="0.00"
-                    />
-                  </div>
-                  {errors.ltcgAmount && (
-                    <p className="text-red-500 text-sm mt-1">{errors.ltcgAmount}</p>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Additional Deductions Section */}
-            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-              <h3 className="text-lg font-semibold mb-4">Additional Deductions</h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Section 80CCD(1) - NPS Contribution
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-2 text-gray-500">₹</span>
-                    <input
-                      type="number"
-                      name="section80CCD1"
-                      value={formData.section80CCD1}
-                      onChange={handleChange}
-                      className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="0.00"
-                    />
-                  </div>
-                  {errors.section80CCD1 && (
-                    <p className="text-red-500 text-sm mt-1">{errors.section80CCD1}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Section 80CCD(2) - Employer's NPS Contribution
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-2 text-gray-500">₹</span>
-                    <input
-                      type="number"
-                      name="section80CCD2"
-                      value={formData.section80CCD2}
-                      onChange={handleChange}
-                      className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="0.00"
-                    />
-                  </div>
-                  {errors.section80CCD2 && (
-                    <p className="text-red-500 text-sm mt-1">{errors.section80CCD2}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Section 80CCH - Health Insurance Premium
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-2 text-gray-500">₹</span>
-                    <input
-                      type="number"
-                      name="section80CCH"
-                      value={formData.section80CCH}
-                      onChange={handleChange}
-                      className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="0.00"
-                    />
-                  </div>
-                  {errors.section80CCH && (
-                    <p className="text-red-500 text-sm mt-1">{errors.section80CCH}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Section 80DD - Disability Deduction
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-2 text-gray-500">₹</span>
-                    <input
-                      type="number"
-                      name="section80DD"
-                      value={formData.section80DD}
-                      onChange={handleChange}
-                      className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="0.00"
-                    />
-                  </div>
-                  {errors.section80DD && (
-                    <p className="text-red-500 text-sm mt-1">{errors.section80DD}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Section 80DDB - Medical Treatment
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-2 text-gray-500">₹</span>
-                    <input
-                      type="number"
-                      name="section80DDB"
-                      value={formData.section80DDB}
-                      onChange={handleChange}
-                      className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="0.00"
-                    />
-                  </div>
-                  {errors.section80DDB && (
-                    <p className="text-red-500 text-sm mt-1">{errors.section80DDB}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Section 80GG - Rent Paid
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-2 text-gray-500">₹</span>
-                    <input
-                      type="number"
-                      name="section80GG"
-                      value={formData.section80GG}
-                      onChange={handleChange}
-                      className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="0.00"
-                    />
-                  </div>
-                  {errors.section80GG && (
-                    <p className="text-red-500 text-sm mt-1">{errors.section80GG}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Section 80TTB - Interest on Deposits
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-2 text-gray-500">₹</span>
-                    <input
-                      type="number"
-                      name="section80TTB"
-                      value={formData.section80TTB}
-                      onChange={handleChange}
-                      className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="0.00"
-                    />
-                  </div>
-                  {errors.section80TTB && (
-                    <p className="text-red-500 text-sm mt-1">{errors.section80TTB}</p>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Total Deductions and Taxable Income */}
-            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-              <h3 className="text-lg font-semibold mb-4">Total Deductions and Taxable Income</h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Total Deductions
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-2 text-gray-500">₹</span>
-                    <input
-                      type="number"
-                      name="totalDeductions"
-                      value={formData.totalDeductions}
-                      onChange={handleChange}
-                      className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="0.00"
-                    />
-                  </div>
-                  {errors.totalDeductions && (
-                    <p className="text-red-500 text-sm mt-1">{errors.totalDeductions}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Taxable Total Income
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-2 text-gray-500">₹</span>
-                    <input
-                      type="number"
-                      name="taxableTotalIncome"
-                      value={formData.taxableTotalIncome}
-                      onChange={handleChange}
-                      className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="0.00"
-                    />
-                  </div>
-                  {errors.taxableTotalIncome && (
-                    <p className="text-red-500 text-sm mt-1">{errors.taxableTotalIncome}</p>
-                  )}
-                </div>
-              </div>
-            </div>
+      {/* Long Term Capital Gains u/s 112A */}
+      <div className="bg-green-50 p-6 rounded-lg">
+        <h3 className="text-lg font-semibold text-green-800 mb-4">Long Term Capital Gains u/s 112A</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Total sale consideration
+            </label>
+            <input
+              type="text"
+              value={formData.ltcg112ATotalSaleConsideration}
+              onChange={(e) => handleInputChange('ltcg112ATotalSaleConsideration', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter amount"
+            />
           </div>
-        )}
-
-        {step === 4 && (
-          <div className="p-4 bg-gray-50 rounded-lg">
-            <h3 className="mb-4 text-lg font-semibold text-gray-700">PART D: Computation of Tax Payable</h3>
-            <div className="space-y-4">
-              <div className="grid grid-cols-3 gap-4">
-                <div className="font-semibold">Code</div>
-                <div className="font-semibold">Field Description</div>
-                <div className="font-semibold">Amount (₹)</div>
-              </div>
-
-              {/* D1 */}
-              <div className="grid grid-cols-3 gap-4 items-center">
-                <div className="font-semibold">D1</div>
-                <div>Tax payable on total income</div>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                  <input
-                    type="number"
-                    name="taxPayable"
-                    value={formData.taxPayable}
-                    onChange={handleChange}
-                    className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                    placeholder="0.00"
-                  />
-                </div>
-              </div>
-
-              {/* D2 */}
-              <div className="grid grid-cols-3 gap-4 items-center">
-                <div className="font-semibold">D2</div>
-                <div>Rebate under Section 87A</div>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                  <input
-                    type="number"
-                    name="rebate87A"
-                    value={formData.rebate87A}
-                    onChange={handleChange}
-                    className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                    placeholder="0.00"
-                  />
-                </div>
-              </div>
-
-              {/* D3 */}
-              <div className="grid grid-cols-3 gap-4 items-center">
-                <div className="font-semibold">D3</div>
-                <div>Tax after Rebate (D1 - D2)</div>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                  <input
-                    type="number"
-                    name="taxAfterRebate"
-                    value={formData.taxAfterRebate}
-                    onChange={handleChange}
-                    className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                    placeholder="0.00"
-                  />
-                </div>
-              </div>
-
-              {/* D4 */}
-              <div className="grid grid-cols-3 gap-4 items-center">
-                <div className="font-semibold">D4</div>
-                <div>Health and Education Cess @ 4% on D3</div>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                  <input
-                    type="number"
-                    name="healthAndEducationCess"
-                    value={formData.healthAndEducationCess}
-                    onChange={handleChange}
-                    className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                    placeholder="0.00"
-                  />
-                </div>
-              </div>
-
-              {/* D5 */}
-              <div className="grid grid-cols-3 gap-4 items-center">
-                <div className="font-semibold">D5</div>
-                <div>Total Tax and Cess (D3 + D4)</div>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                  <input
-                    type="number"
-                    name="totalTaxAndCess"
-                    value={formData.totalTaxAndCess}
-                    onChange={handleChange}
-                    className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                    placeholder="0.00"
-                  />
-                </div>
-              </div>
-
-              {/* D6 */}
-              <div className="grid grid-cols-3 gap-4 items-center">
-                <div className="font-semibold">D6</div>
-                <div>Relief under Section 89 (submit Form 10E to claim this relief)</div>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                  <input
-                    type="number"
-                    name="relief89"
-                    value={formData.relief89}
-                    onChange={handleChange}
-                    className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                    placeholder="0.00"
-                  />
-                </div>
-              </div>
-
-              {/* D7 */}
-              <div className="grid grid-cols-3 gap-4 items-center">
-                <div className="font-semibold">D7</div>
-                <div>Interest under Section 234A (for delay in filing return)</div>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                  <input
-                    type="number"
-                    name="interest234A"
-                    value={formData.interest234A}
-                    onChange={handleChange}
-                    className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                    placeholder="0.00"
-                  />
-                </div>
-              </div>
-
-              {/* D8 */}
-              <div className="grid grid-cols-3 gap-4 items-center">
-                <div className="font-semibold">D8</div>
-                <div>Interest under Section 234B (for default in advance tax payment)</div>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                  <input
-                    type="number"
-                    name="interest234B"
-                    value={formData.interest234B}
-                    onChange={handleChange}
-                    className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                    placeholder="0.00"
-                  />
-                </div>
-              </div>
-
-              {/* D9 */}
-              <div className="grid grid-cols-3 gap-4 items-center">
-                <div className="font-semibold">D9</div>
-                <div>Interest under Section 234C (for deferment of advance tax)</div>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                  <input
-                    type="number"
-                    name="interest234C"
-                    value={formData.interest234C}
-                    onChange={handleChange}
-                    className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                    placeholder="0.00"
-                  />
-                </div>
-              </div>
-
-              {/* D10 */}
-              <div className="grid grid-cols-3 gap-4 items-center">
-                <div className="font-semibold">D10</div>
-                <div>Late filing Fee under Section 234F</div>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                  <input
-                    type="number"
-                    name="lateFilingFee234F"
-                    value={formData.lateFilingFee234F}
-                    onChange={handleChange}
-                    className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                    placeholder="0.00"
-                  />
-                </div>
-              </div>
-
-              {/* D11 */}
-              <div className="grid grid-cols-3 gap-4 items-center">
-                <div className="font-semibold">D11</div>
-                <div>Total Tax, Fee and Interest (D5 + D7 + D8 + D9 + D10 - D6)</div>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                  <input
-                    type="number"
-                    name="totalTaxFeeAndInterest"
-                    value={formData.totalTaxFeeAndInterest}
-                    onChange={handleChange}
-                    className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                    placeholder="0.00"
-                  />
-                </div>
-              </div>
-
-              {/* D12 */}
-              <div className="grid grid-cols-3 gap-4 items-center">
-                <div className="font-semibold">D12</div>
-                <div>Total Taxes Paid (Advance tax + TDS + TCS + Self-assessment tax)</div>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                  <input
-                    type="number"
-                    name="totalTaxesPaid"
-                    value={formData.totalTaxesPaid}
-                    onChange={handleChange}
-                    className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                    placeholder="0.00"
-                  />
-                </div>
-              </div>
-
-              {/* D13 */}
-              <div className="grid grid-cols-3 gap-4 items-center">
-                <div className="font-semibold">D13</div>
-                <div>Amount Payable (if D11 &gt; D12): D11 - D12</div>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                  <input
-                    type="number"
-                    name="amountPayable"
-                    value={formData.amountPayable}
-                    onChange={handleChange}
-                    className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                    placeholder="0.00"
-                  />
-                </div>
-              </div>
-
-              {/* D14 */}
-              <div className="grid grid-cols-3 gap-4 items-center">
-                <div className="font-semibold">D14</div>
-                <div>Refund (if D12 &gt; D11): D12 - D11</div>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                  <input
-                    type="number"
-                    name="refund"
-                    value={formData.refund}
-                    onChange={handleChange}
-                    className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                    placeholder="0.00"
-                  />
-                </div>
-              </div>
-            </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Total cost of acquisition
+            </label>
+            <input
+              type="text"
+              value={formData.ltcg112ATotalCostOfAcquisition}
+              onChange={(e) => handleInputChange('ltcg112ATotalCostOfAcquisition', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter amount"
+            />
           </div>
-        )}
-
-        {step === 5 && (
-          <div className="p-4 bg-gray-50 rounded-lg">
-            <h3 className="mb-4 text-lg font-semibold text-gray-700">PART E: Other Information</h3>
-            
-            {/* 1. Bank Account Details */}
-            <div className="mb-8">
-              <h4 className="mb-4 text-md font-semibold text-gray-700">1. Bank Account Details (Excluding Dormant Accounts)</h4>
-              <div className="overflow-x-auto">
-                <table className="min-w-full bg-white border border-gray-300">
-                  <thead>
-                    <tr className="bg-gray-100">
-                      <th className="px-4 py-2 border border-gray-300">S.No.</th>
-                      <th className="px-4 py-2 border border-gray-300">IFS Code</th>
-                      <th className="px-4 py-2 border border-gray-300">Bank Name</th>
-                      <th className="px-4 py-2 border border-gray-300">Account Number</th>
-                      <th className="px-4 py-2 border border-gray-300">Account Type</th>
-                      <th className="px-4 py-2 border border-gray-300">Select for Refund</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {formData.bankAccounts.map((account, index) => (
-                      <tr key={index}>
-                        <td className="px-4 py-2 border border-gray-300">{index + 1}</td>
-                        <td className="px-4 py-2 border border-gray-300">
-                          <input
-                            type="text"
-                            value={account.ifscCode}
-                            onChange={(e) => {
-                              const newAccounts = [...formData.bankAccounts];
-                              newAccounts[index].ifscCode = e.target.value;
-                              setFormData({ ...formData, bankAccounts: newAccounts });
-                            }}
-                            className="w-full p-2 border border-gray-300 rounded-md"
-                            placeholder="Enter IFSC Code"
-                          />
-                        </td>
-                        <td className="px-4 py-2 border border-gray-300">
-                          <input
-                            type="text"
-                            value={account.bankName}
-                            onChange={(e) => {
-                              const newAccounts = [...formData.bankAccounts];
-                              newAccounts[index].bankName = e.target.value;
-                              setFormData({ ...formData, bankAccounts: newAccounts });
-                            }}
-                            className="w-full p-2 border border-gray-300 rounded-md"
-                            placeholder="Enter Bank Name"
-                          />
-                        </td>
-                        <td className="px-4 py-2 border border-gray-300">
-                          <input
-                            type="text"
-                            value={account.accountNumber}
-                            onChange={(e) => {
-                              const newAccounts = [...formData.bankAccounts];
-                              newAccounts[index].accountNumber = e.target.value;
-                              setFormData({ ...formData, bankAccounts: newAccounts });
-                            }}
-                            className="w-full p-2 border border-gray-300 rounded-md"
-                            placeholder="Enter Account Number"
-                          />
-                        </td>
-                        <td className="px-4 py-2 border border-gray-300">
-                          <select
-                            value={account.accountType}
-                            onChange={(e) => {
-                              const newAccounts = [...formData.bankAccounts];
-                              newAccounts[index].accountType = e.target.value;
-                              setFormData({ ...formData, bankAccounts: newAccounts });
-                            }}
-                            className="w-full p-2 border border-gray-300 rounded-md"
-                          >
-                            <option value="">Select Type</option>
-                            <option value="Savings">Savings</option>
-                            <option value="Current">Current</option>
-                          </select>
-                        </td>
-                        <td className="px-4 py-2 border border-gray-300">
-                          <input
-                            type="checkbox"
-                            checked={account.selectForRefund}
-                            onChange={(e) => {
-                              const newAccounts = [...formData.bankAccounts];
-                              newAccounts[index].selectForRefund = e.target.checked;
-                              setFormData({ ...formData, bankAccounts: newAccounts });
-                            }}
-                            className="w-4 h-4"
-                          />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <p className="mt-2 text-sm text-gray-600">
-                Note: Report all active accounts held in India anytime during the financial year. At least one account must be marked as "Select for Refund".
-                If multiple are selected, CPC will choose one validated account for credit.
-              </p>
-            </div>
-
-            {/* 2. Schedule-IT – Advance Tax and Self-Assessment Tax Payments */}
-            <div className="mb-8">
-              <h4 className="mb-4 text-md font-semibold text-gray-700">2. Schedule-IT – Advance Tax and Self-Assessment Tax Payments</h4>
-              <div className="overflow-x-auto">
-                <table className="min-w-full bg-white border border-gray-300">
-                  <thead>
-                    <tr className="bg-gray-100">
-                      <th className="px-4 py-2 border border-gray-300">S.No.</th>
-                      <th className="px-4 py-2 border border-gray-300">BSR Code</th>
-                      <th className="px-4 py-2 border border-gray-300">Date of Deposit</th>
-                      <th className="px-4 py-2 border border-gray-300">Challan Serial Number</th>
-                      <th className="px-4 py-2 border border-gray-300">Amount Paid (₹)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {formData.advanceTaxPayments.map((payment, index) => (
-                      <tr key={index}>
-                        <td className="px-4 py-2 border border-gray-300">{index + 1}</td>
-                        <td className="px-4 py-2 border border-gray-300">
-                          <input
-                            type="text"
-                            value={payment.bsrCode}
-                            onChange={(e) => {
-                              const newPayments = [...formData.advanceTaxPayments];
-                              newPayments[index].bsrCode = e.target.value;
-                              setFormData({ ...formData, advanceTaxPayments: newPayments });
-                            }}
-                            className="w-full p-2 border border-gray-300 rounded-md"
-                            placeholder="Enter BSR Code"
-                          />
-                        </td>
-                        <td className="px-4 py-2 border border-gray-300">
-                          <input
-                            type="date"
-                            value={payment.dateOfDeposit}
-                            onChange={(e) => {
-                              const newPayments = [...formData.advanceTaxPayments];
-                              newPayments[index].dateOfDeposit = e.target.value;
-                              setFormData({ ...formData, advanceTaxPayments: newPayments });
-                            }}
-                            className="w-full p-2 border border-gray-300 rounded-md"
-                          />
-                        </td>
-                        <td className="px-4 py-2 border border-gray-300">
-                          <input
-                            type="text"
-                            value={payment.challanSerialNumber}
-                            onChange={(e) => {
-                              const newPayments = [...formData.advanceTaxPayments];
-                              newPayments[index].challanSerialNumber = e.target.value;
-                              setFormData({ ...formData, advanceTaxPayments: newPayments });
-                            }}
-                            className="w-full p-2 border border-gray-300 rounded-md"
-                            placeholder="Enter Challan Serial Number"
-                          />
-                        </td>
-                        <td className="px-4 py-2 border border-gray-300">
-                          <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                            <input
-                              type="number"
-                              value={payment.amountPaid}
-                              onChange={(e) => {
-                                const newPayments = [...formData.advanceTaxPayments];
-                                newPayments[index].amountPaid = e.target.value;
-                                setFormData({ ...formData, advanceTaxPayments: newPayments });
-                              }}
-                              className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md"
-                              placeholder="0.00"
-                            />
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* 3. Schedule-TDS – TDS/TCS Details */}
-            <div className="mb-8">
-              <h4 className="mb-4 text-md font-semibold text-gray-700">3. Schedule-TDS – TDS/TCS Details</h4>
-              <p className="mb-4 text-sm text-gray-600">
-                (As per Form 16/16A/16C/27D issued by Deductor/Collector/Employer)
-              </p>
-              <div className="overflow-x-auto">
-                <table className="min-w-full bg-white border border-gray-300">
-                  <thead>
-                    <tr className="bg-gray-100">
-                      <th className="px-4 py-2 border border-gray-300">S.No.</th>
-                      <th className="px-4 py-2 border border-gray-300">TAN / PAN / Aadhaar of Deductor / Collector</th>
-                      <th className="px-4 py-2 border border-gray-300">Name of Deductor / Collector</th>
-                      <th className="px-4 py-2 border border-gray-300">Section</th>
-                      <th className="px-4 py-2 border border-gray-300">Gross Payment / Receipt (₹)</th>
-                      <th className="px-4 py-2 border border-gray-300">Year of Deduction / Collection</th>
-                      <th className="px-4 py-2 border border-gray-300">Tax Deducted / Collected (₹)</th>
-                      <th className="px-4 py-2 border border-gray-300">Tax Credit Claimed (₹)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {formData.tdsDetails.map((detail, index) => (
-                      <tr key={index}>
-                        <td className="px-4 py-2 border border-gray-300">{index + 1}</td>
-                        <td className="px-4 py-2 border border-gray-300">
-                          <input
-                            type="text"
-                            value={detail.tanPanAadhar}
-                            onChange={(e) => {
-                              const newDetails = [...formData.tdsDetails];
-                              newDetails[index].tanPanAadhar = e.target.value;
-                              setFormData({ ...formData, tdsDetails: newDetails });
-                            }}
-                            className="w-full p-2 border border-gray-300 rounded-md"
-                            placeholder="Enter TAN/PAN/Aadhaar"
-                          />
-                        </td>
-                        <td className="px-4 py-2 border border-gray-300">
-                          <input
-                            type="text"
-                            value={detail.deductorName}
-                            onChange={(e) => {
-                              const newDetails = [...formData.tdsDetails];
-                              newDetails[index].deductorName = e.target.value;
-                              setFormData({ ...formData, tdsDetails: newDetails });
-                            }}
-                            className="w-full p-2 border border-gray-300 rounded-md"
-                            placeholder="Enter Name"
-                          />
-                        </td>
-                        <td className="px-4 py-2 border border-gray-300">
-                          <input
-                            type="text"
-                            value={detail.section}
-                            onChange={(e) => {
-                              const newDetails = [...formData.tdsDetails];
-                              newDetails[index].section = e.target.value;
-                              setFormData({ ...formData, tdsDetails: newDetails });
-                            }}
-                            className="w-full p-2 border border-gray-300 rounded-md"
-                            placeholder="e.g., 192, 194C"
-                          />
-                        </td>
-                        <td className="px-4 py-2 border border-gray-300">
-                          <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                            <input
-                              type="number"
-                              value={detail.grossAmount}
-                              onChange={(e) => {
-                                const newDetails = [...formData.tdsDetails];
-                                newDetails[index].grossAmount = e.target.value;
-                                setFormData({ ...formData, tdsDetails: newDetails });
-                              }}
-                              className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md"
-                              placeholder="0.00"
-                            />
-                          </div>
-                        </td>
-                        <td className="px-4 py-2 border border-gray-300">
-                          <input
-                            type="text"
-                            value={detail.yearOfDeduction}
-                            onChange={(e) => {
-                              const newDetails = [...formData.tdsDetails];
-                              newDetails[index].yearOfDeduction = e.target.value;
-                              setFormData({ ...formData, tdsDetails: newDetails });
-                            }}
-                            className="w-full p-2 border border-gray-300 rounded-md"
-                            placeholder="YYYY"
-                          />
-                        </td>
-                        <td className="px-4 py-2 border border-gray-300">
-                          <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                            <input
-                              type="number"
-                              value={detail.taxDeducted}
-                              onChange={(e) => {
-                                const newDetails = [...formData.tdsDetails];
-                                newDetails[index].taxDeducted = e.target.value;
-                                setFormData({ ...formData, tdsDetails: newDetails });
-                              }}
-                              className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md"
-                              placeholder="0.00"
-                            />
-                          </div>
-                        </td>
-                        <td className="px-4 py-2 border border-gray-300">
-                          <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                            <input
-                              type="number"
-                              value={detail.taxCreditClaimed}
-                              onChange={(e) => {
-                                const newDetails = [...formData.tdsDetails];
-                                newDetails[index].taxCreditClaimed = e.target.value;
-                                setFormData({ ...formData, tdsDetails: newDetails });
-                              }}
-                              className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md"
-                              placeholder="0.00"
-                            />
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Long term capital gains as per sec 112A
+            </label>
+            <input
+              type="text"
+              value={formData.ltcg112ALongTermCapitalGains}
+              readOnly
+              className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+              placeholder="Auto-calculated"
+            />
           </div>
-        )}
+        </div>
+      </div>
 
-        <div className="flex justify-between mt-6">
-          {step > 1 && (
+      {/* Tax Calculation */}
+      <div className="bg-yellow-50 p-6 rounded-lg">
+        <h3 className="text-lg font-semibold text-yellow-800 mb-4">Tax Calculation</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Tax Payable on Total Income
+            </label>
+            <input
+              type="text"
+              value={formData.taxPayableOnTotalIncome}
+              readOnly
+              className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+              placeholder="Auto-calculated"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Rebate u/s 87A
+            </label>
+            <input
+              type="text"
+              value={formData.rebate87A}
+              readOnly
+              className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+              placeholder="Auto-calculated"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Tax payable after Rebate
+            </label>
+            <input
+              type="text"
+              value={formData.taxPayableAfterRebate}
+              readOnly
+              className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+              placeholder="Auto-calculated"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Health and Education Cess @4%
+            </label>
+            <input
+              type="text"
+              value={formData.healthAndEducationCess}
+              readOnly
+              className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+              placeholder="Auto-calculated"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Total Tax and Cess
+            </label>
+            <input
+              type="text"
+              value={formData.totalTaxAndCess}
+              readOnly
+              className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+              placeholder="Auto-calculated"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Relief u/s 89 (Form 10E required)
+            </label>
+            <input
+              type="text"
+              value={formData.relief89}
+              onChange={(e) => handleInputChange('relief89', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter amount"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Relief u/s 89A
+            </label>
+            <input
+              type="text"
+              value={formData.relief89A}
+              onChange={(e) => handleInputChange('relief89A', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter amount"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Balance Tax after Relief
+            </label>
+            <input
+              type="text"
+              value={formData.balanceTaxAfterRelief}
+              readOnly
+              className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+              placeholder="Auto-calculated"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Interest and Fee Calculations */}
+      <div className="bg-red-50 p-6 rounded-lg">
+        <h3 className="text-lg font-semibold text-red-800 mb-4">Interest and Fee Calculations</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Interest u/s 234A
+            </label>
+            <input
+              type="text"
+              value={formData.interest234A}
+              readOnly
+              className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+              placeholder="Auto-calculated"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Interest u/s 234B
+            </label>
+            <input
+              type="text"
+              value={formData.interest234B}
+              readOnly
+              className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+              placeholder="Auto-calculated"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Interest u/s 234C
+            </label>
+            <input
+              type="text"
+              value={formData.interest234C}
+              readOnly
+              className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+              placeholder="Auto-calculated"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Fee u/s 234F
+            </label>
+            <input
+              type="text"
+              value={formData.fee234F}
+              readOnly
+              className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+              placeholder="Auto-calculated"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Total Interest, Fee Payable
+            </label>
+            <input
+              type="text"
+              value={formData.totalInterestFeePayable}
+              readOnly
+              className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+              placeholder="Auto-calculated"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Total Tax, Fee and Interest
+            </label>
+            <input
+              type="text"
+              value={formData.totalTaxFeeAndInterest}
+              readOnly
+              className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+              placeholder="Auto-calculated"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Step 8: Bank Details & Verification
+  const renderBankDetailsAndVerification = () => (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold text-gray-800">Bank Details & Verification</h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Bank Name *
+          </label>
+          <input
+            type="text"
+            value={formData.bankName}
+            onChange={(e) => handleInputChange('bankName', e.target.value)}
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.bankName ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="Enter bank name"
+          />
+          {errors.bankName && <p className="mt-1 text-sm text-red-600">{errors.bankName}</p>}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Account Number *
+          </label>
+          <input
+            type="text"
+            value={formData.accountNumber}
+            onChange={(e) => handleInputChange('accountNumber', e.target.value)}
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.accountNumber ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="Enter account number"
+          />
+          {errors.accountNumber && <p className="mt-1 text-sm text-red-600">{errors.accountNumber}</p>}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            IFSC Code *
+          </label>
+          <input
+            type="text"
+            value={formData.ifscCode}
+            onChange={(e) => handleInputChange('ifscCode', e.target.value)}
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.ifscCode ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="Enter IFSC code"
+          />
+          {errors.ifscCode && <p className="mt-1 text-sm text-red-600">{errors.ifscCode}</p>}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Account Type *
+          </label>
+          <select
+            value={formData.accountType}
+            onChange={(e) => handleInputChange('accountType', e.target.value)}
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.accountType ? 'border-red-500' : 'border-gray-300'
+            }`}
+          >
+            <option value="">Select Account Type</option>
+            {ITR_ONE_OPTIONS.accountType.map(option => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          {errors.accountType && <p className="mt-1 text-sm text-red-600">{errors.accountType}</p>}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Verification Method *
+          </label>
+          <select
+            value={formData.verificationMethod}
+            onChange={(e) => handleInputChange('verificationMethod', e.target.value)}
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.verificationMethod ? 'border-red-500' : 'border-gray-300'
+            }`}
+          >
+            <option value="">Select Verification Method</option>
+            {ITR_ONE_OPTIONS.verificationMethod.map(option => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          {errors.verificationMethod && <p className="mt-1 text-sm text-red-600">{errors.verificationMethod}</p>}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Place of Filing *
+          </label>
+          <input
+            type="text"
+            value={formData.placeOfFiling}
+            onChange={(e) => handleInputChange('placeOfFiling', e.target.value)}
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.placeOfFiling ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="Enter place of filing"
+          />
+          {errors.placeOfFiling && <p className="mt-1 text-sm text-red-600">{errors.placeOfFiling}</p>}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Verification Date
+          </label>
+          <input
+            type="text"
+            value={formData.verificationDate}
+            onChange={(e) => handleInputChange('verificationDate', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="DD"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Verification Month
+          </label>
+          <input
+            type="text"
+            value={formData.verificationMonth}
+            onChange={(e) => handleInputChange('verificationMonth', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="MM"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Verification Year
+          </label>
+          <input
+            type="text"
+            value={formData.verificationYear}
+            onChange={(e) => handleInputChange('verificationYear', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="YYYY"
+          />
+        </div>
+
+        {/* Multiple Bank Accounts */}
+        <div className="md:col-span-2">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Bank Accounts</h3>
+          <div className="space-y-4">
+            {formData.bankAccounts.map((account, index) => (
+              <div key={index} className="border border-gray-200 rounded-lg p-4">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      IFSC Code
+                    </label>
+                    <input
+                      type="text"
+                      value={account.ifscCode}
+                      onChange={(e) => handleArrayFieldChange('bankAccounts', index, 'ifscCode', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter IFSC code"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Bank Name
+                    </label>
+                    <input
+                      type="text"
+                      value={account.bankName}
+                      onChange={(e) => handleArrayFieldChange('bankAccounts', index, 'bankName', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter bank name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Account Number
+                    </label>
+                    <input
+                      type="text"
+                      value={account.accountNumber}
+                      onChange={(e) => handleArrayFieldChange('bankAccounts', index, 'accountNumber', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter account number"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Account Type
+                    </label>
+                    <select
+                      value={account.accountType}
+                      onChange={(e) => handleArrayFieldChange('bankAccounts', index, 'accountType', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">Select Type</option>
+                      {ITR_ONE_OPTIONS.accountType.map(option => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Select for Refund
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="checkbox"
+                        checked={account.selectForRefund}
+                        onChange={(e) => handleArrayFieldChange('bankAccounts', index, 'selectForRefund', e.target.checked.toString())}
+                        className="mt-2"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeArrayItem('bankAccounts', index)}
+                        className="px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
             <button
               type="button"
-              onClick={handlePreviousStep}
-              className="px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              onClick={() => addArrayItem('bankAccounts', { ifscCode: '', bankName: '', accountNumber: '', accountType: '', selectForRefund: false })}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              Add Bank Account
+            </button>
+          </div>
+        </div>
+
+        {/* Filing Status Details */}
+        <div className="md:col-span-2">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Filing Status Details</h3>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Filed u/s
+          </label>
+          <select
+            value={formData.filedUnderSection}
+            onChange={(e) => handleInputChange('filedUnderSection', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Select Section</option>
+            {ITR_ONE_OPTIONS.filedUnderSection.map(option => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Filed in response to notice u/s
+          </label>
+          <input
+            type="text"
+            value={formData.filedInResponseToNotice}
+            onChange={(e) => handleInputChange('filedInResponseToNotice', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter section"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Receipt Number
+          </label>
+          <input
+            type="text"
+            value={formData.receiptNumber}
+            onChange={(e) => handleInputChange('receiptNumber', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter receipt number"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Date of filing of original return
+          </label>
+          <input
+            type="text"
+            value={formData.originalFilingDate}
+            onChange={(e) => handleInputChange('originalFilingDate', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="DD/MM/YYYY"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Unique Number/DIN
+          </label>
+          <input
+            type="text"
+            value={formData.noticeDIN}
+            onChange={(e) => handleInputChange('noticeDIN', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter DIN"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Date of such Notice or Order
+          </label>
+          <input
+            type="text"
+            value={formData.noticeDate}
+            onChange={(e) => handleInputChange('noticeDate', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="DD/MM/YYYY"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Due Date of filing of ITR
+          </label>
+          <input
+            type="text"
+            value={formData.dueDateOfFiling}
+            readOnly
+            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+            placeholder="31/07/2025"
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">ITR-1 (SAHAJ)</h1>
+              <p className="text-gray-600 mt-2">Indian Income Tax Return for Individuals</p>
+            </div>
+            <button
+              onClick={() => navigate('/practice/itr/login')}
+              className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+            >
+              ← Back to ITR Forms
+            </button>
+          </div>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-800">
+              Step {step} of {ITR_ONE_STEPS.length}: {ITR_ONE_STEPS[step - 1]?.title}
+            </h2>
+            <span className="text-sm text-gray-500">
+              {Math.round((step / ITR_ONE_STEPS.length) * 100)}% Complete
+            </span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div
+              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${(step / ITR_ONE_STEPS.length) * 100}%` }}
+            ></div>
+          </div>
+          <p className="text-sm text-gray-600 mt-2">
+            {ITR_ONE_STEPS[step - 1]?.description}
+          </p>
+        </div>
+
+        {/* Form Content */}
+        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+          {renderStepContent()}
+        </div>
+
+        {/* Navigation Buttons */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center justify-between">
+            <button
+              onClick={prevStep}
+              disabled={step === 1}
+              className={`px-6 py-2 rounded-md font-medium ${
+                step === 1
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  : 'bg-gray-600 text-white hover:bg-gray-700'
+              }`}
             >
               Previous
             </button>
-          )}
-          <button
-            type="button"
-            onClick={handleNextStep}
-            disabled={isLoading}
-            className={`px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
-              isLoading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-          >
-            {isLoading ? (
-              <span className="flex items-center">
-                <svg className="w-4 h-4 mr-2 animate-spin" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-                Processing...
-              </span>
-            ) : step === 5 ? (
-              "Submit"
-            ) : (
-              "Next"
-            )}
-          </button>
+
+            <div className="flex space-x-4">
+              <button
+                onClick={saveFormData}
+                disabled={isLoading}
+                className="px-6 py-2 bg-yellow-600 text-white rounded-md font-medium hover:bg-yellow-700 disabled:opacity-50"
+              >
+                {isLoading ? 'Saving...' : 'Save Draft'}
+              </button>
+
+              {step < ITR_ONE_STEPS.length ? (
+                <button
+                  onClick={nextStep}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700"
+                >
+                  Next
+                </button>
+              ) : (
+                <button
+                  onClick={saveFormData}
+                  disabled={isLoading}
+                  className="px-6 py-2 bg-green-600 text-white rounded-md font-medium hover:bg-green-700 disabled:opacity-50"
+                >
+                  {isLoading ? 'Submitting...' : 'Submit ITR'}
+                </button>
+              )}
+            </div>
+          </div>
         </div>
+
+        {/* Error Message */}
         {saveError && (
-          <div className="mt-2 text-sm text-red-500">{saveError}</div>
+          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-md">
+            <p className="text-red-600">{saveError}</p>
+          </div>
         )}
+      </div>
     </div>
-    </>
   );
 };
 

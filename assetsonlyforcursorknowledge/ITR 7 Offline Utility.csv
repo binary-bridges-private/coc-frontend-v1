@@ -1,0 +1,55 @@
+,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,
+,,,,Assessment Year 2025-26,,,,,,,,,,
+,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,
+,,Sl.No.,Schedule Name,Schedules for Filling Income Tax Returns,"Description
+Click on applicable links to navigate to the respective sheet / schedule.",Select Applicable sheets  below by choosing Y/N and click on apply,Select Sheets to print and click on apply,,,,,Enabled,,
+,,1,PI,"Personal Information, Other Details","Personal Information, Filing Status, Other Details",Y,Y,,,,,Y,,
+,,2,Audit,Audit Details,Audit Information,Y,Y,,,,,Y,,
+,,3,Schedule I,Schedule I,Details of amounts accumulated / set apart within the meaning of section 11(2),Y,Y,,,,,Y,,
+,,4,Schedule IA,Schedule IA,Details of accumulated income taxed in earlier assessment years as per section 11(3),Y,Y,,,,,,,
+,,5,Schedule D,Schedule D,Details of deemed application of income under clause (2) of Explanation 1 to sub-section (1) of section 11.,Y,Y,,,,,,,
+,,6,Schedule DA,Schedule DA,Details of accumulated income taxed in earlier assessment years as per section 11 (1B),Y,Y,,,,,,,
+,,7,Schedule J,Schedule J,Details Of Investment Of Funds,Y,Y,,,,,Y,,
+,,8,BALANCE_SHEET,BALANCE_SHEET,"Balance Sheet as on 31st day of March, 2025 [to be mandatorily filled in by all persons filing ITR-7]",Y,Y,,,,,,,
+,,9,Schedule R,Schedule R,Reconciliation of Corpus of Schedule J and Balance sheet,Y,Y,,,,,Y,,
+,,10,Schedule LA,Schedule LA,Political Party,Y,Y,,,,,Y,,
+,,11,Schedule ET,Schedule ET,Electoral Trust,Y,Y,,,,,Y,,
+,,12,Schedule VC,Schedule VC,Voluntary Contributions,Y,Y,,,,,Y,,Y
+,,12,Schedule AI,Schedule AI,Aggregate of income referred to in section u/s 11 and 12 derived during the previous year excluding Voluntary contribution forming part of corpus as per section 11(1)(d) and voluntary contributions,Y,Y,,,,Y,,,
+,,13,Schedule ER,Schedule ER,Amount applied to charitable or religious purposes in India during the previous year - Revenue Account,Y,Y,,,,Y,,,
+,,14,Schedule EC,Schedule EC,Amount applied to charitable or religious purposes in India during the previous year–Capital Account [excluding application from borrowed funds and amount exempt u/s 11(1A)],Y,Y,,,,Y,,,
+,,13,Schedule A,Schedule A,Amount applied to stated objects of the trust/institution during the previous year from all sources referred to in C1 to C7 E1 to E7 8 of this table- Revenue Account  [to be filled by assessee claiming exemption u/s 11 and 12 or u/s 10(23C)(iv) or 10(23C)(v) or 10(23C)(vi) or 10(23C)(via)],Y,Y,,,,Y,,,
+,,14,Schedule VC,Schedule VC,Voluntary Contributions,Y,Y,,,,Y,,,
+,,15,Schedule IE-1,Schedule IE-1,"Income & Expenditure statement (Applicable for assessees claiming exemption under sections 10(21),10(22B),10(23AAA),10(23B), 10(23D), 10(23DA), 10(23EC), 10(23ED), 10(23EE), 10(29A), 10(46), 10(47) and other clauses of section 10 where income is unconditionally exempt)",Y,Y,,,,Y,,,
+,,16,Schedule IE-2,Schedule IE-2,"Income & Expenditure statement (Applicable for assessees claiming exemption under sections 10(23A), 10(24) )",Y,Y,,,,N,,,
+,,17,Schedule IE-3,Schedule IE-3,Income & Expenditure statement (applicable for assessees claiming exemption under sections 10(23C)(iiiab) or 10(23C)(iiiac) (please fill up separate schedule for each institution),Y,Y,,,,N,,,
+,,18,Schedule IE-4,Schedule IE-4,Income & Expenditure statement (applicable for assessees claiming exemption under sections 10(23C)(iiiad) or 10(23C)(iiiae)( (please fill up separate schedule for each institution),Y,Y,,,,Y,,,
+,,19,Schedule HP,Schedule HP,Details of Income from House Property ,Y,Y,,,,Y,Y,,Y
+,,20,Schedule CG,Schedule CG,Capital Gains,Y,Y,,,,Y,Y,,Y
+,,21,Schedule OS,Schedule OS,Income from other sources,Y,Y,,,,Y,Y,,Y
+,,22,Schedule VDA,Schedule VDA,Income from transfer of Virtual Digital Assets,Y,Y,,,,,,,
+,,23,Schedule OA,Schedule OA,General. Do you have any income under the head business and profession?,Y,Y,,,,,Y,,Y
+,,24,Schedule BP,Schedule BP,Income From Business Or Profession,Y,Y,,,,,Y,,Y
+,,25,Schedule CYLA,Schedule CYLA,Details of Income after set-off of current years losses,Y,Y,,,,Y,Y,,Y
+,,26,Schedule PTI,Schedule PTI,"Pass Through Income details from business trust or investment fund as per section 115UA, 115UB",Y,Y,,,,Y,,,Y
+,,27,Schedule SI,Schedule SI,Income chargeable to tax at special rates,Y,Y,,,,,Y,,
+,,28,Schedule 115TD,Schedule 115TD,Accreted income under section 115TD,Y,Y,,,,Y,,,
+,,29,Schedule 115BBI,Schedule 115BBI,Specified income of certain institutions under section 115BBI ,Y,Y,,,,,,,
+,,30,Schedule FSI,Schedule FSI,Details of Income accruing or arising outside India,Y,Y,,,,,Y,,
+,,31,Schedule TR,Schedule TR,Details of Income from outside India and tax relief,Y,Y,,,,,Y,,Y
+,,32,Schedule FA,Schedule FA,Details of Foreign Assets,Y,Y,,,,,Y,,Y
+,,33,Schedule SH,Schedule SH,SHAREHOLDING OF UNLISTED COMPANY ,Y,Y,,,,,,,
+,,34,PART-B-TI & TTI,"PART B TI , PART B TTI","State of Income, Tax Liability",Y,Y,,,,,Y,,
+,,35,IT,18A,Details of payments of Advance Tax and Self-Assessment,Y,Y,,,,,Y,,
+,,36,TDS,18B,Details of Tax Deducted at Source (TDS) on Income,Y,Y,,,,,Y,,
+,,37,TCS,18C,Details of Tax Collected at Source (TCS),Y,Y,,,,,Y,,
+,,38,Verification,Schedule Verification,Verification,Y,Y,,,,,,,
+,,"Instructions:
+1. Green cells are for data entry
+2. Red labels indicate compulsory fields
+3. Do not use CTRL X or cut paste while data entry",,,,,,,,,,,,
