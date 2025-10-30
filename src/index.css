@@ -7,3 +7,7 @@
 body {
     @apply font-sans;
 }
+
+input[type="date"] {
+    color-scheme: light;
+}
