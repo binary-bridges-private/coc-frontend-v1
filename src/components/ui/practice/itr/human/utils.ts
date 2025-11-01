@@ -46,3 +46,24 @@ export const itr4NatureOfEmployment = [
   "Others",
   "Not Annlicable (e.g. Family Pension etc.)",
 ];
+
+export const itr4FiledUSlashS = [
+  "139(1)-On or before due date",
+  "139(4)-After due date",
+  "139(5)-Revised Return",
+  "119(2)(b)-After Condonation of delay"
+];
+
+export const itr4OrFiledInResponseToNoticeUSlashS = [
+  "139(9)",
+  "142(1)",
+  "148",
+  "153C"
+];
+
+export const itr4Question1 = [
+  "Yes",
+  "No",
+  "Not applicable (Return was filed in ITR Form 1/ Form 2)"
+];
+

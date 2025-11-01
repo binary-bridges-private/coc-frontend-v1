@@ -1,198 +1,274 @@
-import { itr4Status, indianStates, itr4NatureOfEmployment } from "./utils.ts"
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { itr4Status, indianStates, itr4NatureOfEmployment, itr4FiledUSlashS, itr4OrFiledInResponseToNoticeUSlashS } from "./utils.ts"
+
+const questions = {
+    "question1": "Have you exercised the option u/s 115BAC(6) of Opting out of new tax regime in Form 10-IEA in AY 2024-25?",
+    "question2": "Do you wish to continue to opt out of New Tax Regime for current assessment year",
+}
 
 const ItrFour = () => {
-    const onFormSubmit = (e) => {
-        e.preventDefault();
-        const form = e.target;
-        const formData = new FormData(form);
+    const formSchema = z.object({
+        firstName: z.string().nonempty("This field is required"),
+        middleName: z.string(),
+        lastName: z.string().nonempty("This field is required"),
+        permanentAccountNumber: z.string().nonempty("This field is required"),
+        flatOrDoorOrBlockNumber: z.string().nonempty("This field is required"),
+        nameOfPremiseOrBuildingOrVillage: z.string().nonempty("This field is required"),
+        status: z.string().nonempty("This field is required"),
+        roadOrStreetOrPostOffice: z.string().nonempty("This field is required"),
+        areaOrLocality: z.string().nonempty("This field is required"),
+        dateOfBirth: z.string().nonempty("This field is required"),
+        townOrCityOrDistrict: z.string().nonempty("This field is required"),
+        state: z.string().nonempty("This field is required"),
+        countryOrRegion: z.string().nonempty("This field is required"),
+        pinCodeOrZipCode: z.coerce.number().int().min(100000, "Must be 6 digits"),
+        email1: z.email().nonempty("This field is required"),
+        email2: z.email().nonempty("This field is required"),
+        residentialOrOfficePhoneNumberWithIsdCode: z.e164("Phone number must be in +XXYYYYYYYYYY format").nonempty("This field is required"),
+        mobileNumber1: z.e164("Phone number must be in +XXYYYYYYYYYY format").nonempty("This field is required"),
+        mobileNumber2: z.e164("Phone number must be in +XXYYYYYYYYYY format").nonempty("This field is required"),
+        aadhaarNumber: z.coerce.number().min(100000000000, "Must be 12 digits"),
+        natureOfEmployment: z.string().nonempty("This field is required"),
+        filedUnderSection: z.string().nonempty("This field is required"),
+        orFiledInResponseToNoticeUnderSection: z.string().nonempty("This field is required"),
+        // If revised/defective then enter
+        receiptNumber: z.string(),
+        dateOfFilingOfOriginalReturn: z.string(),
+        // If filed in response to notice u/s 139(9) /142(1)/148/153C or order u/s 119(2)(b)-
+        uniqueNumberOrDocumentIdentificationNumber: z.string(),
+        dateOfSuchNoticeOrOrder: z.string(),
+        question1: z.string().nonempty("This field is required"),
+        // If opted out from new tax regime
+        dateOfFilingForm10Iea: z.string(),
+        acknowledgementNumberOfForm10Iea: z.string(),
+    });
 
+    type FormData = z.infer<typeof formSchema>;
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting },
+        reset,
+    } = useForm<FormData>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            countryOrRegion: "India",
+        },
+    });
+
+    const onFormSubmit = async (formData: FormData) => {
+        // Simulate API call
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         console.table(formData);
-        const prefix = "itr-4-";
-
-        alert("ITR-4 Form submitted successfully!");
+        reset();
         setTimeout(() => window.location.href = "/practice/itr/login", 5000);
     }
 
-    const pStyle = "mt-2 w-5/6 mx-auto text-gray-400 text-center text-sm";
-    const sectionStyle = "border-[1px] shadow-md rounded-2xl px-6 py-16 grid grid-cols-2";
-    const fieldsetStyle = "";
-    const formPairStyle = "flex justify-center items-center gap-5";
-    const inputStyle = "border-2 border-gray-300 rounded-lg px-2 py-1 w-1/2 bg-white text-gray-800 focus:outline-none focus:border-blue-500";
-    const labelStyle = "text-black w-1/3";
-    const noteStyle = "text-gray-400 text-sm w-3/4 mx-auto mt-2";
+    const pStyle = "mt-4 w-5/6 mx-auto text-gray-400 text-center text-xs";
+    const fieldsetStyle = "border-[1px] shadow-md rounded-2xl p-14 grid grid-cols-2 gap-x-14 gap-y-3";
+    const fieldStyle = "";
+    const formPairStyle = "flex flex-col gap-2";
+    const labelStyle = "text-black";
+    const inputStyle = "border-2 border-gray-300 rounded-lg px-2.5 py-1.5 bg-white text-gray-800 focus:outline-none focus:border-blue-500";
+    const noteStyle = "ml-2 border-[1px] border-gray-400 rounded-full text-gray-600 font-bold px-2 py-0.5 text-xs";
     const errorStyle = "text-red-500 text-sm my-2";
 
     return (
         <div className="min-h-screen bg-white">
-            <h1 className="text-center text-gray-800 text-4xl pt-7 font-bold">ITR-4</h1>
-            {/* <p className={pStyle}>For Individuals, HUFs and Firms (other than LLP) being a Resident having total income upto Rs.50 lakh and having income from business and profession which is computed under sections 44AD, 44ADA or 44AE, and having long-term capital gains under section 112A upto Rs. 1.25 lakh</p>
-            <p className={pStyle}>Not for an individual who is either Director in a company or has invested in unlisted equity shares or if income-tax is deferred on ESOP or has agricultural income more than Rs.5000 or has assets (including financial interest in any entity) located outside India</p> */}
-            <form onSubmit={onFormSubmit} className="py-8 px-16 mx-auto w-7/8 space-y-8 text-center">
-                <section className={sectionStyle}>
-                    <fieldset className={fieldsetStyle}>
+            <h1 className="text-center text-blue-600 text-4xl pt-7 font-bold">ITR-4</h1>
+            {/* <p className={pStyle}>For Individuals, HUFs and Firms (other than LLP) being a Resident having total income upto Rs.50 lakh and having income from business and profession which is computed under sections 44AD, 44ADA or 44AE, and having long-term capital gains under section 112A upto Rs. 1.25 lakh. Not for an individual who is either Director in a company or has invested in unlisted equity shares or if income-tax is deferred on ESOP or has agricultural income more than Rs.5000 or has assets (including financial interest in any entity) located outside India</p> */}
+            <form onSubmit={handleSubmit(onFormSubmit)} className="py-8 px-16 mx-auto w-7/8 space-y-8">
+                <fieldset className={fieldsetStyle}>
+                    <div className={fieldStyle}>
                         <div className={formPairStyle}>
-                            <label htmlFor="itr-4-first-name" className={labelStyle}>First Name</label>
-                            <input required type="text" name="itr-4-first-name" id="itr-4-first-name" className={inputStyle} />
+                            <label className={labelStyle}>First Name</label>
+                            <input type="text" {...register("firstName")} className={inputStyle} />
                         </div>
-                        <div id="itr-4-first-name-error" className={errorStyle}></div>
-                    </fieldset>
-                    <fieldset className={fieldsetStyle}>
+                        {errors.firstName && <div className={errorStyle}>{errors.firstName.message}</div>}
+                    </div>
+                    <div className={fieldStyle}>
                         <div className={formPairStyle}>
-                            <label htmlFor="itr-4-middle-name" className={labelStyle}>Middle Name</label>
-                            <input type="text" name="itr-4-middle-name" id="itr-4-middle-name" className={inputStyle} />
+                            <label className={labelStyle}>Middle Name</label>
+                            <input type="text" {...register("middleName")} className={inputStyle} />
                         </div>
-                        <div id="itr-4-middle-name-error" className={errorStyle}></div>
-                    </fieldset>
-                    <fieldset className={fieldsetStyle}>
+                        {errors.middleName && <div className={errorStyle}>{errors.middleName.message}</div>}
+                    </div>
+                    <div className={fieldStyle}>
                         <div className={formPairStyle}>
-                            <label htmlFor="itr-4-last-name" className={labelStyle}>Last Name</label>
-                            <input required type="text" name="itr-4-last-name" id="itr-4-last-name" className={inputStyle} />
+                            <label className={labelStyle}>Last Name</label>
+                            <input type="text" {...register("lastName")} className={inputStyle} />
                         </div>
-                        <div id="itr-4-last-name-error" className={errorStyle}></div>
-                    </fieldset>
-                    <fieldset className={fieldsetStyle}>
+                        {errors.lastName && <div className={errorStyle}>{errors.lastName.message}</div>}
+                    </div>
+                    <div className={fieldStyle}>
                         <div className={formPairStyle}>
-                            <label htmlFor="itr-4-permanent-account-number" className={labelStyle}>Permanent Account Number</label>
-                            <input required type="text" name="itr-4-permanent-account-number" id="itr-4-permanent-account-number" className={inputStyle} />
+                            <label className={labelStyle}>Permanent Account Number</label>
+                            <input type="text" {...register("permanentAccountNumber")} className={inputStyle} />
                         </div>
-                        <div id="itr-4-permanent-account-number-error" className={errorStyle}></div>
-                    </fieldset>
-                    <fieldset className={fieldsetStyle}>
+                        {errors.permanentAccountNumber && <div className={errorStyle}>{errors.permanentAccountNumber.message}</div>}
+                    </div>
+                    <div className={fieldStyle}>
                         <div className={formPairStyle}>
-                            <label htmlFor="itr-4-flat-door-block-no" className={labelStyle}>Flat/Door/Block No.</label>
-                            <input required type="text" name="itr-4-flat-door-block-no" id="itr-4-flat-door-block-no" className={inputStyle} />
+                            <label className={labelStyle}>Flat/Door/Block No.</label>
+                            <input type="text" {...register("flatOrDoorOrBlockNumber")} className={inputStyle} />
                         </div>
-                        <div id="itr-4-flat-door-block-no-error" className={errorStyle}></div>
-                    </fieldset>
-                    <fieldset className={fieldsetStyle}>
+                        {errors.flatOrDoorOrBlockNumber && <div className={errorStyle}>{errors.flatOrDoorOrBlockNumber.message}</div>}
+                    </div>
+                    <div className={fieldStyle}>
                         <div className={formPairStyle}>
-                            <label htmlFor="itr-4-premise-building-village" className={labelStyle}>Name of Premise/Building/Village</label>
-                            <input required type="text" name="itr-4-premise-building-village" id="itr-4-premise-building-village" className={inputStyle} />
+                            <label className={labelStyle}>Name of Premise/Building/Village</label>
+                            <input type="text" {...register("nameOfPremiseOrBuildingOrVillage")} className={inputStyle} />
                         </div>
-                        <div id="itr-4-premise-building-village-error" className={errorStyle}></div>
-                    </fieldset>
-                    <fieldset className={fieldsetStyle}>
+                        {errors.nameOfPremiseOrBuildingOrVillage && <div className={errorStyle}>{errors.nameOfPremiseOrBuildingOrVillage.message}</div>}
+                    </div>
+                    <div className={fieldStyle}>
                         <div className={formPairStyle}>
-                            <label htmlFor="itr-4-status" className={labelStyle}>Status</label>
-                            <select name="itr-4-status" id="itr-4-status" className={inputStyle}>
+                            <label className={labelStyle}>Status</label>
+                            <select {...register("status")} className={inputStyle}>
                                 {itr4Status.map(status => (
                                     <option value={status}>{status}</option>
                                 ))}
                             </select>
                         </div>
-                        <div id="itr-4-status-error" className={errorStyle}></div>
-                    </fieldset>
-                    <fieldset className={fieldsetStyle}>
+                        {errors.status && <div className={errorStyle}>{errors.status.message}</div>}
+                    </div>
+                    <div className={fieldStyle}>
                         <div className={formPairStyle}>
-                            <label htmlFor="itr-4-road-street-postoffice" className={labelStyle}>Road/Street/Post Office</label>
-                            <input required type="text" name="itr-4-road-street-postoffice" id="itr-4-road-street-postoffice" className={inputStyle} />
+                            <label className={labelStyle}>Road/Street/Post Office</label>
+                            <input type="text" {...register("roadOrStreetOrPostOffice")} className={inputStyle} />
                         </div>
-                        <div id="itr-4-road-street-postoffice-error" className={errorStyle}></div>
-                    </fieldset>
-                    <fieldset className={fieldsetStyle}>
+                        {errors.roadOrStreetOrPostOffice && <div className={errorStyle}>{errors.roadOrStreetOrPostOffice.message}</div>}
+                    </div>
+                    <div className={fieldStyle}>
                         <div className={formPairStyle}>
-                            <label htmlFor="itr-4-area-locality" className={labelStyle}>Area/Locality</label>
-                            <input required type="text" name="itr-4-area-locality" id="itr-4-area-locality" className={inputStyle} />
+                            <label className={labelStyle}>Area/Locality</label>
+                            <input type="text" {...register("areaOrLocality")} className={inputStyle} />
                         </div>
-                        <div id="itr-4-area-locality-error" className={errorStyle}></div>
-                    </fieldset>
-                    <fieldset className={fieldsetStyle}>
+                        {errors.areaOrLocality && <div className={errorStyle}>{errors.areaOrLocality.message}</div>}
+                    </div>
+                    <div className={fieldStyle}>
                         <div className={formPairStyle}>
-                            <label htmlFor="itr-4-date-of-birth" className={labelStyle}>Date of Birth</label>
-                            <input required type="date" name="itr-4-date-of-birth" id="itr-4-date-of-birth" className={inputStyle + " accent-blue-500"} />
+                            <label className={labelStyle}>Date of Birth</label>
+                            <input type="date" {...register("dateOfBirth")} className={inputStyle + " accent-blue-500"} />
                         </div>
-                        <div id="itr-4-date-of-birth-error" className={errorStyle}></div>
-                    </fieldset>
-                    <fieldset className={fieldsetStyle}>
+                        {errors.dateOfBirth && <div className={errorStyle}>{errors.dateOfBirth.message}</div>}
+                    </div>
+                    <div className={fieldStyle}>
                         <div className={formPairStyle}>
-                            <label htmlFor="itr-4-town-city-district" className={labelStyle}>Town/City/District</label>
-                            <input required type="text" name="itr-4-town-city-district" id="itr-4-town-city-district" className={inputStyle} />
+                            <label className={labelStyle}>Town/City/District</label>
+                            <input type="text" {...register("townOrCityOrDistrict")} className={inputStyle} />
                         </div>
-                        <div id="itr-4-town-city-district-error" className={errorStyle}></div>
-                    </fieldset>
-                    <fieldset className={fieldsetStyle}>
+                        {errors.townOrCityOrDistrict && <div className={errorStyle}>{errors.townOrCityOrDistrict.message}</div>}
+                    </div>
+                    <div className={fieldStyle}>
                         <div className={formPairStyle}>
-                            <label htmlFor="itr-4-state" className={labelStyle}>State</label>
-                            <select name="itr-4-state" id="itr-4-state" className={inputStyle}>
+                            <label className={labelStyle}>State</label>
+                            <select {...register("state")} className={inputStyle}>
                                 {indianStates.map(state => (
                                     <option value={state}>{state}</option>
                                 ))}
                             </select>
                         </div>
-                        <div id="itr-4-state-error" className={errorStyle}></div>
-                    </fieldset>
-                    <fieldset className={fieldsetStyle}>
+                        {errors.state && <div className={errorStyle}>{errors.state.message}</div>}
+                    </div>
+                    <div className={fieldStyle}>
                         <div className={formPairStyle}>
-                            <label htmlFor="itr-4-country-region" className={labelStyle}>Country/Region</label>
-                            <input required type="text" name="itr-4-country-region" id="itr-4-country-region" className={inputStyle} />
+                            <label className={labelStyle}>Country/Region</label>
+                            <input type="text" {...register("countryOrRegion")}  className={inputStyle} />
                         </div>
-                        <div id="itr-4-country-region-error" className={errorStyle}></div>
-                    </fieldset>
-                    <fieldset className={fieldsetStyle}>
+                        {errors.countryOrRegion && <div className={errorStyle}>{errors.countryOrRegion.message}</div>}
+                    </div>
+                    <div className={fieldStyle}>
                         <div className={formPairStyle}>
-                            <label htmlFor="itr-4-pin-code" className={labelStyle}>PIN Code/ZIP Code</label>
-                            <input required type="number" name="itr-4-pin-code" id="itr-4-pin-code" className={inputStyle} />
+                            <label className={labelStyle}>PIN Code/ZIP Code</label>
+                            <input type="number" {...register("pinCodeOrZipCode")} className={inputStyle} />
                         </div>
-                        <div id="itr-4-pin-code-error" className={errorStyle}></div>
-                    </fieldset>
-                </section>
-                <section className={sectionStyle}>
-                    <fieldset className={fieldsetStyle}>
+                        {errors.pinCodeOrZipCode && <div className={errorStyle}>{errors.pinCodeOrZipCode.message}</div>}
+                    </div>
+                </fieldset>
+                <fieldset className={fieldsetStyle}>
+                    <div className={fieldStyle}>
                         <div className={formPairStyle}>
-                            <label htmlFor="itr-4-email-1" className={labelStyle}>Email 1</label>
-                            <input required type="email" name="itr-4-email-1" id="itr-4-email-1" className={inputStyle} />
+                            <label className={labelStyle}>Email 1</label>
+                            <input type="email" {...register("email1")} className={inputStyle} />
                         </div>
-                        <div id="itr-4-email-1-error" className={errorStyle}></div>
-                    </fieldset>
-                    <fieldset className={fieldsetStyle}>
+                        {errors.email1 && <div className={errorStyle}>{errors.email1.message}</div>}
+                    </div>
+                    <div className={fieldStyle}>
                         <div className={formPairStyle}>
-                            <label htmlFor="itr-4-email-2" className={labelStyle}>Email 2</label>
-                            <input type="email" name="itr-4-email-2" id="itr-4-email-2" className={inputStyle} />
+                            <label className={labelStyle}>Email 2</label>
+                            <input type="email" {...register("email2")} className={inputStyle} />
                         </div>
-                        <div id="itr-4-email-2-error" className={errorStyle}></div>
-                    </fieldset>
-                    <fieldset className={fieldsetStyle}>
+                        {errors.email2 && <div className={errorStyle}>{errors.email2.message}</div>}
+                    </div>
+                    <div className={fieldStyle}>
                         <div className={formPairStyle}>
-                            <label htmlFor="itr-4-residential-or-office-phone-number" className={labelStyle}>Residential/Office Phone Number with ISD Code</label>
-                            <input required type="tel" name="itr-4-residential-or-office-phone-number" id="itr-4-residential-or-office-phone-number" className={inputStyle} />
+                            <label className={labelStyle}>Residential/Office Phone Number with ISD Code</label>
+                            <input type="tel" {...register("residentialOrOfficePhoneNumberWithIsdCode")} className={inputStyle} />
                         </div>
-                        <div id="itr-4-residential-or-office-phone-number-error" className={errorStyle}></div>
-                    </fieldset>
-                    <fieldset className={fieldsetStyle}>
+                        {errors.residentialOrOfficePhoneNumberWithIsdCode && <div className={errorStyle}>{errors.residentialOrOfficePhoneNumberWithIsdCode.message}</div>}
+                    </div>
+                    <div className={fieldStyle}>
                         <div className={formPairStyle}>
-                            <label htmlFor="itr-4-mobile-number-1" className={labelStyle}>Mobile Number 1</label>
-                            <input required type="tel" name="itr-4-mobile-number-1" id="itr-4-mobile-number-1" className={inputStyle} />
+                            <label className={labelStyle}>Mobile Number 1</label>
+                            <input type="tel" {...register("mobileNumber1")} className={inputStyle} />
                         </div>
-                        <div id="itr-4-mobile-number-1-error" className={errorStyle}></div>
-                    </fieldset>
-                    <fieldset className={fieldsetStyle}>
+                        {errors.mobileNumber1 && <div className={errorStyle}>{errors.mobileNumber1.message}</div>}
+                    </div>
+                    <div className={fieldStyle}>
                         <div className={formPairStyle}>
-                            <label htmlFor="itr-4-mobile-number-2" className={labelStyle}>Mobile Number 2</label>
-                            <input type="tel" name="itr-4-mobile-number-2" id="itr-4-mobile-number-2" className={inputStyle} />
+                            <label className={labelStyle}>Mobile Number 2</label>
+                            <input type="tel" {...register("mobileNumber2")} className={inputStyle} />
                         </div>
-                        <div id="itr-4-mobile-number-2-error" className={errorStyle}></div>
-                    </fieldset>
-                    <fieldset className={fieldsetStyle}>
+                        {errors.mobileNumber2 && <div className={errorStyle}>{errors.mobileNumber2.message}</div>}
+                    </div>
+                    <div className={fieldStyle}>
                         <div className={formPairStyle}>
-                            <label htmlFor="itr-4-aadhaar-number" className={labelStyle}>Aadhaar Number</label>
-                            <input required type="number" name="itr-4-aadhaar-number" id="itr-4-aadhaar-number" className={inputStyle} />
+                            <label className={labelStyle}>Aadhaar Number <span className={noteStyle} title="Note: Please enter the Aadhaar Number which is linked for your PAN in e-Filing portal. Applicable to Individual only">i</span></label>
+                            <input type="number" {...register("aadhaarNumber")} className={inputStyle} />
                         </div>
-                        <div className={noteStyle}>Note: Please enter the Aadhaar Number which is linked for your PAN in e-Filing portal. Applicable to Individual only</div>
-                        <div id="itr-4-aadhaar-number-error" className={errorStyle}></div>
-                    </fieldset>
-                    <fieldset className={fieldsetStyle}>
+                        {errors.aadhaarNumber && <div className={errorStyle}>{errors.aadhaarNumber.message}</div>}
+                    </div>
+                    <div className={fieldStyle}>
                         <div className={formPairStyle}>
-                            <label htmlFor="itr-4-nature-of-employment" className={labelStyle}>Nature of Employment</label>
-                            <select name="itr-4-nature-of-employment" id="itr-4-nature-of-employment" className={inputStyle}>
+                            <label className={labelStyle}>Nature of Employment</label>
+                            <select {...register("natureOfEmployment")} className={inputStyle}>
                                 {itr4NatureOfEmployment.map(nature => (
                                     <option value={nature}>{nature}</option>
                                 ))}
                             </select>
                         </div>
-                        <div id="itr-4-nature-of-employment-error" className={errorStyle}></div>
-                    </fieldset>
-                </section>
-                <button type="submit" className="!mt-8 bg-blue-500 text-white text-lg rounded-full px-10 py-3 hover:bg-blue-600">Submit</button>
+                        {errors.natureOfEmployment && <div className={errorStyle}>{errors.natureOfEmployment.message}</div>}
+                    </div>
+                    <div className={fieldStyle}>
+                        <div className={formPairStyle}>
+                            <label className={labelStyle}>Filed u/s</label>
+                            <select {...register("filedUnderSection")} className={inputStyle}>
+                                {itr4FiledUSlashS.map(item => (
+                                    <option value={item}>{item}</option>
+                                ))}
+                            </select>
+                        </div>
+                        {errors.filedUnderSection && <div className={errorStyle}>{errors.filedUnderSection.message}</div>}
+                    </div>
+                    <div className={fieldStyle}>
+                        <div className={formPairStyle}>
+                            <label className={labelStyle}>Or Filed in response to notice u/s</label>
+                            <select {...register("orFiledInResponseToNoticeUnderSection")} className={inputStyle}>
+                                {itr4OrFiledInResponseToNoticeUSlashS.map(item => (
+                                    <option value={item}>{item}</option>
+                                ))}
+                            </select>
+                        </div>
+                        {errors.orFiledInResponseToNoticeUnderSection && <div className={errorStyle}>{errors.orFiledInResponseToNoticeUnderSection.message}</div>}
+                    </div>
+                </fieldset>
+                <div className="!mt-8 text-center">
+                    <button type="submit" className="bg-blue-500 text-white text-lg rounded-full px-10 py-3 hover:bg-blue-600 transition-colors duration-500 ease-in-out">Submit</button>
+                </div>
             </form>
         </div>
     );
