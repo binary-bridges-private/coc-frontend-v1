@@ -22,7 +22,7 @@ const ItrOne = () => {
     }));
     
     // Clear error when user starts typing
-    if (errors[field]) {
+    if (field in errors && errors[field as keyof ItrOneFormErrors]) {
       setErrors(prev => ({
         ...prev,
         [field]: ""
