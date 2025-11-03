@@ -1,3 +1,8 @@
+:root {
+  --theme1: rgb(144, 167, 248); 
+  --theme2: rgb(144, 167, 248); 
+}
+
 .carousel-container {
     width: 100%;
     overflow: hidden;
@@ -15,14 +20,14 @@
   .card {
     flex-shrink: 0;
     width: 300px;
-    height: 400px;
+    height: auto;
     transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
     transform: scale(0.9);
     opacity: 0.8; 
   }
   
   .card.center {
-    background: #101C36;
+    background: var(--theme1);
     transition: background-color 0.5s ease-in-out, opacity 0.5s ease-in-out; 
     color: white;
     transform: scale(1);
@@ -30,7 +35,8 @@
     z-index: 10;
     transition: transform 0.9s ease-in-out; 
   }
-  
+
+
   .card-content {
     background: white;
     padding: 16px;

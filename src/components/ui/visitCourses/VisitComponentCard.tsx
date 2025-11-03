@@ -1,38 +1,62 @@
 import React from 'react'
+import { motion } from "framer-motion";
 
-const VisitComponentCard = ({ title, label1, label2, label3, iconUrl, iconBgColor }) => {
+const VisitCoursesCard = ({ iconUrl, iconBgColor, title, labels, link }) => {
     return (
-        <div className="relative w-sm h-[250px] bg-white border border-[#F5F5F5] shadow-lg rounded-lg p-4 flex flex-col items-start overflow-hidden">
-
-            <div className="absolute top-6 left-8 text-2xl font-bold text-[#282828]">
-                {title}
-            </div>
-
-            <div className={`absolute top-0 right-[-125px] w-[250px] h-[250px] rounded-full`} style={{ backgroundColor: iconBgColor }} />
-
-            <img className="absolute right-8 top-[calc(50%-24px)] w-12 h-12 bg-cover bg-center" src={iconUrl} />
-
-            <div className="absolute top-20 left-8 flex items-center justify-center gap-2 border border-[#545454] rounded-md p-2 text-[#545454] text-n2">
-                {label1}
-            </div>
-
-            <div className="absolute top-20 left-32 mx-2 flex items-center justify-center gap-2 border border-[#545454] rounded-md p-2 text-[#545454] text-n2">
-                {label2}
-            </div>
-
-            <div className="absolute top-32 left-8 flex items-center justify-center gap-2 border border-[#545454] rounded-md p-2 text-[#545454] text-n2">
-                {label3}
-            </div>
-
-            <div className="absolute flex items-center gap-2 bottom-8 left-8">
-                <span className="text-lg font-semibold text-[#101C36]">Explore Courses</span>
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-[#101C36]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5-5 5M6 7l5 5-5 5"></path>
-                </svg>
-            </div>
-        </div>
-
+        <motion.div
+            whileHover={{ y: -8, scale: 1.02 }}
+            transition={{ duration: 0.3 }}
+            className="relative flex flex-col h-64 overflow-hidden bg-white border border-amber-100 shadow-sm rounded-2xl hover:shadow-xl group"
+        >
+            {/* Background Pattern */}
+            <div className="absolute top-0 right-0 w-32 h-32 -mt-10 -mr-10 rounded-full opacity-5 bg-gradient-to-br from-orange-400 to-amber-500"></div>
+            <div className="absolute bottom-0 left-0 w-32 h-32 -mb-10 -ml-10 rounded-full opacity-5 bg-gradient-to-br from-amber-400 to-orange-300"></div>
+            
+            <a 
+                href={link} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex flex-col flex-1 h-full p-6"
+            >
+                <div className="flex flex-col h-full z-10">
+                    {/* Card Header with Icon and Title */}
+                    <div className="flex items-center mb-5">
+                        <div 
+                            className="flex items-center justify-center w-14 h-14 mr-4 transition-transform duration-300 rounded-xl group-hover:rotate-3"
+                            style={{ backgroundColor: iconBgColor }}
+                        >
+                            <img src={iconUrl} alt={title} className="w-8 h-8" />
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-900">{title}</h3>
+                    </div>
+                    
+                    {/* Card Body with Tags */}
+                    <div className="flex flex-wrap gap-2 mt-auto">
+                        {labels.map((label, index) => (
+                            <span 
+                                key={index} 
+                                className="px-3 py-1 text-sm font-medium text-amber-800 bg-gradient-to-r from-amber-50 to-orange-50 rounded-full border border-amber-100"
+                            >
+                                {label}
+                            </span>
+                        ))}
+                    </div>
+                    
+                    {/* Card Footer with CTA */}
+                    <div className="flex items-center justify-between mt-5 pt-4 border-t border-amber-100">
+                        <div className="text-xs font-medium text-amber-700">
+                            COC Education
+                        </div>
+                        <div className="flex items-center text-orange-600 transition-transform duration-300 group-hover:translate-x-1">
+                            <span className="text-sm font-medium">View course</span>
+                            <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </motion.div>
     )
-}
-
-export default VisitComponentCard
+};
+export default VisitCoursesCard;

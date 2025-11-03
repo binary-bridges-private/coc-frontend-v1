@@ -1,53 +1,164 @@
+import { motion } from 'framer-motion';
 import React from 'react';
 
 const WhyChooseCOC = () => {
     const features = [
         {
-            title: 'Studio Recorded Sessions',
+            title: 'Updated Studio Recorded Lectures',
             icon: '/assets/whyChooseCoc/first.svg',
+            description: 'Learn anytime, anywhere with updated studio-recorded lectures designed for flexible and effective learning.',
+            gradient: 'from-blue-500 to-blue-600'
         },
         {
-            title: 'Excellent Supportive Team',
+            title: 'Best Technical Support',
             icon: '/assets/whyChooseCoc/second.svg',
+            description: 'Our technical support team is always on call, ready to resolve your problems anytime.',
+            gradient: 'from-purple-500 to-purple-600'
         },
         {
             title: 'Academic Instructor Team',
             icon: '/assets/whyChooseCoc/third.svg',
+            description: 'Lazy to study? Our team will keep you accountable and on track until you finish.',
+            gradient: 'from-amber-500 to-amber-600'
         },
         {
-            title: 'Material Covering all MTR/RTP',
+            title: 'Job Assistance & Interview Preparation',
             icon: '/assets/whyChooseCoc/fourth.svg',
+            description: 'From Resume to Offer Letter — Complete Job & Interview Guidance.',
+            gradient: 'from-green-500 to-green-600'
         },
         {
             title: 'Daily Doubt Sessions',
             icon: '/assets/whyChooseCoc/fifth.svg',
+            description: 'Your doubts are no longer doubts — our expert faculty is ready and waiting to solve them.',
+            gradient: 'from-red-500 to-red-600'
         },
         {
-            title: 'Unlimited Views Available',
+            title: 'Unlimited Views on Classes',
             icon: '/assets/whyChooseCoc/sixth.svg',
+            description: 'Revisit lessons unlimited times, anytime, throughout the entire duration of your course access.',
+            gradient: 'from-indigo-500 to-indigo-600'
         },
     ];
 
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: { 
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.2
+            }
+        }
+    };
+
+    const itemVariants = {
+        hidden: { y: 20, opacity: 0 },
+        visible: { 
+            y: 0, 
+            opacity: 1,
+            transition: {
+                duration: 0.6,
+                ease: "easeOut"
+            }
+        }
+    };
+
     return (
-        <div className="bg-[#101C36] h-full w-full text-white py-20 px-10">
-            <div className="mx-auto mb-10 text-center max-w-7xl">
-                <h1 className="mb-4 lg:text-hl md:text-hm text-hs">Why choose classes from COC Education</h1>
-                <p className="lg:text-pl md:text-pm text-ps">Explore the benefits of learning with us, tailored to help you excel.</p>
+        <section className="relative w-full py-20 overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 opacity-10">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-orange-500/20 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px]" />
             </div>
 
-            {/* <div className="grid grid-flow-row grid-cols-1 gap-2 px-10 py-10 auto-rows-auto sm:grid-cols-2" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))" }}> */}
-            <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
-                {features.map((feature, index) => (
-                    <div
-                        key={index}
-                        className="bg-white text-[#282828]  w-sm rounded-xl shadow-lg p-6 flex flex-col items-center space-y-4"
+            <div className="relative px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+                <motion.div
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8 }}
+                    viewport={{ once: true }}
+                    className="text-center"
+                >
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.2, duration: 0.6 }}
+                        viewport={{ once: true }}
+                        className="inline-block mb-6 px-4 py-2 rounded-full bg-gradient-to-r from-orange-500/10 to-orange-600/10 border border-orange-500/20"
                     >
-                        <img src={feature.icon} className="w-20 h-20 bg-center bg-cover" />
-                        <h3 className="text-center text-small">{feature.title}</h3>
-                    </div>
-                ))}
+                        <span className="text-orange-400 font-medium">Our Unique Features</span>
+                    </motion.div>
+
+                    <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+                        Why Choose <span className="text-orange-400">COC Education</span>
+                    </h2>
+                    <p className="max-w-2xl mx-auto text-lg text-gray-300 md:text-xl">
+                        Discover the premium learning experience that sets us apart from the rest
+                    </p>
+                </motion.div>
+
+                <motion.div
+                    variants={containerVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    className="grid grid-cols-1 gap-8 mt-16 sm:grid-cols-2 lg:grid-cols-3"
+                >
+                    {features.map((feature, index) => (
+                        <motion.div
+                            key={index}
+                            variants={itemVariants}
+                            className="group"
+                        >
+                            <motion.div
+                                whileHover={{ y: -10 }}
+                                className="relative h-full p-8 transition-all duration-300 bg-white rounded-2xl hover:shadow-2xl"
+                            >
+                                <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${feature.gradient}`}></div>
+                                <div className="flex items-center mb-6">
+                                    <div className={`p-3 rounded-xl bg-gradient-to-r ${feature.gradient}`}>
+                                        <img
+                                            src={feature.icon}
+                                            className="w-12 h-12"
+                                            alt={feature.title}
+                                        />
+                                    </div>
+                                </div>
+                                <h3 className="mb-3 text-xl font-bold text-gray-900">{feature.title}</h3>
+                                <p className="text-gray-600">{feature.description}</p>
+                            </motion.div>
+                        </motion.div>
+                    ))}
+                </motion.div>
+
+                {/* Animated CTA */}
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.4 }}
+                    viewport={{ once: true }}
+                    className="mt-16 text-center"
+                >
+                    <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="px-8 py-4 text-lg font-semibold text-white transition-all duration-300 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50"
+                    >
+                        <a href="https://www.coceducation.com/new-course/skill-courses" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
+                            Start Learning Today
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="w-5 h-5"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                            </svg>
+                        </a>
+                    </motion.button>
+                </motion.div>
             </div>
-        </div>
+        </section>
     );
 };
 

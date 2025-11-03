@@ -1,59 +1,109 @@
 import React from "react";
-import { FaWhatsapp, FaYoutube } from "react-icons/fa";
-import { MdPhoneInTalk } from "react-icons/md";
+import { FaWhatsapp, FaYoutube, FaStar } from "react-icons/fa";
+import { MdPhoneInTalk, MdOutlineGroups } from "react-icons/md";
+import { RiFlashlightFill } from "react-icons/ri";
 
-const ProductCard = ({ name, byline, photo, priceRange }) => {
+const ProductCard = ({ name, byline, photo, priceRange, rating, students, tag, discount, link }) => {
+    const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+        const target = e.target as HTMLImageElement;
+        target.src = 'https://via.placeholder.com/800x450?text=Course+Image';
+        target.className = "object-contain bg-gray-200";
+    };
+
     return (
-        <div className="flex items-center justify-center w-full mt-6 mb-6">
-            <div className="flex flex-col items-start p-2 gap-2 shadow-lg w-[330px] bg-white border border-[#DBDBDB] rounded-lg">
-                {/* Client Info Item */}
-                <div className="flex flex-col items-center justify-center w-full gap-4">
-                    {/* Image */}
-                    <div
-                        className="w-[310px] h-[335px] rounded-md"
-                        style={{
-                            backgroundImage: `url('${photo}')`,
-                            backgroundSize: "100% 100%",
-                            backgroundPosition: "center",
-                        }}
-                    ></div>
+        <div className="relative flex flex-col w-full h-full overflow-hidden transition-all duration-300 bg-white rounded-2xl shadow-lg hover:shadow-2xl group">
+            {/* Tag Badge */}
+            {tag && (
+                <div className="absolute z-10 top-4 left-4">
+                    <span className={`px-3 py-1.5 text-xs font-bold tracking-wider text-white uppercase rounded-full shadow-md ${
+                        tag === "BEST SELLER" ? "bg-gradient-to-r from-purple-600 to-purple-700" :
+                        tag === "NEW" ? "bg-gradient-to-r from-blue-600 to-blue-700" :
+                        tag === "POPULAR" ? "bg-gradient-to-r from-pink-600 to-pink-700" :
+                        tag === "HOT" ? "bg-gradient-to-r from-red-600 to-red-700" : 
+                        "bg-gradient-to-r from-indigo-600 to-indigo-700"
+                    }`}>
+                        {tag}
+                    </span>
+                </div>
+            )}
 
-                    {/* Person Details */}
-                    <div className="flex flex-col items-start gap-1.5 w-[300px]">
-                        {/* Title */}
-                        <h3 className="w-[300px] h-[54px] font-sans font-semibold text-[21px] leading-[130%] text-[#111827]">
-                            {name}
-                        </h3>
+            {/* Discount Badge */}
+            {discount && (
+                <div className="absolute z-10 top-4 right-4">
+                    <span className="flex items-center px-3 py-1.5 text-xs font-bold tracking-wider text-white uppercase bg-gradient-to-r from-emerald-600 to-emerald-700 rounded-full shadow-md">
+                        <RiFlashlightFill className="mr-1.5 text-sm" />
+                        {discount}
+                    </span>
+                </div>
+            )}
 
-                        {/* Subtitle */}
-                        <p className="w-[300px] h-[70px] font-mulish font-normal text-n2 leading-[20px] text-[#374151]">
-                            By: {byline}
-                        </p>
+            {/* Image Container */}
+            <div className="relative w-full h-[220px] overflow-hidden bg-gray-100">
+                <img
+                    src={photo || 'https://via.placeholder.com/800x450?text=Course+Image'}
+                    alt={name}
+                    className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+                    onError={handleImageError}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+            </div>
+
+            {/* Course Details */}
+            <div className="flex flex-col flex-1 p-4">
+                {/* Title and Byline */}
+                <div className="mb-3">
+                    <h3 className="text-lg font-bold leading-tight text-gray-900 line-clamp-2 mb-1.5">
+                        {name}
+                    </h3>
+                    <p className="text-sm text-gray-600 line-clamp-2">
+                        By: {byline}
+                    </p>
+                </div>
+
+                {/* Rating and Students */}
+                <div className="flex items-center mb-3 space-x-4">
+                    <div className="flex items-center space-x-1.5">
+                        <FaStar className="text-base text-orange-500" />
+                        <span className="text-sm font-semibold text-gray-900">
+                            {rating}
+                        </span>
+                    </div>
+                    <div className="flex items-center space-x-1.5">
+                        <MdOutlineGroups className="text-base text-gray-500" />
+                        <span className="text-sm text-gray-600">
+                            {students.toLocaleString()} students
+                        </span>
                     </div>
                 </div>
 
-                {/* Price Tag */}
-                <div className="z-10 flex items-center justify-center w-full h-10 bg-green-700 rounded-md">
-                    <p className="h-full flex items-center justify-center font-sans font-bold text-xl leading-[20px] text-white">
+                {/* Price */}
+                <div className="p-2.5 my-3 text-center bg-gradient-to-r from-orange-50 to-orange-100 rounded-xl">
+                    <p className="text-lg font-bold text-gray-900">
                         {priceRange}
                     </p>
                 </div>
 
-                {/* Social Media Links */}
-                <div className="flex flex-row items-center gap-6 w-[310px] h-[44px]">
-                    {/* YouTube Icon */}
-                    <FaYoutube className="text-5xl text-red-600" />
-
-                    {/* WhatsApp Icon */}
-                    <FaWhatsapp className="text-5xl text-green-600" />
-
-                    {/* Phone Icon */}
-                    <MdPhoneInTalk className="text-5xl text-blue-500" />
-                    <button className="flex active:scale-80 active:bg-[#101C36] text-[#101C36] active:text-white flex-row justify-center items-center gap-2.5 p-2 w-[135px] h-11 border border-[#101C36] rounded-md">
-                        <span className="font-sans font-medium text-[16px]">
-                            View Details
-                        </span>
-                    </button>
+                {/* Action Buttons */}
+                <div className="flex items-center justify-between mt-auto">
+                    <div className="flex space-x-2">
+                        <button className="p-2 text-orange-600 transition-all duration-300 bg-orange-50 rounded-full hover:bg-orange-100 hover:scale-110">
+                            <FaYoutube className="text-base" />
+                        </button>
+                        <button className="p-2 text-orange-600 transition-all duration-300 bg-orange-50 rounded-full hover:bg-orange-100 hover:scale-110">
+                            <FaWhatsapp className="text-base" />
+                        </button>
+                        <button className="p-2 text-orange-600 transition-all duration-300 bg-orange-50 rounded-full hover:bg-orange-100 hover:scale-110">
+                            <MdPhoneInTalk className="text-base" />
+                        </button>
+                    </div>
+                    <a 
+                        href={link} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="px-4 py-2 text-sm font-medium text-white transition-all duration-300 bg-gradient-to-r from-orange-600 to-orange-700 rounded-lg hover:from-orange-700 hover:to-orange-800 hover:shadow-lg"
+                    >
+                        View Details
+                    </a>
                 </div>
             </div>
         </div>

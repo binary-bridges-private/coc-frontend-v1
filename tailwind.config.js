@@ -1,14 +1,18 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     content: [
-        "./src/**/*.{js,ts,jsx,tsx}", // Include all source files
+        "./src/**/*.{js,ts,jsx,tsx}", 
     ],
     theme: {
         extend: {
             colors: {
-                primary: "#FFFFFF40", // Example primary color
-                secondary: "#F59E0B", // Example secondary color
-                accent: "#10B981", // Example accent color
+                primary: "#FFFFFF40", 
+                secondary: "#F59E0B", 
+                accent: "#10B981", 
+                theme1: "rgb(63, 97, 217)",
+                theme2: "rgb(152, 173, 248)",
+                theme3: "rgb(231, 255, 124)",
+                theme4: "rgb(252, 252, 192)"
             },
             fontFamily: {
                 sans: ['"SF Pro Display"', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
@@ -33,7 +37,18 @@ module.exports = {
             screens: {
                 'laptop1': { 'min': '1022px', 'max': '1200px' }, // Custom range
             },
+            keyframes: {
+                scrollLeft: {
+                    '0%': { transform: 'translateX(100%)' },
+                    '100%': { transform: 'translateX(-115%)' },
+                },
+            },
+            animation: {
+                scrollLeft: 'scrollLeft 10s linear infinite',
+            },
         },
     },
     plugins: [require("daisyui")],
 };
+
+
