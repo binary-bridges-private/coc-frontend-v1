@@ -24,6 +24,10 @@ const ItrOne: React.FC = () => {
     ITR_ONE_SUMMARY_SECTIONS.map((section) => ({ ...section }))
   );
   const [activeDetailId, setActiveDetailId] = useState<string | null>(null);
+  const [submissionInfo, setSubmissionInfo] = useState<{
+    acknowledgementNo: string;
+    submittedAt: Date;
+  } | null>(null);
   useEffect(()=>{
     window.scrollTo(0,0);
   },[])
@@ -159,6 +163,8 @@ const ItrOne: React.FC = () => {
     const targetIndex = sections.findIndex((section) => section.id === sectionId);
     if (targetIndex === -1) return;
 
+    setSubmissionInfo(null);
+
     setSections((prev) => {
       const updated = prev.map((section, index) => {
         if (index < targetIndex) {
@@ -190,6 +196,7 @@ const ItrOne: React.FC = () => {
     resetPersonal(personalData);
     resetGrossIncome(grossIncomeData);
     setActiveDetailId(null);
+    setSubmissionInfo(null);
     setSections((prev) =>
       ensureAtLeastOneInProgress(prev.map((section) => ({ ...section })))
     );
@@ -197,6 +204,7 @@ const ItrOne: React.FC = () => {
 
   const handlePersonalSubmit: SubmitHandler<PersonalInformationFormData> = (values) => {
     setPersonalData(values);
+    setSubmissionInfo(null);
     setSections((prev) => {
       const updated = prev.map((section) => {
         if (section.id === "personal") {
@@ -215,6 +223,7 @@ const ItrOne: React.FC = () => {
 
   const handleGrossIncomeSubmit = (values: any) => {
     setGrossIncomeData(values);
+    setSubmissionInfo(null);
     setSections((prev) => {
       const updated = prev.map((section) => {
         if (section.id === "gross-income") {
@@ -233,6 +242,7 @@ const ItrOne: React.FC = () => {
 
   const handleDeductionSubmit = (values: any) => {
     setDeductionData(values);
+    setSubmissionInfo(null);
     setSections((prev) => {
       const updated = prev.map((section) => {
         if (section.id === "deductions") {
@@ -247,6 +257,23 @@ const ItrOne: React.FC = () => {
       return ensureAtLeastOneInProgress(updated);
     });
     setActiveDetailId(null);
+  };
+
+  const allSectionsCompleted = useMemo(
+    () => sections.every((section) => section.status === "completed"),
+    [sections]
+  );
+
+  const generateAcknowledgementNumber = () => {
+    const timePart = Date.now().toString();
+    const randomPart = Math.floor(100000 + Math.random() * 900000).toString();
+    return (timePart + randomPart).slice(-15);
+  };
+
+  const handleFinalSubmit = () => {
+    const acknowledgementNo = generateAcknowledgementNumber();
+    const submittedAt = new Date();
+    setSubmissionInfo({ acknowledgementNo, submittedAt });
   };
 
   return (
@@ -274,6 +301,47 @@ const ItrOne: React.FC = () => {
             <span className="text-sm text-gray-600">
               Review each section below and provide your confirmation before moving to the next step.
             </span>
+            {submissionInfo ? (
+              <div className="flex flex-col gap-3 rounded-lg border border-green-200 bg-green-50 p-5 text-sm text-gray-800">
+                <div className="flex items-start gap-3">
+                  <span className="mt-1 flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white">
+                    ✓
+                  </span>
+                  <div className="space-y-1">
+                    <h3 className="text-base font-semibold text-green-800">
+                      Success! Return submitted successfully.
+                    </h3>
+                    <p>
+                      Acknowledgement No: <span className="font-semibold text-green-900">{submissionInfo.acknowledgementNo}</span>
+                    </p>
+                    <p>
+                      Submission Date: {submissionInfo.submittedAt.toLocaleString()}
+                    </p>
+                    <p>
+                      Please e-Verify your return within 30 days of filing. You can download the ITR-V/Acknowledgement from Dashboard &gt; Services &gt; View Filed Returns.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              allSectionsCompleted && (
+                <div className="flex flex-col gap-4 rounded-lg border border-blue-200 bg-blue-50 p-5 text-sm text-gray-800">
+                  <div className="space-y-1">
+                    <h3 className="text-base font-semibold text-blue-900">All sections confirmed.</h3>
+                    <p>Submit your return to generate the acknowledgement message shown on the Income Tax e-Filing portal.</p>
+                  </div>
+                  <div>
+                    <button
+                      type="button"
+                      onClick={handleFinalSubmit}
+                      className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    >
+                      Submit Return
+                    </button>
+                  </div>
+                </div>
+              )
+            )}
             <ItrEntry sections={sections} activeSectionId={activeSectionId} onSectionSelect={handleSectionSelect} />
           </section>
         )}
