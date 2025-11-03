@@ -94,21 +94,21 @@ const ItrOne: React.FC = () => {
   const [grossIncomeData, setGrossIncomeData] = useState<Partial<GrossTotalIncomeFormData>>(defaultGrossIncomeData);
   const [deductionData, setDeductionData] = useState<Partial<TaxDeductionFormData>>({});
 
-  const personalFormMethods = useForm<PersonalInformationFormData>({
-    resolver: zodResolver(personalInformationSchema),
+  const personalFormMethods = useForm({
+    resolver: zodResolver(personalInformationSchema) as any,
     mode: "onBlur",
-    defaultValues: personalData,
+    defaultValues: personalData as any,
   });
 
-  const grossIncomeFormMethods = useForm<any>({
+  const grossIncomeFormMethods = useForm({
     mode: "onBlur",
-    defaultValues: grossIncomeData,
+    defaultValues: grossIncomeData as any,
   });
 
-  const deductionFormMethods = useForm<any>({
-    resolver: zodResolver(taxDeductionSchema),
+  const deductionFormMethods = useForm({
+    resolver: zodResolver(taxDeductionSchema) as any,
     mode: "onBlur",
-    defaultValues: deductionData,
+    defaultValues: deductionData as any,
   });
 
   const { reset: resetPersonal } = personalFormMethods;
@@ -124,8 +124,8 @@ const ItrOne: React.FC = () => {
   }, [grossIncomeData, resetGrossIncome]);
 
   useEffect(() => {
-    resetDeduction(deductionData);
-  }, [deductionData, resetDeduction]);
+    resetDeduction({ ...grossIncomeData, ...deductionData });
+  }, [deductionData, grossIncomeData, resetDeduction]);
 
   const ensureAtLeastOneInProgress = (list: ItrSummarySection[]): ItrSummarySection[] => {
     if (list.some((section) => section.status === "in-progress")) {
@@ -290,11 +290,11 @@ const ItrOne: React.FC = () => {
         <ITRProgress steps={ITR_ONE_PROGRESS_STEPS} activeStepId={activeStepId} stepStatusMap={stepStatusMap} />
 
         {activeDetailId === "personal" ? (
-          <PersonalInformation form={personalFormMethods} onSubmit={handlePersonalSubmit} onCancel={handleBackToSummary} />
+          <PersonalInformation form={personalFormMethods as any} onSubmit={handlePersonalSubmit} onCancel={handleBackToSummary} />
         ) : activeDetailId === "gross-income" ? (
-          <GrossTotalIncome form={grossIncomeFormMethods} onSubmit={handleGrossIncomeSubmit} onCancel={handleBackToSummary} />
+          <GrossTotalIncome form={grossIncomeFormMethods as any} onSubmit={handleGrossIncomeSubmit} onCancel={handleBackToSummary} />
         ) : activeDetailId === "deductions" ? (
-          <TaxDeduction form={deductionFormMethods} onSubmit={handleDeductionSubmit} onCancel={handleBackToSummary} />
+          <TaxDeduction form={deductionFormMethods as any} onSubmit={handleDeductionSubmit} onCancel={handleBackToSummary} />
         ) : (
           <section className="space-y-4">
             <h2 className="text-xl font-semibold text-gray-900">Return Summary</h2>

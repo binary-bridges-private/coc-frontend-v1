@@ -74,7 +74,6 @@ const PersonalInformation: React.FC<PersonalInformationProps> = ({
     formState: { errors, isSubmitting },
   } = form;
 
-  const [showFilingMetadata, setShowFilingMetadata] = useState(false);
   const filingStatus = watch("filingStatus");
   const filedInResponseToNotice = watch("filedInResponseToNotice");
   const isRevisedOrDefective = watch("isRevisedOrDefective");
@@ -124,26 +123,26 @@ const PersonalInformation: React.FC<PersonalInformationProps> = ({
                   Agricultural income (up to ₹5,000), and Interest
                 </li>
                 <li>
-                  <strong className="text-red-600">Does NOT have:</strong>{" "}
+                  <strong className="text-red-600">Does NOT have:</strong>
                   Income under the head 'Profits and Gains of Business or
                   Profession'
                 </li>
                 <li>
-                  <strong className="text-red-600">Does NOT have:</strong>{" "}
+                  <strong className="text-red-600">Does NOT have:</strong>
                   Capital Gains (Long term or Short term)
                 </li>
                 <li>
-                  <strong className="text-red-600">Does NOT have:</strong>{" "}
+                  <strong className="text-red-600">Does NOT have:</strong>
                   Income from more than one house property
                 </li>
                 <li>
-                  <strong className="text-red-600">Does NOT have:</strong>{" "}
+                  <strong className="text-red-600">Does NOT have:</strong>
                   Income from Lottery, Race Horses, Legal Gambling, etc.
                 </li>
               </ul>
               <p className="mt-3 rounded bg-white p-2 text-xs italic">
                 ℹ️ Individuals who are Directors in a company or have invested
-                in unlisted equity shares are{" "}
+                in unlisted equity shares are
                 <strong className="text-red-600">NOT eligible</strong> to file
                 ITR-1.
               </p>
@@ -156,10 +155,67 @@ const PersonalInformation: React.FC<PersonalInformationProps> = ({
         onSubmit={handleSubmit(onSubmit)}
         className="space-y-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"
       >
+        {(() => {
+          const relevantErrors = Object.entries(errors).filter(([fieldName]) => {
+            // Skip errors for conditional fields that shouldn't be validated
+            if (fieldName === 'originalReceiptNumber' || fieldName === 'originalFilingDate') {
+              if (filingStatus !== FilingStatus.Revised && filingStatus !== FilingStatus.DefectiveReturn) {
+                return false;
+              }
+            }
+            if (fieldName === 'responseNoticeSection' || fieldName === 'noticeUniqueDIN') {
+              if (!filedInResponseToNotice) {
+                return false;
+              }
+            }
+            if (fieldName === 'form10IEAckNumber' || fieldName === 'form10IEAckDate') {
+              if (taxRegime !== TaxRegime.New115BAC) {
+                return false;
+              }
+            }
+            if (fieldName === 'foreignTravelExpenditure' || fieldName === 'electricityExpenditure') {
+              if (!filingUnderSeventhProviso) {
+                return false;
+              }
+            }
+            return true;
+          });
+
+          if (relevantErrors.length === 0) return null;
+
+          return (
+            <div className="rounded-lg border-2 border-red-300 bg-red-50 p-4 shadow-sm">
+              <div className="flex items-start gap-3">
+                <svg className="h-6 w-6 flex-shrink-0 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+                <div className="flex-1">
+                  <h3 className="mb-2 text-sm font-bold text-red-900">
+                    ⚠️ Please fix the following errors ({relevantErrors.length} field{relevantErrors.length > 1 ? 's' : ''})
+                  </h3>
+                  <ul className="space-y-1 text-sm text-red-800">
+                    {relevantErrors.map(([fieldName, error]: [string, any]) => {
+                      const message = error?.message || 'This field is required';
+                      return (
+                        <li key={fieldName} className="flex items-start gap-2">
+                          <span className="font-medium">•</span>
+                          <span>
+                            <strong className="capitalize">{fieldName.replace(/([A-Z])/g, ' $1').trim()}:</strong> {message}
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+
         <div className="rounded-lg border border-gray-300 bg-gray-50 p-4 text-center">
           <p className="text-sm text-gray-700">
             <strong>💡 Helpful Tip:</strong> To estimate your total tax and
-            decide as to which tax regime is beneficial, you may use{" "}
+            decide as to which tax regime is beneficial, you may use
             <span className="text-blue-600 font-semibold">
               income tax calculator
             </span>
@@ -440,38 +496,16 @@ const PersonalInformation: React.FC<PersonalInformationProps> = ({
         </div>
 
         <div className="border-t border-gray-200 pt-6">
-          <button
-            type="button"
-            onClick={() => setShowFilingMetadata(!showFilingMetadata)}
-            className="mb-4 flex w-full items-center justify-between rounded-lg bg-blue-50 p-4 text-left transition-colors hover:bg-blue-100"
-          >
-            <div>
-              <h3 className="font-semibold text-gray-900">
-                Filing Status & Tax Regime
-              </h3>
-              <p className="text-sm text-gray-600">
-                Important information about your ITR filing
-              </p>
-            </div>
-            <svg
-              className={`h-5 w-5 text-gray-600 transition-transform ${
-                showFilingMetadata ? "rotate-180" : ""
-              }`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </button>
+          <div className="mb-4 rounded-lg bg-blue-50 p-4">
+            <h3 className="font-semibold text-gray-900">
+              Filing Status & Tax Regime
+            </h3>
+            <p className="text-sm text-gray-600">
+              Important information about your ITR filing
+            </p>
+          </div>
 
-          {showFilingMetadata && (
-            <div className="space-y-6 rounded-lg border border-gray-200 bg-gray-50 p-6">
+          <div className="space-y-6 rounded-lg">
               <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
                 <h4 className="mb-2 font-semibold text-blue-900">
                   💡 Understanding Tax Regimes
@@ -602,12 +636,12 @@ const PersonalInformation: React.FC<PersonalInformationProps> = ({
                       <div className="space-y-2 text-sm text-gray-800">
                         <p>
                           1. By selecting <strong>"No"</strong> option your
-                          income and tax computation shall be as per{" "}
+                          income and tax computation shall be as per
                           <strong>"NEW TAX REGIME"</strong>
                         </p>
                         <p>
                           2. By selecting <strong>"Yes"</strong> option your
-                          income and tax computation shall be as per{" "}
+                          income and tax computation shall be as per
                           <strong>"OLD TAX REGIME"</strong>
                         </p>
                         <p className="mt-2 rounded bg-white p-2 text-xs italic text-red-700">
@@ -663,7 +697,7 @@ const PersonalInformation: React.FC<PersonalInformationProps> = ({
                   <div className="ml-6 mt-2 rounded-md border-l-4 border-purple-400 bg-purple-50 p-3 text-xs text-gray-700">
                     <strong>⚠️ Mandatory Filing Condition:</strong> Even if your
                     total income is below taxable limit, you MUST file return if
-                    your expenditure on foreign travel exceeds{" "}
+                    your expenditure on foreign travel exceeds
                     <strong>₹2,00,000</strong> or electricity consumption
                     exceeds <strong>₹1,00,000</strong> during the financial
                     year.
@@ -713,10 +747,10 @@ const PersonalInformation: React.FC<PersonalInformationProps> = ({
                         <span className="flex-1 text-gray-700">
                           The aggregate of tax deducted at source and tax
                           collected at source during the previous year, in the
-                          case of the person, is{" "}
+                          case of the person, is
                           <strong>twenty-five thousand rupees or more</strong>
                           <span className="text-gray-600">
-                            {" "}
+                            
                             (fifty thousand for resident senior citizen)
                           </span>
                         </span>
@@ -730,7 +764,7 @@ const PersonalInformation: React.FC<PersonalInformationProps> = ({
                         />
                         <span className="flex-1 text-gray-700">
                           The deposit in one or more savings bank account of the
-                          person, in aggregate, is{" "}
+                          person, in aggregate, is
                           <strong>fifty lakh rupees or more</strong>, in the
                           previous year
                         </span>
@@ -740,7 +774,6 @@ const PersonalInformation: React.FC<PersonalInformationProps> = ({
                 </div>
               </div>
             </div>
-          )}
         </div>
 
         <div className="flex flex-col gap-3 border-t border-gray-100 pt-4 sm:flex-row sm:justify-end">

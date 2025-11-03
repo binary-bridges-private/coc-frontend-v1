@@ -15,6 +15,7 @@ import {
   SalaryIncomeFormData,
   HousePropertyFormData,
   CapitalGainsSectionAFormData,
+  CapitalGainsSectionBFormData,
 } from "./itr-two.validation.ts";
 
 const ItrTwo: React.FC = () => {
@@ -24,7 +25,10 @@ const ItrTwo: React.FC = () => {
     personalInfo?: PersonalInfoFormData;
     salaryIncome?: SalaryIncomeFormData;
     houseProperty?: HousePropertyFormData;
-    capitalGains?: CapitalGainsSectionAFormData;
+    capitalGains?: {
+      sectionA?: CapitalGainsSectionAFormData;
+      sectionB?: CapitalGainsSectionBFormData;
+    };
   }>({});
 
   const completionPercentage = useMemo(
@@ -164,6 +168,7 @@ const ItrTwo: React.FC = () => {
               <ItrTwoSalary
                 onComplete={(data) => handleSectionComplete("schedule-s", data)}
                 initialData={formData.salaryIncome}
+                personalInfo={formData.personalInfo} 
               />
             )}
 
@@ -173,6 +178,7 @@ const ItrTwo: React.FC = () => {
                   handleSectionComplete("house-property", data)
                 }
                 initialData={formData.houseProperty}
+                personalInfo={formData.personalInfo} 
               />
             )}
 
@@ -180,6 +186,7 @@ const ItrTwo: React.FC = () => {
               <ItrTwoCapitalGain
                 onComplete={(data) => handleSectionComplete("cg", data)}
                 initialData={formData.capitalGains}
+                personalInfo={formData.personalInfo}
               />
             )}
 

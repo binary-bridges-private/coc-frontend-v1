@@ -5,15 +5,18 @@ import {
   salaryIncomeSchema,
   SalaryIncomeFormData,
 } from "../itr-two.validation.ts";
+import { PersonalInfoFormData } from "../itr-two.validation.ts";
 
 interface ItrTwoSalaryProps {
   onComplete: (data: SalaryIncomeFormData) => void;
   initialData?: Partial<SalaryIncomeFormData>;
+  personalInfo?: PersonalInfoFormData; // 👈 NEW: Accept personal info from previous section
 }
 
 const ItrTwoSalary: React.FC<ItrTwoSalaryProps> = ({
   onComplete,
   initialData,
+  personalInfo, // 👈 NEW: Destructure personal info
 }) => {
   const {
     register,
@@ -122,6 +125,34 @@ const ItrTwoSalary: React.FC<ItrTwoSalaryProps> = ({
 
   return (
     <div className="mx-auto max-w-7xl space-y-6 ">
+      {personalInfo && (
+        <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+          <h4 className="mb-2 flex items-center gap-2 text-sm font-semibold text-blue-900">
+            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+            </svg>
+            Personal Information from Part A
+          </h4>
+          <div className="grid grid-cols-2 gap-3 text-xs md:grid-cols-4">
+            <div>
+              <span className="font-medium text-blue-700">Name:</span>
+              <p className="text-blue-900">{personalInfo.firstName} {personalInfo.lastName}</p>
+            </div>
+            <div>
+              <span className="font-medium text-blue-700">PAN:</span>
+              <p className="text-blue-900">{personalInfo.pan}</p>
+            </div>
+            <div>
+              <span className="font-medium text-blue-700">State:</span>
+              <p className="text-blue-900">{personalInfo.state}</p>
+            </div>
+            <div>
+              <span className="font-medium text-blue-700">Status:</span>
+              <p className="text-blue-900">{personalInfo.filingStatus}</p>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="rounded-lg ">
         
 
