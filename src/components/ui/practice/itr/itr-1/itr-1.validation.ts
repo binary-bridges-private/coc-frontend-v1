@@ -112,11 +112,10 @@ const taxRegimeSchema = z.nativeEnum(TaxRegime, {
   message: "Please select tax regime",
 });
 
-const filingSectionSchema = z
-  .nativeEnum(FilingSection, {
-    message: "Please select filing section",
-  })
-  .optional();
+const filingSectionSchema = z.union([
+  z.literal(""),
+  z.nativeEnum(FilingSection),
+]).optional();
 
 const optionalDateSchema = z
   .union([
@@ -183,12 +182,87 @@ export const personalInformationSchema = z.object({
   form10IEAckDate: optionalDateSchema,
 
   filingUnderSeventhProviso: z.boolean().optional(),
-  foreignTravelExpenditure: z.number().optional(),
-  electricityExpenditure: z.number().optional(),
+  foreignTravelExpenditure: z.union([
+    z.number(),
+    z.string().transform((val) => val === "" ? undefined : parseFloat(val)),
+    z.undefined(),
+  ]).optional(),
+  electricityExpenditure: z.union([
+    z.number(),
+    z.string().transform((val) => val === "" ? undefined : parseFloat(val)),
+    z.undefined(),
+  ]).optional(),
 
   filingUnderOtherSeventhProvisoConditions: z.boolean().optional(),
   tdsTcsAggregate25ThousandOrMore: z.boolean().optional(),
   savingsBankDeposit50LakhOrMore: z.boolean().optional(),
+}).superRefine((data, ctx) => {
+  if (
+    data.filingStatus === FilingStatus.Revised ||
+    data.filingStatus === FilingStatus.DefectiveReturn
+  ) {
+    if (!data.originalReceiptNumber || data.originalReceiptNumber.trim() === "") {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["originalReceiptNumber"],
+        message: "Original receipt number is required for revised/defective returns",
+      });
+    }
+    if (!data.originalFilingDate || data.originalFilingDate === "") {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["originalFilingDate"],
+        message: "Original filing date is required for revised/defective returns",
+      });
+    }
+  }
+
+  if (data.filedInResponseToNotice) {
+    if (!data.responseNoticeSection) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["responseNoticeSection"],
+        message: "Notice section is required when filed in response to notice",
+      });
+    }
+    if (!data.noticeUniqueDIN || data.noticeUniqueDIN.trim() === "") {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["noticeUniqueDIN"],
+        message: "DIN (Document Identification Number) is required",
+      });
+    }
+  }
+
+  if (data.taxRegime === TaxRegime.New115BAC && data.optingOut115BAC) {
+    if (!data.form10IEAckNumber || data.form10IEAckNumber.trim() === "") {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["form10IEAckNumber"],
+        message: "Form 10-IE acknowledgment number is required when opting out of 115BAC",
+      });
+    }
+    if (!data.form10IEAckDate || data.form10IEAckDate === "") {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["form10IEAckDate"],
+        message: "Form 10-IE date is required when opting out of 115BAC",
+      });
+    }
+  }
+
+  if (data.filingUnderSeventhProviso) {
+    if (
+      (data.foreignTravelExpenditure === undefined || data.foreignTravelExpenditure === 0) &&
+      (data.electricityExpenditure === undefined || data.electricityExpenditure === 0)
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["foreignTravelExpenditure"],
+        message: "Either foreign travel or electricity expenditure must be provided",
+      });
+    }
+  }
 });
 
 export type PersonalInformationFormData = z.infer<
@@ -521,6 +595,18 @@ export const taxDeductionSchema = z.object({
   fee234F: optionalNumericAmountSchema,
   totalInterestFee: optionalNumericAmountSchema,
   totalTaxFeeInterest: optionalNumericAmountSchema,
+  
+  // Exempt Income
+  exemptIncomeNature1: z.string().optional(),
+  exemptIncomeDescription1: z.string().optional(),
+  exemptIncome1: optionalNumericAmountSchema,
+  exemptIncomeNature2: z.string().optional(),
+  exemptIncomeDescription2: z.string().optional(),
+  exemptIncome2: optionalNumericAmountSchema,
+  
+  // LTCG u/s 112A
+  ltcgSaleConsideration112A: optionalNumericAmountSchema,
+  ltcgCostOfAcquisition112A: optionalNumericAmountSchema,
 });
 
 export type TaxDeductionFormData = z.infer<typeof taxDeductionSchema>;

@@ -97,7 +97,7 @@ export const personalInfoSchema = z
 
     filingUnderSeventhProviso: z.enum(["Yes", "No"]).optional(),
 
-    depositedAmountExceeds1Crore: z.enum(["Yes", "No"]).optional(),
+    depositedAmountExceeds1Crore: z.enum(["Yes", "No"]).optional().or(z.literal("")).nullable(),
     depositedAmount: z
       .number()
       .positive("Amount must be positive")
@@ -105,7 +105,7 @@ export const personalInfoSchema = z
       .optional()
       .nullable(),
 
-    incurredExpenditureExceeds2Lakhs: z.enum(["Yes", "No"]).optional(),
+    incurredExpenditureExceeds2Lakhs: z.enum(["Yes", "No"]).optional().or(z.literal("")).nullable(),
     incurredExpenditureAmount: z
       .number()
       .positive("Amount must be positive")
@@ -113,7 +113,7 @@ export const personalInfoSchema = z
       .optional()
       .nullable(),
 
-    electricityExpenditureExceeds1Lakh: z.enum(["Yes", "No"]).optional(),
+    electricityExpenditureExceeds1Lakh: z.enum(["Yes", "No"]).optional().or(z.literal("")).nullable(),
     electricityExpenditureAmount: z
       .number()
       .positive("Amount must be positive")
@@ -121,7 +121,7 @@ export const personalInfoSchema = z
       .optional()
       .nullable(),
 
-    otherConditionsApplicable: z.enum(["Yes", "No"]).optional(),
+    otherConditionsApplicable: z.enum(["Yes", "No"]).optional().or(z.literal("")).nullable(),
     relevantCondition: z.string().max(200).optional().or(z.literal("")),
 
     isRevisedDefectiveModified: z.boolean().default(false),
@@ -683,4 +683,525 @@ export const capitalGainsSectionASchema = z.object({
 
 export type CapitalGainsSectionAFormData = z.infer<
   typeof capitalGainsSectionASchema
+>;
+
+// Section B - Long-term Capital Gains (LTCG)
+export const capitalGainsSectionBSchema = z.object({
+  // B1: From sale of land or building or both
+  ltcgLandBuildingSales: z
+    .array(
+      z.object({
+        purchaseDate: z
+          .string()
+          .regex(/^\d{2}\/\d{2}\/\d{4}$/, "Date must be in DD/MM/YYYY format")
+          .optional()
+          .or(z.literal("")),
+        saleDate: z
+          .string()
+          .regex(/^\d{2}\/\d{2}\/\d{4}$/, "Date must be in DD/MM/YYYY format")
+          .optional()
+          .or(z.literal("")),
+
+        // a. Full value of consideration
+        fullValueConsideration: z.number().min(0).default(0),
+        stampDutyValue: z.number().min(0).default(0),
+        fullValueAdopted: z.number().min(0).default(0),
+
+        // b. Deductions under section 48
+        costAcquisitionWithoutIndexation: z.number().min(0).default(0),
+        costAcquisitionWithIndexation: z.number().min(0).default(0),
+        costImprovementWithoutIndexation: z.number().min(0).default(0),
+        yearOfImprovement: z.string().max(10).optional().or(z.literal("")),
+        costImprovementWithIndexation: z.number().min(0).default(0),
+        expenditureOnTransfer: z.number().min(0).default(0),
+        
+        // Transfer timing specific fields
+        totalBeforeJuly23: z.number().min(0).default(0),
+        totalAfterJuly23: z.number().min(0).default(0),
+        totalForComputingExcessTax: z.number().min(0).default(0),
+
+        // c. Balance
+        balance: z.number().default(0),
+        balanceForComputingExcessTax: z.number().default(0),
+
+        // ca. Balance for residents computational purposes
+        balanceComputationalPurpose: z.number().default(0),
+
+        // d. Deduction under sections 54/54B/54D/54F/54GB
+        deductionSection54: z.number().min(0).default(0),
+
+        // e. Long-term capital gains
+        longTermCapitalGain: z.number().default(0),
+        longTermCapitalGainComputational: z.number().default(0),
+
+        // ci. Tax as per section 112(1)(a)(iiB) at 12.5%
+        taxAt12_5Percent: z.number().min(0).default(0),
+
+        // cii. Excess amount required to be ignored
+        excessAmountIgnored: z.number().min(0).default(0),
+
+        // f. Transfer of immovable property details
+        transferDetails: z
+          .object({
+            buyerName: z.string().max(200).optional().or(z.literal("")),
+            buyerPanAadhaar: z.string().max(12).optional().or(z.literal("")),
+            percentageShare: z.number().min(0).max(100).optional().nullable(),
+            amount: z.number().min(0).default(0),
+            propertyAddress: z.string().max(500).optional().or(z.literal("")),
+            countryCode: z.string().max(10).optional().or(z.literal("")),
+            zipCode: z.string().max(20).optional().or(z.literal("")),
+            pinCode: z
+              .string()
+              .regex(/^\d{6}$/, "PIN code must be 6 digits")
+              .optional()
+              .or(z.literal("")),
+            state: z.string().max(100).optional().or(z.literal("")),
+          })
+          .optional(),
+
+        // g. Total LTCG on immovable property
+        totalLTCGImmovableProperty: z.number().default(0),
+        totalLTCGBeforeJuly23: z.number().default(0),
+        totalLTCGAfterJuly23: z.number().default(0),
+        totalExcessTaxIgnored: z.number().default(0),
+      })
+    )
+    .optional()
+    .default([]),
+
+  // B2: For residents, from sale of unlisted bonds/debentures
+  unlistedBondsSales: z
+    .array(
+      z.object({
+        transferWasBefore23July: z.boolean().default(false),
+        transferWasAfter23July: z.boolean().default(false),
+
+        fullValueConsideration: z.number().min(0).default(0),
+        costAcquisitionWithoutIndexation: z.number().min(0).default(0),
+        costImprovementWithoutIndexation: z.number().min(0).default(0),
+        expenditureOnTransfer: z.number().min(0).default(0),
+        totalDeductions: z.number().min(0).default(0),
+        balance: z.number().default(0),
+        deductionSection54: z.number().min(0).default(0),
+        ltcgOnBonds: z.number().default(0),
+      })
+    )
+    .optional()
+    .default([]),
+
+  // B3i: From sale of listed securities
+  listedSecuritiesSales: z
+    .array(
+      z.object({
+        transferWasBefore23July: z.boolean().default(false),
+        transferWasAfter23July: z.boolean().default(false),
+
+        fullValueConsideration: z.number().min(0).default(0),
+        costAcquisitionWithIndexation: z.number().min(0).default(0),
+        costAcquisitionWithoutIndexation: z.number().min(0).default(0),
+        costImprovementWithoutIndexation: z.number().min(0).default(0),
+        expenditureOnTransfer: z.number().min(0).default(0),
+        totalDeductions: z.number().min(0).default(0),
+        balance: z.number().default(0),
+        balanceForComputingExcessTax: z.number().default(0),
+        deductionSection54: z.number().min(0).default(0),
+        ltcgOnSecurities: z.number().default(0),
+        ltcgForComputingExcessTax: z.number().default(0),
+
+        taxAt12_5Percent: z.number().min(0).default(0),
+        excessAmountIgnored: z.number().min(0).default(0),
+      })
+    )
+    .optional()
+    .default([]),
+
+  // B3ii: From sale of CDIR or Indian company under section 115AC(1)
+  cdirSales: z
+    .object({
+      transferWasBefore23July: z.boolean().default(false),
+      transferWasAfter23July: z.boolean().default(false),
+
+      fullValueConsideration: z.number().min(0).default(0),
+      costAcquisitionWithoutIndexation: z.number().min(0).default(0),
+      costImprovementWithoutIndexation: z.number().min(0).default(0),
+      expenditureOnTransfer: z.number().min(0).default(0),
+      totalDeductions: z.number().min(0).default(0),
+      balance: z.number().default(0),
+      deductionSection54: z.number().min(0).default(0),
+      ltcgOnAssets: z.number().default(0),
+    })
+    .optional(),
+
+  // B4: From sale of equity shares
+  equitySharesSales: z
+    .array(
+      z.object({
+        // Case assets include shares of company other than quoted shares
+        caseType: z.enum(["quoted", "unquoted"]).default("quoted"),
+
+        fullValueConsideration: z.number().min(0).default(0),
+        fairMarketValue: z.number().min(0).default(0),
+        fullValueAdopted: z.number().min(0).default(0),
+        fullValueOther: z.number().min(0).default(0),
+        totalFullValue: z.number().min(0).default(0),
+
+        costAcquisitionWithIndexation: z.number().min(0).default(0),
+        costAcquisitionWithoutIndexation: z.number().min(0).default(0),
+        costImprovementWithoutIndexation: z.number().min(0).default(0),
+        expenditureOnTransfer: z.number().min(0).default(0),
+        totalDeductions: z.number().min(0).default(0),
+
+        balance: z.number().default(0),
+        deductionSection54: z.number().min(0).default(0),
+        ltcgOnAssets: z.number().default(0),
+
+        transferWasBefore23July: z.boolean().default(false),
+        transferWasAfter23July: z.boolean().default(false),
+      })
+    )
+    .optional()
+    .default([]),
+
+  // B5: For NON-RESIDENTS: from sale of shares or debentures of Indian company
+  nonResidentSharesSales: z
+    .object({
+      // LTCG computed without indexation benefit
+      withoutIndexation: z
+        .object({
+          before23July: z.number().default(0),
+          onAfter23July: z.number().default(0),
+          totalListedDebentures: z.number().default(0),
+          totalOtherThanListedDebentures: z.number().default(0),
+          totalUnlistedShares: z.number().default(0),
+        })
+        .optional(),
+
+      // Deduction under sections 54F
+      deductionSection54F: z
+        .object({
+          before23July: z.number().min(0).default(0),
+          onAfter23July: z.number().min(0).default(0),
+          totalListedDebentures: z.number().min(0).default(0),
+          totalOtherThanListedDebentures: z.number().min(0).default(0),
+          totalUnlistedShares: z.number().min(0).default(0),
+        })
+        .optional(),
+
+      // LTCG on sale of debentures
+      ltcgDebentures: z
+        .object({
+          before23July: z.number().default(0),
+          onAfter23July: z.number().default(0),
+          totalListedDebentures: z.number().default(0),
+          totalOtherThanListedDebentures: z.number().default(0),
+          totalUnlistedShares: z.number().default(0),
+        })
+        .optional(),
+
+      // For NON-RESIDENTS: from sale of unlisted shares or FII
+      unlistedOrFII: z
+        .object({
+          transferWasBefore23July: z.boolean().default(false),
+          transferWasAfter23July: z.boolean().default(false),
+        })
+        .optional(),
+    })
+    .optional(),
+
+  // B6: For FII/ FPI (NON-RESIDENTS): From sale of shares in company or unit of equity oriented fund
+  fpiNonResidentSales: z
+    .object({
+      transferWasBefore23July: z.boolean().default(false),
+      transferWasAfter23July: z.boolean().default(false),
+
+      fullValueConsideration: z.number().min(0).default(0),
+      costAcquisitionWithIndexation: z.number().min(0).default(0),
+      costAcquisitionWithoutIndexation: z.number().min(0).default(0),
+      costImprovementWithoutIndexation: z.number().min(0).default(0),
+      expenditureOnTransfer: z.number().min(0).default(0),
+      totalDeductions: z.number().min(0).default(0),
+
+      balance: z.number().default(0),
+      deductionSection54: z.number().min(0).default(0),
+      ltcgOnCapitalAssets: z.number().default(0),
+    })
+    .optional(),
+
+  // B7: For FII/ FPI (NON-RESIDENTS): from sale of shares in company or unit of equity oriented fund
+  fpiFiiSales: z
+    .object({
+      ltcgColumn14Before23July: z.number().default(0),
+      ltcgColumn14After23July: z.number().default(0),
+
+      deductionSection54: z.number().min(0).default(0),
+      deductionBefore23July: z.number().min(0).default(0),
+      deductionAfter23July: z.number().min(0).default(0),
+
+      ltcgCapitalAssetsBefore23July: z.number().default(0),
+      ltcgCapitalAssetsAfter23July: z.number().default(0),
+    })
+    .optional(),
+
+  // B8: From sale of foreign exchange asset by NON-RESIDENT INDIAN
+  foreignExchangeAssetSales: z
+    .object({
+      ltcgBefore23July: z.number().default(0),
+      ltcgAfter23July: z.number().default(0),
+
+      lessDeductionSection115F: z.number().min(0).default(0),
+      lessDeductionBefore23July: z.number().min(0).default(0),
+      lessDeductionAfter23July: z.number().min(0).default(0),
+
+      balanceBefore23July: z.number().default(0),
+      balanceAfter23July: z.number().default(0),
+    })
+    .optional(),
+
+  // B9: From sale of assets where B1 to B8 above are not applicable
+  otherAssetsSales: z
+    .array(
+      z.object({
+        transferWasBefore23July: z.boolean().default(false),
+        transferWasAfter23July: z.boolean().default(false),
+
+        caseType: z.enum(["quoted", "unquoted"]).default("quoted"),
+
+        fullValueConsideration: z.number().min(0).default(0),
+        fairMarketValue: z.number().min(0).default(0),
+        fullValueAdopted: z.number().min(0).default(0),
+        fullValueOther: z.number().min(0).default(0),
+        totalFullValue: z.number().min(0).default(0),
+
+        costAcquisitionWithIndexation: z.number().min(0).default(0),
+        costAcquisitionWithoutIndexation: z.number().min(0).default(0),
+        costImprovementWithIndexation: z.number().min(0).default(0),
+        costImprovementWithoutIndexation: z.number().min(0).default(0),
+        expenditureOnTransfer: z.number().min(0).default(0),
+        totalDeductions: z.number().min(0).default(0),
+
+        balance: z.number().default(0),
+        deductionSection54: z.number().min(0).default(0),
+        ltcgOnAssets: z.number().default(0),
+      })
+    )
+    .optional()
+    .default([]),
+
+  // B10: Amount deemed to be long-term capital gains
+  amountDeemedLTCG: z
+    .object({
+      // Whether any unutilized capital gain arose from previous year shown below
+      capitalGainAccountDetails: z
+        .array(
+          z.object({
+            previousYear: z.string().max(10).optional().or(z.literal("")),
+            section: z.string().max(20).optional().or(z.literal("")),
+            previousYearUtilized: z.number().default(0),
+            amountUtilizedOutOfCapitalGains: z.number().default(0),
+            amountNotUtilizedCapitalGains: z.number().default(0),
+            whetherDateLimitationWithdrawal: z
+              .string()
+              .max(50)
+              .optional()
+              .or(z.literal("")),
+          })
+        )
+        .optional()
+        .default([]),
+
+      amountDeemedBefore23July: z.number().default(0),
+      amountDeemedAfter23July: z.number().default(0),
+      totalAmountDeemed: z.number().default(0),
+    })
+    .optional(),
+
+  // B11: Pass Through Income/ Loss in the nature of Long-Term Capital Gain
+  ltcgPassThroughIncome: z
+    .object({
+      at10Percent: z.number().default(0),
+      at10PercentNonResident: z.number().default(0),
+      at12_5Percent: z.number().default(0),
+      at20Percent: z.number().default(0),
+    })
+    .optional(),
+
+  // B12: Amount of LTCG included in B1-B11 but claimed as not chargeable or chargeable at special rates
+  ltcgNotChargeableOrSpecialRates: z
+    .array(
+      z.object({
+        itemNo: z.string().max(10).optional().or(z.literal("")),
+        countryNameCode: z.string().max(100).optional().or(z.literal("")),
+        articleOfDTAA: z.string().max(50).optional().or(z.literal("")),
+        rateAsPerTreatyAnnexure: z
+          .number()
+          .min(0)
+          .max(100)
+          .optional()
+          .nullable(),
+        whetherTRC: z.enum(["Yes", "No"]).optional(),
+        sectionOfITAct: z.string().max(50).optional().or(z.literal("")),
+        rateAsPerITAct: z.number().min(0).max(100).optional().nullable(),
+        applicableRate: z.number().min(0).max(100).optional().nullable(),
+      })
+    )
+    .optional()
+    .default([]),
+
+  totalLTCGNotChargeable: z.number().default(0),
+  totalLTCGSpecialRates: z.number().default(0),
+
+  // B(A): Capital Loss on buy back of shares
+  capitalLossBuyBack: z
+    .object({
+      longTermLoss: z.number().default(0),
+      tenPercent: z.number().default(0),
+      tenPercentNonResident: z.number().default(0),
+    })
+    .optional(),
+
+  // B13: Total long-term capital gain chargeable under I.T. Act
+  totalLTCGChargeable: z.number().default(0),
+
+  // C1: Sum of Capital Incomes
+  totalCapitalIncome: z.number().default(0),
+
+  // C2: Income from transfer of Virtual Digital Assets
+  virtualDigitalAssetIncome: z.number().default(0),
+
+  // C3: Income chargeable under the head "CAPITAL GAINS"
+  totalCapitalGainsIncome: z.number().default(0),
+
+  // C4: Deduction claimed against Capital Gains
+  deductionClaimedDetails: z
+    .array(
+      z.object({
+        deductionType: z
+          .enum([
+            "54/54B/54D/54F/54GB",
+            "54/54B/54EC",
+            "54EC",
+            "54E",
+            "115F",
+          ])
+          .optional(),
+        dateOfTransferOriginalAsset: z
+          .string()
+          .regex(/^\d{2}\/\d{2}\/\d{4}$/, "Date must be in DD/MM/YYYY format")
+          .optional()
+          .or(z.literal("")),
+        costOfNewResidentialHouse: z.number().min(0).optional().nullable(),
+        dateOfPurchaseNewHouse: z
+          .string()
+          .regex(/^\d{2}\/\d{2}\/\d{4}$/, "Date must be in DD/MM/YYYY format")
+          .optional()
+          .or(z.literal("")),
+        amountDepositedCapitalGains: z.number().min(0).optional().nullable(),
+        dateOfDeposit: z
+          .string()
+          .regex(/^\d{2}\/\d{2}\/\d{4}$/, "Date must be in DD/MM/YYYY format")
+          .optional()
+          .or(z.literal("")),
+        accountNumber: z.string().max(50).optional().or(z.literal("")),
+        ifscCode: z.string().max(20).optional().or(z.literal("")),
+        amountOfDeductionClaimed: z.number().min(0).default(0),
+      })
+    )
+    .optional()
+    .default([]),
+
+  totalDeductionClaimed: z.number().default(0),
+
+  // E: Set-off of current year capital losses with current year capital gains
+  setOffDetails: z
+    .object({
+      capitalLossToBeSetOff: z
+        .array(
+          z.object({
+            typeOfCapitalGain: z
+              .string()
+              .max(100)
+              .optional()
+              .or(z.literal("")),
+            capitalGainThisColumn: z.number().default(0),
+            shortTermCapitalLoss: z.number().default(0),
+            longTermCapitalLoss: z.number().default(0),
+            currentYearCapitalGainsRemainingAfterSetOff: z.number().default(0),
+          })
+        )
+        .optional()
+        .default([]),
+
+      at15Percent: z
+        .object({
+          gains: z.number().default(0),
+          stcgLoss: z.number().default(0),
+          ltcgLoss: z.number().default(0),
+          remaining: z.number().default(0),
+        })
+        .optional(),
+
+      at20Percent: z
+        .object({
+          gains: z.number().default(0),
+          stcgLoss: z.number().default(0),
+          ltcgLoss: z.number().default(0),
+          remaining: z.number().default(0),
+        })
+        .optional(),
+
+      at30Percent: z
+        .object({
+          gains: z.number().default(0),
+          stcgLoss: z.number().default(0),
+          ltcgLoss: z.number().default(0),
+          remaining: z.number().default(0),
+        })
+        .optional(),
+
+      atApplicableRate: z
+        .object({
+          gains: z.number().default(0),
+          stcgLoss: z.number().default(0),
+          ltcgLoss: z.number().default(0),
+          remaining: z.number().default(0),
+        })
+        .optional(),
+
+      dtaaRate: z
+        .object({
+          gains: z.number().default(0),
+          stcgLoss: z.number().default(0),
+          ltcgLoss: z.number().default(0),
+          remaining: z.number().default(0),
+        })
+        .optional(),
+
+      totalTaxSetOff: z.number().default(0),
+      lossRemainingAfterSetOff: z.number().default(0),
+    })
+    .optional(),
+
+  // F: Information about accrual/receipt of capital gain
+  accrualReceiptInformation: z
+    .array(
+      z.object({
+        typeOfCapitalGain: z
+          .string()
+          .max(100)
+          .optional()
+          .or(z.literal("")),
+        dateRange: z.string().max(50).optional().or(z.literal("")),
+        upTo15_6: z.number().default(0),
+        from16_6_to_15_9: z.number().default(0),
+        from16_9_to_15_12: z.number().default(0),
+        from16_12_to_15_3: z.number().default(0),
+        from16_3_to_31_3: z.number().default(0),
+      })
+    )
+    .optional()
+    .default([]),
+});
+
+export type CapitalGainsSectionBFormData = z.infer<
+  typeof capitalGainsSectionBSchema
 >;

@@ -148,6 +148,11 @@ const FilingStatusAdvanced: React.FC<FilingStatusAdvancedProps> = ({
                   <span className="text-sm text-gray-700">No</span>
                 </label>
               </div>
+              {errors.depositedAmountExceeds1Crore && (
+                <p className="mt-1 text-xs text-red-500">
+                  {errors.depositedAmountExceeds1Crore.message}
+                </p>
+              )}
               {watch("depositedAmountExceeds1Crore") === "Yes" && (
                 <div>
                   <label className="mb-1 block text-xs text-gray-600">
@@ -196,6 +201,11 @@ const FilingStatusAdvanced: React.FC<FilingStatusAdvancedProps> = ({
                   <span className="text-sm text-gray-700">No</span>
                 </label>
               </div>
+              {errors.incurredExpenditureExceeds2Lakhs && (
+                <p className="mt-1 text-xs text-red-500">
+                  {errors.incurredExpenditureExceeds2Lakhs.message}
+                </p>
+              )}
               {watch("incurredExpenditureExceeds2Lakhs") === "Yes" && (
                 <div>
                   <label className="mb-1 block text-xs text-gray-600">
@@ -246,6 +256,11 @@ const FilingStatusAdvanced: React.FC<FilingStatusAdvancedProps> = ({
                   <span className="text-sm text-gray-700">No</span>
                 </label>
               </div>
+              {errors.electricityExpenditureExceeds1Lakh && (
+                <p className="mt-1 text-xs text-red-500">
+                  {errors.electricityExpenditureExceeds1Lakh.message}
+                </p>
+              )}
               {watch("electricityExpenditureExceeds1Lakh") === "Yes" && (
                 <div>
                   <label className="mb-1 block text-xs text-gray-600">
@@ -296,6 +311,11 @@ const FilingStatusAdvanced: React.FC<FilingStatusAdvancedProps> = ({
                   <span className="text-sm text-gray-700">No</span>
                 </label>
               </div>
+              {errors.otherConditionsApplicable && (
+                <p className="mt-1 text-xs text-red-500">
+                  {errors.otherConditionsApplicable.message}
+                </p>
+              )}
               {watch("otherConditionsApplicable") === "Yes" && (
                 <div>
                   <label className="mb-1 block text-xs text-gray-600">

@@ -1,20 +1,26 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   housePropertySchema,
   HousePropertyFormData,
 } from "../itr-two.validation.ts";
+import { PersonalInfoFormData } from "../itr-two.validation.ts";
 
 interface ItrTwoHousingProps {
   onComplete: (data: HousePropertyFormData) => void;
   initialData?: Partial<HousePropertyFormData>;
+  personalInfo?: PersonalInfoFormData; // 👈 NEW: Accept personal info from previous section
 }
 
 const ItrTwoHousing: React.FC<ItrTwoHousingProps> = ({
   onComplete,
   initialData,
+  personalInfo, // 👈 NEW: Destructure personal info
 }) => {
+
+  const [visibleCalculations, setVisibleCalculations] = useState<Record<string, boolean>>({});
+
   const {
     register,
     handleSubmit,
@@ -64,59 +70,119 @@ const ItrTwoHousing: React.FC<ItrTwoHousingProps> = ({
 
   const watchProperties = watch("properties");
 
-  useEffect(() => {
-    watchProperties.forEach((property, index) => {
-      const total =
-        (property.grossRentReceived || 0) -
-        (property.rentNotRealized || 0) -
-        (property.taxPaidToAuthorities || 0);
-      setValue(`properties.${index}.totalRent`, total);
-    });
-  }, [watchProperties, setValue]);
+  const computePropertyValues = (
+    property: HousePropertyFormData["properties"][number],
+    index: number
+  ) => {
+    const totalRent =
+      (property.rentNotRealized || 0) + (property.taxPaidToAuthorities || 0);
+    const annualValue = (property.grossRentReceived || 0) - totalRent;
+    const annualValueOwned =
+      annualValue * ((property.ownershipPercentage || 100) / 100);
+    const fiftyPercent = annualValueOwned * 0.5;
+    const totalInterest =
+      fiftyPercent + (property.interestOnBorrowedCapital || 0);
+    const income =
+      annualValueOwned - totalInterest + (property.arrearsUnrealizedRent || 0);
+
+    setValue(`properties.${index}.totalRent`, totalRent);
+    setValue(`properties.${index}.annualValue`, annualValue);
+    setValue(`properties.${index}.annualValueOwned`, annualValueOwned);
+    setValue(`properties.${index}.fiftyPercentOfAnnualValue`, fiftyPercent);
+    setValue(`properties.${index}.totalInterest`, totalInterest);
+    setValue(`properties.${index}.incomeFromProperty`, income);
+  };
 
   useEffect(() => {
     watchProperties.forEach((property, index) => {
-      const annualValue =
-        (property.grossRentReceived || 0) - (property.totalRent || 0);
-      setValue(`properties.${index}.annualValue`, annualValue);
+      const fieldId = fields[index]?.id;
+      if (!fieldId || !visibleCalculations[fieldId]) {
+        return;
+      }
+      computePropertyValues(property, index);
     });
-  }, [watchProperties, setValue]);
+  }, [watchProperties, fields, visibleCalculations, setValue]);
 
+  // d. Total (1b + 1c) = rentNotRealized + taxPaidToAuthorities
   useEffect(() => {
     watchProperties.forEach((property, index) => {
-      const annualValueOwned =
-        (property.annualValue || 0) *
-        ((property.ownershipPercentage || 100) / 100);
-      setValue(`properties.${index}.annualValueOwned`, annualValueOwned);
+      const hasInput = 
+        (property.rentNotRealized && property.rentNotRealized !== 0) ||
+        (property.taxPaidToAuthorities && property.taxPaidToAuthorities !== 0);
+      
+      if (hasInput) {
+        const total =
+          (property.rentNotRealized || 0) +
+          (property.taxPaidToAuthorities || 0);
+        setValue(`properties.${index}.totalRent`, total);
+      }
     });
   }, [watchProperties, setValue]);
 
+  // e. Annual value (1a - 1d) = grossRentReceived - totalRent
   useEffect(() => {
     watchProperties.forEach((property, index) => {
-      const fiftyPercent = (property.annualValueOwned || 0) * 0.5;
-      setValue(`properties.${index}.fiftyPercentOfAnnualValue`, fiftyPercent);
+      if (property.grossRentReceived && property.grossRentReceived !== 0 && property.totalRent !== undefined) {
+        const annualValue =
+          (property.grossRentReceived || 0) - (property.totalRent || 0);
+        setValue(`properties.${index}.annualValue`, annualValue);
+      }
     });
   }, [watchProperties, setValue]);
 
+  // f. Annual value of the property owned (own percentage share x 1e)
   useEffect(() => {
     watchProperties.forEach((property, index) => {
-      const total =
-        (property.fiftyPercentOfAnnualValue || 0) +
-        (property.interestOnBorrowedCapital || 0);
-      setValue(`properties.${index}.totalInterest`, total);
+      // Only calculate if annualValue has been set
+      if (property.annualValue !== undefined) {
+        const annualValueOwned =
+          (property.annualValue || 0) *
+          ((property.ownershipPercentage || 100) / 100);
+        setValue(`properties.${index}.annualValueOwned`, annualValueOwned);
+      }
     });
   }, [watchProperties, setValue]);
 
+  // g. 50% of 1f
   useEffect(() => {
     watchProperties.forEach((property, index) => {
-      const income =
-        (property.annualValueOwned || 0) -
-        (property.totalInterest || 0) +
-        (property.arrearsUnrealizedRent || 0);
-      setValue(`properties.${index}.incomeFromProperty`, income);
+      // Only calculate if annualValueOwned has been set
+      if (property.annualValueOwned !== undefined) {
+        const fiftyPercent = (property.annualValueOwned || 0) * 0.5;
+        setValue(`properties.${index}.fiftyPercentOfAnnualValue`, fiftyPercent);
+      }
     });
   }, [watchProperties, setValue]);
 
+  // i. Total (1g + 1h) = 50% deduction + interest on borrowed capital
+  useEffect(() => {
+    watchProperties.forEach((property, index) => {
+      // Only calculate if fiftyPercentOfAnnualValue has been set or interestOnBorrowedCapital has input
+      if (property.fiftyPercentOfAnnualValue !== undefined || 
+          (property.interestOnBorrowedCapital && property.interestOnBorrowedCapital !== 0)) {
+        const total =
+          (property.fiftyPercentOfAnnualValue || 0) +
+          (property.interestOnBorrowedCapital || 0);
+        setValue(`properties.${index}.totalInterest`, total);
+      }
+    });
+  }, [watchProperties, setValue]);
+
+  // k. Income from house property = (1f - 1i + 1j)
+  useEffect(() => {
+    watchProperties.forEach((property, index) => {
+      // Only calculate if the required calculated fields exist
+      if (property.annualValueOwned !== undefined && property.totalInterest !== undefined) {
+        const income =
+          (property.annualValueOwned || 0) -
+          (property.totalInterest || 0) +
+          (property.arrearsUnrealizedRent || 0);
+        setValue(`properties.${index}.incomeFromProperty`, income);
+      }
+    });
+  }, [watchProperties, setValue]);
+
+  // Total income from all house properties
   useEffect(() => {
     const total = watchProperties.reduce(
       (sum, property) => sum + (property.incomeFromProperty || 0),
@@ -124,6 +190,14 @@ const ItrTwoHousing: React.FC<ItrTwoHousingProps> = ({
     );
     setValue("incomeFromHouseProperty", total);
   }, [watchProperties, setValue]);
+
+  const handleShowCalculations = (fieldId: string, index: number) => {
+    setVisibleCalculations((prev) => ({ ...prev, [fieldId]: true }));
+    const property = watchProperties[index];
+    if (property) {
+      computePropertyValues(property, index);
+    }
+  }
 
   const onSubmit = (data: HousePropertyFormData) => {
     console.log("House Property form submitted:", data);
@@ -136,27 +210,62 @@ const ItrTwoHousing: React.FC<ItrTwoHousingProps> = ({
 
   return (
     <div className="mx-auto max-w-7xl space-y-6">
+      {personalInfo && (
+        <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+          <h4 className="mb-2 flex items-center gap-2 text-sm font-semibold text-blue-900">
+            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+            </svg>
+            Personal Information from Part A
+          </h4>
+          <div className="grid grid-cols-2 gap-3 text-xs md:grid-cols-4">
+            <div>
+              <span className="font-medium text-blue-700">Name:</span>
+              <p className="text-blue-900">{personalInfo.firstName} {personalInfo.lastName}</p>
+            </div>
+            <div>
+              <span className="font-medium text-blue-700">PAN:</span>
+              <p className="text-blue-900">{personalInfo.pan}</p>
+            </div>
+            <div>
+              <span className="font-medium text-blue-700">State:</span>
+              <p className="text-blue-900">{personalInfo.state}</p>
+            </div>
+            <div>
+              <span className="font-medium text-blue-700">Status:</span>
+              <p className="text-blue-900">{personalInfo.filingStatus}</p>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="rounded-lg">
         <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-8">
           <div className="space-y-6">
-            {fields.map((field, index) => (
-              <div
-                key={field.id}
-                className="rounded-lg border-2 border-gray-200 p-6"
-              >
-                <div className="mb-4 flex items-center justify-between">
+            {fields.map((field, index) => {
+              const fieldId = field.id;
+              const showCalculations = !!visibleCalculations[fieldId];
+              const propertyState = watchProperties[index] || {};
+
+              return (
+                <div
+                  key={field.id}
+                  className="rounded-lg border-2 border-gray-200 p-6"
+                >
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                   <h3 className="text-lg font-semibold text-gray-900">
                     Property {index + 1}
                   </h3>
-                  {fields.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => remove(index)}
-                      className="rounded border border-red-500 px-3 py-1 text-sm text-red-600 hover:text-red-700"
-                    >
-                      Remove Property
-                    </button>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {fields.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => remove(index)}
+                        className="rounded border border-red-500 px-3 py-1 text-sm text-red-600 hover:text-red-700"
+                      >
+                        Remove Property
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 <div className="mb-6 rounded-lg border border-gray-300 p-4">
@@ -469,8 +578,19 @@ const ItrTwoHousing: React.FC<ItrTwoHousingProps> = ({
                 )}
 
                 <div className="rounded-lg border border-gray-300 p-4">
-                  <h4 className="mb-4 font-semibold text-gray-700">
-                    Income Calculation
+                  <h4 className="mb-4 font-semibold text-gray-700 flex items-center justify-between">
+                    <span>
+                      Income Calculation
+                    </span>
+
+                    <button
+                      type="button"
+                      onClick={() => handleShowCalculations(fieldId, index)}
+                      className="rounded border border-blue-500 px-3 py-1 text-xs font-medium text-blue-600 transition-colors hover:border-blue-600 hover:text-blue-700"
+                    >
+                      {showCalculations ? "Recalculate" : "Show Calculations"}
+                    </button>
+
                   </h4>
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -528,7 +648,7 @@ const ItrTwoHousing: React.FC<ItrTwoHousingProps> = ({
                         />
                       </div>
 
-                      <div className="rounded-lg border border-gray-300 p-3">
+                      <div className="rounded-lg border border-gray-300 bg-gray-50 p-3">
                         <label className="mb-1.5 block text-sm font-medium text-gray-700">
                           d. Total (1b + 1c)
                         </label>
@@ -538,11 +658,13 @@ const ItrTwoHousing: React.FC<ItrTwoHousingProps> = ({
                           })}
                           type="number"
                           readOnly
-                          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-semibold text-gray-900"
+                          value={showCalculations ? propertyState.totalRent ?? "" : ""}
+                          placeholder="Click 'Show Calculations'"
+                          className="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm font-semibold text-gray-900 placeholder:text-gray-400"
                         />
                       </div>
 
-                      <div className="rounded-lg border border-gray-300 p-3">
+                      <div className="rounded-lg border border-gray-300 bg-gray-50 p-3">
                         <label className="mb-1.5 block text-sm font-medium text-gray-700">
                           e. Annual value (1a - 1d){" "}
                           <span className="text-xs text-gray-500">
@@ -556,11 +678,13 @@ const ItrTwoHousing: React.FC<ItrTwoHousingProps> = ({
                           })}
                           type="number"
                           readOnly
-                          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-semibold text-gray-900"
+                          value={showCalculations ? propertyState.annualValue ?? "" : ""}
+                          placeholder="Click 'Show Calculations'"
+                          className="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm font-semibold text-gray-900 placeholder:text-gray-400"
                         />
                       </div>
 
-                      <div className="rounded-lg border border-gray-300 p-3">
+                      <div className="rounded-lg border border-gray-300 bg-gray-50 p-3">
                         <label className="mb-1.5 block text-sm font-medium text-gray-700">
                           f. Annual value of the property owned (own percentage
                           share x 1e)
@@ -571,11 +695,13 @@ const ItrTwoHousing: React.FC<ItrTwoHousingProps> = ({
                           })}
                           type="number"
                           readOnly
-                          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-semibold text-gray-900"
+                          value={showCalculations ? propertyState.annualValueOwned ?? "" : ""}
+                          placeholder="Click 'Show Calculations'"
+                          className="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm font-semibold text-gray-900 placeholder:text-gray-400"
                         />
                       </div>
 
-                      <div className="rounded-lg border border-gray-300 p-3">
+                      <div className="rounded-lg border border-gray-300 bg-gray-50 p-3">
                         <label className="mb-1.5 block text-sm font-medium text-gray-700">
                           g. 50% of 1f
                         </label>
@@ -588,7 +714,9 @@ const ItrTwoHousing: React.FC<ItrTwoHousingProps> = ({
                           )}
                           type="number"
                           readOnly
-                          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-semibold text-gray-900"
+                          value={showCalculations ? propertyState.fiftyPercentOfAnnualValue ?? "" : ""}
+                          placeholder="Click 'Show Calculations'"
+                          className="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm font-semibold text-gray-900 placeholder:text-gray-400"
                         />
                       </div>
 
@@ -613,7 +741,7 @@ const ItrTwoHousing: React.FC<ItrTwoHousingProps> = ({
                         />
                       </div>
 
-                      <div className="rounded-lg border border-gray-300 p-3">
+                      <div className="rounded-lg border border-gray-300 bg-gray-50 p-3">
                         <label className="mb-1.5 block text-sm font-medium text-gray-700">
                           i. Total (1g + 1h)
                         </label>
@@ -623,7 +751,9 @@ const ItrTwoHousing: React.FC<ItrTwoHousingProps> = ({
                           })}
                           type="number"
                           readOnly
-                          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-semibold text-gray-900"
+                          value={showCalculations ? propertyState.totalInterest ?? "" : ""}
+                          placeholder="Click 'Show Calculations'"
+                          className="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm font-semibold text-gray-900 placeholder:text-gray-400"
                         />
                       </div>
 
@@ -647,7 +777,7 @@ const ItrTwoHousing: React.FC<ItrTwoHousingProps> = ({
                         />
                       </div>
 
-                      <div className="rounded-lg border-2 border-gray-300 p-3">
+                      <div className="rounded-lg border-2 border-blue-300 bg-blue-50 p-3">
                         <label className="mb-1.5 block text-sm font-semibold text-gray-900">
                           k. Income from house property 1 (1f - 1i + 1j)
                         </label>
@@ -660,7 +790,9 @@ const ItrTwoHousing: React.FC<ItrTwoHousingProps> = ({
                           )}
                           type="number"
                           readOnly
-                          className="w-full rounded-lg border-2 border-gray-300 px-3 py-2 text-sm font-bold text-gray-900"
+                          value={showCalculations ? propertyState.incomeFromProperty ?? "" : ""}
+                          placeholder="Click 'Show Calculations'"
+                          className="w-full rounded-lg border-2 border-blue-300 bg-blue-50 px-3 py-2 text-sm font-bold text-gray-900 placeholder:text-gray-400"
                         />
                       </div>
                     </div>
@@ -670,8 +802,9 @@ const ItrTwoHousing: React.FC<ItrTwoHousingProps> = ({
                     </p>
                   </div>
                 </div>
-              </div>
-            ))}
+                </div>
+              );
+            })}
 
             <button
               type="button"
@@ -689,18 +822,7 @@ const ItrTwoHousing: React.FC<ItrTwoHousingProps> = ({
                   tenantNames: "",
                   tenantPanOrAadhaar: "",
                   tenantPanOrTan: "",
-                  grossRentReceived: 0,
-                  rentNotRealized: 0,
-                  taxPaidToAuthorities: 0,
-                  totalRent: 0,
-                  annualValue: 0,
-                  annualValueOwned: 0,
-                  fiftyPercentOfAnnualValue: 0,
-                  interestOnBorrowedCapital: 0,
-                  totalInterest: 0,
-                  arrearsUnrealizedRent: 0,
-                  incomeFromProperty: 0,
-                })
+                } as any)
               }
               className="rounded-lg border-2 border-dashed border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:border-gray-400"
             >

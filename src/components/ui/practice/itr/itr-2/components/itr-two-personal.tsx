@@ -31,6 +31,10 @@ const ItrTwoPersonal: React.FC<ItrTwoPersonalProps> = ({ onComplete, onCancel, i
 			filedUnderSection: undefined,
 			optingOutNewRegime: undefined,
 			filingUnderSeventhProviso: undefined,
+			depositedAmountExceeds1Crore: undefined,
+			incurredExpenditureExceeds2Lakhs: undefined,
+			electricityExpenditureExceeds1Lakh: undefined,
+			otherConditionsApplicable: undefined,
 			representativeAssessee: undefined,
 			wasDirector: undefined,
 			heldUnlistedEquity: undefined,
@@ -93,12 +97,22 @@ const ItrTwoPersonal: React.FC<ItrTwoPersonalProps> = ({ onComplete, onCancel, i
 								{Object.entries(errors).slice(0, 10).map(([key, error]: [string, any]) => (
 									<li key={key} className="flex items-start gap-2">
 										<span className="font-medium">•</span>
-										<span>
+										<button
+											type="button"
+											onClick={() => {
+												const errorElement = document.querySelector(`[name="${key}"]`);
+												if (errorElement) {
+													errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+													(errorElement as HTMLElement).focus();
+												}
+											}}
+											className="text-left hover:underline"
+										>
 											<span className="font-semibold capitalize">
 												{key.replace(/([A-Z])/g, ' $1').trim()}:
 											</span>{' '}
 											{error.message || `Invalid value`}
-										</span>
+										</button>
 									</li>
 								))}
 								{Object.keys(errors).length > 10 && (
