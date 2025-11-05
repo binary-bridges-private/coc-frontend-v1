@@ -1,18 +1,40 @@
 import React from "react";
-import { UseFormRegister, UseFormWatch, FieldErrors } from "react-hook-form";
+import { UseFormRegister, UseFormWatch, FieldErrors, Control, useFieldArray } from "react-hook-form";
 import { PersonalInfoFormData } from "../itr-two.validation.ts";
 
 interface FilingStatusAdvancedProps {
   register: UseFormRegister<PersonalInfoFormData>;
   watch: UseFormWatch<PersonalInfoFormData>;
   errors: FieldErrors<PersonalInfoFormData>;
+  control: Control<PersonalInfoFormData>;
 }
 
 const FilingStatusAdvanced: React.FC<FilingStatusAdvancedProps> = ({
   register,
   watch,
   errors,
+  control,
 }) => {
+  
+  const {
+    fields: companyFields,
+    append: appendCompany,
+    remove: removeCompany,
+  } = useFieldArray({
+    control,
+    name: "companyDetails",
+  });
+
+  
+  const {
+    fields: equityFields,
+    append: appendEquity,
+    remove: removeEquity,
+  } = useFieldArray({
+    control,
+    name: "equitySharesDetails",
+  });
+
   return (
     <>
       <div>
@@ -379,8 +401,9 @@ const FilingStatusAdvanced: React.FC<FilingStatusAdvancedProps> = ({
                 type="text"
                 maxLength={10}
                 className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                placeholder="DD/MM/YYYY"
+                placeholder="DD/MM/YYYY (e.g., 31/03/2024)"
               />
+              <p className="mt-1 text-xs text-gray-500">Day (01-31), Month (01-12), Year (cannot exceed current year)</p>
               {errors.originalFilingDate && (
                 <p className="mt-1 text-xs text-red-500">
                   {errors.originalFilingDate.message}
@@ -425,8 +448,9 @@ const FilingStatusAdvanced: React.FC<FilingStatusAdvancedProps> = ({
               type="text"
               maxLength={10}
               className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              placeholder="DD/MM/YYYY"
+              placeholder="DD/MM/YYYY (e.g., 15/06/2024)"
             />
+            <p className="mt-1 text-xs text-gray-500">Day (01-31), Month (01-12), Year (cannot exceed current year)</p>
             {errors.noticeDate && (
               <p className="mt-1 text-xs text-red-500">
                 {errors.noticeDate.message}
@@ -706,8 +730,9 @@ const FilingStatusAdvanced: React.FC<FilingStatusAdvancedProps> = ({
                 type="text"
                 maxLength={10}
                 className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                placeholder="DD/MM/YYYY"
+                placeholder="DD/MM/YYYY (e.g., 31/12/2025)"
               />
+              <p className="mt-1 text-xs text-gray-500">Day (01-31), Month (01-12), Year (future dates allowed)</p>
               {errors.leiValidDate && (
                 <p className="mt-1 text-xs text-red-500">
                   {errors.leiValidDate.message}
@@ -890,53 +915,130 @@ const FilingStatusAdvanced: React.FC<FilingStatusAdvancedProps> = ({
                     <th className="border border-gray-300 px-2 py-2 text-left">
                       DIN
                     </th>
+                    <th className="border border-gray-300 px-2 py-2 text-center w-20">
+                      Action
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td className="border border-gray-300 px-2 py-2">
-                      <input
-                        type="text"
-                        className="w-full rounded border-gray-300 bg-white px-2 py-1 text-sm text-gray-900"
-                        placeholder="Company name"
-                      />
-                    </td>
-                    <td className="border border-gray-300 px-2 py-2">
-                      <input
-                        type="text"
-                        className="w-full rounded border-gray-300 bg-white px-2 py-1 text-sm text-gray-900"
-                        placeholder="Type"
-                      />
-                    </td>
-                    <td className="border border-gray-300 px-2 py-2">
-                      <input
-                        type="text"
-                        maxLength={10}
-                        className="w-full rounded border-gray-300 bg-white px-2 py-1 text-sm uppercase text-gray-900"
-                        placeholder="PAN"
-                      />
-                    </td>
-                    <td className="border border-gray-300 px-2 py-2">
-                      <select className="w-full rounded border-gray-300 bg-white px-2 py-1 text-sm text-gray-900">
-                        <option value="">Select</option>
-                        <option value="Listed">Listed</option>
-                        <option value="Unlisted">Unlisted</option>
-                      </select>
-                    </td>
-                    <td className="border border-gray-300 px-2 py-2">
-                      <input
-                        type="text"
-                        className="w-full rounded border-gray-300 bg-white px-2 py-1 text-sm text-gray-900"
-                        placeholder="DIN"
-                      />
-                    </td>
-                  </tr>
+                  {companyFields.length === 0 && (
+                    <tr>
+                      <td colSpan={6} className="border border-gray-300 px-2 py-4 text-center text-gray-500">
+                        No companies added. Click "Add Company" below.
+                      </td>
+                    </tr>
+                  )}
+                  {companyFields.map((field, index) => (
+                    <tr key={field.id}>
+                      <td className="border border-gray-300 px-2 py-2">
+                        <input
+                          {...register(`companyDetails.${index}.companyName`)}
+                          type="text"
+                          className={`w-full rounded px-2 py-1 text-sm text-gray-900 ${
+                            errors.companyDetails?.[index]?.companyName 
+                              ? 'border-2 border-red-500' 
+                              : 'border border-gray-300 bg-white'
+                          }`}
+                          placeholder="Company name"
+                        />
+                        {errors.companyDetails?.[index]?.companyName && (
+                          <p className="mt-1 text-xs text-red-500">
+                            {errors.companyDetails[index]?.companyName?.message}
+                          </p>
+                        )}
+                      </td>
+                      <td className="border border-gray-300 px-2 py-2">
+                        <input
+                          {...register(`companyDetails.${index}.companyType`)}
+                          type="text"
+                          className={`w-full rounded px-2 py-1 text-sm text-gray-900 ${
+                            errors.companyDetails?.[index]?.companyType 
+                              ? 'border-2 border-red-500' 
+                              : 'border border-gray-300 bg-white'
+                          }`}
+                          placeholder="Type"
+                        />
+                        {errors.companyDetails?.[index]?.companyType && (
+                          <p className="mt-1 text-xs text-red-500">
+                            {errors.companyDetails[index]?.companyType?.message}
+                          </p>
+                        )}
+                      </td>
+                      <td className="border border-gray-300 px-2 py-2">
+                        <input
+                          {...register(`companyDetails.${index}.pan`)}
+                          type="text"
+                          maxLength={10}
+                          className={`w-full rounded px-2 py-1 text-sm uppercase text-gray-900 ${
+                            errors.companyDetails?.[index]?.pan 
+                              ? 'border-2 border-red-500' 
+                              : 'border border-gray-300 bg-white'
+                          }`}
+                          placeholder="ABCDE1234F"
+                        />
+                        {errors.companyDetails?.[index]?.pan && (
+                          <p className="mt-1 text-xs text-red-500">
+                            <span className="font-semibold">PAN Error:</span> {errors.companyDetails[index]?.pan?.message}
+                          </p>
+                        )}
+                      </td>
+                      <td className="border border-gray-300 px-2 py-2">
+                        <label className="flex items-center">
+                          <input
+                            {...register(`companyDetails.${index}.sharesListed`)}
+                            type="checkbox"
+                            className="mr-2"
+                          />
+                          <span className="text-xs">Listed</span>
+                        </label>
+                      </td>
+                      <td className="border border-gray-300 px-2 py-2">
+                        <input
+                          {...register(`companyDetails.${index}.din`)}
+                          type="text"
+                          maxLength={8}
+                          className={`w-full rounded px-2 py-1 text-sm text-gray-900 ${
+                            errors.companyDetails?.[index]?.din 
+                              ? 'border-2 border-red-500' 
+                              : 'border border-gray-300 bg-white'
+                          }`}
+                          placeholder="12345678"
+                        />
+                        {errors.companyDetails?.[index]?.din && (
+                          <p className="mt-1 text-xs text-red-500">
+                            <span className="font-semibold">DIN Error:</span> {errors.companyDetails[index]?.din?.message}
+                          </p>
+                        )}
+                      </td>
+                      <td className="border border-gray-300 px-2 py-2 text-center">
+                        <button
+                          type="button"
+                          onClick={() => removeCompany(index)}
+                          className="text-red-600 hover:text-red-700"
+                          title="Remove"
+                        >
+                          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
             <button
               type="button"
-              className="mt-2 text-sm text-blue-600 hover:text-blue-700"
+              onClick={() =>
+                appendCompany({
+                  companyName: "",
+                  companyType: "",
+                  pan: "",
+                  sharesListed: false,
+                  din: "",
+                })
+              }
+              className="mt-2 text-sm font-medium text-blue-600 hover:text-blue-700"
             >
               + Add Another Company
             </button>
@@ -1033,106 +1135,241 @@ const FilingStatusAdvanced: React.FC<FilingStatusAdvancedProps> = ({
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td className="border border-gray-300 px-2 py-2">
-                      <input
-                        type="text"
-                        className="w-full rounded border-gray-300 bg-white px-2 py-1 text-xs"
-                        placeholder="Company"
-                      />
-                    </td>
-                    <td className="border border-gray-300 px-2 py-2">
-                      <input
-                        type="text"
-                        className="w-24 rounded border-gray-300 bg-white px-2 py-1 text-xs"
-                        placeholder="Type"
-                      />
-                    </td>
-                    <td className="border border-gray-300 px-2 py-2">
-                      <input
-                        type="text"
-                        maxLength={10}
-                        className="w-28 rounded border-gray-300 bg-white px-2 py-1 text-xs uppercase"
-                        placeholder="PAN"
-                      />
-                    </td>
-                    <td className="border border-gray-300 px-2 py-2">
-                      <input
-                        type="number"
-                        className="w-24 rounded border-gray-300 bg-white px-2 py-1 text-xs"
-                        placeholder="0"
-                      />
-                    </td>
-                    <td className="border border-gray-300 px-2 py-2">
-                      <input
-                        type="number"
-                        className="w-20 rounded border-gray-300 bg-white px-2 py-1 text-xs"
-                        placeholder="0"
-                      />
-                    </td>
-                    <td className="border border-gray-300 px-2 py-2">
-                      <input
-                        type="text"
-                        className="w-24 rounded border-gray-300 bg-white px-2 py-1 text-xs"
-                        placeholder="DD/MM/YY"
-                      />
-                    </td>
-                    <td className="border border-gray-300 px-2 py-2">
-                      <input
-                        type="number"
-                        className="w-20 rounded border-gray-300 bg-white px-2 py-1 text-xs"
-                        placeholder="0"
-                      />
-                    </td>
-                    <td className="border border-gray-300 px-2 py-2">
-                      <input
-                        type="number"
-                        className="w-24 rounded border-gray-300 bg-white px-2 py-1 text-xs"
-                        placeholder="0"
-                      />
-                    </td>
-                    <td className="border border-gray-300 px-2 py-2">
-                      <input
-                        type="number"
-                        className="w-20 rounded border-gray-300 bg-white px-2 py-1 text-xs"
-                        placeholder="0"
-                      />
-                    </td>
-                    <td className="border border-gray-300 px-2 py-2">
-                      <input
-                        type="number"
-                        className="w-24 rounded border-gray-300 bg-white px-2 py-1 text-xs"
-                        placeholder="0"
-                      />
-                    </td>
-                    <td className="border border-gray-300 px-2 py-2">
-                      <input
-                        type="number"
-                        className="w-24 rounded border-gray-300 bg-white px-2 py-1 text-xs"
-                        placeholder="0"
-                      />
-                    </td>
-                    <td className="border border-gray-300 px-2 py-2">
-                      <input
-                        type="number"
-                        className="w-24 rounded border-gray-300 bg-white px-2 py-1 text-xs"
-                        placeholder="0"
-                      />
-                    </td>
-                    <td className="border border-gray-300 px-2 py-2">
-                      <input
-                        type="number"
-                        className="w-24 rounded border-gray-300 bg-white px-2 py-1 text-xs"
-                        placeholder="0"
-                      />
-                    </td>
-                  </tr>
+                  {equityFields.length === 0 && (
+                    <tr>
+                      <td colSpan={13} className="border border-gray-300 px-2 py-4 text-center text-gray-500">
+                        No equity shares added. Click "Add Another Entry" below.
+                      </td>
+                    </tr>
+                  )}
+                  {equityFields.map((field, index) => (
+                    <tr key={field.id}>
+                      <td className="border border-gray-300 px-2 py-2">
+                        <input
+                          {...register(`equitySharesDetails.${index}.companyName`)}
+                          type="text"
+                          className={`w-full rounded px-2 py-1 text-xs ${
+                            errors.equitySharesDetails?.[index]?.companyName 
+                              ? 'border-2 border-red-500' 
+                              : 'border border-gray-300 bg-white'
+                          }`}
+                          placeholder="Company"
+                        />
+                        {errors.equitySharesDetails?.[index]?.companyName && (
+                          <p className="mt-1 text-xs text-red-500">
+                            {errors.equitySharesDetails[index]?.companyName?.message}
+                          </p>
+                        )}
+                      </td>
+                      <td className="border border-gray-300 px-2 py-2">
+                        <input
+                          {...register(`equitySharesDetails.${index}.companyType`)}
+                          type="text"
+                          className={`w-24 rounded px-2 py-1 text-xs ${
+                            errors.equitySharesDetails?.[index]?.companyType 
+                              ? 'border-2 border-red-500' 
+                              : 'border border-gray-300 bg-white'
+                          }`}
+                          placeholder="Type"
+                        />
+                        {errors.equitySharesDetails?.[index]?.companyType && (
+                          <p className="mt-1 text-xs text-red-500">
+                            {errors.equitySharesDetails[index]?.companyType?.message}
+                          </p>
+                        )}
+                      </td>
+                      <td className="border border-gray-300 px-2 py-2">
+                        <input
+                          {...register(`equitySharesDetails.${index}.pan`)}
+                          type="text"
+                          maxLength={10}
+                          className={`w-28 rounded px-2 py-1 text-xs uppercase ${
+                            errors.equitySharesDetails?.[index]?.pan 
+                              ? 'border-2 border-red-500' 
+                              : 'border border-gray-300 bg-white'
+                          }`}
+                          placeholder="ABCDE1234F"
+                        />
+                        {errors.equitySharesDetails?.[index]?.pan && (
+                          <p className="mt-1 text-xs text-red-500">
+                            <span className="font-semibold">PAN:</span> {errors.equitySharesDetails[index]?.pan?.message}
+                          </p>
+                        )}
+                      </td>
+                      <td className="border border-gray-300 px-2 py-2">
+                        <input
+                          {...register(`equitySharesDetails.${index}.openingBalance`, { valueAsNumber: true })}
+                          type="number"
+                          className={`w-24 rounded px-2 py-1 text-xs ${
+                            errors.equitySharesDetails?.[index]?.openingBalance 
+                              ? 'border-2 border-red-500' 
+                              : 'border border-gray-300 bg-white'
+                          }`}
+                          placeholder="0"
+                        />
+                        {errors.equitySharesDetails?.[index]?.openingBalance && (
+                          <p className="mt-1 text-xs text-red-500">
+                            {errors.equitySharesDetails[index]?.openingBalance?.message}
+                          </p>
+                        )}
+                      </td>
+                      <td className="border border-gray-300 px-2 py-2">
+                        <input
+                          {...register(`equitySharesDetails.${index}.sharesAcquired`, { valueAsNumber: true })}
+                          type="number"
+                          className={`w-20 rounded px-2 py-1 text-xs ${
+                            errors.equitySharesDetails?.[index]?.sharesAcquired 
+                              ? 'border-2 border-red-500' 
+                              : 'border border-gray-300 bg-white'
+                          }`}
+                          placeholder="0"
+                        />
+                        {errors.equitySharesDetails?.[index]?.sharesAcquired && (
+                          <p className="mt-1 text-xs text-red-500">
+                            {errors.equitySharesDetails[index]?.sharesAcquired?.message}
+                          </p>
+                        )}
+                      </td>
+                      <td className="border border-gray-300 px-2 py-2">
+                        <input
+                          type="text"
+                          className="w-24 rounded border-gray-300 bg-white px-2 py-1 text-xs"
+                          placeholder="DD/MM/YY"
+                        />
+                      </td>
+                      <td className="border border-gray-300 px-2 py-2">
+                        <input
+                          type="number"
+                          className="w-20 rounded border-gray-300 bg-white px-2 py-1 text-xs"
+                          placeholder="0"
+                        />
+                      </td>
+                      <td className="border border-gray-300 px-2 py-2">
+                        <input
+                          {...register(`equitySharesDetails.${index}.purchasePrice`, { valueAsNumber: true })}
+                          type="number"
+                          className={`w-24 rounded px-2 py-1 text-xs ${
+                            errors.equitySharesDetails?.[index]?.purchasePrice 
+                              ? 'border-2 border-red-500' 
+                              : 'border border-gray-300 bg-white'
+                          }`}
+                          placeholder="0"
+                        />
+                        {errors.equitySharesDetails?.[index]?.purchasePrice && (
+                          <p className="mt-1 text-xs text-red-500">
+                            {errors.equitySharesDetails[index]?.purchasePrice?.message}
+                          </p>
+                        )}
+                      </td>
+                      <td className="border border-gray-300 px-2 py-2">
+                        <input
+                          {...register(`equitySharesDetails.${index}.sharesTransferred`, { valueAsNumber: true })}
+                          type="number"
+                          className={`w-20 rounded px-2 py-1 text-xs ${
+                            errors.equitySharesDetails?.[index]?.sharesTransferred 
+                              ? 'border-2 border-red-500' 
+                              : 'border border-gray-300 bg-white'
+                          }`}
+                          placeholder="0"
+                        />
+                        {errors.equitySharesDetails?.[index]?.sharesTransferred && (
+                          <p className="mt-1 text-xs text-red-500">
+                            {errors.equitySharesDetails[index]?.sharesTransferred?.message}
+                          </p>
+                        )}
+                      </td>
+                      <td className="border border-gray-300 px-2 py-2">
+                        <input
+                          {...register(`equitySharesDetails.${index}.salePrice`, { valueAsNumber: true })}
+                          type="number"
+                          className={`w-24 rounded px-2 py-1 text-xs ${
+                            errors.equitySharesDetails?.[index]?.salePrice 
+                              ? 'border-2 border-red-500' 
+                              : 'border border-gray-300 bg-white'
+                          }`}
+                          placeholder="0"
+                        />
+                        {errors.equitySharesDetails?.[index]?.salePrice && (
+                          <p className="mt-1 text-xs text-red-500">
+                            {errors.equitySharesDetails[index]?.salePrice?.message}
+                          </p>
+                        )}
+                      </td>
+                      <td className="border border-gray-300 px-2 py-2">
+                        <input
+                          type="number"
+                          className="w-24 rounded border-gray-300 bg-white px-2 py-1 text-xs"
+                          placeholder="0"
+                        />
+                      </td>
+                      <td className="border border-gray-300 px-2 py-2">
+                        <input
+                          {...register(`equitySharesDetails.${index}.closingBalance`, { valueAsNumber: true })}
+                          type="number"
+                          className={`w-24 rounded px-2 py-1 text-xs ${
+                            errors.equitySharesDetails?.[index]?.closingBalance 
+                              ? 'border-2 border-red-500' 
+                              : 'border border-gray-300 bg-white'
+                          }`}
+                          placeholder="0"
+                        />
+                        {errors.equitySharesDetails?.[index]?.closingBalance && (
+                          <p className="mt-1 text-xs text-red-500">
+                            {errors.equitySharesDetails[index]?.closingBalance?.message}
+                          </p>
+                        )}
+                      </td>
+                      <td className="border border-gray-300 px-2 py-2">
+                        <input
+                          {...register(`equitySharesDetails.${index}.costOfAcquisition`, { valueAsNumber: true })}
+                          type="number"
+                          className={`w-24 rounded px-2 py-1 text-xs ${
+                            errors.equitySharesDetails?.[index]?.costOfAcquisition 
+                              ? 'border-2 border-red-500' 
+                              : 'border border-gray-300 bg-white'
+                          }`}
+                          placeholder="0"
+                        />
+                        {errors.equitySharesDetails?.[index]?.costOfAcquisition && (
+                          <p className="mt-1 text-xs text-red-500">
+                            {errors.equitySharesDetails[index]?.costOfAcquisition?.message}
+                          </p>
+                        )}
+                      </td>
+                      <td className="border border-gray-300 px-2 py-2 text-center">
+                        <button
+                          type="button"
+                          onClick={() => removeEquity(index)}
+                          className="text-red-600 hover:text-red-700"
+                          title="Remove"
+                        >
+                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
             <button
               type="button"
-              className="mt-2 text-sm text-blue-600 hover:text-blue-700"
+              onClick={() =>
+                appendEquity({
+                  companyName: "",
+                  companyType: "",
+                  pan: "",
+                  openingBalance: 0,
+                  sharesAcquired: 0,
+                  purchasePrice: 0,
+                  sharesTransferred: 0,
+                  salePrice: 0,
+                  closingBalance: 0,
+                  costOfAcquisition: 0,
+                })
+              }
+              className="mt-2 text-sm font-medium text-blue-600 hover:text-blue-700"
             >
               + Add Another Entry
             </button>

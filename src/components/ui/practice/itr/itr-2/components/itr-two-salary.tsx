@@ -10,13 +10,13 @@ import { PersonalInfoFormData } from "../itr-two.validation.ts";
 interface ItrTwoSalaryProps {
   onComplete: (data: SalaryIncomeFormData) => void;
   initialData?: Partial<SalaryIncomeFormData>;
-  personalInfo?: PersonalInfoFormData; // 👈 NEW: Accept personal info from previous section
+  personalInfo?: PersonalInfoFormData; 
 }
 
 const ItrTwoSalary: React.FC<ItrTwoSalaryProps> = ({
   onComplete,
   initialData,
-  personalInfo, // 👈 NEW: Destructure personal info
+  personalInfo, 
 }) => {
   const {
     register,
@@ -69,8 +69,9 @@ const ItrTwoSalary: React.FC<ItrTwoSalaryProps> = ({
   const watchEntertainment = watch("entertainmentAllowance");
   const watchProfessionalTax = watch("professionalTax");
 
-  useEffect(() => {
-    const total = watchEmployers.reduce((sum, employer) => {
+  const calculateTotalGrossSalary = () => {
+    const employers = watch("employers");
+    const total = employers.reduce((sum, employer) => {
       const employerGross =
         (employer.salaryAsPerSection17_1 || 0) +
         (employer.valueOfPerquisites || 0) +
@@ -81,7 +82,7 @@ const ItrTwoSalary: React.FC<ItrTwoSalaryProps> = ({
       return sum + employerGross;
     }, 0);
     setValue("totalGrossSalary", total);
-  }, [watchEmployers, setValue]);
+  };
 
   // Calculate Net Salary (2 - 3 - 3a)
   useEffect(() => {
@@ -562,13 +563,26 @@ const ItrTwoSalary: React.FC<ItrTwoSalaryProps> = ({
                     (from all employers)
                   </span>
                 </label>
-                <input
-                  {...register("totalGrossSalary", { valueAsNumber: true })}
-                  type="number"
-                  readOnly
-                  className="w-full rounded-lg border border-gray-300 bg-gray-100 px-3 py-2 text-sm font-semibold text-gray-900"
-                  placeholder="0.00"
-                />
+                <div className="flex gap-2">
+                  <input
+                    {...register("totalGrossSalary", { valueAsNumber: true })}
+                    type="number"
+                    readOnly
+                    className="flex-1 rounded-lg border border-gray-300 bg-gray-100 px-3 py-2 text-sm font-semibold text-gray-900"
+                    placeholder="0.00"
+                  />
+                  <button
+                    type="button"
+                    onClick={calculateTotalGrossSalary}
+                    className="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    title="Calculate Total Gross Salary from all employers"
+                  >
+                    Calculate
+                  </button>
+                </div>
+                <p className="mt-1 text-xs text-gray-500">
+                  Click "Calculate" after adding/updating employer details
+                </p>
               </div>
 
               <div>

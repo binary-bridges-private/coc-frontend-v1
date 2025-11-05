@@ -5,6 +5,7 @@ import ItrTwoPersonal from "./components/itr-two-personal.tsx";
 import ItrTwoSalary from "./components/itr-two-salary.tsx";
 import ItrTwoHousing from "./components/Itr-two-housing.tsx";
 import ItrTwoCapitalGain from "./components/Itr-two-capital-gain.tsx";
+import ItrTwoSchedule112A from "./components/itr-two-schedule112A.tsx";
 import {
   ITR_TWO_SECTIONS,
   calculateCompletionPercentage,
@@ -16,6 +17,7 @@ import {
   HousePropertyFormData,
   CapitalGainsSectionAFormData,
   CapitalGainsSectionBFormData,
+  Schedule112AFormData,
 } from "./itr-two.validation.ts";
 
 const ItrTwo: React.FC = () => {
@@ -29,6 +31,7 @@ const ItrTwo: React.FC = () => {
       sectionA?: CapitalGainsSectionAFormData;
       sectionB?: CapitalGainsSectionBFormData;
     };
+    schedule112A?: Schedule112AFormData;
   }>({});
 
   const completionPercentage = useMemo(
@@ -87,6 +90,9 @@ const ItrTwo: React.FC = () => {
     }
     if (sectionId === "cg" && data) {
       setFormData((prev) => ({ ...prev, capitalGains: data }));
+    }
+    if (sectionId === "schedule-112a" && data) {
+      setFormData((prev) => ({ ...prev, schedule112A: data }));
     }
 
     setSections((prev) => {
@@ -190,10 +196,19 @@ const ItrTwo: React.FC = () => {
               />
             )}
 
+            {activeSectionId === "schedule-112a" && (
+              <ItrTwoSchedule112A
+                onSubmit={(data) => handleSectionComplete("schedule-112a", data)}
+                onCancel={handleBackToSummary}
+                initialData={formData.schedule112A}
+              />
+            )}
+
             {activeSectionId !== "part-a-general" &&
               activeSectionId !== "schedule-s" &&
               activeSectionId !== "house-property" &&
-              activeSectionId !== "cg" && (
+              activeSectionId !== "cg" &&
+              activeSectionId !== "schedule-112a" && (
                 <div className="rounded-xl border border-gray-200 bg-white p-8 text-center shadow-sm">
                   <div className="mx-auto max-w-md space-y-4">
                     <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">

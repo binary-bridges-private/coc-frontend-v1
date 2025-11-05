@@ -15,6 +15,7 @@ const ItrTwoPersonal: React.FC<ItrTwoPersonalProps> = ({ onComplete, onCancel, i
 		register,
 		handleSubmit,
 		watch,
+		control,
 		formState: { errors },
 	} = useForm<PersonalInfoFormData>({
 		resolver: zodResolver(personalInfoSchema) as any,
@@ -44,11 +45,6 @@ const ItrTwoPersonal: React.FC<ItrTwoPersonalProps> = ({ onComplete, onCancel, i
 			...initialData,
 		},
 	});
-
-	const filingStatus = watch('filingStatus');
-	const wasDirector = watch('wasDirector');
-	const heldUnlistedEquity = watch('heldUnlistedEquity');
-	const representativeAssessee = watch('representativeAssessee');
 
 	const onSubmit = (data: PersonalInfoFormData) => {
 		console.log('Form submitted successfully:', data);
@@ -94,27 +90,61 @@ const ItrTwoPersonal: React.FC<ItrTwoPersonalProps> = ({ onComplete, onCancel, i
 								Please fix the following errors ({Object.keys(errors).length})
 							</h3>
 							<ul className="mt-2 space-y-1 text-xs text-red-700">
-								{Object.entries(errors).slice(0, 10).map(([key, error]: [string, any]) => (
-									<li key={key} className="flex items-start gap-2">
-										<span className="font-medium">•</span>
-										<button
-											type="button"
-											onClick={() => {
-												const errorElement = document.querySelector(`[name="${key}"]`);
-												if (errorElement) {
-													errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-													(errorElement as HTMLElement).focus();
-												}
-											}}
-											className="text-left hover:underline"
-										>
-											<span className="font-semibold capitalize">
-												{key.replace(/([A-Z])/g, ' $1').trim()}:
-											</span>{' '}
-											{error.message || `Invalid value`}
-										</button>
-									</li>
-								))}
+								{Object.entries(errors).slice(0, 10).map(([key, error]: [string, any]) => {
+									// Handle nested array errors (companyDetails, equitySharesDetails)
+									if (Array.isArray(error) && error.length > 0) {
+										return error.map((item: any, index: number) => {
+											if (!item) return null;
+											const nestedErrors = Object.entries(item).filter(([_, val]) => val);
+											return nestedErrors.map(([nestedKey, nestedError]: [string, any]) => (
+												<li key={`${key}.${index}.${nestedKey}`} className="flex items-start gap-2">
+													<span className="font-medium">•</span>
+													<button
+														type="button"
+														onClick={() => {
+															const errorElement = document.querySelector(`[name="${key}.${index}.${nestedKey}"]`);
+															if (errorElement) {
+																errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+																(errorElement as HTMLElement).focus();
+															}
+														}}
+														className="text-left hover:underline"
+													>
+														<span className="font-semibold">
+															{key === 'companyDetails' ? `Company ${index + 1}` : 
+															 key === 'equitySharesDetails' ? `Equity Share Entry ${index + 1}` :
+															 key.replace(/([A-Z])/g, ' $1').trim()} - {nestedKey.replace(/([A-Z])/g, ' $1').trim()}:
+														</span>{' '}
+														{nestedError.message || `Invalid value`}
+													</button>
+												</li>
+											));
+										});
+									}
+									
+									// Handle regular field errors
+									return (
+										<li key={key} className="flex items-start gap-2">
+											<span className="font-medium">•</span>
+											<button
+												type="button"
+												onClick={() => {
+													const errorElement = document.querySelector(`[name="${key}"]`);
+													if (errorElement) {
+														errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+														(errorElement as HTMLElement).focus();
+													}
+												}}
+												className="text-left hover:underline"
+											>
+												<span className="font-semibold capitalize">
+													{key.replace(/([A-Z])/g, ' $1').trim()}:
+												</span>{' '}
+												{error.message || `Invalid value`}
+											</button>
+										</li>
+									);
+								})}
 								{Object.keys(errors).length > 10 && (
 									<li className="italic">...and {Object.keys(errors).length - 10} more errors</li>
 								)}
@@ -207,18 +237,20 @@ const ItrTwoPersonal: React.FC<ItrTwoPersonalProps> = ({ onComplete, onCancel, i
 						</div>
 
 						<div>
-							<label className="mb-1.5 block text-sm font-medium text-gray-700">
-								Date of Birth <span className="text-red-500">*</span>
-							</label>
-							<input
-								{...register('dateOfBirth')}
-								type="text"
-								placeholder="DD/MM/YYYY"
-								className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-							/>
-							{errors.dateOfBirth && (
-								<p className="mt-1 text-xs text-red-500">{errors.dateOfBirth.message}</p>
-							)}
+						<label className="mb-1.5 block text-sm font-medium text-gray-700">
+							Date of Birth <span className="text-red-500">*</span>
+						</label>
+						<input
+							{...register('dateOfBirth')}
+							type="text"
+							maxLength={10}
+							placeholder="DD/MM/YYYY"
+							className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+						/>
+						<p className="mt-1 text-xs text-gray-500">Format: DD/MM/YYYY (e.g., 15/08/1990)</p>
+						{errors.dateOfBirth && (
+							<p className="mt-1 text-xs text-red-500">{errors.dateOfBirth.message}</p>
+						)}
 						</div>
 					</div>
 
@@ -573,7 +605,7 @@ const ItrTwoPersonal: React.FC<ItrTwoPersonalProps> = ({ onComplete, onCancel, i
 						)}
 					</div>
 
-					<FilingStatusAdvanced register={register} watch={watch} errors={errors} />
+					<FilingStatusAdvanced register={register} watch={watch} errors={errors} control={control} />
 
 					
 					<div>

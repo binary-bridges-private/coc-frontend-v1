@@ -19,17 +19,16 @@ interface ItrTwoCapitalGainProps {
     sectionA?: Partial<CapitalGainsSectionAFormData>;
     sectionB?: Partial<CapitalGainsSectionBFormData>;
   };
-  personalInfo?: PersonalInfoFormData; 
+  personalInfo?: PersonalInfoFormData;
 }
 
 const ItrTwoCapitalGain: React.FC<ItrTwoCapitalGainProps> = ({
   onComplete,
   initialData,
-  personalInfo, 
+  personalInfo,
 }) => {
   const [showImportantNotes, setShowImportantNotes] = useState(false);
-  
-  // Section A form
+
   const sectionAForm = useForm<CapitalGainsSectionAFormData>({
     resolver: zodResolver(capitalGainsSectionASchema) as any,
     defaultValues: initialData?.sectionA || {
@@ -48,7 +47,6 @@ const ItrTwoCapitalGain: React.FC<ItrTwoCapitalGainProps> = ({
     },
   });
 
-  // Section B form
   const sectionBForm = useForm<CapitalGainsSectionBFormData>({
     resolver: zodResolver(capitalGainsSectionBSchema) as any,
     defaultValues: initialData?.sectionB || {
@@ -74,8 +72,12 @@ const ItrTwoCapitalGain: React.FC<ItrTwoCapitalGainProps> = ({
     formState: { errors },
   } = sectionAForm;
 
-  const [visibleCalculations, setVisibleCalculations] = useState<Record<string, boolean>>({});
-  const [visibleLTCGCalculations, setVisibleLTCGCalculations] = useState<Record<string, boolean>>({});
+  const [visibleCalculations, setVisibleCalculations] = useState<
+    Record<string, boolean>
+  >({});
+  const [visibleLTCGCalculations, setVisibleLTCGCalculations] = useState<
+    Record<string, boolean>
+  >({});
 
   const {
     fields: landBuildingFields,
@@ -101,10 +103,7 @@ const ItrTwoCapitalGain: React.FC<ItrTwoCapitalGainProps> = ({
 
     setValue(`landBuildingSales.${index}.totalDeductions`, totalDeductions);
     setValue(`landBuildingSales.${index}.balance`, balance);
-    setValue(
-      `landBuildingSales.${index}.shortTermCapitalGain`,
-      shortTermGain
-    );
+    setValue(`landBuildingSales.${index}.shortTermCapitalGain`, shortTermGain);
   };
 
   useEffect(() => {
@@ -115,25 +114,26 @@ const ItrTwoCapitalGain: React.FC<ItrTwoCapitalGainProps> = ({
       }
       computeLandBuildingValues(sale, index);
     });
-  }, [watchAll.landBuildingSales, landBuildingFields, visibleCalculations, setValue]);
+  }, [
+    watchAll.landBuildingSales,
+    landBuildingFields,
+    visibleCalculations,
+    setValue,
+  ]);
 
-  
   useEffect(() => {
     let total = 0;
 
-    
     watchAll.landBuildingSales?.forEach((sale) => {
       total += sale.shortTermCapitalGain || 0;
     });
 
-    
     if (watchAll.equityMfSales) {
       total += watchAll.equityMfSales.transferBefore23July?.balance || 0;
       total += watchAll.equityMfSales.transferOnAfter23July?.balance || 0;
       total += watchAll.equityMfSales.stcgOtherShares || 0;
     }
 
-    
     if (watchAll.nonResidentShares) {
       total += watchAll.nonResidentShares.transferBefore23July || 0;
       total += watchAll.nonResidentShares.transferOnAfter23July || 0;
@@ -141,20 +141,16 @@ const ItrTwoCapitalGain: React.FC<ItrTwoCapitalGainProps> = ({
       total += watchAll.nonResidentShares.stcgSection111A || 0;
     }
 
-    
     if (watchAll.nonResidentFII) {
       total += watchAll.nonResidentFII.shortTermCapitalGain || 0;
     }
 
-    
     if (watchAll.otherAssetsSales) {
       total += watchAll.otherAssetsSales.shortTermCapitalGain || 0;
     }
 
-    
     total += watchAll.amountDeemedSTCG || 0;
 
-    
     if (watchAll.passeThroughIncome) {
       total += watchAll.passeThroughIncome.at15Percent || 0;
       total += watchAll.passeThroughIncome.at30Percent || 0;
@@ -162,10 +158,8 @@ const ItrTwoCapitalGain: React.FC<ItrTwoCapitalGainProps> = ({
       total += watchAll.passeThroughIncome.atApplicableRates || 0;
     }
 
-    
     total -= watchAll.totalSTCGNotChargeable || 0;
 
-    
     total -= watchAll.capitalLossBuyBack || 0;
 
     setValue("totalShortTermCapitalGain", total);
@@ -191,13 +185,63 @@ const ItrTwoCapitalGain: React.FC<ItrTwoCapitalGainProps> = ({
     removeLandBuilding(index);
   };
 
+  // Manual calculation for B13: Total LTCG
+  const calculateTotalLTCG = () => {
+    const sectionBData = sectionBForm.getValues();
+    let total = 0;
+
+    // Sum from all LTCG land/building sales
+    sectionBData.ltcgLandBuildingSales?.forEach((sale) => {
+      total += sale.longTermCapitalGain || 0;
+    });
+
+    // Sum from unlisted bonds
+    sectionBData.unlistedBondsSales?.forEach((sale) => {
+      total += sale.ltcgOnBonds || 0;
+    });
+
+    // Sum from listed securities
+    sectionBData.listedSecuritiesSales?.forEach((sale) => {
+      total += sale.ltcgOnSecurities || 0;
+    });
+
+    // Sum from equity shares
+    sectionBData.equitySharesSales?.forEach((sale) => {
+      total += sale.ltcgOnAssets || 0;
+    });
+
+    // Sum from other assets
+    sectionBData.otherAssetsSales?.forEach((sale) => {
+      total += sale.ltcgOnAssets || 0;
+    });
+
+    sectionBForm.setValue("totalLTCGChargeable", total);
+  };
+
+  // Manual calculation for C3: Total Capital Gains Income
+  const calculateTotalCapitalGainsIncome = () => {
+    const sectionAData = sectionAForm.getValues();
+    const sectionBData = sectionBForm.getValues();
+
+    // C1 = A9 + B13
+    const totalSTCG = sectionAData.totalShortTermCapitalGain || 0;
+    const totalLTCG = sectionBData.totalLTCGChargeable || 0;
+    const c1 = totalSTCG + totalLTCG;
+    sectionBForm.setValue("totalCapitalIncome", c1);
+
+    // C3 = C1 + C2
+    const c2 = sectionBData.virtualDigitalAssetIncome || 0;
+    const c3 = c1 + c2;
+    sectionBForm.setValue("totalCapitalGainsIncome", c3);
+  };
+
   const onSubmitBothSections = () => {
     const sectionAData = sectionAForm.getValues();
     const sectionBData = sectionBForm.getValues();
-    
+
     console.log("Capital Gains Section A submitted:", sectionAData);
     console.log("Capital Gains Section B submitted:", sectionBData);
-    
+
     onComplete({
       sectionA: sectionAData,
       sectionB: sectionBData,
@@ -214,14 +258,20 @@ const ItrTwoCapitalGain: React.FC<ItrTwoCapitalGainProps> = ({
         <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
           <h4 className="mb-2 flex items-center gap-2 text-sm font-semibold text-blue-900">
             <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                clipRule="evenodd"
+              />
             </svg>
             Personal Information from Part A
           </h4>
           <div className="grid grid-cols-2 gap-3 text-xs md:grid-cols-4">
             <div>
               <span className="font-medium text-blue-700">Name:</span>
-              <p className="text-blue-900">{personalInfo.firstName} {personalInfo.lastName}</p>
+              <p className="text-blue-900">
+                {personalInfo.firstName} {personalInfo.lastName}
+              </p>
             </div>
             <div>
               <span className="font-medium text-blue-700">PAN:</span>
@@ -238,7 +288,7 @@ const ItrTwoCapitalGain: React.FC<ItrTwoCapitalGainProps> = ({
           </div>
         </div>
       )}
-      
+
       <div className="rounded-lg border-2 border-amber-300 bg-amber-50 p-4">
         <button
           type="button"
@@ -247,61 +297,100 @@ const ItrTwoCapitalGain: React.FC<ItrTwoCapitalGainProps> = ({
         >
           <h3 className="flex items-center gap-2 text-base font-semibold text-amber-900">
             <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                clipRule="evenodd"
+              />
             </svg>
             Important Notes & Instructions
           </h3>
           <svg
-            className={`h-5 w-5 transform text-amber-700 transition-transform ${showImportantNotes ? "rotate-180" : ""}`}
+            className={`h-5 w-5 transform text-amber-700 transition-transform ${
+              showImportantNotes ? "rotate-180" : ""
+            }`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
           </svg>
         </button>
 
         {showImportantNotes && (
           <div className="mt-4 space-y-3 text-sm text-amber-900">
             <div className="rounded border border-amber-200 bg-white p-3">
-              <p className="mb-2 font-semibold">📌 Sub-sections 5, 6, 7 & 8 are not applicable for residents</p>
+              <p className="mb-2 font-semibold">
+                📌 Sub-sections 5, 6, 7 & 8 are not applicable for residents
+              </p>
               <p className="text-xs text-amber-800">
-                These sections relate to specific scenarios for non-residents, FIIs, and foreign exchange assets.
+                These sections relate to specific scenarios for non-residents,
+                FIIs, and foreign exchange assets.
               </p>
             </div>
 
             <div className="rounded border border-amber-200 bg-white p-3">
-              <p className="mb-2 font-semibold">📅 Significance of July 23, 2024</p>
+              <p className="mb-2 font-semibold">
+                📅 Significance of July 23, 2024
+              </p>
               <p className="text-xs text-amber-800">
-                For residents, from sale of unlisted bonds or unlisted debentures (other than capital indexed bonds issued by Government) applicable only where transfer was before 23rd July 2024. For computational purposes under second proviso to section 112(1)(a) where acquisition is before and transfer is on or after 23rd July 2024, applicable for residents.
+                For residents, from sale of unlisted bonds or unlisted
+                debentures (other than capital indexed bonds issued by
+                Government) applicable only where transfer was before 23rd July
+                2024. For computational purposes under second proviso to section
+                112(1)(a) where acquisition is before and transfer is on or
+                after 23rd July 2024, applicable for residents.
               </p>
             </div>
 
             <div className="rounded border border-amber-200 bg-white p-3">
               <p className="mb-2 font-semibold">🔢 Indexation Benefit</p>
               <p className="text-xs text-amber-800">
-                (A) For transfers before 23rd July 2024, OR (B) Residents for computational purposes under second proviso to section 112(1)(a) where acquisition is before and transfer is on or after 23rd July 2024. Only for the purpose of computing ciB (biia = bi + biii).
+                (A) For transfers before 23rd July 2024, OR (B) Residents for
+                computational purposes under second proviso to section 112(1)(a)
+                where acquisition is before and transfer is on or after 23rd
+                July 2024. Only for the purpose of computing ciB (biia = bi +
+                biii).
               </p>
             </div>
 
             <div className="rounded border border-amber-200 bg-white p-3">
-              <p className="mb-2 font-semibold">🏦 Capital Gains Account Scheme</p>
+              <p className="mb-2 font-semibold">
+                🏦 Capital Gains Account Scheme
+              </p>
               <p className="text-xs text-amber-800">
-                For claiming deduction under section 54/54B/54EC/54F/54GB, you can deposit unutilized capital gains in Capital Gains Accounts Scheme within the date for furnishing the return u/s 139(1). Provide details below in item D.
+                For claiming deduction under section 54/54B/54EC/54F/54GB, you
+                can deposit unutilized capital gains in Capital Gains Accounts
+                Scheme within the date for furnishing the return u/s 139(1).
+                Provide details below in item D.
               </p>
             </div>
 
             <div className="rounded border border-amber-200 bg-white p-3">
               <p className="mb-2 font-semibold">📄 Furnishing of PAN/Aadhaar</p>
               <p className="text-xs text-amber-800">
-                Furnishing of PAN/Aadhaar No. is mandatory, if the tax is deducted under section 194-IA or is quoted by buyer in the documents. In case of more than one buyer, please indicate the respective percentage share and amount.
+                Furnishing of PAN/Aadhaar No. is mandatory, if the tax is
+                deducted under section 194-IA or is quoted by buyer in the
+                documents. In case of more than one buyer, please indicate the
+                respective percentage share and amount.
               </p>
             </div>
 
             <div className="rounded border border-amber-200 bg-white p-3">
               <p className="mb-2 font-semibold">⚖️ DTAA Provisions</p>
               <p className="text-xs text-amber-800">
-                For partial taxability under chapter XII-A, break up of income based on date of transfer is not required. Note: The figures of STCG in this table (A1e* etc.) are the amounts of STCG, computed in respective column (A1-A7) either such similar securities and as reduced by the amount of STCG not chargeable to tax or chargeable at special rates as per DTAA, which is included therein, if any.
+                For partial taxability under chapter XII-A, break up of income
+                based on date of transfer is not required. Note: The figures of
+                STCG in this table (A1e* etc.) are the amounts of STCG, computed
+                in respective column (A1-A7) either such similar securities and
+                as reduced by the amount of STCG not chargeable to tax or
+                chargeable at special rates as per DTAA, which is included
+                therein, if any.
               </p>
             </div>
           </div>
@@ -316,10 +405,13 @@ const ItrTwoCapitalGain: React.FC<ItrTwoCapitalGainProps> = ({
           Section A - Short-term Capital Gains (STCG)
         </p>
 
-        <form onSubmit={(e) => {
-          e.preventDefault();
-          onSubmitBothSections();
-        }} className="space-y-8">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            onSubmitBothSections();
+          }}
+          className="space-y-8"
+        >
           <div className="space-y-4 rounded-lg border-2 border-gray-300 p-6">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-lg font-semibold text-gray-900">
@@ -361,15 +453,21 @@ const ItrTwoCapitalGain: React.FC<ItrTwoCapitalGainProps> = ({
                         <div className="flex items-center gap-2">
                           <button
                             type="button"
-                            onClick={() => handleShowCalculations(fieldId, index)}
+                            onClick={() =>
+                              handleShowCalculations(fieldId, index)
+                            }
                             className="rounded border border-blue-500 px-3 py-1 text-xs font-semibold text-blue-600 transition-colors hover:border-blue-600 hover:text-blue-700"
                           >
-                            {showCalculations ? "Recalculate" : "Show Calculations"}
+                            {showCalculations
+                              ? "Recalculate"
+                              : "Show Calculations"}
                           </button>
                           {landBuildingFields.length > 0 && (
                             <button
                               type="button"
-                              onClick={() => handleRemoveLandBuilding(fieldId, index)}
+                              onClick={() =>
+                                handleRemoveLandBuilding(fieldId, index)
+                              }
                               className="rounded border border-red-500 px-3 py-1 text-sm text-red-600 hover:text-red-700"
                             >
                               Remove
@@ -379,128 +477,70 @@ const ItrTwoCapitalGain: React.FC<ItrTwoCapitalGainProps> = ({
                       </div>
                       {!showCalculations && (
                         <p className="mb-4 text-xs text-gray-500">
-                          Calculated fields stay blank until you click "Show Calculations".
+                          Calculated fields stay blank until you click "Show
+                          Calculations".
                         </p>
                       )}
                       {showCalculations && (
                         <p className="mb-4 text-xs font-medium text-blue-600">
-                          Calculations are up to date. Edit values and press "Recalculate" if needed.
+                          Calculations are up to date. Edit values and press
+                          "Recalculate" if needed.
                         </p>
                       )}
 
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                      <div>
-                        <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                          Date of purchase/acquisition (DD/MM/YYYY)
-                        </label>
-                        <input
-                          {...register(
-                            `landBuildingSales.${index}.purchaseDate`
-                          )}
-                          type="text"
-                          placeholder="DD/MM/YYYY"
-                          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        />
-                        {errors.landBuildingSales?.[index]?.purchaseDate && (
-                          <p className="mt-1 text-xs text-red-500">
-                            {
-                              errors.landBuildingSales[index]?.purchaseDate
-                                ?.message
-                            }
-                          </p>
-                        )}
-                      </div>
-
-                      <div>
-                        <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                          Date of sale/transfer (DD/MM/YYYY)
-                        </label>
-                        <input
-                          {...register(`landBuildingSales.${index}.saleDate`)}
-                          type="text"
-                          placeholder="DD/MM/YYYY"
-                          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        />
-                        {errors.landBuildingSales?.[index]?.saleDate && (
-                          <p className="mt-1 text-xs text-red-500">
-                            {errors.landBuildingSales[index]?.saleDate?.message}
-                          </p>
-                        )}
-                      </div>
-
-                      <div>
-                        <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                          a.i. Full value of consideration received/receivable
-                        </label>
-                        <input
-                          {...register(
-                            `landBuildingSales.${index}.fullValueConsideration`,
-                            {
-                              valueAsNumber: true,
-                            }
-                          )}
-                          type="number"
-                          min="0"
-                          step="0.01"
-                          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          placeholder="0.00"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                          a.ii. Value of property as per stamp valuation
-                          authority
-                        </label>
-                        <input
-                          {...register(
-                            `landBuildingSales.${index}.stampDutyValue`,
-                            {
-                              valueAsNumber: true,
-                            }
-                          )}
-                          type="number"
-                          min="0"
-                          step="0.01"
-                          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          placeholder="0.00"
-                        />
-                      </div>
-
-                      <div className="md:col-span-2">
-                        <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                          a.iii. Full value of consideration adopted as per
-                          section 50C
-                        </label>
-                        <input
-                          {...register(
-                            `landBuildingSales.${index}.fullValueAdopted`,
-                            {
-                              valueAsNumber: true,
-                            }
-                          )}
-                          type="number"
-                          min="0"
-                          step="0.01"
-                          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          placeholder="0.00"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="mt-6">
-                      <h5 className="mb-4 font-medium text-gray-700">
-                        b. Deductions under section 48
-                      </h5>
                       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div>
                           <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                            b.i. Cost of acquisition without indexation
+                            Date of purchase/acquisition (DD/MM/YYYY)
                           </label>
                           <input
                             {...register(
-                              `landBuildingSales.${index}.costAcquisitionWithoutIndexation`,
-                              { valueAsNumber: true }
+                              `landBuildingSales.${index}.purchaseDate`
+                            )}
+                            type="text"
+                            placeholder="DD/MM/YYYY"
+                            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          />
+                          {errors.landBuildingSales?.[index]?.purchaseDate && (
+                            <p className="mt-1 text-xs text-red-500">
+                              {
+                                errors.landBuildingSales[index]?.purchaseDate
+                                  ?.message
+                              }
+                            </p>
+                          )}
+                        </div>
+
+                        <div>
+                          <label className="mb-1.5 block text-sm font-medium text-gray-700">
+                            Date of sale/transfer (DD/MM/YYYY)
+                          </label>
+                          <input
+                            {...register(`landBuildingSales.${index}.saleDate`)}
+                            type="text"
+                            placeholder="DD/MM/YYYY"
+                            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          />
+                          {errors.landBuildingSales?.[index]?.saleDate && (
+                            <p className="mt-1 text-xs text-red-500">
+                              {
+                                errors.landBuildingSales[index]?.saleDate
+                                  ?.message
+                              }
+                            </p>
+                          )}
+                        </div>
+
+                        <div>
+                          <label className="mb-1.5 block text-sm font-medium text-gray-700">
+                            a.i. Full value of consideration received/receivable
+                          </label>
+                          <input
+                            {...register(
+                              `landBuildingSales.${index}.fullValueConsideration`,
+                              {
+                                valueAsNumber: true,
+                              }
                             )}
                             type="number"
                             min="0"
@@ -512,29 +552,12 @@ const ItrTwoCapitalGain: React.FC<ItrTwoCapitalGainProps> = ({
 
                         <div>
                           <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                            b.ii. Cost of improvement without indexation
+                            a.ii. Value of property as per stamp valuation
+                            authority
                           </label>
                           <input
                             {...register(
-                              `landBuildingSales.${index}.costImprovementWithoutIndexation`,
-                              { valueAsNumber: true }
-                            )}
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            placeholder="0.00"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                            b.iii. Expenditure wholly and exclusively in
-                            connection with transfer
-                          </label>
-                          <input
-                            {...register(
-                              `landBuildingSales.${index}.expenditureOnTransfer`,
+                              `landBuildingSales.${index}.stampDutyValue`,
                               {
                                 valueAsNumber: true,
                               }
@@ -547,46 +570,14 @@ const ItrTwoCapitalGain: React.FC<ItrTwoCapitalGainProps> = ({
                           />
                         </div>
 
-                        <div className="rounded-lg border border-gray-300 bg-gray-50 p-3">
+                        <div className="md:col-span-2">
                           <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                            b.iv. Total (b.i + b.ii + b.iii)
+                            a.iii. Full value of consideration adopted as per
+                            section 50C
                           </label>
                           <input
                             {...register(
-                              `landBuildingSales.${index}.totalDeductions`,
-                              {
-                                valueAsNumber: true,
-                              }
-                            )}
-                            type="number"
-                            readOnly
-                            placeholder="Auto-calculated"
-                            className="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm font-semibold text-gray-900 placeholder:text-gray-400"
-                          />
-                        </div>
-
-                        <div className="rounded-lg border border-gray-300 bg-gray-50 p-3">
-                          <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                            c. Balance (a.iii - b.iv)
-                          </label>
-                          <input
-                            {...register(`landBuildingSales.${index}.balance`, {
-                              valueAsNumber: true,
-                            })}
-                            type="number"
-                            readOnly
-                            placeholder="Auto-calculated"
-                            className="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm font-semibold text-gray-900 placeholder:text-gray-400"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                            d. Deduction under section 54B
-                          </label>
-                          <input
-                            {...register(
-                              `landBuildingSales.${index}.deductionSection54B`,
+                              `landBuildingSales.${index}.fullValueAdopted`,
                               {
                                 valueAsNumber: true,
                               }
@@ -596,29 +587,144 @@ const ItrTwoCapitalGain: React.FC<ItrTwoCapitalGainProps> = ({
                             step="0.01"
                             className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                             placeholder="0.00"
-                          />
-                        </div>
-
-                        <div className="rounded-lg border-2 border-blue-300 bg-blue-50 p-3 md:col-span-2">
-                          <label className="mb-1.5 block text-sm font-semibold text-gray-900">
-                            e. Short-term Capital Gains on Immovable property
-                            (1c - 1d)
-                          </label>
-                          <input
-                            {...register(
-                              `landBuildingSales.${index}.shortTermCapitalGain`,
-                              {
-                                valueAsNumber: true,
-                              }
-                            )}
-                            type="number"
-                            readOnly
-                            placeholder="Auto-calculated"
-                            className="w-full rounded-lg border-2 border-blue-300 bg-blue-50 px-3 py-2 text-sm font-bold text-gray-900 placeholder:text-gray-400"
                           />
                         </div>
                       </div>
-                    </div>
+
+                      <div className="mt-6">
+                        <h5 className="mb-4 font-medium text-gray-700">
+                          b. Deductions under section 48
+                        </h5>
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                          <div>
+                            <label className="mb-1.5 block text-sm font-medium text-gray-700">
+                              b.i. Cost of acquisition without indexation
+                            </label>
+                            <input
+                              {...register(
+                                `landBuildingSales.${index}.costAcquisitionWithoutIndexation`,
+                                { valueAsNumber: true }
+                              )}
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                              placeholder="0.00"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="mb-1.5 block text-sm font-medium text-gray-700">
+                              b.ii. Cost of improvement without indexation
+                            </label>
+                            <input
+                              {...register(
+                                `landBuildingSales.${index}.costImprovementWithoutIndexation`,
+                                { valueAsNumber: true }
+                              )}
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                              placeholder="0.00"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="mb-1.5 block text-sm font-medium text-gray-700">
+                              b.iii. Expenditure wholly and exclusively in
+                              connection with transfer
+                            </label>
+                            <input
+                              {...register(
+                                `landBuildingSales.${index}.expenditureOnTransfer`,
+                                {
+                                  valueAsNumber: true,
+                                }
+                              )}
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                              placeholder="0.00"
+                            />
+                          </div>
+
+                          <div className="rounded-lg border border-gray-300 bg-gray-50 p-3">
+                            <label className="mb-1.5 block text-sm font-medium text-gray-700">
+                              b.iv. Total (b.i + b.ii + b.iii)
+                            </label>
+                            <input
+                              {...register(
+                                `landBuildingSales.${index}.totalDeductions`,
+                                {
+                                  valueAsNumber: true,
+                                }
+                              )}
+                              type="number"
+                              readOnly
+                              placeholder="Auto-calculated"
+                              className="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm font-semibold text-gray-900 placeholder:text-gray-400"
+                            />
+                          </div>
+
+                          <div className="rounded-lg border border-gray-300 bg-gray-50 p-3">
+                            <label className="mb-1.5 block text-sm font-medium text-gray-700">
+                              c. Balance (a.iii - b.iv)
+                            </label>
+                            <input
+                              {...register(
+                                `landBuildingSales.${index}.balance`,
+                                {
+                                  valueAsNumber: true,
+                                }
+                              )}
+                              type="number"
+                              readOnly
+                              placeholder="Auto-calculated"
+                              className="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm font-semibold text-gray-900 placeholder:text-gray-400"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="mb-1.5 block text-sm font-medium text-gray-700">
+                              d. Deduction under section 54B
+                            </label>
+                            <input
+                              {...register(
+                                `landBuildingSales.${index}.deductionSection54B`,
+                                {
+                                  valueAsNumber: true,
+                                }
+                              )}
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                              placeholder="0.00"
+                            />
+                          </div>
+
+                          <div className="rounded-lg border-2 border-blue-300 bg-blue-50 p-3 md:col-span-2">
+                            <label className="mb-1.5 block text-sm font-semibold text-gray-900">
+                              e. Short-term Capital Gains on Immovable property
+                              (1c - 1d)
+                            </label>
+                            <input
+                              {...register(
+                                `landBuildingSales.${index}.shortTermCapitalGain`,
+                                {
+                                  valueAsNumber: true,
+                                }
+                              )}
+                              type="number"
+                              readOnly
+                              placeholder="Auto-calculated"
+                              className="w-full rounded-lg border-2 border-blue-300 bg-blue-50 px-3 py-2 text-sm font-bold text-gray-900 placeholder:text-gray-400"
+                            />
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   );
                 })}
@@ -836,7 +942,7 @@ const ItrTwoCapitalGain: React.FC<ItrTwoCapitalGainProps> = ({
             />
           </div>
 
-          <div className="rounded-lg border-2 border-green-300 bg-green-50 p-6">
+          <div className="rounded-lg border-2 border-gray-300  p-6">
             <h3 className="mb-4 text-lg font-semibold text-gray-900">
               9. Total Short-term Capital Gain (A1e + A2e + A3a+ A3b+ A4e+ A5e +
               A6 + A7 - A8a + A(A))
@@ -848,7 +954,7 @@ const ItrTwoCapitalGain: React.FC<ItrTwoCapitalGainProps> = ({
               type="number"
               readOnly
               placeholder="Auto-calculated"
-              className="w-full rounded-lg border-2 border-green-300 bg-green-50 px-4 py-3 text-lg font-bold text-gray-900 placeholder:text-gray-400"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
 
@@ -862,6 +968,9 @@ const ItrTwoCapitalGain: React.FC<ItrTwoCapitalGainProps> = ({
               form={sectionBForm}
               visibleCalculations={visibleLTCGCalculations}
               setVisibleCalculations={setVisibleLTCGCalculations}
+              calculateTotalLTCG={calculateTotalLTCG}
+              calculateTotalCapitalGainsIncome={calculateTotalCapitalGainsIncome}
+              sectionAForm={sectionAForm}
             />
           </div>
 
@@ -879,17 +988,24 @@ const ItrTwoCapitalGain: React.FC<ItrTwoCapitalGainProps> = ({
   );
 };
 
-// LTCG Section B Component
 interface LTCGSectionBProps {
   form: ReturnType<typeof useForm<CapitalGainsSectionBFormData>>;
   visibleCalculations: Record<string, boolean>;
-  setVisibleCalculations: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+  setVisibleCalculations: React.Dispatch<
+    React.SetStateAction<Record<string, boolean>>
+  >;
+  calculateTotalLTCG: () => void;
+  calculateTotalCapitalGainsIncome: () => void;
+  sectionAForm: ReturnType<typeof useForm<CapitalGainsSectionAFormData>>;
 }
 
 const LTCGSectionB: React.FC<LTCGSectionBProps> = ({
   form,
   visibleCalculations,
   setVisibleCalculations,
+  calculateTotalLTCG,
+  calculateTotalCapitalGainsIncome,
+  sectionAForm,
 }) => {
   const {
     register,
@@ -914,13 +1030,16 @@ const LTCGSectionB: React.FC<LTCGSectionBProps> = ({
     sale: CapitalGainsSectionBFormData["ltcgLandBuildingSales"][number],
     index: number
   ) => {
-    // c. Balance (a.iii - b.iv)
-    const balance = (sale.fullValueAdopted || 0) - 
-      ((sale.costAcquisitionWithIndexation || sale.costAcquisitionWithoutIndexation || 0) +
-       (sale.costImprovementWithIndexation || sale.costImprovementWithoutIndexation || 0) +
-       (sale.expenditureOnTransfer || 0));
-    
-    // e. Long-term capital gains (c - d)
+    const balance =
+      (sale.fullValueAdopted || 0) -
+      ((sale.costAcquisitionWithIndexation ||
+        sale.costAcquisitionWithoutIndexation ||
+        0) +
+        (sale.costImprovementWithIndexation ||
+          sale.costImprovementWithoutIndexation ||
+          0) +
+        (sale.expenditureOnTransfer || 0));
+
     const ltcg = balance - (sale.deductionSection54 || 0);
 
     setValue(`ltcgLandBuildingSales.${index}.balance`, balance);
@@ -947,7 +1066,7 @@ const LTCGSectionB: React.FC<LTCGSectionBProps> = ({
   return (
     <div className="space-y-8">
       {/* B1: From sale of land or building or both */}
-      <div className="space-y-4 rounded-lg border-2 border-purple-300 bg-purple-50 p-6">
+      <div className="space-y-4 rounded-lg">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-lg font-semibold text-purple-900">
             B1. From sale of land or building or both
@@ -988,7 +1107,9 @@ const LTCGSectionB: React.FC<LTCGSectionBProps> = ({
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
-                        onClick={() => handleShowLTCGCalculations(fieldId, index)}
+                        onClick={() =>
+                          handleShowLTCGCalculations(fieldId, index)
+                        }
                         className="rounded border border-purple-500 px-3 py-1 text-xs font-semibold text-purple-600 transition-colors hover:border-purple-600 hover:text-purple-700"
                       >
                         {showCalculations ? "Recalculate" : "Show Calculations"}
@@ -996,7 +1117,9 @@ const LTCGSectionB: React.FC<LTCGSectionBProps> = ({
                       {ltcgLandBuildingFields.length > 0 && (
                         <button
                           type="button"
-                          onClick={() => handleRemoveLTCGProperty(fieldId, index)}
+                          onClick={() =>
+                            handleRemoveLTCGProperty(fieldId, index)
+                          }
                           className="rounded border border-red-500 px-3 py-1 text-sm text-red-600 hover:text-red-700"
                         >
                           Remove
@@ -1004,15 +1127,17 @@ const LTCGSectionB: React.FC<LTCGSectionBProps> = ({
                       )}
                     </div>
                   </div>
-                  
+
                   {!showCalculations && (
                     <p className="mb-4 text-xs text-purple-600">
-                      Calculated fields stay blank until you click "Show Calculations".
+                      Calculated fields stay blank until you click "Show
+                      Calculations".
                     </p>
                   )}
                   {showCalculations && (
                     <p className="mb-4 text-xs font-medium text-purple-700">
-                      Calculations are up to date. Edit values and press "Recalculate" if needed.
+                      Calculations are up to date. Edit values and press
+                      "Recalculate" if needed.
                     </p>
                   )}
 
@@ -1079,7 +1204,8 @@ const LTCGSectionB: React.FC<LTCGSectionBProps> = ({
 
                     <div className="md:col-span-2">
                       <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                        a.iii. Full value of consideration adopted as per section 50C
+                        a.iii. Full value of consideration adopted as per
+                        section 50C
                       </label>
                       <input
                         {...register(
@@ -1170,7 +1296,8 @@ const LTCGSectionB: React.FC<LTCGSectionBProps> = ({
 
                       <div>
                         <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                          b.iii. Expenditure wholly and exclusively in connection with transfer
+                          b.iii. Expenditure wholly and exclusively in
+                          connection with transfer
                         </label>
                         <input
                           {...register(
@@ -1185,18 +1312,21 @@ const LTCGSectionB: React.FC<LTCGSectionBProps> = ({
                         />
                       </div>
 
-                      <div className="rounded-lg border border-purple-300 bg-purple-50 p-3 md:col-span-2">
+                      <div className="rounded-lg md:col-span-2">
                         <label className="mb-1.5 block text-sm font-medium text-purple-700">
                           c. Balance (a.iii - total deductions)
                         </label>
                         <input
-                          {...register(`ltcgLandBuildingSales.${index}.balance`, {
-                            valueAsNumber: true,
-                          })}
+                          {...register(
+                            `ltcgLandBuildingSales.${index}.balance`,
+                            {
+                              valueAsNumber: true,
+                            }
+                          )}
                           type="number"
                           readOnly
                           placeholder="Click 'Show Calculations'"
-                          className="w-full rounded-lg border border-purple-300 bg-purple-50 px-3 py-2 text-sm font-semibold text-purple-900 placeholder:text-purple-400"
+                          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
                         />
                       </div>
 
@@ -1217,9 +1347,10 @@ const LTCGSectionB: React.FC<LTCGSectionBProps> = ({
                         />
                       </div>
 
-                      <div className="rounded-lg border-2 border-purple-400 bg-purple-100 p-3">
+                      <div className="rounded-lg border-2 border-purple-400 p-3">
                         <label className="mb-1.5 block text-sm font-semibold text-purple-900">
-                          e. Long-term Capital Gains on Immovable property (c - d)
+                          e. Long-term Capital Gains on Immovable property (c -
+                          d)
                         </label>
                         <input
                           {...register(
@@ -1229,7 +1360,7 @@ const LTCGSectionB: React.FC<LTCGSectionBProps> = ({
                           type="number"
                           readOnly
                           placeholder="Click 'Show Calculations'"
-                          className="w-full rounded-lg border-2 border-purple-400 bg-purple-100 px-3 py-2 text-sm font-bold text-purple-900 placeholder:text-purple-400"
+                          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
                         />
                       </div>
                     </div>
@@ -1242,23 +1373,36 @@ const LTCGSectionB: React.FC<LTCGSectionBProps> = ({
       </div>
 
       {/* B13: Total LTCG */}
-      <div className="rounded-lg border-2 border-purple-400 bg-purple-100 p-6">
+      <div className="rounded-lg ">
         <h3 className="mb-4 text-lg font-semibold text-purple-900">
           B13. Total long-term capital gain chargeable under I.T. Act
         </h3>
-        <input
-          {...register("totalLTCGChargeable", {
-            valueAsNumber: true,
-          })}
-          type="number"
-          readOnly
-          placeholder="Auto-calculated"
-          className="w-full rounded-lg border-2 border-purple-400 bg-purple-100 px-4 py-3 text-lg font-bold text-purple-900 placeholder:text-purple-400"
-        />
+        <div className="flex gap-3">
+          <input
+            {...register("totalLTCGChargeable", {
+              valueAsNumber: true,
+            })}
+            type="number"
+            readOnly
+            placeholder="Auto-calculated"
+            className="flex-1 rounded-lg border border-gray-300 bg-gray-100 px-3 py-2 text-sm font-semibold text-gray-900 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+          />
+          <button
+            type="button"
+            onClick={calculateTotalLTCG}
+            className="rounded-lg bg-green-600 px-6 py-2 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+            title="Calculate total LTCG from all assets"
+          >
+            Calculate
+          </button>
+        </div>
+        <p className="mt-2 text-xs text-gray-500">
+          Click "Calculate" to sum all long-term capital gains from B1 through B12
+        </p>
       </div>
 
       {/* C1-C3: Total Capital Income */}
-      <div className="space-y-4 rounded-lg border-2 border-indigo-300 bg-indigo-50 p-6">
+      <div className="space-y-4 rounded-lg">
         <h3 className="text-lg font-semibold text-indigo-900">
           Summary - Total Capital Income
         </h3>
@@ -1274,13 +1418,14 @@ const LTCGSectionB: React.FC<LTCGSectionBProps> = ({
             type="number"
             readOnly
             placeholder="Auto-calculated"
-            className="w-full rounded-lg border border-indigo-300 bg-indigo-50 px-3 py-2 text-sm font-semibold text-indigo-900 placeholder:text-indigo-400"
+            className="w-full rounded-lg border border-gray-300 bg-gray-100 px-3 py-2 text-sm font-semibold text-gray-900 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
           />
         </div>
 
         <div>
           <label className="mb-1.5 block text-sm font-medium text-gray-700">
-            C2. Income from transfer of Virtual Digital Assets (Col. 7 of schedule VDA)
+            C2. Income from transfer of Virtual Digital Assets (Col. 7 of
+            schedule VDA)
           </label>
           <input
             {...register("virtualDigitalAssetIncome", {
@@ -1289,24 +1434,37 @@ const LTCGSectionB: React.FC<LTCGSectionBProps> = ({
             type="number"
             min="0"
             step="0.01"
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
             placeholder="0.00"
           />
         </div>
 
-        <div className="rounded-lg border-2 border-indigo-400 bg-white p-4">
+        <div className="rounded-lg border-2 border-indigo-300 bg-indigo-50 p-4">
           <label className="mb-1.5 block text-sm font-semibold text-indigo-900">
             C3. Income chargeable under the head "CAPITAL GAINS" (C1 + C2)
           </label>
-          <input
-            {...register("totalCapitalGainsIncome", {
-              valueAsNumber: true,
-            })}
-            type="number"
-            readOnly
-            placeholder="Auto-calculated"
-            className="w-full rounded-lg border-2 border-indigo-400 bg-white px-4 py-3 text-lg font-bold text-indigo-900 placeholder:text-indigo-400"
-          />
+          <div className="flex gap-3">
+            <input
+              {...register("totalCapitalGainsIncome", {
+                valueAsNumber: true,
+              })}
+              type="number"
+              readOnly
+              placeholder="Auto-calculated"
+              className="flex-1 rounded-lg border-2 border-indigo-400 bg-gray-100 px-4 py-3 text-lg font-bold text-indigo-900 placeholder:text-indigo-400"
+            />
+            <button
+              type="button"
+              onClick={calculateTotalCapitalGainsIncome}
+              className="rounded-lg bg-green-600 px-6 py-3 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+              title="Calculate total capital gains income (C1 + C2)"
+            >
+              Calculate
+            </button>
+          </div>
+          <p className="mt-2 text-xs text-indigo-700">
+            Click "Calculate" to compute: (A9 + B13) + C2 = Total Capital Gains Income
+          </p>
         </div>
       </div>
     </div>
