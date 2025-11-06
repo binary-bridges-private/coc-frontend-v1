@@ -10,43 +10,58 @@ const mobileRegex = /^\d{10}$/;
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// Date validation function
-const validateDate = (dateStr: string, allowFuture: boolean = false): { valid: boolean; message?: string } => {
-  // Check format DD/MM/YYYY
+const validateDate = (
+  dateStr: string,
+  allowFuture: boolean = false
+): { valid: boolean; message?: string } => {
   if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
     return { valid: false, message: "Date must be in DD/MM/YYYY format" };
   }
 
-  const parts = dateStr.split('/');
+  const parts = dateStr.split("/");
   const day = parseInt(parts[0], 10);
   const month = parseInt(parts[1], 10);
   const year = parseInt(parts[2], 10);
 
-  // Validate day (1-31)
   if (day < 1 || day > 31) {
     return { valid: false, message: "Day must be between 01 and 31" };
   }
 
-  // Validate month (1-12)
   if (month < 1 || month > 12) {
     return { valid: false, message: "Month must be between 01 and 12" };
   }
 
-  // Validate year (not future unless allowed)
   const currentYear = new Date().getFullYear();
   if (!allowFuture && year > currentYear) {
-    return { valid: false, message: `Year cannot be greater than ${currentYear}` };
+    return {
+      valid: false,
+      message: `Year cannot be greater than ${currentYear}`,
+    };
   }
 
-  // Validate reasonable year range (1900 to current/future)
   if (year < 1900) {
     return { valid: false, message: "Year must be 1900 or later" };
   }
 
-  // Check if date is valid (e.g., not 31/02/2024)
-  const daysInMonth = [31, (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  const daysInMonth = [
+    31,
+    year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0) ? 29 : 28,
+    31,
+    30,
+    31,
+    30,
+    31,
+    31,
+    30,
+    31,
+    30,
+    31,
+  ];
   if (day > daysInMonth[month - 1]) {
-    return { valid: false, message: `Invalid date: ${dateStr} (month ${month} doesn't have ${day} days)` };
+    return {
+      valid: false,
+      message: `Invalid date: ${dateStr} (month ${month} doesn't have ${day} days)`,
+    };
   }
 
   return { valid: true };
@@ -147,25 +162,59 @@ export const personalInfoSchema = z
 
     filingUnderSeventhProviso: z.enum(["Yes", "No"]).optional(),
 
-    depositedAmountExceeds1Crore: z.enum(["Yes", "No"]).optional().or(z.literal("")).nullable(),
+    depositedAmountExceeds1Crore: z
+      .enum(["Yes", "No"])
+      .optional()
+      .or(z.literal(""))
+      .nullable(),
     depositedAmount: z.preprocess(
-      (val) => (val === "" || val === null || val === undefined || (typeof val === 'number' && isNaN(val))) ? undefined : val,
+      (val) =>
+        val === "" ||
+        val === null ||
+        val === undefined ||
+        (typeof val === "number" && isNaN(val))
+          ? undefined
+          : val,
       z.number().min(10000000, "Amount must be at least Rs. 1 Crore").optional()
     ),
 
-    incurredExpenditureExceeds2Lakhs: z.enum(["Yes", "No"]).optional().or(z.literal("")).nullable(),
+    incurredExpenditureExceeds2Lakhs: z
+      .enum(["Yes", "No"])
+      .optional()
+      .or(z.literal(""))
+      .nullable(),
     incurredExpenditureAmount: z.preprocess(
-      (val) => (val === "" || val === null || val === undefined || (typeof val === 'number' && isNaN(val))) ? undefined : val,
+      (val) =>
+        val === "" ||
+        val === null ||
+        val === undefined ||
+        (typeof val === "number" && isNaN(val))
+          ? undefined
+          : val,
       z.number().min(200000, "Amount must be at least Rs. 2 Lakhs").optional()
     ),
 
-    electricityExpenditureExceeds1Lakh: z.enum(["Yes", "No"]).optional().or(z.literal("")).nullable(),
+    electricityExpenditureExceeds1Lakh: z
+      .enum(["Yes", "No"])
+      .optional()
+      .or(z.literal(""))
+      .nullable(),
     electricityExpenditureAmount: z.preprocess(
-      (val) => (val === "" || val === null || val === undefined || (typeof val === 'number' && isNaN(val))) ? undefined : val,
+      (val) =>
+        val === "" ||
+        val === null ||
+        val === undefined ||
+        (typeof val === "number" && isNaN(val))
+          ? undefined
+          : val,
       z.number().min(100000, "Amount must be at least Rs. 1 Lakh").optional()
     ),
 
-    otherConditionsApplicable: z.enum(["Yes", "No"]).optional().or(z.literal("")).nullable(),
+    otherConditionsApplicable: z
+      .enum(["Yes", "No"])
+      .optional()
+      .or(z.literal(""))
+      .nullable(),
     relevantCondition: z.string().max(200).optional().or(z.literal("")),
 
     isRevisedDefectiveModified: z.boolean().default(false),
@@ -174,8 +223,14 @@ export const personalInfoSchema = z
       .optional()
       .or(z.literal(""))
       .refine(
-        (val) => !val || val.length === 0 || (val.length <= 50 && /^[A-Z0-9]+$/.test(val)),
-        { message: "Receipt number should contain only letters and numbers (max 50 chars)" }
+        (val) =>
+          !val ||
+          val.length === 0 ||
+          (val.length <= 50 && /^[A-Z0-9]+$/.test(val)),
+        {
+          message:
+            "Receipt number should contain only letters and numbers (max 50 chars)",
+        }
       ),
     originalFilingDate: z
       .string()
@@ -220,44 +275,107 @@ export const personalInfoSchema = z
     ),
 
     residentDaysInIndia: z.preprocess(
-      (val) => (val === "" || val === null || val === undefined || (typeof val === 'number' && isNaN(val))) ? undefined : val,
+      (val) =>
+        val === "" ||
+        val === null ||
+        val === undefined ||
+        (typeof val === "number" && isNaN(val))
+          ? undefined
+          : val,
       z.number().min(0).max(366).optional()
     ),
     residentCondition: z.string().max(500).optional(),
 
     rnorDaysInIndia: z.preprocess(
-      (val) => (val === "" || val === null || val === undefined || (typeof val === 'number' && isNaN(val))) ? undefined : val,
+      (val) =>
+        val === "" ||
+        val === null ||
+        val === undefined ||
+        (typeof val === "number" && isNaN(val))
+          ? undefined
+          : val,
       z.number().min(0).max(366).optional()
     ),
     rnorCondition: z.string().max(500).optional(),
 
     nonResidentDaysInIndia: z.preprocess(
-      (val) => (val === "" || val === null || val === undefined || (typeof val === 'number' && isNaN(val))) ? undefined : val,
+      (val) =>
+        val === "" ||
+        val === null ||
+        val === undefined ||
+        (typeof val === "number" && isNaN(val))
+          ? undefined
+          : val,
       z.number().min(0).max(366).optional()
     ),
     jurisdictionOfResidence: z.string().max(200).optional(),
     taxpayerIdentificationNumber: z.string().max(100).optional(),
     totalPeriodInIndiaPreviousYear: z.preprocess(
-      (val) => (val === "" || val === null || val === undefined || (typeof val === 'number' && isNaN(val))) ? undefined : val,
+      (val) =>
+        val === "" ||
+        val === null ||
+        val === undefined ||
+        (typeof val === "number" && isNaN(val))
+          ? undefined
+          : val,
       z.number().min(0).max(366).optional()
     ),
     totalPeriodInIndiaPreceding4Years: z.preprocess(
-      (val) => (val === "" || val === null || val === undefined || (typeof val === 'number' && isNaN(val))) ? undefined : val,
+      (val) =>
+        val === "" ||
+        val === null ||
+        val === undefined ||
+        (typeof val === "number" && isNaN(val))
+          ? undefined
+          : val,
       z.number().min(0).max(1464).optional()
     ),
 
     daysInIndia: z.preprocess(
-      (val) => (val === "" || val === null || val === undefined || (typeof val === 'number' && isNaN(val))) ? undefined : val,
-      z.number().int("Must be a whole number").min(0, "Days cannot be negative").max(366, "Days cannot exceed 366").optional()
+      (val) =>
+        val === "" ||
+        val === null ||
+        val === undefined ||
+        (typeof val === "number" && isNaN(val))
+          ? undefined
+          : val,
+      z
+        .number()
+        .int("Must be a whole number")
+        .min(0, "Days cannot be negative")
+        .max(366, "Days cannot exceed 366")
+        .optional()
     ),
 
     daysInIndiaPreviousYear: z.preprocess(
-      (val) => (val === "" || val === null || val === undefined || (typeof val === 'number' && isNaN(val))) ? undefined : val,
-      z.number().int("Must be a whole number").min(0, "Days cannot be negative").max(366, "Days cannot exceed 366").optional()
+      (val) =>
+        val === "" ||
+        val === null ||
+        val === undefined ||
+        (typeof val === "number" && isNaN(val))
+          ? undefined
+          : val,
+      z
+        .number()
+        .int("Must be a whole number")
+        .min(0, "Days cannot be negative")
+        .max(366, "Days cannot exceed 366")
+        .optional()
     ),
     daysInIndiaPreceding4Years: z.preprocess(
-      (val) => (val === "" || val === null || val === undefined || (typeof val === 'number' && isNaN(val))) ? undefined : val,
-      z.number().int("Must be a whole number").min(0, "Days cannot be negative").max(1464, "Days cannot exceed 1464 (4 years)").optional()
+      (val) =>
+        val === "" ||
+        val === null ||
+        val === undefined ||
+        (typeof val === "number" && isNaN(val))
+          ? undefined
+          : val,
+      z
+        .number()
+        .int("Must be a whole number")
+        .min(0, "Days cannot be negative")
+        .max(1464, "Days cannot exceed 1464 (4 years)")
+        .optional()
     ),
 
     section115HBenefit: z.enum(["Yes", "No"]).optional(),
@@ -268,7 +386,10 @@ export const personalInfoSchema = z
       .optional()
       .or(z.literal(""))
       .refine(
-        (val) => !val || val.length === 0 || (val.length <= 50 && /^[A-Z0-9\/\-]+$/.test(val)),
+        (val) =>
+          !val ||
+          val.length === 0 ||
+          (val.length <= 50 && /^[A-Z0-9\/\-]+$/.test(val)),
         { message: "Invalid SEBI Reg No. format (max 50 chars)" }
       ),
 
@@ -278,7 +399,10 @@ export const personalInfoSchema = z
       .optional()
       .or(z.literal(""))
       .refine(
-        (val) => !val || val.length === 0 || (val.length === 20 && /^[A-Z0-9]{20}$/.test(val)),
+        (val) =>
+          !val ||
+          val.length === 0 ||
+          (val.length === 20 && /^[A-Z0-9]{20}$/.test(val)),
         { message: "LEI must be 20 alphanumeric characters if provided" }
       ),
     leiValidDate: z
@@ -287,7 +411,7 @@ export const personalInfoSchema = z
       .or(z.literal(""))
       .superRefine((val, ctx) => {
         if (val && val.length > 0) {
-          const result = validateDate(val, true); // Allow future dates for validity period
+          const result = validateDate(val, true);
           if (!result.valid) {
             ctx.addIssue({
               code: z.ZodIssueCode.custom,
@@ -303,8 +427,14 @@ export const personalInfoSchema = z
       .optional()
       .or(z.literal(""))
       .refine(
-        (val) => !val || val.length === 0 || (val.length <= 200 && /^[A-Za-z\s.'-]+$/.test(val)),
-        { message: "Name can only contain letters, spaces, periods, apostrophes (max 200 chars)" }
+        (val) =>
+          !val ||
+          val.length === 0 ||
+          (val.length <= 200 && /^[A-Za-z\s.'-]+$/.test(val)),
+        {
+          message:
+            "Name can only contain letters, spaces, periods, apostrophes (max 200 chars)",
+        }
       ),
     representativeCapacity: z.string().max(200).optional().or(z.literal("")),
     representativeAddress: z.string().max(500).optional().or(z.literal("")),
@@ -312,28 +442,37 @@ export const personalInfoSchema = z
       .string()
       .optional()
       .or(z.literal(""))
-      .refine(
-        (val) => !val || val.length === 0 || panRegex.test(val),
-        { message: "Invalid PAN format (e.g., ABCDE1234F)" }
-      ),
+      .refine((val) => !val || val.length === 0 || panRegex.test(val), {
+        message: "Invalid PAN format (e.g., ABCDE1234F)",
+      }),
     representativeAadhaar: z
       .string()
       .optional()
       .or(z.literal(""))
-      .refine(
-        (val) => !val || val.length === 0 || aadhaarRegex.test(val),
-        { message: "Invalid Aadhaar number (must be 12 digits)" }
-      ),
+      .refine((val) => !val || val.length === 0 || aadhaarRegex.test(val), {
+        message: "Invalid Aadhaar number (must be 12 digits)",
+      }),
 
     wasDirector: z.enum(["Yes", "No"]).optional(),
     companyDetails: z
       .array(
         z.object({
-          companyName: z.string().min(1, "Company name is required").max(200, "Company name is too long"),
-          companyType: z.string().min(1, "Company type is required").max(50, "Company type is too long"),
-          pan: z.string().regex(panRegex, "Invalid PAN format (e.g., ABCDE1234F)"),
+          companyName: z
+            .string()
+            .min(1, "Company name is required")
+            .max(200, "Company name is too long"),
+          companyType: z
+            .string()
+            .min(1, "Company type is required")
+            .max(50, "Company type is too long"),
+          pan: z
+            .string()
+            .regex(panRegex, "Invalid PAN format (e.g., ABCDE1234F)"),
           sharesListed: z.boolean(),
-          din: z.string().min(1, "DIN is required").regex(/^[0-9]{8}$/, "Invalid DIN format (must be 8 digits)"),
+          din: z
+            .string()
+            .min(1, "DIN is required")
+            .regex(/^[0-9]{8}$/, "Invalid DIN format (must be 8 digits)"),
         })
       )
       .optional(),
@@ -342,16 +481,34 @@ export const personalInfoSchema = z
     equitySharesDetails: z
       .array(
         z.object({
-          companyName: z.string().min(1, "Company name is required").max(200, "Company name is too long"),
-          companyType: z.string().min(1, "Company type is required").max(50, "Company type is too long"),
-          pan: z.string().regex(panRegex, "Invalid PAN format (e.g., ABCDE1234F)"),
-          openingBalance: z.number().min(0, "Opening balance cannot be negative"),
-          sharesAcquired: z.number().min(0, "Shares acquired cannot be negative"),
+          companyName: z
+            .string()
+            .min(1, "Company name is required")
+            .max(200, "Company name is too long"),
+          companyType: z
+            .string()
+            .min(1, "Company type is required")
+            .max(50, "Company type is too long"),
+          pan: z
+            .string()
+            .regex(panRegex, "Invalid PAN format (e.g., ABCDE1234F)"),
+          openingBalance: z
+            .number()
+            .min(0, "Opening balance cannot be negative"),
+          sharesAcquired: z
+            .number()
+            .min(0, "Shares acquired cannot be negative"),
           purchasePrice: z.number().min(0, "Purchase price cannot be negative"),
-          sharesTransferred: z.number().min(0, "Shares transferred cannot be negative"),
+          sharesTransferred: z
+            .number()
+            .min(0, "Shares transferred cannot be negative"),
           salePrice: z.number().min(0, "Sale price cannot be negative"),
-          closingBalance: z.number().min(0, "Closing balance cannot be negative"),
-          costOfAcquisition: z.number().min(0, "Cost of acquisition cannot be negative"),
+          closingBalance: z
+            .number()
+            .min(0, "Closing balance cannot be negative"),
+          costOfAcquisition: z
+            .number()
+            .min(0, "Cost of acquisition cannot be negative"),
         })
       )
       .optional(),
@@ -777,9 +934,7 @@ export type CapitalGainsSectionAFormData = z.infer<
   typeof capitalGainsSectionASchema
 >;
 
-// Section B - Long-term Capital Gains (LTCG)
 export const capitalGainsSectionBSchema = z.object({
-  // B1: From sale of land or building or both
   ltcgLandBuildingSales: z
     .array(
       z.object({
@@ -794,45 +949,35 @@ export const capitalGainsSectionBSchema = z.object({
           .optional()
           .or(z.literal("")),
 
-        // a. Full value of consideration
         fullValueConsideration: z.number().min(0).default(0),
         stampDutyValue: z.number().min(0).default(0),
         fullValueAdopted: z.number().min(0).default(0),
 
-        // b. Deductions under section 48
         costAcquisitionWithoutIndexation: z.number().min(0).default(0),
         costAcquisitionWithIndexation: z.number().min(0).default(0),
         costImprovementWithoutIndexation: z.number().min(0).default(0),
         yearOfImprovement: z.string().max(10).optional().or(z.literal("")),
         costImprovementWithIndexation: z.number().min(0).default(0),
         expenditureOnTransfer: z.number().min(0).default(0),
-        
-        // Transfer timing specific fields
+
         totalBeforeJuly23: z.number().min(0).default(0),
         totalAfterJuly23: z.number().min(0).default(0),
         totalForComputingExcessTax: z.number().min(0).default(0),
 
-        // c. Balance
         balance: z.number().default(0),
         balanceForComputingExcessTax: z.number().default(0),
 
-        // ca. Balance for residents computational purposes
         balanceComputationalPurpose: z.number().default(0),
 
-        // d. Deduction under sections 54/54B/54D/54F/54GB
         deductionSection54: z.number().min(0).default(0),
 
-        // e. Long-term capital gains
         longTermCapitalGain: z.number().default(0),
         longTermCapitalGainComputational: z.number().default(0),
 
-        // ci. Tax as per section 112(1)(a)(iiB) at 12.5%
         taxAt12_5Percent: z.number().min(0).default(0),
 
-        // cii. Excess amount required to be ignored
         excessAmountIgnored: z.number().min(0).default(0),
 
-        // f. Transfer of immovable property details
         transferDetails: z
           .object({
             buyerName: z.string().max(200).optional().or(z.literal("")),
@@ -851,7 +996,6 @@ export const capitalGainsSectionBSchema = z.object({
           })
           .optional(),
 
-        // g. Total LTCG on immovable property
         totalLTCGImmovableProperty: z.number().default(0),
         totalLTCGBeforeJuly23: z.number().default(0),
         totalLTCGAfterJuly23: z.number().default(0),
@@ -861,7 +1005,6 @@ export const capitalGainsSectionBSchema = z.object({
     .optional()
     .default([]),
 
-  // B2: For residents, from sale of unlisted bonds/debentures
   unlistedBondsSales: z
     .array(
       z.object({
@@ -881,7 +1024,6 @@ export const capitalGainsSectionBSchema = z.object({
     .optional()
     .default([]),
 
-  // B3i: From sale of listed securities
   listedSecuritiesSales: z
     .array(
       z.object({
@@ -907,7 +1049,6 @@ export const capitalGainsSectionBSchema = z.object({
     .optional()
     .default([]),
 
-  // B3ii: From sale of CDIR or Indian company under section 115AC(1)
   cdirSales: z
     .object({
       transferWasBefore23July: z.boolean().default(false),
@@ -924,11 +1065,9 @@ export const capitalGainsSectionBSchema = z.object({
     })
     .optional(),
 
-  // B4: From sale of equity shares
   equitySharesSales: z
     .array(
       z.object({
-        // Case assets include shares of company other than quoted shares
         caseType: z.enum(["quoted", "unquoted"]).default("quoted"),
 
         fullValueConsideration: z.number().min(0).default(0),
@@ -954,10 +1093,8 @@ export const capitalGainsSectionBSchema = z.object({
     .optional()
     .default([]),
 
-  // B5: For NON-RESIDENTS: from sale of shares or debentures of Indian company
   nonResidentSharesSales: z
     .object({
-      // LTCG computed without indexation benefit
       withoutIndexation: z
         .object({
           before23July: z.number().default(0),
@@ -968,7 +1105,6 @@ export const capitalGainsSectionBSchema = z.object({
         })
         .optional(),
 
-      // Deduction under sections 54F
       deductionSection54F: z
         .object({
           before23July: z.number().min(0).default(0),
@@ -979,7 +1115,6 @@ export const capitalGainsSectionBSchema = z.object({
         })
         .optional(),
 
-      // LTCG on sale of debentures
       ltcgDebentures: z
         .object({
           before23July: z.number().default(0),
@@ -990,7 +1125,6 @@ export const capitalGainsSectionBSchema = z.object({
         })
         .optional(),
 
-      // For NON-RESIDENTS: from sale of unlisted shares or FII
       unlistedOrFII: z
         .object({
           transferWasBefore23July: z.boolean().default(false),
@@ -1000,7 +1134,6 @@ export const capitalGainsSectionBSchema = z.object({
     })
     .optional(),
 
-  // B6: For FII/ FPI (NON-RESIDENTS): From sale of shares in company or unit of equity oriented fund
   fpiNonResidentSales: z
     .object({
       transferWasBefore23July: z.boolean().default(false),
@@ -1019,7 +1152,6 @@ export const capitalGainsSectionBSchema = z.object({
     })
     .optional(),
 
-  // B7: For FII/ FPI (NON-RESIDENTS): from sale of shares in company or unit of equity oriented fund
   fpiFiiSales: z
     .object({
       ltcgColumn14Before23July: z.number().default(0),
@@ -1034,7 +1166,6 @@ export const capitalGainsSectionBSchema = z.object({
     })
     .optional(),
 
-  // B8: From sale of foreign exchange asset by NON-RESIDENT INDIAN
   foreignExchangeAssetSales: z
     .object({
       ltcgBefore23July: z.number().default(0),
@@ -1049,7 +1180,6 @@ export const capitalGainsSectionBSchema = z.object({
     })
     .optional(),
 
-  // B9: From sale of assets where B1 to B8 above are not applicable
   otherAssetsSales: z
     .array(
       z.object({
@@ -1079,10 +1209,8 @@ export const capitalGainsSectionBSchema = z.object({
     .optional()
     .default([]),
 
-  // B10: Amount deemed to be long-term capital gains
   amountDeemedLTCG: z
     .object({
-      // Whether any unutilized capital gain arose from previous year shown below
       capitalGainAccountDetails: z
         .array(
           z.object({
@@ -1107,7 +1235,6 @@ export const capitalGainsSectionBSchema = z.object({
     })
     .optional(),
 
-  // B11: Pass Through Income/ Loss in the nature of Long-Term Capital Gain
   ltcgPassThroughIncome: z
     .object({
       at10Percent: z.number().default(0),
@@ -1117,7 +1244,6 @@ export const capitalGainsSectionBSchema = z.object({
     })
     .optional(),
 
-  // B12: Amount of LTCG included in B1-B11 but claimed as not chargeable or chargeable at special rates
   ltcgNotChargeableOrSpecialRates: z
     .array(
       z.object({
@@ -1142,7 +1268,6 @@ export const capitalGainsSectionBSchema = z.object({
   totalLTCGNotChargeable: z.number().default(0),
   totalLTCGSpecialRates: z.number().default(0),
 
-  // B(A): Capital Loss on buy back of shares
   capitalLossBuyBack: z
     .object({
       longTermLoss: z.number().default(0),
@@ -1151,30 +1276,19 @@ export const capitalGainsSectionBSchema = z.object({
     })
     .optional(),
 
-  // B13: Total long-term capital gain chargeable under I.T. Act
   totalLTCGChargeable: z.number().default(0),
 
-  // C1: Sum of Capital Incomes
   totalCapitalIncome: z.number().default(0),
 
-  // C2: Income from transfer of Virtual Digital Assets
   virtualDigitalAssetIncome: z.number().default(0),
 
-  // C3: Income chargeable under the head "CAPITAL GAINS"
   totalCapitalGainsIncome: z.number().default(0),
 
-  // C4: Deduction claimed against Capital Gains
   deductionClaimedDetails: z
     .array(
       z.object({
         deductionType: z
-          .enum([
-            "54/54B/54D/54F/54GB",
-            "54/54B/54EC",
-            "54EC",
-            "54E",
-            "115F",
-          ])
+          .enum(["54/54B/54D/54F/54GB", "54/54B/54EC", "54EC", "54E", "115F"])
           .optional(),
         dateOfTransferOriginalAsset: z
           .string()
@@ -1203,17 +1317,12 @@ export const capitalGainsSectionBSchema = z.object({
 
   totalDeductionClaimed: z.number().default(0),
 
-  // E: Set-off of current year capital losses with current year capital gains
   setOffDetails: z
     .object({
       capitalLossToBeSetOff: z
         .array(
           z.object({
-            typeOfCapitalGain: z
-              .string()
-              .max(100)
-              .optional()
-              .or(z.literal("")),
+            typeOfCapitalGain: z.string().max(100).optional().or(z.literal("")),
             capitalGainThisColumn: z.number().default(0),
             shortTermCapitalLoss: z.number().default(0),
             longTermCapitalLoss: z.number().default(0),
@@ -1273,15 +1382,10 @@ export const capitalGainsSectionBSchema = z.object({
     })
     .optional(),
 
-  // F: Information about accrual/receipt of capital gain
   accrualReceiptInformation: z
     .array(
       z.object({
-        typeOfCapitalGain: z
-          .string()
-          .max(100)
-          .optional()
-          .or(z.literal("")),
+        typeOfCapitalGain: z.string().max(100).optional().or(z.literal("")),
         dateRange: z.string().max(50).optional().or(z.literal("")),
         upTo15_6: z.number().default(0),
         from16_6_to_15_9: z.number().default(0),
@@ -1298,12 +1402,10 @@ export type CapitalGainsSectionBFormData = z.infer<
   typeof capitalGainsSectionBSchema
 >;
 
-// Schedule 112A - Equity Shares with STT
 export const schedule112ASchema = z.object({
   equityShares: z
     .array(
       z.object({
-        // Basic Information
         shareOrUnit: z.enum(["Share", "Unit"]).default("Share"),
         shareTransferred: z
           .string()
@@ -1332,57 +1434,204 @@ export const schedule112ASchema = z.object({
           .optional()
           .or(z.literal("")),
 
-        // Acquisition Details
-        acquiredBefore: z.enum(["Before 31.01.2018", "On or after 31.01.2018", "After 23rd July 2024"]).optional(),
-        
-        // Full Value of Consideration
+        acquiredBefore: z
+          .enum([
+            "Before 31.01.2018",
+            "On or after 31.01.2018",
+            "After 23rd July 2024",
+          ])
+          .optional(),
+
         fullValueOfConsideration: z.number().min(0).default(0),
-        
-        // Cost of Acquisition with indexation
+
         costOfAcquisitionWithIndexation: z.number().min(0).default(0),
-        
-        // Cost of Acquisition
+
         costOfAcquisition: z.number().min(0).default(0),
-        
-        // Fair Market Value on Long-term capital gain per share
+
         fairMarketValuePerShare: z.number().min(0).default(0),
-        
-        // Total Market Value
+
         totalMarketValue: z.number().min(0).default(0),
-        
-        // Capital gains before exemption
+
         capitalGainsBeforeExemption: z.number().default(0),
-        
-        // Capital gains under section 112A before Jan 2018
+
         capitalGainsUnder112ABeforeJan2018: z.number().default(0),
-        
-        // Long-term capital gains under 112A before 220* (5\5C/\Ac after 1Apr 14)+11
+
         ltcgUnder112ABeforeLowRateOf6And11: z.number().default(0),
-        
-        // Exemption whole or any portion transferred
+
         exemptionWholeOrAnyPortionTransferred: z.number().min(0).default(0),
-        
-        // Total deduction
+
         totalDeduction: z.number().min(0).default(0),
-        
-        // Balance
+
         balance: z.number().default(0),
       })
     )
     .default([]),
 
-  // Summary totals
-  totals: z.object({
-    totalCol14BeforeJuly2024: z.number().default(0),
-    totalCol14AfterJuly2024: z.number().default(0),
-    totalCol14Overall: z.number().default(0),
-    totalLTCGUs112A: z.number().default(0),
-  }).default({
-    totalCol14BeforeJuly2024: 0,
-    totalCol14AfterJuly2024: 0,
-    totalCol14Overall: 0,
-    totalLTCGUs112A: 0,
-  }),
+  totals: z
+    .object({
+      totalCol14BeforeJuly2024: z.number().default(0),
+      totalCol14AfterJuly2024: z.number().default(0),
+      totalCol14Overall: z.number().default(0),
+      totalLTCGUs112A: z.number().default(0),
+    })
+    .default({
+      totalCol14BeforeJuly2024: 0,
+      totalCol14AfterJuly2024: 0,
+      totalCol14Overall: 0,
+      totalLTCGUs112A: 0,
+    }),
 });
 
 export type Schedule112AFormData = z.infer<typeof schedule112ASchema>;
+
+export const schedule115ADRowSchema = z.object({
+  slNo: z.number().min(1, "Serial number is required"),
+
+  shareUnitAcquired: z
+    .string()
+    .min(1, "Acquired date is required")
+    .refine((val) => {
+      const result = validateDate(val, false);
+      return result.valid;
+    }, "Invalid date format (DD/MM/YYYY)")
+    .refine((val) => {
+      const parts = val.split("/");
+      const day = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10);
+      const year = parseInt(parts[2], 10);
+      const inputDate = new Date(year, month - 1, day);
+      const cutoffDate = new Date(2018, 0, 31);
+      return inputDate <= cutoffDate;
+    }, "Date must be on or before 31st January 2018"),
+
+  shareUnitTransferred: z
+    .string()
+    .min(1, "Transfer date is required")
+    .refine((val) => {
+      const result = validateDate(val, false);
+      return result.valid;
+    }, "Invalid date format (DD/MM/YYYY)"),
+
+  isinCode: z
+    .string()
+    .min(1, "ISIN code is required")
+    .max(12, "ISIN code must be 12 characters")
+    .regex(
+      /^[A-Z]{2}[A-Z0-9]{9}[0-9]$/,
+      "Invalid ISIN code format (e.g., INE002A01018)"
+    )
+    .toUpperCase(),
+
+  nameOfShare: z
+    .string()
+    .min(1, "Share name is required")
+    .max(200, "Share name too long"),
+
+  numberOfShares: z
+    .number()
+    .min(1, "Number of shares must be at least 1")
+    .int("Number of shares must be a whole number"),
+
+  salePrice: z.number().min(0, "Sale price cannot be negative"),
+
+  fullValueConsideration: z
+    .number()
+    .min(0, "Full value of consideration cannot be negative"),
+
+  costOfAcquisitionWithIndexation: z
+    .number()
+    .min(0, "Cost of acquisition cannot be negative"),
+
+  costOfAcquisitionWithoutIndexation: z
+    .number()
+    .min(0, "Cost of acquisition cannot be negative"),
+
+  ifLowerOf6And11: z.number().min(0, "Value cannot be negative"),
+
+  fairMarketValue: z.number().min(0, "Fair market value cannot be negative"),
+
+  totalFairMarketValue: z
+    .number()
+    .min(0, "Total fair market value cannot be negative"),
+
+  expenditureWhollyExclusively: z
+    .number()
+    .min(0, "Expenditure cannot be negative"),
+
+  totalDeduction: z.number().min(0, "Total deduction cannot be negative"),
+
+  balanceCapitalGains: z.number(),
+
+  ltcgScheduleOf115AD: z.number(),
+});
+
+export const schedule115ADSchema = z.object({
+  rows: z
+    .array(schedule115ADRowSchema)
+    .min(1, "At least one transaction is required")
+    .max(100, "Maximum 100 transactions allowed")
+    .default([]),
+
+  totalCol14BeforeTransfer: z
+    .number()
+    .min(0, "Total cannot be negative")
+    .default(0),
+
+  totalCol14OnOrAfterTransfer: z
+    .number()
+    .min(0, "Total cannot be negative")
+    .default(0),
+
+  totalLTCG115AD: z.number().default(0),
+});
+
+export type Schedule115ADRowData = z.infer<typeof schedule115ADRowSchema>;
+export type Schedule115ADFormData = z.infer<typeof schedule115ADSchema>;
+
+export const scheduleVDARowSchema = z.object({
+  slNo: z.number().min(1, "Serial number is required"),
+
+  dateOfAcquisition: z
+    .string()
+    .min(1, "Acquisition date is required")
+    .refine((val) => {
+      const result = validateDate(val, false);
+      return result.valid;
+    }, "Invalid date format (DD/MM/YYYY)"),
+
+  dateOfTransfer: z
+    .string()
+    .min(1, "Transfer date is required")
+    .refine((val) => {
+      const result = validateDate(val, false);
+      return result.valid;
+    }, "Invalid date format (DD/MM/YYYY)"),
+
+  headUnderWhichIncomeToBeTaxed: z
+    .string()
+    .min(1, "Head under which income to be taxed is required")
+    .max(100, "Head name too long"),
+
+  costOfAcquisition: z
+    .number()
+    .min(0, "Cost of acquisition cannot be negative"),
+
+  considerationReceived: z
+    .number()
+    .min(0, "Consideration received cannot be negative"),
+
+  incomeFromTransferOfVDA: z.number(),
+});
+
+export const scheduleVDASchema = z.object({
+  rows: z
+    .array(scheduleVDARowSchema)
+    .min(1, "At least one transaction is required")
+    .max(100, "Maximum 100 transactions allowed")
+    .default([]),
+
+  totalIncomeFromVDA: z.number().default(0),
+});
+
+export type ScheduleVDARowData = z.infer<typeof scheduleVDARowSchema>;
+export type ScheduleVDAFormData = z.infer<typeof scheduleVDASchema>;

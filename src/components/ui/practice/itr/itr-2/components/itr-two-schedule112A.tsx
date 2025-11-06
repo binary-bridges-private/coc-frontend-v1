@@ -163,36 +163,9 @@ const ItrTwoSchedule112A: React.FC<ItrTwoSchedule112AProps> = ({
 
   return (
     <section className="space-y-6">
-      {/* Header */}
-      <div className="rounded-xl border border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50 p-6 shadow-sm">
-        <div className="flex items-start justify-between">
-          <div>
-            <div className="mb-2 flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-600 text-lg font-bold text-white">
-                112A
-              </span>
-              <h2 className="text-2xl font-bold text-gray-900">
-                Schedule 112A - Equity Shares with STT
-              </h2>
-            </div>
-            <p className="text-sm text-gray-600">
-              From sale of equity share in a company or unit of equity-oriented
-              fund or unit of a business trust on which STT is paid under
-              section 112A
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={onCancel}
-            className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
-          >
-            Back to Capital Gains
-          </button>
-        </div>
-      </div>
-
+      
       {/* Important Notes Section */}
-      <div className="rounded-xl border border-blue-200 bg-blue-50 shadow-sm">
+      <div className="rounded-lg border border-gray-300 bg-gray-50 shadow-sm">
         <button
           type="button"
           onClick={() => setShowNotes(!showNotes)}
@@ -200,12 +173,12 @@ const ItrTwoSchedule112A: React.FC<ItrTwoSchedule112AProps> = ({
         >
           <div className="flex items-center gap-3">
             <span className="text-2xl">📋</span>
-            <span className="font-semibold text-blue-900">
+            <span className="font-semibold text-gray-900">
               Important Notes & Instructions
             </span>
           </div>
           <svg
-            className={`h-5 w-5 text-blue-600 transition-transform ${
+            className={`h-5 w-5 text-gray-600 transition-transform ${
               showNotes ? "rotate-180" : ""
             }`}
             fill="none"
@@ -222,13 +195,13 @@ const ItrTwoSchedule112A: React.FC<ItrTwoSchedule112AProps> = ({
         </button>
 
         {showNotes && (
-          <div className="border-t border-blue-200 bg-white p-4">
+          <div className="border-t border-gray-300 bg-white p-4">
             <div className="space-y-3 text-sm text-gray-700">
-              <div className="rounded-lg bg-yellow-50 p-3">
-                <p className="font-semibold text-yellow-900">
+              <div className="rounded-lg border border-gray-300 bg-white p-3">
+                <p className="font-semibold text-gray-900">
                   🔑 Key Points for Section 112A:
                 </p>
-                <ul className="ml-4 mt-2 list-disc space-y-1 text-yellow-800">
+                <ul className="ml-4 mt-2 list-disc space-y-1 text-gray-700">
                   <li>
                     Applicable to equity shares where STT has been paid on both
                     acquisition and transfer
@@ -248,11 +221,11 @@ const ItrTwoSchedule112A: React.FC<ItrTwoSchedule112AProps> = ({
                 </ul>
               </div>
 
-              <div className="rounded-lg bg-blue-50 p-3">
-                <p className="font-semibold text-blue-900">
+              <div className="rounded-lg border border-gray-300 bg-white p-3">
+                <p className="font-semibold text-gray-900">
                   📊 Fair Market Value (FMV) Guidelines:
                 </p>
-                <ul className="ml-4 mt-2 list-disc space-y-1 text-blue-800">
+                <ul className="ml-4 mt-2 list-disc space-y-1 text-gray-700">
                   <li>
                     FMV as on January 31, 2018 = Higher of average price on
                     January 31, 2018 OR highest price on January 31, 2018
@@ -267,11 +240,11 @@ const ItrTwoSchedule112A: React.FC<ItrTwoSchedule112AProps> = ({
                 </ul>
               </div>
 
-              <div className="rounded-lg bg-green-50 p-3">
-                <p className="font-semibold text-green-900">
+              <div className="rounded-lg border border-gray-300 bg-white p-3">
+                <p className="font-semibold text-gray-900">
                   💰 Exemption under Section 54F:
                 </p>
-                <ul className="ml-4 mt-2 list-disc space-y-1 text-green-800">
+                <ul className="ml-4 mt-2 list-disc space-y-1 text-gray-700">
                   <li>
                     Available if capital gains are invested in residential
                     property
@@ -302,7 +275,7 @@ const ItrTwoSchedule112A: React.FC<ItrTwoSchedule112AProps> = ({
               <button
                 type="button"
                 onClick={addEquityShare}
-                className="flex items-center gap-2 rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-700"
+                className="flex items-center gap-2 rounded-lg border border-gray-900 bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800"
               >
                 <svg
                   className="h-5 w-5"
@@ -348,7 +321,7 @@ const ItrTwoSchedule112A: React.FC<ItrTwoSchedule112AProps> = ({
               <button
                 type="button"
                 onClick={addEquityShare}
-                className="rounded-lg bg-purple-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-purple-700"
+                className="rounded-lg border border-gray-900 bg-gray-900 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800"
               >
                 Add First Transaction
               </button>
@@ -365,14 +338,14 @@ const ItrTwoSchedule112A: React.FC<ItrTwoSchedule112AProps> = ({
                       <button
                         type="button"
                         onClick={() => calculateCapitalGains(index)}
-                        className="rounded-lg bg-green-600 px-4 py-1.5 text-sm font-medium text-white transition-colors hover:bg-green-700"
+                        className="rounded-lg border border-gray-900 bg-gray-900 px-4 py-1.5 text-sm font-medium text-white transition-colors hover:bg-gray-800"
                       >
                         Calculate
                       </button>
                       <button
                         type="button"
                         onClick={() => remove(index)}
-                        className="rounded-lg bg-red-600 px-4 py-1.5 text-sm font-medium text-white transition-colors hover:bg-red-700"
+                        className="rounded-lg border border-gray-300 bg-white px-4 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
                       >
                         Remove
                       </button>
@@ -387,7 +360,7 @@ const ItrTwoSchedule112A: React.FC<ItrTwoSchedule112AProps> = ({
                       </label>
                       <select
                         {...register(`equityShares.${index}.shareOrUnit`)}
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
                       >
                         <option value="Share">Share</option>
                         <option value="Unit">Unit</option>
@@ -403,7 +376,7 @@ const ItrTwoSchedule112A: React.FC<ItrTwoSchedule112AProps> = ({
                         type="text"
                         {...register(`equityShares.${index}.isinCode`)}
                         maxLength={12}
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
                         placeholder="INE123456789"
                       />
                     </div>
@@ -416,7 +389,7 @@ const ItrTwoSchedule112A: React.FC<ItrTwoSchedule112AProps> = ({
                       <input
                         type="text"
                         {...register(`equityShares.${index}.nameOfCompany`)}
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
                         placeholder="Company Name"
                       />
                     </div>
@@ -431,7 +404,7 @@ const ItrTwoSchedule112A: React.FC<ItrTwoSchedule112AProps> = ({
                         {...register(`equityShares.${index}.numberOfSharesAcquired`, {
                           valueAsNumber: true,
                         })}
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
                         placeholder="100"
                       />
                     </div>
@@ -444,7 +417,7 @@ const ItrTwoSchedule112A: React.FC<ItrTwoSchedule112AProps> = ({
                       <input
                         type="text"
                         {...register(`equityShares.${index}.dateOfAcquisition`)}
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
                         placeholder="DD/MM/YYYY"
                       />
                     </div>
@@ -457,7 +430,7 @@ const ItrTwoSchedule112A: React.FC<ItrTwoSchedule112AProps> = ({
                       <input
                         type="text"
                         {...register(`equityShares.${index}.dateOfSale`)}
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
                         placeholder="DD/MM/YYYY"
                       />
                     </div>
@@ -469,7 +442,7 @@ const ItrTwoSchedule112A: React.FC<ItrTwoSchedule112AProps> = ({
                       </label>
                       <select
                         {...register(`equityShares.${index}.acquiredBefore`)}
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
                       >
                         <option value="">Select Period</option>
                         <option value="Before 31.01.2018">
@@ -495,7 +468,7 @@ const ItrTwoSchedule112A: React.FC<ItrTwoSchedule112AProps> = ({
                           `equityShares.${index}.fullValueOfConsideration`,
                           { valueAsNumber: true }
                         )}
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
                         placeholder="0"
                       />
                     </div>
@@ -510,7 +483,7 @@ const ItrTwoSchedule112A: React.FC<ItrTwoSchedule112AProps> = ({
                         {...register(`equityShares.${index}.costOfAcquisition`, {
                           valueAsNumber: true,
                         })}
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
                         placeholder="0"
                       />
                     </div>
@@ -526,7 +499,7 @@ const ItrTwoSchedule112A: React.FC<ItrTwoSchedule112AProps> = ({
                           `equityShares.${index}.fairMarketValuePerShare`,
                           { valueAsNumber: true }
                         )}
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
                         placeholder="0"
                       />
                     </div>
@@ -573,7 +546,7 @@ const ItrTwoSchedule112A: React.FC<ItrTwoSchedule112AProps> = ({
                           `equityShares.${index}.exemptionWholeOrAnyPortionTransferred`,
                           { valueAsNumber: true }
                         )}
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
                         placeholder="0"
                       />
                     </div>
@@ -603,7 +576,7 @@ const ItrTwoSchedule112A: React.FC<ItrTwoSchedule112AProps> = ({
                         {...register(`equityShares.${index}.balance`, {
                           valueAsNumber: true,
                         })}
-                        className="w-full rounded-lg border border-gray-300 bg-green-50 px-3 py-2 font-semibold"
+                        className="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 font-semibold text-gray-900"
                         readOnly
                       />
                     </div>
@@ -616,48 +589,48 @@ const ItrTwoSchedule112A: React.FC<ItrTwoSchedule112AProps> = ({
 
         {/* Summary Totals */}
         {fields.length > 0 && (
-          <div className="rounded-xl border border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50 p-6 shadow-sm">
+          <div className="rounded-lg border border-gray-200 bg-gray-50 p-6 shadow-sm">
             <h3 className="mb-4 text-lg font-semibold text-gray-900">
               Summary of LTCG u/s 112A
             </h3>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <div className="rounded-lg bg-white p-4 shadow-sm">
+              <div className="rounded-lg border border-gray-300 bg-white p-4 shadow-sm">
                 <p className="mb-1 text-sm text-gray-600">
                   Total (Before 23rd July 2024)
                 </p>
-                <p className="text-2xl font-bold text-blue-700">
+                <p className="text-2xl font-bold text-gray-900">
                   ₹
                   {watch("totals.totalCol14BeforeJuly2024")?.toLocaleString(
                     "en-IN"
                   ) || "0"}
                 </p>
               </div>
-              <div className="rounded-lg bg-white p-4 shadow-sm">
+              <div className="rounded-lg border border-gray-300 bg-white p-4 shadow-sm">
                 <p className="mb-1 text-sm text-gray-600">
                   Total (On or after 23rd July 2024)
                 </p>
-                <p className="text-2xl font-bold text-purple-700">
+                <p className="text-2xl font-bold text-gray-900">
                   ₹
                   {watch("totals.totalCol14AfterJuly2024")?.toLocaleString(
                     "en-IN"
                   ) || "0"}
                 </p>
               </div>
-              <div className="rounded-lg bg-white p-4 shadow-sm">
+              <div className="rounded-lg border border-gray-300 bg-white p-4 shadow-sm">
                 <p className="mb-1 text-sm text-gray-600">
                   Total (Col 14) Overall
                 </p>
-                <p className="text-2xl font-bold text-orange-700">
+                <p className="text-2xl font-bold text-gray-900">
                   ₹
                   {watch("totals.totalCol14Overall")?.toLocaleString("en-IN") ||
                     "0"}
                 </p>
               </div>
-              <div className="rounded-lg bg-white p-4 shadow-sm">
+              <div className="rounded-lg border border-gray-300 bg-white p-4 shadow-sm">
                 <p className="mb-1 text-sm text-gray-600">
                   Total LTCG u/s 112A
                 </p>
-                <p className="text-2xl font-bold text-green-700">
+                <p className="text-2xl font-bold text-gray-900">
                   ₹
                   {watch("totals.totalLTCGUs112A")?.toLocaleString("en-IN") ||
                     "0"}
@@ -668,7 +641,7 @@ const ItrTwoSchedule112A: React.FC<ItrTwoSchedule112AProps> = ({
         )}
 
         {/* Action Buttons */}
-        <div className="flex justify-end gap-3 rounded-xl border-t border-gray-200 bg-gray-50 p-4">
+        <div className="flex justify-end gap-3 rounded-lg border-t border-gray-200 bg-gray-50 p-4">
           <button
             type="button"
             onClick={onCancel}
@@ -679,7 +652,7 @@ const ItrTwoSchedule112A: React.FC<ItrTwoSchedule112AProps> = ({
           <button
             type="submit"
             disabled={isSubmitting}
-            className="rounded-lg bg-purple-600 px-8 py-2.5 text-sm font-semibold text-white shadow-md transition-colors hover:bg-purple-700 disabled:cursor-not-allowed disabled:bg-gray-400"
+            className="rounded-lg border border-gray-900 bg-gray-900 px-8 py-2.5 text-sm font-semibold text-white shadow-md transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
           >
             {isSubmitting ? "Saving..." : "Save & Continue"}
           </button>

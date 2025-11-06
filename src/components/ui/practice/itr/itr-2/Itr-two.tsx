@@ -6,6 +6,14 @@ import ItrTwoSalary from "./components/itr-two-salary.tsx";
 import ItrTwoHousing from "./components/Itr-two-housing.tsx";
 import ItrTwoCapitalGain from "./components/Itr-two-capital-gain.tsx";
 import ItrTwoSchedule112A from "./components/itr-two-schedule112A.tsx";
+import ItrTwo115AD from "./components/Itr-two-115AD.tsx";
+import ItrTwoVda from "./components/Itr-two-Vda.tsx";
+import ItrTwoOs from "./components/itr-two-os.tsx";
+import ItrTwoCyla from "./components/itr-two-cyla.tsx";
+import ItrTwoBfla from "./components/Itr-two-bfla.tsx";
+import ItrTwoCylaBfla from "./components/itr-two-cyla-bfla.tsx";
+import ItrTwoCfl from "./components/itr-two-cfl.tsx";
+import ItrTwo80G from "./components/itr-two-80g.tsx";
 import {
   ITR_TWO_SECTIONS,
   calculateCompletionPercentage,
@@ -18,6 +26,8 @@ import {
   CapitalGainsSectionAFormData,
   CapitalGainsSectionBFormData,
   Schedule112AFormData,
+  Schedule115ADFormData,
+  ScheduleVDAFormData,
 } from "./itr-two.validation.ts";
 
 const ItrTwo: React.FC = () => {
@@ -32,6 +42,13 @@ const ItrTwo: React.FC = () => {
       sectionB?: CapitalGainsSectionBFormData;
     };
     schedule112A?: Schedule112AFormData;
+    schedule115AD?: Schedule115ADFormData;
+    scheduleVDA?: ScheduleVDAFormData;
+    scheduleOS?: any;
+    scheduleCYLA?: any;
+    scheduleBFLA?: any;
+    scheduleCFL?: any;
+    schedule80G?: any;
   }>({});
 
   const completionPercentage = useMemo(
@@ -93,6 +110,34 @@ const ItrTwo: React.FC = () => {
     }
     if (sectionId === "schedule-112a" && data) {
       setFormData((prev) => ({ ...prev, schedule112A: data }));
+    }
+    if (sectionId === "schedule-115ad" && data) {
+      setFormData((prev) => ({ ...prev, schedule115AD: data }));
+    }
+    if (sectionId === "vda" && data) {
+      setFormData((prev) => ({ ...prev, scheduleVDA: data }));
+    }
+    if (sectionId === "os" && data) {
+      setFormData((prev) => ({ ...prev, scheduleOS: data }));
+    }
+    if (sectionId === "cyla" && data) {
+      setFormData((prev) => ({ ...prev, scheduleCYLA: data }));
+    }
+    if (sectionId === "bfla" && data) {
+      setFormData((prev) => ({ ...prev, scheduleBFLA: data }));
+    }
+    if (sectionId === "cyla-bfla" && data) {
+      setFormData((prev) => ({ 
+        ...prev, 
+        scheduleCYLA: data.cyla,
+        scheduleBFLA: data.bfla 
+      }));
+    }
+    if (sectionId === "cfl" && data) {
+      setFormData((prev) => ({ ...prev, scheduleCFL: data }));
+    }
+    if (sectionId === "80g" && data) {
+      setFormData((prev) => ({ ...prev, schedule80G: data }));
     }
 
     setSections((prev) => {
@@ -204,11 +249,84 @@ const ItrTwo: React.FC = () => {
               />
             )}
 
+            {activeSectionId === "schedule-115ad" && (
+              <ItrTwo115AD
+                onSubmit={(data) => handleSectionComplete("schedule-115ad", data)}
+                onBack={handleBackToSummary}
+                initialData={formData.schedule115AD}
+              />
+            )}
+
+            {activeSectionId === "vda" && (
+              <ItrTwoVda
+                onSubmit={(data) => handleSectionComplete("vda", data)}
+                onBack={handleBackToSummary}
+                initialData={formData.scheduleVDA}
+              />
+            )}
+
+            {activeSectionId === "os" && (
+              <ItrTwoOs
+                onSubmit={(data) => handleSectionComplete("os", data)}
+                onBack={handleBackToSummary}
+                initialData={formData.scheduleOS}
+              />
+            )}
+
+            {activeSectionId === "cyla" && (
+              <ItrTwoCyla
+                onSubmit={(data) => handleSectionComplete("cyla", data)}
+                onBack={handleBackToSummary}
+                initialData={formData.scheduleCYLA}
+              />
+            )}
+
+            {activeSectionId === "bfla" && (
+              <ItrTwoBfla
+                onSubmit={(data) => handleSectionComplete("bfla", data)}
+                onBack={handleBackToSummary}
+                initialData={formData.scheduleBFLA}
+              />
+            )}
+
+            {activeSectionId === "cyla-bfla" && (
+              <ItrTwoCylaBfla
+                onSubmit={(data) => handleSectionComplete("cyla-bfla", data)}
+                onBack={handleBackToSummary}
+                initialData={{
+                  cyla: formData.scheduleCYLA,
+                  bfla: formData.scheduleBFLA
+                }}
+              />
+            )}
+
+            {activeSectionId === "cfl" && (
+              <ItrTwoCfl
+                onSubmit={(data) => handleSectionComplete("cfl", data)}
+                onBack={handleBackToSummary}
+                initialData={formData.scheduleCFL}
+              />
+            )}
+
+            {activeSectionId === "80c" && (
+              <ItrTwo80G
+                onSave={(data) => handleSectionComplete("80c", data)}
+                initialData={formData.schedule80G}
+              />
+            )}
+
             {activeSectionId !== "part-a-general" &&
               activeSectionId !== "schedule-s" &&
               activeSectionId !== "house-property" &&
               activeSectionId !== "cg" &&
-              activeSectionId !== "schedule-112a" && (
+              activeSectionId !== "schedule-112a" &&
+              activeSectionId !== "schedule-115ad" &&
+              activeSectionId !== "vda" &&
+              activeSectionId !== "os" &&
+              activeSectionId !== "cyla" &&
+              activeSectionId !== "bfla" &&
+              activeSectionId !== "cyla-bfla" &&
+              activeSectionId !== "cfl" && (
                 <div className="rounded-xl border border-gray-200 bg-white p-8 text-center shadow-sm">
                   <div className="mx-auto max-w-md space-y-4">
                     <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
