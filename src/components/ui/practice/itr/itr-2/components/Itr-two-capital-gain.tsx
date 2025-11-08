@@ -247,56 +247,17 @@ const ItrTwoCapitalGain: React.FC<ItrTwoCapitalGainProps> = ({
       sectionB: sectionBData,
     });
   };
-
-  const onError = (errors: any) => {
-    console.error("Capital Gains validation errors:", errors);
-  };
-
+  
   return (
-    <div className="mx-auto max-w-7xl space-y-6">
-      {personalInfo && (
-        <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-          <h4 className="mb-2 flex items-center gap-2 text-sm font-semibold text-blue-900">
-            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fillRule="evenodd"
-                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Personal Information from Part A
-          </h4>
-          <div className="grid grid-cols-2 gap-3 text-xs md:grid-cols-4">
-            <div>
-              <span className="font-medium text-blue-700">Name:</span>
-              <p className="text-blue-900">
-                {personalInfo.firstName} {personalInfo.lastName}
-              </p>
-            </div>
-            <div>
-              <span className="font-medium text-blue-700">PAN:</span>
-              <p className="text-blue-900">{personalInfo.pan}</p>
-            </div>
-            <div>
-              <span className="font-medium text-blue-700">State:</span>
-              <p className="text-blue-900">{personalInfo.state}</p>
-            </div>
-            <div>
-              <span className="font-medium text-blue-700">Status:</span>
-              <p className="text-blue-900">{personalInfo.filingStatus}</p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="rounded-lg border-2 border-amber-300 bg-amber-50 p-4">
+    <div className="space-y-6">
+      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
         <button
           type="button"
           onClick={() => setShowImportantNotes(!showImportantNotes)}
           className="flex w-full items-center justify-between text-left"
         >
-          <h3 className="flex items-center gap-2 text-base font-semibold text-amber-900">
-            <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 20 20">
+          <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-900">
+            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
                 d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
@@ -306,7 +267,7 @@ const ItrTwoCapitalGain: React.FC<ItrTwoCapitalGainProps> = ({
             Important Notes & Instructions
           </h3>
           <svg
-            className={`h-5 w-5 transform text-amber-700 transition-transform ${
+            className={`h-5 w-5 transform text-gray-700 transition-transform ${
               showImportantNotes ? "rotate-180" : ""
             }`}
             fill="none"
@@ -323,22 +284,22 @@ const ItrTwoCapitalGain: React.FC<ItrTwoCapitalGainProps> = ({
         </button>
 
         {showImportantNotes && (
-          <div className="mt-4 space-y-3 text-sm text-amber-900">
-            <div className="rounded border border-amber-200 bg-white p-3">
-              <p className="mb-2 font-semibold">
+          <div className="mt-4 space-y-3 text-sm text-gray-700">
+            <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+              <p className="mb-2 font-semibold text-gray-900">
                 📌 Sub-sections 5, 6, 7 & 8 are not applicable for residents
               </p>
-              <p className="text-xs text-amber-800">
+              <p className="text-xs text-gray-600">
                 These sections relate to specific scenarios for non-residents,
                 FIIs, and foreign exchange assets.
               </p>
             </div>
 
-            <div className="rounded border border-amber-200 bg-white p-3">
-              <p className="mb-2 font-semibold">
+            <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+              <p className="mb-2 font-semibold text-gray-900">
                 📅 Significance of July 23, 2024
               </p>
-              <p className="text-xs text-amber-800">
+              <p className="text-xs text-gray-600">
                 For residents, from sale of unlisted bonds or unlisted
                 debentures (other than capital indexed bonds issued by
                 Government) applicable only where transfer was before 23rd July
@@ -348,9 +309,9 @@ const ItrTwoCapitalGain: React.FC<ItrTwoCapitalGainProps> = ({
               </p>
             </div>
 
-            <div className="rounded border border-amber-200 bg-white p-3">
-              <p className="mb-2 font-semibold">🔢 Indexation Benefit</p>
-              <p className="text-xs text-amber-800">
+            <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+              <p className="mb-2 font-semibold text-gray-900">🔢 Indexation Benefit</p>
+              <p className="text-xs text-gray-600">
                 (A) For transfers before 23rd July 2024, OR (B) Residents for
                 computational purposes under second proviso to section 112(1)(a)
                 where acquisition is before and transfer is on or after 23rd
@@ -359,11 +320,11 @@ const ItrTwoCapitalGain: React.FC<ItrTwoCapitalGainProps> = ({
               </p>
             </div>
 
-            <div className="rounded border border-amber-200 bg-white p-3">
-              <p className="mb-2 font-semibold">
+            <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+              <p className="mb-2 font-semibold text-gray-900">
                 🏦 Capital Gains Account Scheme
               </p>
-              <p className="text-xs text-amber-800">
+              <p className="text-xs text-gray-600">
                 For claiming deduction under section 54/54B/54EC/54F/54GB, you
                 can deposit unutilized capital gains in Capital Gains Accounts
                 Scheme within the date for furnishing the return u/s 139(1).
@@ -371,9 +332,9 @@ const ItrTwoCapitalGain: React.FC<ItrTwoCapitalGainProps> = ({
               </p>
             </div>
 
-            <div className="rounded border border-amber-200 bg-white p-3">
-              <p className="mb-2 font-semibold">📄 Furnishing of PAN/Aadhaar</p>
-              <p className="text-xs text-amber-800">
+            <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+              <p className="mb-2 font-semibold text-gray-900">📄 Furnishing of PAN/Aadhaar</p>
+              <p className="text-xs text-gray-600">
                 Furnishing of PAN/Aadhaar No. is mandatory, if the tax is
                 deducted under section 194-IA or is quoted by buyer in the
                 documents. In case of more than one buyer, please indicate the
@@ -381,9 +342,9 @@ const ItrTwoCapitalGain: React.FC<ItrTwoCapitalGainProps> = ({
               </p>
             </div>
 
-            <div className="rounded border border-amber-200 bg-white p-3">
-              <p className="mb-2 font-semibold">⚖️ DTAA Provisions</p>
-              <p className="text-xs text-amber-800">
+            <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+              <p className="mb-2 font-semibold text-gray-900">⚖️ DTAA Provisions</p>
+              <p className="text-xs text-gray-600">
                 For partial taxability under chapter XII-A, break up of income
                 based on date of transfer is not required. Note: The figures of
                 STCG in this table (A1e* etc.) are the amounts of STCG, computed
@@ -397,11 +358,11 @@ const ItrTwoCapitalGain: React.FC<ItrTwoCapitalGainProps> = ({
         )}
       </div>
 
-      <div className="rounded-lg p-6 shadow-md">
-        <h2 className="mb-6 text-2xl font-bold text-gray-900">
+      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <h2 className="mb-6 text-lg font-semibold text-gray-900">
           Schedule CG - Capital Gains
         </h2>
-        <p className="mb-4 text-sm text-gray-600">
+        <p className="mb-4 text-sm font-medium text-gray-700">
           Section A - Short-term Capital Gains (STCG)
         </p>
 
@@ -974,10 +935,10 @@ const ItrTwoCapitalGain: React.FC<ItrTwoCapitalGainProps> = ({
             />
           </div>
 
-          <div className="flex justify-end gap-4">
+          <div className="flex justify-end gap-3">
             <button
               type="submit"
-              className="rounded-lg border-2 border-blue-600 px-6 py-3 font-semibold text-blue-600 hover:border-blue-700 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
             >
               Save & Continue
             </button>

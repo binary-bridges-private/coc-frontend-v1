@@ -214,43 +214,7 @@ const ItrTwoHousing: React.FC<ItrTwoHousingProps> = ({
   };
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6">
-      {personalInfo && (
-        <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-          <h4 className="mb-2 flex items-center gap-2 text-sm font-semibold text-blue-900">
-            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fillRule="evenodd"
-                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Personal Information from Part A
-          </h4>
-          <div className="grid grid-cols-2 gap-3 text-xs md:grid-cols-4">
-            <div>
-              <span className="font-medium text-blue-700">Name:</span>
-              <p className="text-blue-900">
-                {personalInfo.firstName} {personalInfo.lastName}
-              </p>
-            </div>
-            <div>
-              <span className="font-medium text-blue-700">PAN:</span>
-              <p className="text-blue-900">{personalInfo.pan}</p>
-            </div>
-            <div>
-              <span className="font-medium text-blue-700">State:</span>
-              <p className="text-blue-900">{personalInfo.state}</p>
-            </div>
-            <div>
-              <span className="font-medium text-blue-700">Status:</span>
-              <p className="text-blue-900">{personalInfo.filingStatus}</p>
-            </div>
-          </div>
-        </div>
-      )}
-      <div className="rounded-lg">
-        <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-8">
+    <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-6">
           <div className="space-y-6">
             {fields.map((field, index) => {
               const fieldId = field.id;
@@ -260,9 +224,9 @@ const ItrTwoHousing: React.FC<ItrTwoHousingProps> = ({
               return (
                 <div
                   key={field.id}
-                  className="rounded-lg border-2 border-gray-200 p-6"
+                  className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
                 >
-                  <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                  <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
                     <h3 className="text-lg font-semibold text-gray-900">
                       Property {index + 1}
                     </h3>
@@ -271,7 +235,7 @@ const ItrTwoHousing: React.FC<ItrTwoHousingProps> = ({
                         <button
                           type="button"
                           onClick={() => remove(index)}
-                          className="rounded border border-red-500 px-3 py-1 text-sm text-red-600 hover:text-red-700"
+                          className="rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
                         >
                           Remove Property
                         </button>
@@ -279,8 +243,8 @@ const ItrTwoHousing: React.FC<ItrTwoHousingProps> = ({
                     </div>
                   </div>
 
-                  <div className="mb-6 rounded-lg border border-gray-300 p-4">
-                    <h4 className="mb-4 font-semibold text-gray-700">
+                  <div className="mb-6 space-y-4">
+                    <h4 className="text-base font-semibold text-gray-900">
                       Address of Property {index + 1}
                     </h4>
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -292,7 +256,7 @@ const ItrTwoHousing: React.FC<ItrTwoHousingProps> = ({
                         <textarea
                           {...register(`properties.${index}.propertyAddress`)}
                           rows={2}
-                          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                           placeholder="Enter complete property address"
                         />
                         {errors.properties?.[index]?.propertyAddress && (
@@ -866,13 +830,13 @@ const ItrTwoHousing: React.FC<ItrTwoHousingProps> = ({
                   tenantPanOrTan: "",
                 } as any)
               }
-              className="rounded-lg border-2 border-dashed border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:border-gray-400"
+              className="rounded-lg border-2 border-dashed border-gray-300 bg-white px-6 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:border-gray-400 hover:bg-gray-50"
             >
               + Add Another Property
             </button>
           </div>
 
-          <div className="space-y-4 rounded-lg border-2 border-gray-300 p-6">
+          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm space-y-4">
             <div>
               <label className="mb-1.5 block text-sm font-medium text-gray-700">
                 2. Pass through income/loss if any
@@ -881,12 +845,12 @@ const ItrTwoHousing: React.FC<ItrTwoHousingProps> = ({
                 {...register("totalPassThroughIncome", { valueAsNumber: true })}
                 type="number"
                 step="0.01"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 placeholder="0.00"
               />
             </div>
 
-            <div className="rounded-lg border-2 border-gray-300 p-4">
+            <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
               <label className="mb-1.5 block text-lg font-semibold text-gray-900">
                 3. Income under the head "Income from House Property" (Σ1k + 2)
               </label>
@@ -918,26 +882,26 @@ const ItrTwoHousing: React.FC<ItrTwoHousingProps> = ({
             </div>
           </div>
 
-          <div className="rounded-lg border border-gray-300 p-4">
+          <div className="rounded-lg border border-gray-200 bg-blue-50 p-4">
             <p className="text-sm text-gray-700">
-              <span className="font-semibold">NOTE ►</span> Please include the
+              <span className="font-semibold text-blue-900">NOTE ►</span> Please include the
               income of the specified persons referred to in Schedule SPI and
               Pass through income referred to in schedule PTI while computing
               the income under this head
             </p>
           </div>
 
-          <div className="rounded-lg border border-gray-300 p-4">
+          <div className="rounded-lg border border-gray-200 bg-blue-50 p-4">
             <p className="text-sm text-gray-700">
-              <span className="font-semibold">NOTE ►</span> Furnishing of PAN/
+              <span className="font-semibold text-blue-900">NOTE ►</span> Furnishing of PAN/
               Aadhaar No. of tenant is mandatory, if tax is deducted under
               section 194-IB.
             </p>
           </div>
 
-          <div className="rounded-lg border border-gray-300 p-4">
+          <div className="rounded-lg border border-gray-200 bg-blue-50 p-4">
             <p className="text-sm text-gray-700">
-              <span className="font-semibold">NOTE ►</span> Furnishing of TAN of
+              <span className="font-semibold text-blue-900">NOTE ►</span> Furnishing of TAN of
               tenant is mandatory, if tax is deducted under section 194-I.
             </p>
           </div>
@@ -945,14 +909,12 @@ const ItrTwoHousing: React.FC<ItrTwoHousingProps> = ({
           <div className="flex justify-end gap-4">
             <button
               type="submit"
-              className="rounded-lg border-2 border-blue-600 px-6 py-3 font-semibold text-blue-600 hover:border-blue-700 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
             >
               Save & Continue
             </button>
           </div>
         </form>
-      </div>
-    </div>
   );
 };
 

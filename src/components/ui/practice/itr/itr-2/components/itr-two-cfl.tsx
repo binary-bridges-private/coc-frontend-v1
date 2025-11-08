@@ -1,15 +1,6 @@
 import React from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 
-interface CarryForwardLoss {
-  assessmentYear: string;
-  dateOfFiling: string;
-  housePropertyLoss: number;
-  shortTermCapitalLoss: number;
-  longTermCapitalLoss: number;
-  raceHorsesLoss: number;
-}
-
 interface ItrTwoCflProps {
   onSubmit: (data: any) => void;
   onBack: () => void;

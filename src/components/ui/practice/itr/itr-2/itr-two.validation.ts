@@ -1635,3 +1635,229 @@ export const scheduleVDASchema = z.object({
 
 export type ScheduleVDARowData = z.infer<typeof scheduleVDARowSchema>;
 export type ScheduleVDAFormData = z.infer<typeof scheduleVDASchema>;
+
+// Schedule VI-A (Deductions under Chapter VI-A)
+export const scheduleVIASchema = z.object({
+  deduction80C: z.string().optional(),
+  deduction80CCC: z.string().optional(),
+  deduction80CCD1: z.string().optional(),
+  deduction80CCD1B: z.string().optional(),
+  deduction80CCD2: z.string().optional(),
+  deduction80D: z.string().optional(),
+  deduction80DD: z.string().optional(),
+  deduction80DDB: z.string().optional(),
+  deduction80E: z.string().optional(),
+  deduction80EE: z.string().optional(),
+  deduction80EEA: z.string().optional(),
+  deduction80EEB: z.string().optional(),
+  deduction80F: z.string().optional(),
+  deduction80G: z.string().optional(),
+  deduction80GG: z.string().optional(),
+  deduction80GGA: z.string().optional(),
+  deduction80GGC: z.string().optional(),
+  deduction80QQB: z.string().optional(),
+  deduction80RRB: z.string().optional(),
+  deduction80TTA: z.string().optional(),
+  deduction80TTB: z.string().optional(),
+  deduction80U: z.string().optional(),
+  deduction80CCH: z.string().optional(),
+  anyOtherDeduction: z.string().optional(),
+  totalDeductions: z.string().optional(),
+});
+
+export type ScheduleVIAFormData = z.infer<typeof scheduleVIASchema>;
+
+// Schedule 80GGA (Scientific Research Donations)
+const donationRowSchema80GGA = z.object({
+  relevantClause: z.string().min(1, "Relevant clause is required"),
+  nameAndAddress: z.string().min(1, "Name and address of donee is required"),
+  panOfDonee: z.string()
+    .regex(/^[A-Z]{5}[0-9]{4}[A-Z]$/, "Invalid PAN format")
+    .optional()
+    .or(z.literal('')),
+  donationInCash: z.string().optional(),
+  donationInOtherMode: z.string().optional(),
+  totalDonation: z.string().optional(),
+  eligibleAmount: z.string().optional(),
+});
+
+export const schedule80GGASchema = z.object({
+  donations: z.array(donationRowSchema80GGA).min(1, "At least one donation is required"),
+  totalDonation: z.string().optional(),
+});
+
+export type Schedule80GGAFormData = z.infer<typeof schedule80GGASchema>;
+
+// Schedule 80GGC (Political Contributions)
+const contributionRowSchema80GGC = z.object({
+  date: z.string().min(1, "Date is required"),
+  contributionInCash: z.string().optional(),
+  contributionInOtherMode: z.string().optional(),
+  totalContribution: z.string().optional(),
+  eligibleAmount: z.string().optional(),
+  transactionReference: z.string().optional(),
+  ifsCode: z.string().optional(),
+});
+
+export const schedule80GGCSchema = z.object({
+  contributions: z.array(contributionRowSchema80GGC).min(1, "At least one contribution is required"),
+  totalContribution: z.string().optional(),
+});
+
+export type Schedule80GGCFormData = z.infer<typeof schedule80GGCSchema>;
+
+// Schedule 80DD (Maintenance of Disabled Dependent)
+const dependentRowSchema80DD = z.object({
+  natureOfDisability: z.enum(['1', '2']),
+  typeOfDependent: z.string().min(1, "Type of dependent is required"),
+  panOfDependent: z.string()
+    .regex(/^[A-Z]{5}[0-9]{4}[A-Z]$/, "Invalid PAN format")
+    .optional()
+    .or(z.literal('')),
+  aadhaarOfDependent: z.string()
+    .regex(/^\d{12}$/, "Aadhaar must be 12 digits")
+    .optional()
+    .or(z.literal('')),
+  dateOfFilingForm101A: z.string().optional(),
+  ackNoOfForm101A: z.string().optional(),
+  formAckNoAsPerRole: z.string().optional(),
+  udidNumber: z.string().optional(),
+  amountAvailable: z.string().optional(),
+});
+
+export const schedule80DDSchema = z.object({
+  dependents: z.array(dependentRowSchema80DD).min(1, "At least one dependent is required"),
+});
+
+export type Schedule80DDFormData = z.infer<typeof schedule80DDSchema>;
+
+// Schedule 80TTA (Savings Account Interest)
+const accountRowSchema80TTA = z.object({
+  bankName: z.string().optional(),
+  accountType: z.string().optional(),
+  accountNumber: z.string().optional(),
+  interestEarned: z.string()
+    .optional()
+    .refine(
+      (val) => !val || parseFloat(val) >= 0,
+      "Interest earned cannot be negative"
+    )
+    .refine(
+      (val) => !val || parseFloat(val) <= 100000,
+      "Interest earned cannot exceed ₹1,00,000"
+    ),
+});
+
+export const schedule80TTASchema = z.object({
+  rows: z.array(accountRowSchema80TTA).optional(),
+  totalInterest: z.string().optional(),
+});
+
+export type Schedule80TTAFormData = z.infer<typeof schedule80TTASchema>;
+
+// Schedule 80TTB (Senior Citizen Specified Income)
+const incomeRowSchema80TTB = z.object({
+  incomeType: z.string().optional(),
+  amount: z.string()
+    .optional()
+    .refine(
+      (val) => !val || parseFloat(val) >= 0,
+      "Amount cannot be negative"
+    )
+    .refine(
+      (val) => !val || parseFloat(val) <= 1000000,
+      "Amount cannot exceed ₹10,00,000"
+    ),
+  sourceDetails: z.string().optional(),
+});
+
+export const schedule80TTBSchema = z.object({
+  rows: z.array(incomeRowSchema80TTB).optional(),
+  totalIncome: z.string().optional(),
+});
+
+export type Schedule80TTBFormData = z.infer<typeof schedule80TTBSchema>;
+
+// Schedule 80GG (Rent Paid)
+export const schedule80GGSchema = z.object({
+  landlordName: z.string().optional(),
+  landlordPAN: z.string()
+    .optional()
+    .refine(
+      (val) => !val || /^[A-Z]{5}[0-9]{4}[A-Z]$/.test(val),
+      "Invalid PAN format (e.g., AAAAA9999A)"
+    ),
+  landlordAddress: z.string().optional(),
+  landlordCity: z.string().optional(),
+  hroApplicable: z.enum(['Yes', 'No']).optional(),
+  monthlyRent: z.string()
+    .optional()
+    .refine(
+      (val) => !val || parseFloat(val) >= 0,
+      "Monthly rent cannot be negative"
+    )
+    .refine(
+      (val) => !val || parseFloat(val) <= 10000000,
+      "Monthly rent cannot exceed ₹1,00,00,000"
+    ),
+  rentPaidDuring: z.string()
+    .optional()
+    .refine(
+      (val) => !val || (parseInt(val) >= 0 && parseInt(val) <= 12),
+      "Months must be between 0 and 12"
+    ),
+  totalRentPaid: z.string().optional(),
+  deductionClaimable: z.string().optional(),
+});
+
+export type Schedule80GGFormData = z.infer<typeof schedule80GGSchema>;
+
+// Schedule 80U (Disabled Person Deduction)
+export const schedule80USchema = z.object({
+  disabilityType: z.enum(['Normal Disability', 'Severe Disability']).optional(),
+  disabilityPercentage: z.string()
+    .optional()
+    .refine(
+      (val) => !val || (parseInt(val) >= 40 && parseInt(val) <= 100),
+      "Disability percentage must be between 40 and 100"
+    ),
+  udidNumber: z.string()
+    .optional()
+    .refine(
+      (val) => !val || /^\d{12}$/.test(val),
+      "UDID must be 12 digits"
+    ),
+  udidIssueDate: z.string().optional(),
+  certificateNumber: z.string().optional(),
+  issuingAuthority: z.string().optional(),
+  deductionAmount: z.string()
+    .optional()
+    .refine(
+      (val) => !val || parseFloat(val) >= 0,
+      "Deduction amount cannot be negative"
+    ),
+});
+
+export type Schedule80UFormData = z.infer<typeof schedule80USchema>;
+
+// Schedule 80CCH (Agnipath Scheme Contribution)
+export const schedule80CCHSchema = z.object({
+  participantName: z.string().optional(),
+  agnivestNumber: z.string().optional(),
+  enlistmentDate: z.string().optional(),
+  dischargeDate: z.string().optional(),
+  serviceBranch: z.string().optional(),
+  contributionAmount: z.string()
+    .optional()
+    .refine(
+      (val) => !val || parseFloat(val) >= 0,
+      "Contribution amount cannot be negative"
+    )
+    .refine(
+      (val) => !val || parseFloat(val) <= 10000000,
+      "Contribution amount cannot exceed ₹1,00,00,000"
+    ),
+  totalContribution: z.string().optional(),
+});
+
+export type Schedule80CCHFormData = z.infer<typeof schedule80CCHSchema>;

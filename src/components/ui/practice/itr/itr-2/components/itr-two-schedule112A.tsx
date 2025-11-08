@@ -165,20 +165,26 @@ const ItrTwoSchedule112A: React.FC<ItrTwoSchedule112AProps> = ({
     <section className="space-y-6">
       
       {/* Important Notes Section */}
-      <div className="rounded-lg border border-gray-300 bg-gray-50 shadow-sm">
+      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
         <button
           type="button"
           onClick={() => setShowNotes(!showNotes)}
-          className="flex w-full items-center justify-between p-4 text-left"
+          className="flex w-full items-center justify-between text-left"
         >
           <div className="flex items-center gap-3">
-            <span className="text-2xl">📋</span>
-            <span className="font-semibold text-gray-900">
+            <svg className="h-5 w-5 text-gray-700" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <span className="text-lg font-semibold text-gray-900">
               Important Notes & Instructions
             </span>
           </div>
           <svg
-            className={`h-5 w-5 text-gray-600 transition-transform ${
+            className={`h-5 w-5 text-gray-700 transition-transform ${
               showNotes ? "rotate-180" : ""
             }`}
             fill="none"
@@ -195,9 +201,8 @@ const ItrTwoSchedule112A: React.FC<ItrTwoSchedule112AProps> = ({
         </button>
 
         {showNotes && (
-          <div className="border-t border-gray-300 bg-white p-4">
-            <div className="space-y-3 text-sm text-gray-700">
-              <div className="rounded-lg border border-gray-300 bg-white p-3">
+          <div className="mt-4 space-y-3 text-sm text-gray-700">
+            <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
                 <p className="font-semibold text-gray-900">
                   🔑 Key Points for Section 112A:
                 </p>
@@ -221,7 +226,7 @@ const ItrTwoSchedule112A: React.FC<ItrTwoSchedule112AProps> = ({
                 </ul>
               </div>
 
-              <div className="rounded-lg border border-gray-300 bg-white p-3">
+              <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
                 <p className="font-semibold text-gray-900">
                   📊 Fair Market Value (FMV) Guidelines:
                 </p>
@@ -240,7 +245,7 @@ const ItrTwoSchedule112A: React.FC<ItrTwoSchedule112AProps> = ({
                 </ul>
               </div>
 
-              <div className="rounded-lg border border-gray-300 bg-white p-3">
+              <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
                 <p className="font-semibold text-gray-900">
                   💰 Exemption under Section 54F:
                 </p>
@@ -260,7 +265,6 @@ const ItrTwoSchedule112A: React.FC<ItrTwoSchedule112AProps> = ({
                 </ul>
               </div>
             </div>
-          </div>
         )}
       </div>
 
@@ -275,7 +279,7 @@ const ItrTwoSchedule112A: React.FC<ItrTwoSchedule112AProps> = ({
               <button
                 type="button"
                 onClick={addEquityShare}
-                className="flex items-center gap-2 rounded-lg border border-gray-900 bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800"
+                className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
               >
                 <svg
                   className="h-5 w-5"
@@ -641,18 +645,18 @@ const ItrTwoSchedule112A: React.FC<ItrTwoSchedule112AProps> = ({
         )}
 
         {/* Action Buttons */}
-        <div className="flex justify-end gap-3 rounded-lg border-t border-gray-200 bg-gray-50 p-4">
+        <div className="flex justify-end gap-3 pt-4">
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-lg border border-gray-300 bg-white px-6 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100"
+            className="rounded-lg border border-gray-300 bg-white px-6 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={isSubmitting}
-            className="rounded-lg border border-gray-900 bg-gray-900 px-8 py-2.5 text-sm font-semibold text-white shadow-md transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+            className="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isSubmitting ? "Saving..." : "Save & Continue"}
           </button>

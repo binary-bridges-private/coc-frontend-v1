@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import ItrTwoProgress from "./components/itr-two-progress.tsx";
 import ItrTwoEntry from "./components/Itr-two-entry.tsx";
 import ItrTwoPersonal from "./components/itr-two-personal.tsx";
@@ -13,7 +13,24 @@ import ItrTwoCyla from "./components/itr-two-cyla.tsx";
 import ItrTwoBfla from "./components/Itr-two-bfla.tsx";
 import ItrTwoCylaBfla from "./components/itr-two-cyla-bfla.tsx";
 import ItrTwoCfl from "./components/itr-two-cfl.tsx";
+import ItrTwoScheduleVIA from "./components/itr-two-schedule-via.tsx";
 import ItrTwo80G from "./components/itr-two-80g.tsx";
+import ItrTwo80GGA from "./components/itr-two-80gga.tsx";
+import ItrTwo80GGC from "./components/itr-two-80ggc.tsx";
+import ItrTwo80DD from "./components/itr-two-80dd.tsx";
+import ItrTwo80U from "./components/itr-two-80u.tsx";
+import ItrTwoAMT from "./components/itr-two-amt.tsx";
+import ItrTwoAMTC from "./components/itr-two-amtc.tsx";
+import ItrTwoSI from "./components/itr-two-si.tsx";
+import ItrTwoEI from "./components/itr-two-ei.tsx";
+import ItrTwoPTI from "./components/itr-two-pti.tsx";
+import ItrTwoFSI from "./components/itr-two-fsi.tsx";
+import ItrTwoTR from "./components/itr-two-tr.tsx";
+import ItrTwoFA from "./components/itr-two-fa.tsx";
+import ItrTwo5A from "./components/itr-two-5a.tsx";
+import ItrTwoAL from "./components/itr-two-al.tsx";
+import ItrTwoPart3TTI from "./components/itr-two-part3-tti.tsx";
+import ItrTwoTaxPayments from "./components/itr-two-tax-payments.tsx";
 import {
   ITR_TWO_SECTIONS,
   calculateCompletionPercentage,
@@ -28,7 +45,63 @@ import {
   Schedule112AFormData,
   Schedule115ADFormData,
   ScheduleVDAFormData,
+  ScheduleVIAFormData,
+  Schedule80GGAFormData,
+  Schedule80GGCFormData,
+  Schedule80DDFormData,
 } from "./itr-two.validation.ts";
+
+// CSV Export Function
+const exportToCSV = (allFormData: any, taxPaymentsData: any) => {
+  const completeData = { ...allFormData, taxPayments: taxPaymentsData };
+  
+  // Flatten nested objects into CSV rows
+  const flattenObject = (obj: any, prefix = ''): any => {
+    let result: any = {};
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        const value = obj[key];
+        const newKey = prefix ? `${prefix}_${key}` : key;
+        
+        if (value && typeof value === 'object' && !Array.isArray(value)) {
+          Object.assign(result, flattenObject(value, newKey));
+        } else if (Array.isArray(value)) {
+          result[newKey] = JSON.stringify(value);
+        } else {
+          result[newKey] = value || '';
+        }
+      }
+    }
+    return result;
+  };
+  
+  const flatData = flattenObject(completeData);
+  
+  // Convert to CSV
+  const headers = Object.keys(flatData);
+  const values = Object.values(flatData);
+  
+  const csvContent = [
+    headers.join(','),
+    values.map((val: any) => {
+      const stringVal = String(val).replace(/"/g, '""');
+      return `"${stringVal}"`;
+    }).join(',')
+  ].join('\n');
+  
+  // Download CSV
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  link.setAttribute('href', url);
+  link.setAttribute('download', `ITR2_${new Date().toISOString().split('T')[0]}.csv`);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  
+  console.log('ITR-2 data exported to CSV successfully!');
+};
 
 const ItrTwo: React.FC = () => {
   const [sections, setSections] = useState<ItrTwoSection[]>(ITR_TWO_SECTIONS);
@@ -48,7 +121,24 @@ const ItrTwo: React.FC = () => {
     scheduleCYLA?: any;
     scheduleBFLA?: any;
     scheduleCFL?: any;
+    scheduleVIA?: ScheduleVIAFormData;
     schedule80G?: any;
+    schedule80GGA?: Schedule80GGAFormData;
+    schedule80GGC?: Schedule80GGCFormData;
+    schedule80DD?: Schedule80DDFormData;
+    schedule80U?: any;
+    scheduleAMT?: any;
+    scheduleAMTC?: any;
+    scheduleSI?: any;
+    scheduleEI?: any;
+    schedulePTI?: any;
+    scheduleFSI?: any;
+    scheduleTR?: any;
+    scheduleFA?: any;
+    schedule5A?: any;
+    scheduleAL?: any;
+    part3TTI?: any;
+    taxPayments?: any;
   }>({});
 
   const completionPercentage = useMemo(
@@ -72,6 +162,23 @@ const ItrTwo: React.FC = () => {
   }, [sections]);
 
   const activeSection = sections[activeSectionIndex];
+
+  // Auto-scroll to the currently active (in-progress) section whenever it changes
+  useEffect(() => {
+    // Determine the target element id
+    const targetId = activeSectionId ? `section-${activeSectionId}` : 'section-summary';
+    const scroll = () => {
+      const el = document.getElementById(targetId);
+      if (el && 'scrollIntoView' in el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    };
+    // Allow DOM to render before scrolling
+    const t = window.setTimeout(scroll, 0);
+    return () => window.clearTimeout(t);
+  }, [activeSectionId, activeSectionIndex]);
 
   const handleSectionSelect = (sectionId: string) => {
     const targetIndex = sections.findIndex(
@@ -136,8 +243,59 @@ const ItrTwo: React.FC = () => {
     if (sectionId === "cfl" && data) {
       setFormData((prev) => ({ ...prev, scheduleCFL: data }));
     }
+    if (sectionId === "80c" && data) {
+      setFormData((prev) => ({ ...prev, scheduleVIA: data }));
+    }
     if (sectionId === "80g" && data) {
       setFormData((prev) => ({ ...prev, schedule80G: data }));
+    }
+    if (sectionId === "80gga" && data) {
+      setFormData((prev) => ({ ...prev, schedule80GGA: data }));
+    }
+    if (sectionId === "80ggc" && data) {
+      setFormData((prev) => ({ ...prev, schedule80GGC: data }));
+    }
+    if (sectionId === "80dd" && data) {
+      setFormData((prev) => ({ ...prev, schedule80DD: data }));
+    }
+    if (sectionId === "80u" && data) {
+      setFormData((prev) => ({ ...prev, schedule80U: data }));
+    }
+    if (sectionId === "amt" && data) {
+      setFormData((prev) => ({ ...prev, scheduleAMT: data }));
+    }
+    if (sectionId === "amtc" && data) {
+      setFormData((prev) => ({ ...prev, scheduleAMTC: data }));
+    }
+    if (sectionId === "si" && data) {
+      setFormData((prev) => ({ ...prev, scheduleSI: data }));
+    }
+    if (sectionId === "ei" && data) {
+      setFormData((prev) => ({ ...prev, scheduleEI: data }));
+    }
+    if (sectionId === "pti" && data) {
+      setFormData((prev) => ({ ...prev, schedulePTI: data }));
+    }
+    if (sectionId === "fsi" && data) {
+      setFormData((prev) => ({ ...prev, scheduleFSI: data }));
+    }
+    if (sectionId === "tr" && data) {
+      setFormData((prev) => ({ ...prev, scheduleTR: data }));
+    }
+    if (sectionId === "fa" && data) {
+      setFormData((prev) => ({ ...prev, scheduleFA: data }));
+    }
+    if (sectionId === "5a" && data) {
+      setFormData((prev) => ({ ...prev, schedule5A: data }));
+    }
+    if (sectionId === "al" && data) {
+      setFormData((prev) => ({ ...prev, scheduleAL: data }));
+    }
+    if (sectionId === "part3-tti" && data) {
+      setFormData((prev) => ({ ...prev, part3TTI: data }));
+    }
+    if (sectionId === "tax-payments" && data) {
+      setFormData((prev) => ({ ...prev, taxPayments: data }));
     }
 
     setSections((prev) => {
@@ -161,6 +319,14 @@ const ItrTwo: React.FC = () => {
   const handleBackToSummary = () => {
     setActiveSectionId(null);
   };
+
+  const handleFinalSubmit = () => {
+    exportToCSV(formData, formData.taxPayments);
+  };
+
+  const allSectionsCompleted = useMemo(() => {
+    return sections.every((s) => s.status === "completed");
+  }, [sections]);
 
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4 md:py-12">
@@ -186,7 +352,7 @@ const ItrTwo: React.FC = () => {
         />
 
         {activeSectionId ? (
-          <section className="space-y-4">
+          <section id={`section-${activeSectionId}`} className="space-y-4">
             <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
               <div>
                 <h2 className="text-xl font-semibold text-gray-900">
@@ -309,9 +475,144 @@ const ItrTwo: React.FC = () => {
             )}
 
             {activeSectionId === "80c" && (
-              <ItrTwo80G
+              <ItrTwoScheduleVIA
                 onSave={(data) => handleSectionComplete("80c", data)}
+                onBack={handleBackToSummary}
+                initialData={formData.scheduleVIA}
+              />
+            )}
+
+            {activeSectionId === "80g" && (
+              <ItrTwo80G
+                onSave={(data) => handleSectionComplete("80g", data)}
                 initialData={formData.schedule80G}
+              />
+            )}
+
+            {activeSectionId === "80gga" && (
+              <ItrTwo80GGA
+                onSave={(data) => handleSectionComplete("80gga", data)}
+                onBack={handleBackToSummary}
+                initialData={formData.schedule80GGA}
+              />
+            )}
+
+            {activeSectionId === "80ggc" && (
+              <ItrTwo80GGC
+                onSave={(data) => handleSectionComplete("80ggc", data)}
+                onBack={handleBackToSummary}
+                initialData={formData.schedule80GGC}
+              />
+            )}
+
+            {activeSectionId === "80dd" && (
+              <ItrTwo80DD
+                onSave={(data) => handleSectionComplete("80dd", data)}
+                onBack={handleBackToSummary}
+                initialData={formData.schedule80DD}
+              />
+            )}
+
+            {activeSectionId === "80u" && (
+              <ItrTwo80U
+                onSave={(data) => handleSectionComplete("80u", data)}
+                onBack={handleBackToSummary}
+                initialData={formData.schedule80U}
+              />
+            )}
+
+            {activeSectionId === "amt" && (
+              <ItrTwoAMT
+                onSave={(data) => handleSectionComplete("amt", data)}
+                onBack={handleBackToSummary}
+                initialData={formData.scheduleAMT}
+              />
+            )}
+
+            {activeSectionId === "amtc" && (
+              <ItrTwoAMTC
+                onSave={(data) => handleSectionComplete("amtc", data)}
+                onBack={handleBackToSummary}
+                initialData={formData.scheduleAMTC}
+              />
+            )}
+
+            {activeSectionId === "si" && (
+              <ItrTwoSI
+                onSave={(data) => handleSectionComplete("si", data)}
+                onBack={handleBackToSummary}
+                initialData={formData.scheduleSI}
+              />
+            )}
+
+            {activeSectionId === "ei" && (
+              <ItrTwoEI
+                onSave={(data) => handleSectionComplete("ei", data)}
+                onBack={handleBackToSummary}
+                initialData={formData.scheduleEI}
+              />
+            )}
+
+            {activeSectionId === "pti" && (
+              <ItrTwoPTI
+                onSave={(data) => handleSectionComplete("pti", data)}
+                onBack={handleBackToSummary}
+                initialData={formData.schedulePTI}
+              />
+            )}
+
+            {activeSectionId === "fsi" && (
+              <ItrTwoFSI
+                onSave={(data) => handleSectionComplete("fsi", data)}
+                onBack={handleBackToSummary}
+                initialData={formData.scheduleFSI}
+              />
+            )}
+
+            {activeSectionId === "tr" && (
+              <ItrTwoTR
+                onSave={(data) => handleSectionComplete("tr", data)}
+                onBack={handleBackToSummary}
+                initialData={formData.scheduleTR}
+              />
+            )}
+
+            {activeSectionId === "fa" && (
+              <ItrTwoFA
+                onSave={(data) => handleSectionComplete("fa", data)}
+                onBack={handleBackToSummary}
+                initialData={formData.scheduleFA}
+              />
+            )}
+
+            {activeSectionId === "5a" && (
+              <ItrTwo5A
+                onSave={(data) => handleSectionComplete("5a", data)}
+                onBack={handleBackToSummary}
+                initialData={formData.schedule5A}
+              />
+            )}
+
+            {activeSectionId === "al" && (
+              <ItrTwoAL
+                onSave={(data) => handleSectionComplete("al", data)}
+                initialData={formData.scheduleAL}
+              />
+            )}
+
+            {activeSectionId === "part3-tti" && (
+              <ItrTwoPart3TTI
+                onSave={(data) => handleSectionComplete("part3-tti", data)}
+                onBack={handleBackToSummary}
+                initialData={formData.part3TTI}
+              />
+            )}
+
+            {activeSectionId === "tax-payments" && (
+              <ItrTwoTaxPayments
+                onSave={(data) => handleSectionComplete("tax-payments", data)}
+                onBack={handleBackToSummary}
+                initialData={formData.taxPayments}
               />
             )}
 
@@ -326,7 +627,25 @@ const ItrTwo: React.FC = () => {
               activeSectionId !== "cyla" &&
               activeSectionId !== "bfla" &&
               activeSectionId !== "cyla-bfla" &&
-              activeSectionId !== "cfl" && (
+              activeSectionId !== "cfl" &&
+              activeSectionId !== "80c" &&
+              activeSectionId !== "80g" &&
+              activeSectionId !== "80gga" &&
+              activeSectionId !== "80ggc" &&
+              activeSectionId !== "80dd" &&
+              activeSectionId !== "80u" &&
+              activeSectionId !== "amt" &&
+              activeSectionId !== "amtc" &&
+              activeSectionId !== "si" &&
+              activeSectionId !== "ei" &&
+              activeSectionId !== "pti" &&
+              activeSectionId !== "fsi" &&
+              activeSectionId !== "tr" &&
+              activeSectionId !== "fa" &&
+              activeSectionId !== "5a" &&
+              activeSectionId !== "al" &&
+              activeSectionId !== "part3-tti" &&
+              activeSectionId !== "tax-payments" && (
                 <div className="rounded-xl border border-gray-200 bg-white p-8 text-center shadow-sm">
                   <div className="mx-auto max-w-md space-y-4">
                     <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
@@ -371,7 +690,7 @@ const ItrTwo: React.FC = () => {
               )}
           </section>
         ) : (
-          <section className="space-y-4">
+          <section id="section-summary" className="space-y-4">
             <h2 className="text-xl font-semibold text-gray-900">
               Filing Sections
             </h2>
@@ -384,6 +703,65 @@ const ItrTwo: React.FC = () => {
               activeSectionId={activeSection?.id || ""}
               onSectionSelect={handleSectionSelect}
             />
+
+            {allSectionsCompleted && (
+              <div className="rounded-xl border-2 border-green-500 bg-gradient-to-br from-green-50 to-green-100 p-8 shadow-lg">
+                <div className="mx-auto max-w-2xl text-center space-y-6">
+                  <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-500 shadow-lg">
+                    <svg
+                      className="h-10 w-10 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={3}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <h3 className="text-2xl font-bold text-gray-900">
+                      All Sections Completed!
+                    </h3>
+                    <p className="text-base text-gray-700">
+                      Congratulations! You have successfully filled all sections of ITR-2 form.
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      Click the button below to download your complete ITR-2 data as a CSV file.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleFinalSubmit}
+                    className="inline-flex items-center gap-3 rounded-lg bg-green-600 px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all hover:bg-green-700 hover:shadow-xl hover:scale-105"
+                  >
+                    <svg
+                      className="h-6 w-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
+                    </svg>
+                    Submit & Download ITR-2 Form
+                  </button>
+
+                  <p className="text-xs text-gray-500 pt-2">
+                    Your data will be downloaded as: ITR2_{new Date().toISOString().split('T')[0]}.csv
+                  </p>
+                </div>
+              </div>
+            )}
           </section>
         )}
       </div>

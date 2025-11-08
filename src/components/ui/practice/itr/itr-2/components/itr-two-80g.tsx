@@ -145,8 +145,8 @@ const ItrTwo80G: React.FC<ItrTwo80GProps> = ({ onSave, initialData }) => {
     title: string,
     showARN: boolean = false
   ) => (
-    <div className="mb-8">
-      <h3 className="text-lg font-semibold mb-4">{title}</h3>
+    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+      <h3 className="text-base font-semibold text-gray-900 mb-4">{title}</h3>
       <div className="overflow-x-auto">
         <table className="min-w-full border-collapse border border-gray-300">
           <thead>
@@ -254,7 +254,7 @@ const ItrTwo80G: React.FC<ItrTwo80GProps> = ({ onSave, initialData }) => {
                       : { nameAndAddress: '', panOfDonee: '', donationInCash: '', donationInOtherMode: '', totalDonation: '', eligibleAmount: '' };
                     append(newRow);
                   }}
-                  className="px-4 py-2 bg-gray-900 text-white rounded hover:bg-gray-800"
+                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
                 >
                   Add Row
                 </button>
@@ -285,7 +285,7 @@ const ItrTwo80G: React.FC<ItrTwo80GProps> = ({ onSave, initialData }) => {
                                       section === 'sectionC' ? 'totalDonationsCiii' : 'totalDonationsDiii';
                     calculateSectionTotal(section, totalField);
                   }}
-                  className="px-3 py-1 bg-gray-900 text-white rounded hover:bg-gray-800"
+                  className="rounded-lg bg-green-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-green-700"
                 >
                   Calculate
                 </button>
@@ -298,10 +298,12 @@ const ItrTwo80G: React.FC<ItrTwo80GProps> = ({ onSave, initialData }) => {
   );
 
   return (
-    <div className="w-full mx-auto p-6 bg-white">
-      <h2 className="text-2xl font-bold mb-6">Schedule 80G - Details of donations entitled for deduction under section 80G</h2>
+    <div className="space-y-6">
+      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-gray-900">Schedule 80G - Details of donations entitled for deduction under section 80G</h2>
+      </div>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Section A: 100% deduction without qualifying limit */}
         {renderDonationTable(
           'sectionA',
@@ -340,15 +342,15 @@ const ItrTwo80G: React.FC<ItrTwo80GProps> = ({ onSave, initialData }) => {
         )}
 
         {/* Section E: Total donations */}
-        <div className="mb-8">
-          <h3 className="text-lg font-semibold mb-4">E. Total donations (Aiii + Biii + Ciii + Diii)</h3>
-          <div className="flex items-center gap-4">
-            <label className="font-medium">Grand Total:</label>
+        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <h3 className="text-base font-semibold text-gray-900 mb-4">E. Total donations (Aiii + Biii + Ciii + Diii)</h3>
+          <div className="flex items-center gap-3">
+            <label className="text-sm font-medium text-gray-700">Grand Total:</label>
             <input
               type="number"
               step="0.01"
               {...register('grandTotal')}
-              className="w-48 px-4 py-2 border border-gray-300 rounded bg-gray-50"
+              className="w-48 rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400"
               placeholder="0.00"
               readOnly
             />
@@ -356,17 +358,17 @@ const ItrTwo80G: React.FC<ItrTwo80GProps> = ({ onSave, initialData }) => {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-4 mt-8">
+        <div className="flex items-center justify-end gap-3">
           <button
             type="button"
             onClick={calculateAll}
-            className="px-6 py-3 bg-gray-900 text-white rounded hover:bg-gray-800 font-semibold"
+            className="rounded-lg bg-green-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-green-700"
           >
             Calculate All Totals
           </button>
           <button
             type="submit"
-            className="px-6 py-3 bg-gray-900 text-white rounded hover:bg-gray-800 font-semibold"
+            className="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
           >
             Save Schedule 80G
           </button>

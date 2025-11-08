@@ -203,32 +203,23 @@ const ItrTwo115AD: React.FC<ItrTwo115ADProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-6 flex items-center justify-between rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              Schedule 115AD(1)(b)(iii) Proviso
-            </h1>
-            <p className="mt-2 text-sm text-gray-600">
-              For NON-RESIDENTS - From sale of equity share in a company or unit
-              of equity-oriented fund or unit of a business trust on which STT
-              is paid under section 112A rws 115AD(1)(b)(iii) proviso
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={onBack}
-            className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
-            Back
-          </button>
+    <div className="space-y-6">
+      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="mb-4">
+          <h1 className="text-lg font-semibold text-gray-900">
+            Schedule 115AD(1)(b)(iii) Proviso
+          </h1>
+          <p className="mt-2 text-sm text-gray-600">
+            For NON-RESIDENTS - From sale of equity share in a company or unit
+            of equity-oriented fund or unit of a business trust on which STT
+            is paid under section 112A rws 115AD(1)(b)(iii) proviso
+          </p>
         </div>
 
-        <div className="mb-6 rounded-lg border border-gray-300 bg-gray-50 p-4">
+        <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
           <div className="flex items-start gap-3">
             <svg
-              className="h-6 w-6 flex-shrink-0 text-gray-600"
+              className="h-5 w-5 flex-shrink-0 text-gray-700"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -239,7 +230,7 @@ const ItrTwo115AD: React.FC<ItrTwo115ADProps> = ({
               />
             </svg>
             <div className="flex-1 text-sm text-gray-700">
-              <p className="font-semibold">Important Notes:</p>
+              <p className="font-semibold text-gray-900">Important Notes:</p>
               <ul className="mt-2 list-disc space-y-1 pl-5">
                 <li>
                   Share/Unit must be{" "}
@@ -260,9 +251,11 @@ const ItrTwo115AD: React.FC<ItrTwo115ADProps> = ({
             </div>
           </div>
         </div>
+      </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div className="overflow-x-auto rounded-lg bg-white shadow">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
+          <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -593,30 +586,31 @@ const ItrTwo115AD: React.FC<ItrTwo115ADProps> = ({
               </tbody>
             </table>
           </div>
-
-          <div className="flex justify-center">
+          
+          <div className="border-t border-gray-200 p-4 flex justify-center">
             <button
               type="button"
               onClick={handleAddRow}
-              className="rounded-lg border-2 border-dashed border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 hover:border-gray-400 hover:bg-gray-50"
+              className="rounded-lg border-2 border-dashed border-gray-300 bg-white px-6 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:border-gray-400 hover:bg-gray-50"
             >
               + Add Row
             </button>
           </div>
+        </div>
 
-          <div className="rounded-lg border border-gray-200 bg-white p-6 shadow">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">
-                Summary
-              </h3>
-              <button
-                type="button"
-                onClick={calculateAllTotals}
-                className="rounded-lg border border-gray-900 bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
-              >
-                Calculate Totals
-              </button>
-            </div>
+        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Summary
+            </h3>
+            <button
+              type="button"
+              onClick={calculateAllTotals}
+              className="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700"
+            >
+              Calculate Totals
+            </button>
+          </div>
             <div className="space-y-3">
               <div className="flex items-center justify-between border-b border-gray-200 pb-3">
                 <span className="text-sm font-medium text-gray-700">
@@ -655,23 +649,22 @@ const ItrTwo115AD: React.FC<ItrTwo115ADProps> = ({
             </div>
           </div>
 
-          <div className="flex justify-end gap-4">
-            <button
-              type="button"
-              onClick={onBack}
-              className="rounded-lg border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="rounded-lg border border-gray-900 bg-gray-900 px-6 py-3 text-sm font-medium text-white hover:bg-gray-800"
-            >
-              Save & Continue
-            </button>
-          </div>
-        </form>
-      </div>
+        <div className="flex justify-end gap-3 pt-4">
+          <button
+            type="button"
+            onClick={onBack}
+            className="rounded-lg border border-gray-300 bg-white px-6 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+          >
+            Save & Continue
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

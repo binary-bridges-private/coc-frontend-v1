@@ -99,32 +99,23 @@ const ItrTwoVda: React.FC<ItrTwoVdaProps> = ({
   const totalIncome = watch("totalIncomeFromVDA");
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-6 flex items-center justify-between rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              Schedule VDA - Virtual Digital Assets
-            </h1>
-            <p className="mt-2 text-sm text-gray-600">
-              Income from transfer of Virtual Digital Assets (Note: Details of
-              every transaction are to be filled, wherein every 'transfer' is a
-              transaction)
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={onBack}
-            className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
-            Back
-          </button>
+    <div className="space-y-6">
+      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="mb-4">
+          <h1 className="text-lg font-semibold text-gray-900">
+            Schedule VDA - Virtual Digital Assets
+          </h1>
+          <p className="mt-2 text-sm text-gray-600">
+            Income from transfer of Virtual Digital Assets (Note: Details of
+            every transaction are to be filled, wherein every 'transfer' is a
+            transaction)
+          </p>
         </div>
 
-        <div className="mb-6 rounded-lg border border-gray-300 bg-gray-50 p-4">
+        <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
           <div className="flex items-start gap-3">
             <svg
-              className="h-6 w-6 flex-shrink-0 text-gray-600"
+              className="h-5 w-5 flex-shrink-0 text-gray-700"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -135,7 +126,7 @@ const ItrTwoVda: React.FC<ItrTwoVdaProps> = ({
               />
             </svg>
             <div className="flex-1 text-sm text-gray-700">
-              <p className="font-semibold">Important Notes:</p>
+              <p className="font-semibold text-gray-900">Important Notes:</p>
               <ul className="mt-2 list-disc space-y-1 pl-5">
                 <li>
                   Virtual Digital Assets (VDA) include cryptocurrencies, NFTs,
@@ -163,9 +154,11 @@ const ItrTwoVda: React.FC<ItrTwoVdaProps> = ({
             </div>
           </div>
         </div>
+      </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div className="overflow-x-auto rounded-lg bg-white shadow">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
+          <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -328,7 +321,7 @@ const ItrTwoVda: React.FC<ItrTwoVdaProps> = ({
                         <button
                           type="button"
                           onClick={() => calculateRow(index)}
-                          className="rounded border border-gray-900 bg-gray-900 px-3 py-1 text-xs font-medium text-white hover:bg-gray-800"
+                          className="rounded bg-blue-600 px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-blue-700"
                         >
                           Calculate
                         </button>
@@ -336,7 +329,7 @@ const ItrTwoVda: React.FC<ItrTwoVdaProps> = ({
                           type="button"
                           onClick={() => handleRemoveRow(index)}
                           disabled={fields.length === 1}
-                          className="rounded border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                          className="rounded border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           Remove
                         </button>
@@ -348,57 +341,57 @@ const ItrTwoVda: React.FC<ItrTwoVdaProps> = ({
             </table>
           </div>
 
-          <div className="flex justify-center">
+          <div className="border-t border-gray-200 p-4 flex justify-center">
             <button
               type="button"
               onClick={handleAddRow}
-              className="rounded-lg border-2 border-dashed border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 hover:border-gray-400 hover:bg-gray-50"
+              className="rounded-lg border-2 border-dashed border-gray-300 bg-white px-6 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:border-gray-400 hover:bg-gray-50"
             >
               + Add Transaction
             </button>
           </div>
+        </div>
 
-          <div className="rounded-lg border border-gray-200 bg-white p-6 shadow">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">Summary</h3>
-              <button
-                type="button"
-                onClick={calculateAllTotals}
-                className="rounded-lg border border-gray-900 bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
-              >
-                Calculate Total
-              </button>
-            </div>
-            <div className="flex items-center justify-between border-t-2 border-gray-300 bg-gray-50 p-4 rounded-lg">
-              <span className="text-base font-bold text-gray-900">
-                Total Income from Transfer of Virtual Digital Assets
-              </span>
-              <span className="text-2xl font-bold text-gray-900">
-                ₹{" "}
-                {totalIncome.toLocaleString("en-IN", {
-                  minimumFractionDigits: 2,
-                })}
-              </span>
-            </div>
-          </div>
-
-          <div className="flex justify-end gap-4">
+        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-gray-900">Summary</h3>
             <button
               type="button"
-              onClick={onBack}
-              className="rounded-lg border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              onClick={calculateAllTotals}
+              className="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700"
             >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="rounded-lg border border-gray-900 bg-gray-900 px-6 py-3 text-sm font-medium text-white hover:bg-gray-800"
-            >
-              Save & Continue
+              Calculate Total
             </button>
           </div>
-        </form>
-      </div>
+          <div className="flex items-center justify-between rounded-lg border-t-2 border-gray-300 bg-gray-50 p-4">
+            <span className="text-base font-bold text-gray-900">
+              Total Income from Transfer of Virtual Digital Assets
+            </span>
+            <span className="text-2xl font-bold text-gray-900">
+              ₹{" "}
+              {totalIncome.toLocaleString("en-IN", {
+                minimumFractionDigits: 2,
+              })}
+            </span>
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-3">
+          <button
+            type="button"
+            onClick={onBack}
+            className="rounded-lg border border-gray-300 bg-white px-6 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+          >
+            Save & Continue
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

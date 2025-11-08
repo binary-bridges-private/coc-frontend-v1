@@ -88,13 +88,6 @@ export const ITR_TWO_SECTIONS: ItrTwoSection[] = [
     weight: 1,
   },
   {
-    id: "80d",
-    title: "80D - Medical Insurance",
-    description: "Health insurance premiums for self, family, and parents",
-    status: "pending",
-    weight: 1,
-  },
-  {
     id: "80gga",
     title: "80GGA - Scientific Research Donations",
     description: "Donations for scientific research or rural development",
@@ -102,139 +95,123 @@ export const ITR_TWO_SECTIONS: ItrTwoSection[] = [
     weight: 1,
   },
   {
-    id: "80e-loans",
-    title: "80E/EE/EEA/EEB - Loan Interest",
-    description: "Education, Home, Electric Vehicle loan interest deductions",
-    status: "pending",
-    weight: 1,
-  },
-  {
-    id: "other-80",
-    title: "Other Chapter VI-A Deductions",
-    description: "80TTA, 80TTB, 80GG, 80GGC, 80CCH, etc.",
-    status: "pending",
-    weight: 1,
-  },
-  {
-    id: "vi-a",
-    title: "Chapter VI-A Summary",
-    description: "Total deductions under Chapter VI-A",
-    status: "pending",
-    weight: 1,
-  },
-  {
-    id: "80u-80dd",
-    title: "80U/80DD - Disability Deductions",
-    description: "Deductions for persons with disability and dependents",
-    status: "pending",
-    weight: 1,
-  },
-  {
     id: "80ggc",
     title: "80GGC - Political Contributions",
-    description: "Contributions to political parties",
+    description:
+      "Contributions to political parties (non-cash eligible for deduction)",
     status: "pending",
     weight: 1,
   },
   {
-    id: "spi-si",
-    title: "SPI/SI - Special Income",
-    description: "Income chargeable to tax at special rates",
+    id: "80dd",
+    title: "80DD - Dependent Disability Deduction",
+    description:
+      "Maintenance including medical treatment of a dependent with disability (₹75k / ₹1.25L)",
+    status: "pending",
+    weight: 1,
+  },
+  {
+    id: "80u",
+    title: "80U - Self Disability Deduction",
+    description:
+      "Deduction for self with disability/severe disability (₹75k / ₹1.25L)",
     status: "pending",
     weight: 1,
   },
   {
     id: "amt",
     title: "AMT - Alternate Minimum Tax",
-    description: "Computation of Alternate Minimum Tax",
+    description: "Computation of AMT payable under section 115JC",
     status: "pending",
     weight: 1,
   },
   {
     id: "amtc",
     title: "AMTC - AMT Credit",
-    description: "AMT Credit available for set-off",
+    description:
+      "Computation of AMT credit available and carried forward under section 115JD",
     status: "pending",
     weight: 1,
+  },
+  {
+    id: "si",
+    title: "Schedule SI - Special Rates",
+    description:
+      "Income chargeable to tax at special rates (e.g. 111A, 112A, 115BBE, 115BBH, winnings, patent, pass-through)",
+    status: "pending",
+    weight: 2,
   },
   {
     id: "ei",
-    title: "EI - Exempt Income",
-    description: "Income not chargeable to tax",
+    title: "Schedule EI - Exempt Income",
+    description:
+      "Details of Exempt Income - Interest, Agricultural income, Other exempt income, DTAA income, Pass through income",
     status: "pending",
-    weight: 1,
+    weight: 2,
   },
   {
     id: "pti",
-    title: "PTI - Pass Through Income",
-    description: "Income from business trusts",
+    title: "Schedule PTI - Pass Through Income",
+    description:
+      "Pass Through Income details from business trust or investment fund as per section 115U, 115UA and 115UB",
     status: "pending",
-    weight: 1,
+    weight: 2,
   },
   {
     id: "fsi",
-    title: "FSI - Foreign Source Income",
-    description: "Income earned from outside India",
-    status: "pending",
-    weight: 1,
-  },
-  {
-    id: "tr-fa",
-    title: "TR/FA - Tax Relief & Foreign Assets",
-    description: "Foreign tax credit and foreign asset details",
-    status: "pending",
-    weight: 1,
-  },
-  {
-    id: "sch-5a",
-    title: "Schedule 5A - Tax Payments",
+    title: "Schedule FSI - Foreign Source Income",
     description:
-      "Details of taxes paid - TDS, TCS, Advance Tax, Self-Assessment",
+      "Details of Income from outside India and tax relief (available only for residents)",
     status: "pending",
     weight: 2,
+  },
+  {
+    id: "tr",
+    title: "Schedule TR - Tax Relief",
+    description:
+      "Summary of tax relief claimed for taxes paid outside India (sections 90, 90A, 91)",
+    status: "pending",
+    weight: 2,
+  },
+  {
+    id: "fa",
+    title: "Schedule FA - Foreign Assets",
+    description:
+      "Details of Foreign Assets and Income from any source outside India (Depository, Custodial, Equity, Property, Trusts, etc.)",
+    status: "pending",
+    weight: 3,
+  },
+  {
+    id: "5a",
+    title: "Schedule 5A - Apportionment of Income",
+    description:
+      "Apportionment of income between spouses governed by Portuguese Civil Code",
+    status: "pending",
+    weight: 1,
   },
   {
     id: "al",
-    title: "AL - Agricultural Land",
-    description: "Details of agricultural land held",
-    status: "pending",
-    weight: 1,
-  },
-  {
-    id: "part-b-ti",
-    title: "Part B-TI - Computation of Total Income",
-    description: "Total income computation and taxable total income",
-    status: "pending",
-    weight: 2,
-  },
-  {
-    id: "it",
-    title: "IT - Income Tax Computation",
+    title: "Schedule AL - Assets and Liabilities",
     description:
-      "Tax calculation, rebate u/s 87A, cess, and final tax liability",
+      "Assets and Liabilities at the end of the year (applicable where total income exceeds Rs. 1 Crore)",
     status: "pending",
     weight: 2,
   },
   {
-    id: "esop",
-    title: "ESOP - Employee Stock Options",
-    description: "Details of ESOPs and RSUs",
+    id: "part3-tti",
+    title: "Part B-TTI - Tax Liability Computation",
+    description:
+      "Computation of tax liability on total income including surcharge, cess, rebates, advance tax, TDS, TCS, and refund calculation",
     status: "pending",
-    weight: 1,
+    weight: 3,
   },
   {
-    id: "tds",
-    title: "TDS - Tax Deducted at Source",
-    description: "TDS details from Form 16, 16A, 26AS, and AIS",
+    id: "tax-payments",
+    title: "Tax Payments & Verification",
+    description:
+      "Details of advance tax, TDS, TCS payments and final verification with signature",
     status: "pending",
     weight: 2,
-  },
-  {
-    id: "verification",
-    title: "Verification",
-    description: "Final verification and declaration",
-    status: "pending",
-    weight: 1,
   },
 ];
 
@@ -261,4 +238,4 @@ export const getNextPendingSection = (
       (s) => s.status === "pending" || s.status === "in-progress"
     ) || null
   );
-}
+};
