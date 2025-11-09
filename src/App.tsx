@@ -41,7 +41,7 @@ import ItrRegistration from "./components/ui/practice/itr/Registration.tsx";
 import ItrOne from "./components/ui/practice/itr/itr-1/itr-1.tsx";
 import ItrTwo from "./components/ui/practice/itr/itr-2/Itr-two.tsx";
 // import ItrFour from "./components/ui/practice/itr/ItrFour.tsx";
-import ItrFour from "./components/ui/practice/itr/human/ItrFour.tsx";
+import ItrFour from "./components/ui/practice/itr/itr-4/itr-four.tsx";
 
 import ItrSix from "./components/ui/practice/itr/ItrSix.tsx";
 
