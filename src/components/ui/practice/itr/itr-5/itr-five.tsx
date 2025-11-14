@@ -29,6 +29,11 @@ import ItrFiveScheduleBP from "./components/itr-five-schedule-bp";
 import ItrFiveScheduleCYLA from "./components/itr-five-schedule-cyla";
 import ItrFiveSchedulePTI from "./components/itr-five-schedule-pti";
 import ItrFiveScheduleSI from "./components/itr-five-schedule-si";
+import ItrFiveScheduleUSTD from "./components/itr-five-schedule-ustd";
+import ItrFiveSchedule115BBH from "./components/itr-five-schedule-115bbh";
+import ItrFiveScheduleFSI from "./components/itr-five-schedule-fsi";
+import ItrFiveScheduleTR from "./components/itr-five-schedule-tr";
+import ItrFiveScheduleFA from "./components/itr-five-schedule-fa";
 
 // ITR-5 sections based on the form structure provided
 const ITR_FIVE_SECTIONS: ItrFiveSection[] = [
@@ -207,6 +212,41 @@ const ITR_FIVE_SECTIONS: ItrFiveSection[] = [
       "STCG on shares, LTCG on securities, virtual digital assets, lottery winnings, and other special rate income",
     status: "not-started",
   },
+  {
+    id: "schedule-ustd",
+    title: "Schedule USTD - Accreted Income Under Section 115TD",
+    description:
+      "Fair market value computation, accreted income, and tax/interest payable under section 115TD",
+    status: "not-started",
+  },
+  {
+    id: "schedule-115bbh",
+    title: "Schedule 115BBH - Specified Income of Certain Institutions",
+    description:
+      "Specified income of certain institutions under section 115BBH with various explanations",
+    status: "not-started",
+  },
+  {
+    id: "schedule-fsi",
+    title: "Schedule FSI - Details of Income from Outside India and Tax Relief",
+    description:
+      "Income from outside India and tax relief available under DTAA (applicable only for residents)",
+    status: "not-started",
+  },
+  {
+    id: "schedule-tr",
+    title: "Schedule TR - Summary of Tax Relief Claimed for Taxes Paid Outside India",
+    description:
+      "Summary of tax relief claimed for taxes paid outside India under section 90, 90A or 91 (for residents only)",
+    status: "not-started",
+  },
+  {
+    id: "schedule-fa",
+    title: "Schedule FA - Details of Foreign Assets and Income from Any Source Outside India",
+    description:
+      "Comprehensive details of all foreign assets including depository, custodial, and capital assets held outside India",
+    status: "not-started",
+  },
 ];
 
 const calculateCompletionPercentage = (sections: ItrFiveSection[]): number => {
@@ -242,6 +282,11 @@ interface ItrFiveFormData {
   scheduleCYLA?: any;
   schedulePTI?: any;
   scheduleSI?: any;
+  scheduleUSTD?: any;
+  schedule115BBH?: any;
+  scheduleFSI?: any;
+  scheduleTR?: any;
+  scheduleFA?: any;
   partBIncome?: any;
   partCCapitalGains?: any;
   partDIncome?: any;
@@ -328,6 +373,21 @@ const ItrFive: React.FC = () => {
     }
     if (sectionId === "schedule-si" && data) {
       setFormData((prev) => ({ ...prev, scheduleSI: data }));
+    }
+    if (sectionId === "schedule-ustd" && data) {
+      setFormData((prev) => ({ ...prev, scheduleUSTD: data }));
+    }
+    if (sectionId === "schedule-115bbh" && data) {
+      setFormData((prev) => ({ ...prev, schedule115BBH: data }));
+    }
+    if (sectionId === "schedule-fsi" && data) {
+      setFormData((prev) => ({ ...prev, scheduleFSI: data }));
+    }
+    if (sectionId === "schedule-tr" && data) {
+      setFormData((prev) => ({ ...prev, scheduleTR: data }));
+    }
+    if (sectionId === "schedule-fa" && data) {
+      setFormData((prev) => ({ ...prev, scheduleFA: data }));
     }
     if (sectionId === "part-b-income" && data) {
       setFormData((prev) => ({ ...prev, partBIncome: data }));
@@ -651,9 +711,59 @@ const ItrFive: React.FC = () => {
               />
             )}
 
+            {/* Render Schedule USTD */}
+            {activeSectionId === "schedule-ustd" && (
+              <ItrFiveScheduleUSTD
+                initialData={formData.scheduleUSTD}
+                onSave={(data) => handleSectionComplete("schedule-ustd", data)}
+                onNext={() => handleSectionComplete("schedule-ustd", formData.scheduleUSTD)}
+                onBack={handleBackToSummary}
+              />
+            )}
+
+            {/* Render Schedule 115BBH */}
+            {activeSectionId === "schedule-115bbh" && (
+              <ItrFiveSchedule115BBH
+                initialData={formData.schedule115BBH}
+                onSave={(data) => handleSectionComplete("schedule-115bbh", data)}
+                onNext={() => handleSectionComplete("schedule-115bbh", formData.schedule115BBH)}
+                onBack={handleBackToSummary}
+              />
+            )}
+
+            {/* Render Schedule FSI */}
+            {activeSectionId === "schedule-fsi" && (
+              <ItrFiveScheduleFSI
+                initialData={formData.scheduleFSI}
+                onSave={(data) => handleSectionComplete("schedule-fsi", data)}
+                onNext={() => handleSectionComplete("schedule-fsi", formData.scheduleFSI)}
+                onBack={handleBackToSummary}
+              />
+            )}
+
+            {/* Render Schedule TR */}
+            {activeSectionId === "schedule-tr" && (
+              <ItrFiveScheduleTR
+                initialData={formData.scheduleTR}
+                onSave={(data) => handleSectionComplete("schedule-tr", data)}
+                onNext={() => handleSectionComplete("schedule-tr", formData.scheduleTR)}
+                onBack={handleBackToSummary}
+              />
+            )}
+
+            {/* Render Schedule FA */}
+            {activeSectionId === "schedule-fa" && (
+              <ItrFiveScheduleFA
+                initialData={formData.scheduleFA}
+                onSave={(data) => handleSectionComplete("schedule-fa", data)}
+                onNext={() => handleSectionComplete("schedule-fa", formData.scheduleFA)}
+                onBack={handleBackToSummary}
+              />
+            )}
+
             {/* Placeholder for other sections */}
             {activeSectionId && 
-             !["part-a-gen", "schedule-i", "schedule-ia", "schedule-d", "schedule-da", "schedule-db", "schedule-bs", "schedule-r", "schedule-la", "schedule-et", "schedule-vc", "schedule-ai", "schedule-h", "schedule-he1", "schedule-he3", "schedule-he4", "schedule-hp", "schedule-cg", "schedule-vda", "schedule-os", "schedule-oa", "schedule-bp", "schedule-cyla", "schedule-pti", "schedule-si"].includes(activeSectionId) && (
+             !["part-a-gen", "schedule-i", "schedule-ia", "schedule-d", "schedule-da", "schedule-db", "schedule-bs", "schedule-r", "schedule-la", "schedule-et", "schedule-vc", "schedule-ai", "schedule-h", "schedule-he1", "schedule-he3", "schedule-he4", "schedule-hp", "schedule-cg", "schedule-vda", "schedule-os", "schedule-oa", "schedule-bp", "schedule-cyla", "schedule-pti", "schedule-si", "schedule-ustd", "schedule-115bbh", "schedule-fsi", "schedule-tr", "schedule-fa"].includes(activeSectionId) && (
               <div className="rounded-lg bg-white p-6 shadow-md">
                 <div className="mb-4 flex items-center justify-between">
                   <h2 className="text-2xl font-bold text-gray-900">
