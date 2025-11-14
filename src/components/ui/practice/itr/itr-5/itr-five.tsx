@@ -13,6 +13,8 @@ import ItrFiveScheduleDB from "./components/itr-five-schedule-db";
 import ItrFiveScheduleBS from "./components/itr-five-schedule-bs";
 import ItrFiveScheduleR from "./components/itr-five-schedule-r";
 import ItrFiveScheduleLA from "./components/itr-five-schedule-la";
+import ItrFiveScheduleET from "./components/itr-five-schedule-et";
+import ItrFiveScheduleVC from "./components/itr-five-schedule-vc";
 
 // ITR-5 sections based on the form structure provided
 const ITR_FIVE_SECTIONS: ItrFiveSection[] = [
@@ -79,6 +81,20 @@ const ITR_FIVE_SECTIONS: ItrFiveSection[] = [
       "Details of Political Party Registration, Audit, and Contributions",
     status: "not-started",
   },
+  {
+    id: "schedule-et",
+    title: "Schedule ET - Electoral Trust",
+    description:
+      "Details of Electoral Trust Accounts and Compliance with Distributions",
+    status: "not-started",
+  },
+  {
+    id: "schedule-vc",
+    title: "Schedule VC - Voluntary Contributions",
+    description:
+      "Details of Domestic and Foreign Voluntary Contributions Received",
+    status: "not-started",
+  },
 ];
 
 const calculateCompletionPercentage = (sections: ItrFiveSection[]): number => {
@@ -98,6 +114,8 @@ interface ItrFiveFormData {
   scheduleBS?: any;
   scheduleR?: any;
   scheduleLA?: any;
+  scheduleET?: any;
+  scheduleVC?: any;
   partBIncome?: any;
   partCCapitalGains?: any;
   partDIncome?: any;
@@ -338,9 +356,29 @@ const ItrFive: React.FC = () => {
               />
             )}
 
+            {/* Render Schedule ET */}
+            {activeSectionId === "schedule-et" && (
+              <ItrFiveScheduleET
+                initialData={formData.scheduleET}
+                onSave={(data) => handleSectionComplete("schedule-et", data)}
+                onNext={() => handleSectionComplete("schedule-et", formData.scheduleET)}
+                onBack={handleBackToSummary}
+              />
+            )}
+
+            {/* Render Schedule VC */}
+            {activeSectionId === "schedule-vc" && (
+              <ItrFiveScheduleVC
+                initialData={formData.scheduleVC}
+                onSave={(data) => handleSectionComplete("schedule-vc", data)}
+                onNext={() => handleSectionComplete("schedule-vc", formData.scheduleVC)}
+                onBack={handleBackToSummary}
+              />
+            )}
+
             {/* Placeholder for other sections */}
             {activeSectionId && 
-             !["part-a-gen", "schedule-i", "schedule-ia", "schedule-d", "schedule-da", "schedule-db", "schedule-bs", "schedule-r", "schedule-la"].includes(activeSectionId) && (
+             !["part-a-gen", "schedule-i", "schedule-ia", "schedule-d", "schedule-da", "schedule-db", "schedule-bs", "schedule-r", "schedule-la", "schedule-et", "schedule-vc"].includes(activeSectionId) && (
               <div className="rounded-lg bg-white p-6 shadow-md">
                 <div className="mb-4 flex items-center justify-between">
                   <h2 className="text-2xl font-bold text-gray-900">
