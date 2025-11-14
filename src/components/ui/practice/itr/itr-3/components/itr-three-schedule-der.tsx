@@ -87,7 +87,7 @@ const ItrThreeScheduleDER: React.FC<ScheduleDERProps> = ({
   onSave,
   initialData,
 }) => {
-  const { watch, handleSubmit, formState: { errors }, control } = useForm<ScheduleDERFormData>({
+  const { watch, handleSubmit, formState: { errors }, control, setValue } = useForm<ScheduleDERFormData>({
     resolver: zodResolver(scheduleDERSchema),
     defaultValues: initialData || {
       assets: [
@@ -106,27 +106,37 @@ const ItrThreeScheduleDER: React.FC<ScheduleDERProps> = ({
   const formData = watch();
 
   const depreciateSummary = useMemo(() => {
-    const rates = {
-      "15": [] as number[],
-      "30": [] as number[],
-      "40": [] as number[],
-      "45": [] as number[],
+    const buckets: Record<string, number[]> = {
+      "15": [],
+      "30": [],
+      "40": [],
+      "45": [],
     };
 
     formData.assets?.forEach((asset) => {
-      const dep = asset.depreciation ? parseFloat(asset.depreciation) : 0;
-      if (dep > 0 && asset.rate) {
-        if (asset.rate === "15") rates["15"].push(dep);
-        else if (asset.rate === "30") rates["30"].push(dep);
-        else if (asset.rate === "40") rates["40"].push(dep);
-        else if (asset.rate === "45") rates["45"].push(dep);
+      if (!asset) return;
+      // Normalize depreciation value: remove commas and spaces
+      const rawDep = typeof asset.depreciation === "string" ? asset.depreciation.replace(/[,\s]/g, "") : asset.depreciation;
+      const dep = rawDep ? parseFloat(String(rawDep)) : 0;
+      if (!dep || dep <= 0) return;
+
+      // Parse numeric rate (handle values like "15", "15%", or "15.0")
+      const rateStr = asset.rate ? String(asset.rate).replace(/[^0-9.]/g, "") : "";
+      const rateNum = rateStr ? parseFloat(rateStr) : NaN;
+
+      if (!isNaN(rateNum)) {
+        const rounded = Math.round(rateNum);
+        if (rounded === 15) buckets["15"].push(dep);
+        else if (rounded === 30) buckets["30"].push(dep);
+        else if (rounded === 40) buckets["40"].push(dep);
+        else if (rounded === 45) buckets["45"].push(dep);
       }
     });
 
-    const r15Sum = rates["15"].reduce((a, b) => a + b, 0);
-    const r30Sum = rates["30"].reduce((a, b) => a + b, 0);
-    const r40Sum = rates["40"].reduce((a, b) => a + b, 0);
-    const r45Sum = rates["45"].reduce((a, b) => a + b, 0);
+    const r15Sum = buckets["15"].reduce((a, b) => a + b, 0);
+    const r30Sum = buckets["30"].reduce((a, b) => a + b, 0);
+    const r40Sum = buckets["40"].reduce((a, b) => a + b, 0);
+    const r45Sum = buckets["45"].reduce((a, b) => a + b, 0);
 
     return {
       rate15: r15Sum,
@@ -167,6 +177,28 @@ const ItrThreeScheduleDER: React.FC<ScheduleDERProps> = ({
         onSave(data);
         onNext();
       })} className="space-y-6">
+        {/* Auto Calculate Button */}
+        <div className="flex gap-2 items-center">
+          <button
+            type="button"
+            onClick={() => {
+              const newAssets = formData.assets?.map((asset) => ({
+                ...asset,
+                depreciation: asset.blockId === "1" ? "50000" : asset.blockId === "2" ? "25000" : asset.blockId === "3" ? "15000" : asset.blockId === "4" ? "75000" : asset.blockId === "5" ? "40000" : asset.depreciation,
+              })) || [];
+              newAssets.forEach((_, idx) => {
+                const value = newAssets[idx].depreciation || "";
+                setValue(`assets.${idx}.depreciation` as any, value, { shouldValidate: true });
+              });
+            }}
+            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition"
+            title="Auto-calculate sample depreciation"
+          >
+            🧮 Auto Calculate
+          </button>
+          <span className="text-sm text-gray-500">Fill with sample values for testing</span>
+        </div>
+
         {/* Summary Table */}
         <div className="overflow-x-auto rounded-lg border border-gray-200">
           <table className="w-full border-collapse text-sm">
@@ -200,8 +232,11 @@ const ItrThreeScheduleDER: React.FC<ScheduleDERProps> = ({
                       placeholder="0.00"
                       value={asset.depreciation || ""}
                       onChange={(e) => {
-                        const newAssets = [...(formData.assets || [])];
-                        newAssets[idx].depreciation = e.target.value;
+                        const val = e.target.value;
+                        setValue(`assets.${idx}.depreciation` as any, val, {
+                          shouldValidate: true,
+                          shouldDirty: true,
+                        });
                       }}
                       className="w-full rounded border border-gray-300 px-2 py-1 text-right focus:border-cyan-500 focus:outline-none"
                     />

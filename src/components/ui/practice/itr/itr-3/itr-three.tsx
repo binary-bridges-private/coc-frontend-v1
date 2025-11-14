@@ -602,6 +602,41 @@ const ItrThree: React.FC = () => {
     verification?: any;
   }>({});
 
+  // Dev/test helper: dummy data for Schedule HP (Income from House Property)
+  const DUMMY_SCHEDULE_HP: ScheduleHPFormData = {
+    property1: {
+      propertyId: "1",
+      address: "123 MG Road, Near City Park",
+      city: "Bengaluru",
+      state: "Karnataka",
+      country: "India",
+      pinCode: "560001",
+      isCoOwned: "yes",
+      coOwnershipPercentage: "50",
+      coOwnerName: "Amit Verma",
+      coOwnerPAN: "ABCDE1234F",
+      coOwnershipPercentageShare: "50",
+    },
+    propertyType: "let-out",
+    grossRentReceived: "240000",
+    municipalTaxPaid: "24000",
+    unrealizedRent: "0",
+    annualValueSelfOccupied: "",
+    interestOnBorrowedCapital: "0",
+    details: "Rental income from residential property",
+    totalOfA1: "240000",
+    annualValue: "166000",
+    stdDeduction: "30000",
+    interestPayable: "20000",
+    details2: "Standard deduction and interest on loan",
+    totalDeductionsB1: "50000",
+    arrearsUnrealizedRentReceived: "0",
+    arrearsUnrealizedRentReceivable: "0",
+    unrealizedRentBeforeYear: "0",
+    stdDedOnUnrealized: "0",
+    annualValueCalculated: "166000",
+  };
+
   const completionPercentage = useMemo(
     () => calculateCompletionPercentage(sections),
     [sections]
@@ -827,6 +862,22 @@ const ItrThree: React.FC = () => {
             tax return
           </p>
         </header>
+
+        {/* Dev helper: quick-fill Schedule HP for testing */}
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => {
+              setFormData((prev) => ({ ...prev, scheduleHP: DUMMY_SCHEDULE_HP }));
+              handleSectionSelect("schedule-hp");
+            }}
+            className="px-3 py-2 rounded bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition"
+            title="Fill Schedule HP with dummy data and open the section"
+          >
+            Fill Schedule HP (dev)
+          </button>
+          <span className="text-sm text-gray-500">Use to prefill Schedule HP for testing.</span>
+        </div>
 
         {/* Main Content */}
         {activeSectionId ? (
