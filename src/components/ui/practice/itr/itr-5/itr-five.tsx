@@ -21,6 +21,14 @@ import ItrFiveScheduleHE1 from "./components/itr-five-schedule-he1";
 import ItrFiveScheduleHE3 from "./components/itr-five-schedule-he3";
 import ItrFiveScheduleHE4 from "./components/itr-five-schedule-he4";
 import ItrFiveScheduleHP from "./components/itr-five-schedule-hp";
+import ItrFiveScheduleCG from "./components/itr-five-schedule-cg";
+import ItrFiveScheduleVDA from "./components/itr-five-schedule-vda";
+import ItrFiveScheduleOS from "./components/itr-five-schedule-os";
+import ItrFiveScheduleOA from "./components/itr-five-schedule-oa";
+import ItrFiveScheduleBP from "./components/itr-five-schedule-bp";
+import ItrFiveScheduleCYLA from "./components/itr-five-schedule-cyla";
+import ItrFiveSchedulePTI from "./components/itr-five-schedule-pti";
+import ItrFiveScheduleSI from "./components/itr-five-schedule-si";
 
 // ITR-5 sections based on the form structure provided
 const ITR_FIVE_SECTIONS: ItrFiveSection[] = [
@@ -143,6 +151,62 @@ const ITR_FIVE_SECTIONS: ItrFiveSection[] = [
       "Details of Income from House Property (Self-Occupied, Let out, Deemed let out)",
     status: "not-started",
   },
+  {
+    id: "schedule-cg",
+    title: "Schedule CG - Capital Gains",
+    description:
+      "Short-term and Long-term Capital Gains with deductions and exemptions",
+    status: "not-started",
+  },
+  {
+    id: "schedule-vda",
+    title: "Schedule VDA - Income from Virtual Digital Assets",
+    description:
+      "Details of transactions involving transfer of Virtual Digital Assets u/s 115BBH",
+    status: "not-started",
+  },
+  {
+    id: "schedule-os",
+    title: "Schedule OS - Income from Other Sources",
+    description:
+      "Dividends, Interest, Gifts, Winnings, Rent, and other miscellaneous income",
+    status: "not-started",
+  },
+  {
+    id: "schedule-oa",
+    title: "Schedule OA - Business and Profession",
+    description:
+      "General information about business and profession including accounting method and stock valuation",
+    status: "not-started",
+  },
+  {
+    id: "schedule-bp",
+    title: "Schedule BP - Computation of Income from Business or Profession",
+    description:
+      "Detailed computation including deductions, adjustments, depreciation, and intra-head set-off of losses",
+    status: "not-started",
+  },
+  {
+    id: "schedule-cyla",
+    title: "Schedule CYLA - Details of Income After Set-off of Current Year's Losses",
+    description:
+      "Set-off of losses from various heads of income against income in the current year",
+    status: "not-started",
+  },
+  {
+    id: "schedule-pti",
+    title: "Schedule PTI - Details of Income from Business Trust or Investment Fund",
+    description:
+      "Income from business trust u/s 113U and investment fund u/s 113UA",
+    status: "not-started",
+  },
+  {
+    id: "schedule-si",
+    title: "Schedule SI - Income Chargeable to Tax at Special Rates",
+    description:
+      "STCG on shares, LTCG on securities, virtual digital assets, lottery winnings, and other special rate income",
+    status: "not-started",
+  },
 ];
 
 const calculateCompletionPercentage = (sections: ItrFiveSection[]): number => {
@@ -170,6 +234,14 @@ interface ItrFiveFormData {
   scheduleHE3?: any;
   scheduleHE4?: any;
   scheduleHP?: any;
+  scheduleCG?: any;
+  scheduleVDA?: any;
+  scheduleOS?: any;
+  scheduleOA?: any;
+  scheduleBP?: any;
+  scheduleCYLA?: any;
+  schedulePTI?: any;
+  scheduleSI?: any;
   partBIncome?: any;
   partCCapitalGains?: any;
   partDIncome?: any;
@@ -245,8 +317,17 @@ const ItrFive: React.FC = () => {
     if (sectionId === "schedule-i" && data) {
       setFormData((prev) => ({ ...prev, scheduleI: data }));
     }
-    if (sectionId === "schedule-ia" && data) {
-      setFormData((prev) => ({ ...prev, scheduleIA: data }));
+    if (sectionId === "schedule-bp" && data) {
+      setFormData((prev) => ({ ...prev, scheduleBP: data }));
+    }
+    if (sectionId === "schedule-cyla" && data) {
+      setFormData((prev) => ({ ...prev, scheduleCYLA: data }));
+    }
+    if (sectionId === "schedule-pti" && data) {
+      setFormData((prev) => ({ ...prev, schedulePTI: data }));
+    }
+    if (sectionId === "schedule-si" && data) {
+      setFormData((prev) => ({ ...prev, scheduleSI: data }));
     }
     if (sectionId === "part-b-income" && data) {
       setFormData((prev) => ({ ...prev, partBIncome: data }));
@@ -490,9 +571,89 @@ const ItrFive: React.FC = () => {
               />
             )}
 
+            {/* Render Schedule CG */}
+            {activeSectionId === "schedule-cg" && (
+              <ItrFiveScheduleCG
+                initialData={formData.scheduleCG}
+                onSave={(data) => handleSectionComplete("schedule-cg", data)}
+                onNext={() => handleSectionComplete("schedule-cg", formData.scheduleCG)}
+                onBack={handleBackToSummary}
+              />
+            )}
+
+            {/* Render Schedule VDA */}
+            {activeSectionId === "schedule-vda" && (
+              <ItrFiveScheduleVDA
+                initialData={formData.scheduleVDA}
+                onSave={(data) => handleSectionComplete("schedule-vda", data)}
+                onNext={() => handleSectionComplete("schedule-vda", formData.scheduleVDA)}
+                onBack={handleBackToSummary}
+              />
+            )}
+
+            {/* Render Schedule OS */}
+            {activeSectionId === "schedule-os" && (
+              <ItrFiveScheduleOS
+                initialData={formData.scheduleOS}
+                onSave={(data) => handleSectionComplete("schedule-os", data)}
+                onNext={() => handleSectionComplete("schedule-os", formData.scheduleOS)}
+                onBack={handleBackToSummary}
+              />
+            )}
+
+            {/* Render Schedule OA */}
+            {activeSectionId === "schedule-oa" && (
+              <ItrFiveScheduleOA
+                initialData={formData.scheduleOA}
+                onSave={(data) => handleSectionComplete("schedule-oa", data)}
+                onNext={() => handleSectionComplete("schedule-oa", formData.scheduleOA)}
+                onBack={handleBackToSummary}
+              />
+            )}
+
+            {/* Render Schedule BP */}
+            {activeSectionId === "schedule-bp" && (
+              <ItrFiveScheduleBP
+                initialData={formData.scheduleBP}
+                onSave={(data) => handleSectionComplete("schedule-bp", data)}
+                onNext={() => handleSectionComplete("schedule-bp", formData.scheduleBP)}
+                onBack={handleBackToSummary}
+              />
+            )}
+
+            {/* Render Schedule CYLA */}
+            {activeSectionId === "schedule-cyla" && (
+              <ItrFiveScheduleCYLA
+                initialData={formData.scheduleCYLA}
+                onSave={(data) => handleSectionComplete("schedule-cyla", data)}
+                onNext={() => handleSectionComplete("schedule-cyla", formData.scheduleCYLA)}
+                onBack={handleBackToSummary}
+              />
+            )}
+
+            {/* Render Schedule PTI */}
+            {activeSectionId === "schedule-pti" && (
+              <ItrFiveSchedulePTI
+                initialData={formData.schedulePTI}
+                onSave={(data) => handleSectionComplete("schedule-pti", data)}
+                onNext={() => handleSectionComplete("schedule-pti", formData.schedulePTI)}
+                onBack={handleBackToSummary}
+              />
+            )}
+
+            {/* Render Schedule SI */}
+            {activeSectionId === "schedule-si" && (
+              <ItrFiveScheduleSI
+                initialData={formData.scheduleSI}
+                onSave={(data) => handleSectionComplete("schedule-si", data)}
+                onNext={() => handleSectionComplete("schedule-si", formData.scheduleSI)}
+                onBack={handleBackToSummary}
+              />
+            )}
+
             {/* Placeholder for other sections */}
             {activeSectionId && 
-             !["part-a-gen", "schedule-i", "schedule-ia", "schedule-d", "schedule-da", "schedule-db", "schedule-bs", "schedule-r", "schedule-la", "schedule-et", "schedule-vc", "schedule-ai", "schedule-h", "schedule-he1", "schedule-he3", "schedule-he4", "schedule-hp"].includes(activeSectionId) && (
+             !["part-a-gen", "schedule-i", "schedule-ia", "schedule-d", "schedule-da", "schedule-db", "schedule-bs", "schedule-r", "schedule-la", "schedule-et", "schedule-vc", "schedule-ai", "schedule-h", "schedule-he1", "schedule-he3", "schedule-he4", "schedule-hp", "schedule-cg", "schedule-vda", "schedule-os", "schedule-oa", "schedule-bp", "schedule-cyla", "schedule-pti", "schedule-si"].includes(activeSectionId) && (
               <div className="rounded-lg bg-white p-6 shadow-md">
                 <div className="mb-4 flex items-center justify-between">
                   <h2 className="text-2xl font-bold text-gray-900">
