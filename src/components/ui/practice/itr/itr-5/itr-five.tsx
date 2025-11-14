@@ -17,6 +17,10 @@ import ItrFiveScheduleET from "./components/itr-five-schedule-et";
 import ItrFiveScheduleVC from "./components/itr-five-schedule-vc";
 import ItrFiveScheduleAI from "./components/itr-five-schedule-ai";
 import ItrFiveScheduleH from "./components/itr-five-schedule-h";
+import ItrFiveScheduleHE1 from "./components/itr-five-schedule-he1";
+import ItrFiveScheduleHE3 from "./components/itr-five-schedule-he3";
+import ItrFiveScheduleHE4 from "./components/itr-five-schedule-he4";
+import ItrFiveScheduleHP from "./components/itr-five-schedule-hp";
 
 // ITR-5 sections based on the form structure provided
 const ITR_FIVE_SECTIONS: ItrFiveSection[] = [
@@ -111,6 +115,34 @@ const ITR_FIVE_SECTIONS: ItrFiveSection[] = [
       "Amount applied to stated objects of the trust/institution during previous year from all sources",
     status: "not-started",
   },
+  {
+    id: "schedule-he1",
+    title: "Schedule HE-1 - Income & Expenditure Statement",
+    description:
+      "For assessees claiming exemption u/s 10(21), 10(22)(4), 10(23B), 10(23D)",
+    status: "not-started",
+  },
+  {
+    id: "schedule-he3",
+    title: "Schedule HE-3 - Income & Expenditure Statement",
+    description:
+      "For assessees with institutions/universities not exceeding fifty per cent of total receipts",
+    status: "not-started",
+  },
+  {
+    id: "schedule-he4",
+    title: "Schedule HE-4 - Income & Expenditure Statement",
+    description:
+      "For assessees u/s 10(23C)(iiiad), 10(23C)(iv), 10(23C)(v) with no fifty per cent restriction",
+    status: "not-started",
+  },
+  {
+    id: "schedule-hp",
+    title: "Schedule HP - Income from House Property",
+    description:
+      "Details of Income from House Property (Self-Occupied, Let out, Deemed let out)",
+    status: "not-started",
+  },
 ];
 
 const calculateCompletionPercentage = (sections: ItrFiveSection[]): number => {
@@ -134,6 +166,10 @@ interface ItrFiveFormData {
   scheduleVC?: any;
   scheduleAI?: any;
   scheduleH?: any;
+  scheduleHE1?: any;
+  scheduleHE3?: any;
+  scheduleHE4?: any;
+  scheduleHP?: any;
   partBIncome?: any;
   partCCapitalGains?: any;
   partDIncome?: any;
@@ -414,9 +450,49 @@ const ItrFive: React.FC = () => {
               />
             )}
 
+            {/* Render Schedule HE-1 */}
+            {activeSectionId === "schedule-he1" && (
+              <ItrFiveScheduleHE1
+                initialData={formData.scheduleHE1}
+                onSave={(data) => handleSectionComplete("schedule-he1", data)}
+                onNext={() => handleSectionComplete("schedule-he1", formData.scheduleHE1)}
+                onBack={handleBackToSummary}
+              />
+            )}
+
+            {/* Render Schedule HE-3 */}
+            {activeSectionId === "schedule-he3" && (
+              <ItrFiveScheduleHE3
+                initialData={formData.scheduleHE3}
+                onSave={(data) => handleSectionComplete("schedule-he3", data)}
+                onNext={() => handleSectionComplete("schedule-he3", formData.scheduleHE3)}
+                onBack={handleBackToSummary}
+              />
+            )}
+
+            {/* Render Schedule HE-4 */}
+            {activeSectionId === "schedule-he4" && (
+              <ItrFiveScheduleHE4
+                initialData={formData.scheduleHE4}
+                onSave={(data) => handleSectionComplete("schedule-he4", data)}
+                onNext={() => handleSectionComplete("schedule-he4", formData.scheduleHE4)}
+                onBack={handleBackToSummary}
+              />
+            )}
+
+            {/* Render Schedule HP */}
+            {activeSectionId === "schedule-hp" && (
+              <ItrFiveScheduleHP
+                initialData={formData.scheduleHP}
+                onSave={(data) => handleSectionComplete("schedule-hp", data)}
+                onNext={() => handleSectionComplete("schedule-hp", formData.scheduleHP)}
+                onBack={handleBackToSummary}
+              />
+            )}
+
             {/* Placeholder for other sections */}
             {activeSectionId && 
-             !["part-a-gen", "schedule-i", "schedule-ia", "schedule-d", "schedule-da", "schedule-db", "schedule-bs", "schedule-r", "schedule-la", "schedule-et", "schedule-vc", "schedule-ai", "schedule-h"].includes(activeSectionId) && (
+             !["part-a-gen", "schedule-i", "schedule-ia", "schedule-d", "schedule-da", "schedule-db", "schedule-bs", "schedule-r", "schedule-la", "schedule-et", "schedule-vc", "schedule-ai", "schedule-h", "schedule-he1", "schedule-he3", "schedule-he4", "schedule-hp"].includes(activeSectionId) && (
               <div className="rounded-lg bg-white p-6 shadow-md">
                 <div className="mb-4 flex items-center justify-between">
                   <h2 className="text-2xl font-bold text-gray-900">
