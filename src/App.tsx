@@ -41,7 +41,9 @@ import ItrRegistration from "./components/ui/practice/itr/Registration.tsx";
 import ItrOne from "./components/ui/practice/itr/itr-1/itr-1.tsx";
 import ItrTwo from "./components/ui/practice/itr/itr-2/Itr-two.tsx";
 // import ItrFour from "./components/ui/practice/itr/ItrFour.tsx";
+import ItrThree from "./components/ui/practice/itr/itr-3/itr-three.tsx";
 import ItrFour from "./components/ui/practice/itr/itr-4/itr-four.tsx";
+import ItrSeven from "./components/ui/practice/itr/itr-5/itr-five.tsx";
 
 import ItrSix from "./components/ui/practice/itr/ItrSix.tsx";
 
@@ -57,9 +59,7 @@ import FormAOC4 from "./components/ui/practice/roc/FormAOC4.tsx";
 import FormMGT7 from "./components/ui/practice/roc/FormMGT7.tsx";
 import Incorporation from "./components/ui/practice/roc/Incorporation.tsx";
 import RocFilingForm from "./components/ui/practice/roc/RocFilingForm.tsx";
-import ItrThree from "./components/ui/practice/itr/itrThree.tsx";
 import ItrFive from "./components/ui/practice/itr/ItrFive.tsx";
-import ItrSeven from "./components/ui/practice/itr/ItrSeven.tsx";
 
 function App() {
   return (
@@ -103,17 +103,17 @@ function App() {
             <Route path="/practice/gst/eway-bill" element={<GstProtectedRoutes children={<EWayBill />} />} />
             <Route path="/practice/gst/e-invoice" element={<GstProtectedRoutes children={<ComingSoon />} />} />
 
-            <Route path="/practice/itr" element={<ProtectedRoutes isFree={false} children={<Itr />} />} />
-            {/* <Route path="/practice/itr/login" element={<ProtectedRoutes isFree={false} children={<LoginItr />} />} /> */}
-            <Route path="/practice/itr/registration" element={<ProtectedRoutes isFree={false} children={<ItrRegistration />} />} />
-            <Route path="/practice/itr/login" element={<ProtectedRoutes isFree={false} children={<ItrLogin />} />} />
-            <Route path="/practice/itr/itr-1" element={<ProtectedRoutes isFree={false} children={<ItrOne />} />} />
-            <Route path="/practice/itr/itr-2" element={<ProtectedRoutes isFree={false} children={<ItrTwo />} />} />
-            <Route path="/practice/itr/itr-3" element={<ProtectedRoutes isFree={false} children={<ItrThree />} />} />
-            <Route path="/practice/itr/itr-4" element={<ProtectedRoutes isFree={false} children={<ItrFour />} />} />
-            <Route path="/practice/itr/itr-5" element={<ProtectedRoutes isFree={false} children={<ItrFive />} />} />
-            <Route path="/practice/itr/itr-6" element={<ProtectedRoutes isFree={false} children={<ItrSix />} />} />
-            <Route path="/practice/itr/itr-7" element={<ProtectedRoutes isFree={false} children={<ItrSeven />} />} />
+            <Route path="/practice/itr" element={<ProtectedRoutes isFree={true} children={<Itr />} />} />
+            {/* <Route path="/practice/itr/login" element={<ProtectedRoutes isFree={true} children={<LoginItr />} />} /> */}
+            <Route path="/practice/itr/registration" element={<ProtectedRoutes isFree={true} children={<ItrRegistration />} />} />
+            <Route path="/practice/itr/login" element={<ProtectedRoutes isFree={true} children={<ItrLogin />} />} />
+            <Route path="/practice/itr/itr-1" element={<ProtectedRoutes isFree={true} children={<ItrOne />} />} />
+            <Route path="/practice/itr/itr-2" element={<ProtectedRoutes isFree={true} children={<ItrTwo />} />} />
+            <Route path="/practice/itr/itr-3" element={<ProtectedRoutes isFree={true} children={<ItrThree />} />} />
+            <Route path="/practice/itr/itr-4" element={<ProtectedRoutes isFree={true} children={<ItrFour />} />} />
+            <Route path="/practice/itr/itr-5" element={<ProtectedRoutes isFree={true} children={<ItrFive />} />} />
+            <Route path="/practice/itr/itr-6" element={<ProtectedRoutes isFree={true} children={<ItrSix />} />} />
+            <Route path="/practice/itr/itr-7" element={<ProtectedRoutes isFree={true} children={<ItrSeven />} />} />
 
             <Route path="/practice/tds" element={<ProtectedRoutes isFree={false} children={<Tds />} />} />
             <Route path="/practice/tds/registration" element={<ProtectedRoutes isFree={false} children={<TdsRegister />} />} />

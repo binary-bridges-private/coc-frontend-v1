@@ -34,6 +34,12 @@ import ItrFiveSchedule115BBH from "./components/itr-five-schedule-115bbh";
 import ItrFiveScheduleFSI from "./components/itr-five-schedule-fsi";
 import ItrFiveScheduleTR from "./components/itr-five-schedule-tr";
 import ItrFiveScheduleFA from "./components/itr-five-schedule-fa";
+import ItrFiveScheduleSH from "./components/itr-five-schedule-sh";
+import ItrFiveSchedulePartBII from "./components/itr-five-schedule-partbii";
+import ItrFiveScheduleTTI from "./components/itr-five-schedule-tti";
+import ItrFiveScheduleTAX from "./components/itr-five-schedule-tax";
+import ItrFiveScheduleTDS from "./components/itr-five-schedule-tds";
+import ItrFiveScheduleVerification from "./components/itr-five-schedule-verification";
 
 // ITR-5 sections based on the form structure provided
 const ITR_FIVE_SECTIONS: ItrFiveSection[] = [
@@ -247,6 +253,48 @@ const ITR_FIVE_SECTIONS: ItrFiveSection[] = [
       "Comprehensive details of all foreign assets including depository, custodial, and capital assets held outside India",
     status: "not-started",
   },
+  {
+    id: "schedule-sh",
+    title: "Schedule SH - Share Holding of Unlisted Company",
+    description:
+      "Details of shareholding at end of previous year, equity share applications pending allotment, and former shareholders",
+    status: "not-started",
+  },
+  {
+    id: "schedule-partbii",
+    title: "Schedule PartB-II - Statement of Income for the Period Ended on 31st March, 2025",
+    description:
+      "Income statement for eligible entities claiming exemptions under sections 13A/13B and 10(21), 10(23AA), etc.",
+    status: "not-started",
+  },
+  {
+    id: "schedule-tti",
+    title: "Part B - TTI - Computation of Tax Liability on Total Income",
+    description:
+      "Detailed computation of tax liability including surcharge, cess, relief, and taxes paid with bank account details",
+    status: "not-started",
+  },
+  {
+    id: "schedule-tax",
+    title: "Schedule TAX - Details of Advance Tax and Self-Assessment Tax Payments",
+    description:
+      "Record all advance tax and self-assessment tax payments made during the financial year with challan details",
+    status: "not-started",
+  },
+  {
+    id: "schedule-tds",
+    title: "Schedule TDS - Tax Deducted at Source on Income",
+    description:
+      "Details of Tax Deducted at Source (TDS) as per Form 16A/16B/16C/16D/16E issued by deductors with claimed credits",
+    status: "not-started",
+  },
+  {
+    id: "schedule-verification",
+    title: "Verification - Final Declaration and Signature",
+    description:
+      "Verification declaration as per Income-tax Act, 1961 with assessee signature and date",
+    status: "not-started",
+  },
 ];
 
 const calculateCompletionPercentage = (sections: ItrFiveSection[]): number => {
@@ -287,6 +335,12 @@ interface ItrFiveFormData {
   scheduleFSI?: any;
   scheduleTR?: any;
   scheduleFA?: any;
+  scheduleSH?: any;
+  schedulePartBII?: any;
+  scheduleTTI?: any;
+  scheduleTAX?: any;
+  scheduleTDS?: any;
+  scheduleVerification?: any;
   partBIncome?: any;
   partCCapitalGains?: any;
   partDIncome?: any;
@@ -388,6 +442,24 @@ const ItrFive: React.FC = () => {
     }
     if (sectionId === "schedule-fa" && data) {
       setFormData((prev) => ({ ...prev, scheduleFA: data }));
+    }
+    if (sectionId === "schedule-sh" && data) {
+      setFormData((prev) => ({ ...prev, scheduleSH: data }));
+    }
+    if (sectionId === "schedule-partbii" && data) {
+      setFormData((prev) => ({ ...prev, schedulePartBII: data }));
+    }
+    if (sectionId === "schedule-tti" && data) {
+      setFormData((prev) => ({ ...prev, scheduleTTI: data }));
+    }
+    if (sectionId === "schedule-tax" && data) {
+      setFormData((prev) => ({ ...prev, scheduleTAX: data }));
+    }
+    if (sectionId === "schedule-tds" && data) {
+      setFormData((prev) => ({ ...prev, scheduleTDS: data }));
+    }
+    if (sectionId === "schedule-verification" && data) {
+      setFormData((prev) => ({ ...prev, scheduleVerification: data }));
     }
     if (sectionId === "part-b-income" && data) {
       setFormData((prev) => ({ ...prev, partBIncome: data }));
@@ -761,9 +833,69 @@ const ItrFive: React.FC = () => {
               />
             )}
 
+            {/* Render Schedule SH */}
+            {activeSectionId === "schedule-sh" && (
+              <ItrFiveScheduleSH
+                initialData={formData.scheduleSH}
+                onSave={(data) => handleSectionComplete("schedule-sh", data)}
+                onNext={() => handleSectionComplete("schedule-sh", formData.scheduleSH)}
+                onBack={handleBackToSummary}
+              />
+            )}
+
+            {/* Render Schedule PartB-II */}
+            {activeSectionId === "schedule-partbii" && (
+              <ItrFiveSchedulePartBII
+                initialData={formData.schedulePartBII}
+                onSave={(data) => handleSectionComplete("schedule-partbii", data)}
+                onNext={() => handleSectionComplete("schedule-partbii", formData.schedulePartBII)}
+                onBack={handleBackToSummary}
+              />
+            )}
+
+            {/* Render Schedule TTI */}
+            {activeSectionId === "schedule-tti" && (
+              <ItrFiveScheduleTTI
+                initialData={formData.scheduleTTI}
+                onSave={(data) => handleSectionComplete("schedule-tti", data)}
+                onNext={() => handleSectionComplete("schedule-tti", formData.scheduleTTI)}
+                onBack={handleBackToSummary}
+              />
+            )}
+
+            {/* Render Schedule TAX */}
+            {activeSectionId === "schedule-tax" && (
+              <ItrFiveScheduleTAX
+                initialData={formData.scheduleTAX}
+                onSave={(data) => handleSectionComplete("schedule-tax", data)}
+                onNext={() => handleSectionComplete("schedule-tax", formData.scheduleTAX)}
+                onBack={handleBackToSummary}
+              />
+            )}
+
+            {/* Render Schedule TDS */}
+            {activeSectionId === "schedule-tds" && (
+              <ItrFiveScheduleTDS
+                initialData={formData.scheduleTDS}
+                onSave={(data) => handleSectionComplete("schedule-tds", data)}
+                onNext={() => handleSectionComplete("schedule-tds", formData.scheduleTDS)}
+                onBack={handleBackToSummary}
+              />
+            )}
+
+            {/* Render Schedule Verification */}
+            {activeSectionId === "schedule-verification" && (
+              <ItrFiveScheduleVerification
+                initialData={formData.scheduleVerification}
+                onSave={(data) => handleSectionComplete("schedule-verification", data)}
+                onNext={() => handleSectionComplete("schedule-verification", formData.scheduleVerification)}
+                onBack={handleBackToSummary}
+              />
+            )}
+
             {/* Placeholder for other sections */}
             {activeSectionId && 
-             !["part-a-gen", "schedule-i", "schedule-ia", "schedule-d", "schedule-da", "schedule-db", "schedule-bs", "schedule-r", "schedule-la", "schedule-et", "schedule-vc", "schedule-ai", "schedule-h", "schedule-he1", "schedule-he3", "schedule-he4", "schedule-hp", "schedule-cg", "schedule-vda", "schedule-os", "schedule-oa", "schedule-bp", "schedule-cyla", "schedule-pti", "schedule-si", "schedule-ustd", "schedule-115bbh", "schedule-fsi", "schedule-tr", "schedule-fa"].includes(activeSectionId) && (
+             !["part-a-gen", "schedule-i", "schedule-ia", "schedule-d", "schedule-da", "schedule-db", "schedule-bs", "schedule-r", "schedule-la", "schedule-et", "schedule-vc", "schedule-ai", "schedule-h", "schedule-he1", "schedule-he3", "schedule-he4", "schedule-hp", "schedule-cg", "schedule-vda", "schedule-os", "schedule-oa", "schedule-bp", "schedule-cyla", "schedule-pti", "schedule-si", "schedule-ustd", "schedule-115bbh", "schedule-fsi", "schedule-tr", "schedule-fa", "schedule-sh", "schedule-partbii", "schedule-tti", "schedule-tax", "schedule-tds", "schedule-verification"].includes(activeSectionId) && (
               <div className="rounded-lg bg-white p-6 shadow-md">
                 <div className="mb-4 flex items-center justify-between">
                   <h2 className="text-2xl font-bold text-gray-900">
