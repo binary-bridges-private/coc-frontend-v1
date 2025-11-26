@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useFormContext } from "react-hook-form";
-import type { ITR7FormData } from "../itr-7.types";
+import type { ITR7FormData } from "../itr-7.types.ts";
 
 const UpdatedProfitLossStatement: React.FC<{ onCancel: () => void }> = ({ onCancel }) => {
   const { register, watch, formState: { errors } } = useFormContext<ITR7FormData>();

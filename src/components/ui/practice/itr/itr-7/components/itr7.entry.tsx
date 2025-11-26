@@ -1,5 +1,5 @@
 import React from "react";
-import Itr7Form from "../itr-7";
+import Itr7Form from "../itr-7.tsx";
 
 /**
  * ITR-7 Entry Component

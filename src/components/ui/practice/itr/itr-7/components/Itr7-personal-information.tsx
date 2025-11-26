@@ -1,11 +1,7 @@
 import React from "react";
 import { UseFormReturn } from "react-hook-form";
-import { ITR7FormData } from "../itr-7.types";
+import { ITR7FormData } from "../itr-7.types.ts";
 import {
-  COMPANY_TYPES,
-  FILING_STATUS_OPTIONS,
-  RETURN_TYPE_OPTIONS,
-  RESIDENTIAL_STATUS_OPTIONS,
   INDIAN_STATES,
 } from "../itr-7.constants";
 

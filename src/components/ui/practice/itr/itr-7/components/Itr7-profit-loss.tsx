@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useFormContext } from "react-hook-form";
-import { ITR7FormData } from "../itr-7.types";
+import { ITR7FormData } from "../itr-7.types.ts";
 
 interface ProfitLossAccountProps {
   onCancel: () => void;

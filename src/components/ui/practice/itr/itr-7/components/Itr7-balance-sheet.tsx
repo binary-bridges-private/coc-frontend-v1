@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { UseFormReturn } from "react-hook-form";
-import { ITR7FormData } from "../itr-7.types";
+import { ITR7FormData } from "../itr-7.types.ts";
 
 interface BalanceSheetProps {
   form: UseFormReturn<ITR7FormData>;
@@ -294,7 +294,7 @@ const BalanceSheet: React.FC<BalanceSheetProps> = ({
                       type="number"
                       step="0.01"
                       placeholder="0.00"
-                      {...register("bs_share_application_more_1year")}
+                      {...register("bs_share_application_more_1_year")}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     />
                   </div>
@@ -305,7 +305,7 @@ const BalanceSheet: React.FC<BalanceSheetProps> = ({
                     <input
                       type="number"
                       step="0.01"
-                      value={(Number(watch("bs_share_application_less_1year") || 0) + Number(watch("bs_share_application_more_1year") || 0)).toFixed(2)}
+                      value={(Number(watch("bs_share_application_less_1year") || 0) + Number(watch("bs_share_application_more_1_year") || 0)).toFixed(2)}
                       readOnly
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-green-50 font-semibold text-green-700"
                     />

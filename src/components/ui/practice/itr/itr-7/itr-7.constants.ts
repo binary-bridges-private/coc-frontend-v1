@@ -1,9 +1,3 @@
-export const ITR7_STEPS = [
-  { id: "personal-information", label: "Personal Information", step: 1 }
-];
-
-export const ITR7_TOTAL_STEPS = ITR7_STEPS.length;
-
 export const COMPANY_TYPES = [
   { value: "domestic", label: "Domestic Company" },
   { value: "foreign", label: "Foreign Company" }

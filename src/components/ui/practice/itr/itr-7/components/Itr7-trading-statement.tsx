@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { UseFormReturn } from "react-hook-form";
-import { ITR7FormData } from "../itr-7.types";
+import { ITR7FormData } from "../itr-7.types.ts";
 
 interface TradingStatementProps {
   form: UseFormReturn<ITR7FormData>;
