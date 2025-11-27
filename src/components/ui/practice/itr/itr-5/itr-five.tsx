@@ -498,19 +498,66 @@ const ItrFive: React.FC = () => {
     setActiveSectionId(null);
   };
 
-  const exportToJSON = () => {
-    const dataStr = JSON.stringify(formData, null, 2);
-    const dataBlob = new Blob([dataStr], { type: "application/json" });
+  const exportToCSV = () => {
+    // Helper function to flatten nested objects
+    const flattenObject = (obj: any, prefix = ''): any => {
+      const flattened: any = {};
+      
+      for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          const value = obj[key];
+          const newKey = prefix ? `${prefix}_${key}` : key;
+          
+          if (value === null || value === undefined) {
+            flattened[newKey] = '';
+          } else if (Array.isArray(value)) {
+            // For arrays, create separate rows
+            value.forEach((item, index) => {
+              if (typeof item === 'object') {
+                const itemFlattened = flattenObject(item, `${newKey}_${index + 1}`);
+                Object.assign(flattened, itemFlattened);
+              } else {
+                flattened[`${newKey}_${index + 1}`] = item;
+              }
+            });
+          } else if (typeof value === 'object') {
+            const nestedFlattened = flattenObject(value, newKey);
+            Object.assign(flattened, nestedFlattened);
+          } else {
+            flattened[newKey] = value;
+          }
+        }
+      }
+      
+      return flattened;
+    };
+
+    // Flatten the form data
+    const flatData = flattenObject(formData);
+    
+    // Convert to CSV format
+    const headers = Object.keys(flatData);
+    const values = Object.values(flatData);
+    
+    // Create CSV content
+    let csvContent = 'Field,Value\n';
+    headers.forEach((header, index) => {
+      const value = String(values[index]).replace(/"/g, '""'); // Escape quotes
+      csvContent += `"${header}","${value}"\n`;
+    });
+    
+    // Create and download the file
+    const dataBlob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement("a");
+    const link = document.createElement('a');
     link.href = url;
-    link.download = `ITR5_${new Date().toISOString().split("T")[0]}.json`;
-    link.style.display = "none";
+    link.download = `ITR5_${new Date().toISOString().split('T')[0]}.csv`;
+    link.style.display = 'none';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    console.log("ITR-5 data exported to JSON successfully!");
+    console.log('ITR-5 data exported to CSV successfully!');
   };
 
   return (
@@ -928,10 +975,10 @@ const ItrFive: React.FC = () => {
 
               {/* Export Button */}
               <button
-                onClick={exportToJSON}
+                onClick={exportToCSV}
                 className="mt-4 w-full rounded-lg bg-green-600 px-4 py-3 font-semibold text-white hover:bg-green-700 transition"
               >
-                📥 Export to JSON
+                📥 Export to CSV
               </button>
             </div>
 

@@ -1531,6 +1531,125 @@ const ItrSix: React.FC = () => {
     setSubmissionInfo({ acknowledgementNo, submittedAt });
   };
 
+  const exportToCSV = () => {
+    // Helper function to flatten nested objects
+    const flattenObject = (obj: any, prefix = ''): any => {
+      const flattened: any = {};
+      
+      for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          const value = obj[key];
+          const newKey = prefix ? `${prefix}_${key}` : key;
+          
+          if (value === null || value === undefined) {
+            flattened[newKey] = '';
+          } else if (Array.isArray(value)) {
+            // For arrays, create separate rows
+            value.forEach((item, index) => {
+              if (typeof item === 'object') {
+                const itemFlattened = flattenObject(item, `${newKey}_${index + 1}`);
+                Object.assign(flattened, itemFlattened);
+              } else {
+                flattened[`${newKey}_${index + 1}`] = item;
+              }
+            });
+          } else if (typeof value === 'object') {
+            const nestedFlattened = flattenObject(value, newKey);
+            Object.assign(flattened, nestedFlattened);
+          } else {
+            flattened[newKey] = value;
+          }
+        }
+      }
+      
+      return flattened;
+    };
+
+    // Collect all form data
+    const allFormData = {
+      companyInfo: companyData,
+      balanceSheet: balanceSheetData,
+      manufacturingAccount: manufacturingAccountData,
+      tradingAccount: tradingAccountData,
+      otherInfo: otherInfoData,
+      scheduleHP: scheduleHPData,
+      scheduleBP: scheduleBPData,
+      scheduleDPM: scheduleDPMData,
+      scheduleDOA: scheduleDOAData,
+      scheduleDEP: scheduleDEPData,
+      scheduleDCG: scheduleDCGData,
+      scheduleESR: scheduleESRData,
+      scheduleCG: scheduleCGData,
+      schedule112A: schedule112AData,
+      schedule115AD: schedule115ADData,
+      scheduleVDA: scheduleVDAData,
+      scheduleOS: scheduleOSData,
+      scheduleCYL: scheduleCYLData,
+      scheduleFI: scheduleFIData,
+      scheduleLSF: scheduleLSFData,
+      scheduleUFD: scheduleUFDData,
+      scheduleICDS: scheduleICDSData,
+      schedule16AA: schedule16AAData,
+      schedule80G: schedule80GData,
+      schedule80GGA: schedule80GGAData,
+      schedule80GGC: schedule80GGCData,
+      schedule81AC: schedule81ACData,
+      schedule81LA: schedule81LAData,
+      schedule80IA: schedule80IAData,
+      schedule80IB: schedule80IBData,
+      schedule80RA: schedule80RAData,
+      schedule80IE: schedule80IEData,
+      schedule80P: schedule80PData,
+      scheduleVIA: scheduleVIAData,
+      scheduleAMT: scheduleAMTData,
+      scheduleAMTCredit: scheduleAMTCreditData,
+      scheduleSI: scheduleSIData,
+      scheduleIF: scheduleIFData,
+      scheduleEX: scheduleEXData,
+      schedulePT: schedulePTData,
+      scheduleTPSA: scheduleTPSAData,
+      schedule115TD: schedule115TDData,
+      scheduleFSI: scheduleFSIData,
+      scheduleTR: scheduleTRData,
+      scheduleFA: scheduleFAData,
+      scheduleGST: scheduleGSTData,
+      scheduleTI: scheduleTIData,
+      scheduleTTI: scheduleTTIData,
+      scheduleTP: scheduleTPData,
+      scheduleTDS: scheduleTDSData,
+      financial: financialData,
+      taxComputation: taxData,
+      shareholding: shareholdingData,
+    };
+
+    // Flatten the form data
+    const flatData = flattenObject(allFormData);
+    
+    // Convert to CSV format
+    const headers = Object.keys(flatData);
+    const values = Object.values(flatData);
+    
+    // Create CSV content
+    let csvContent = 'Field,Value\n';
+    headers.forEach((header, index) => {
+      const value = String(values[index]).replace(/"/g, '""'); // Escape quotes
+      csvContent += `"${header}","${value}"\n`;
+    });
+    
+    // Create and download the file
+    const dataBlob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `ITR6_${new Date().toISOString().split('T')[0]}.csv`;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    console.log('ITR-6 data exported to CSV successfully!');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -1590,12 +1709,20 @@ const ItrSix: React.FC = () => {
                   <p className="mb-6 text-gray-600">
                     Review your information and submit your ITR-6
                   </p>
-                  <button
-                    onClick={handleFinalSubmit}
-                    className="rounded-lg bg-green-600 px-8 py-3 text-lg font-semibold text-white shadow-lg transition-colors hover:bg-green-700"
-                  >
-                    Submit ITR-6
-                  </button>
+                  <div className="flex gap-4 justify-center">
+                    <button
+                      onClick={exportToCSV}
+                      className="rounded-lg bg-blue-600 px-8 py-3 text-lg font-semibold text-white shadow-lg transition-colors hover:bg-blue-700"
+                    >
+                      📥 Export to CSV
+                    </button>
+                    <button
+                      onClick={handleFinalSubmit}
+                      className="rounded-lg bg-green-600 px-8 py-3 text-lg font-semibold text-white shadow-lg transition-colors hover:bg-green-700"
+                    >
+                      Submit ITR-6
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
