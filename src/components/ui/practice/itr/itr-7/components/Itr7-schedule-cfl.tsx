@@ -2,8 +2,31 @@ import React, { useEffect } from 'react';
 import { UseFormReturn, useFieldArray, useWatch } from 'react-hook-form';
 import { ITR7ScheduleCFLData } from './itr-7-schedule-cfl.types.ts';
 
-'2020-21', '2021-22', '2022-23', '2023-24', '2024-25'
+const ASSESSMENT_YEARS = [
+    '2017-18', '2018-19', '2019-20', '2020-21', '2021-22', '2022-23', '2023-24', '2024-25'
 ];
+
+interface Itr7ScheduleCFLProps {
+    form: UseFormReturn<ITR7ScheduleCFLData>;
+}
+
+const NumberInput = ({ name, form, disabled }: { name: string; form: UseFormReturn<any>; disabled?: boolean }) => (
+    <input
+        type="number"
+        {...form.register(name)}
+        className={`w-full p-1 border rounded text-right ${disabled ? 'bg-gray-100' : ''}`}
+        disabled={disabled}
+    />
+);
+
+const DateInput = ({ name, form, disabled }: { name: string; form: UseFormReturn<any>; disabled?: boolean }) => (
+    <input
+        type="date"
+        {...form.register(name)}
+        className={`w-full p-1 border rounded ${disabled ? 'bg-gray-100' : ''}`}
+        disabled={disabled}
+    />
+);
 
 const Itr7ScheduleCFL: React.FC<Itr7ScheduleCFLProps> = ({ form }) => {
     const { fields, replace } = useFieldArray({
