@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import * as XLSX from 'xlsx';
 import { itr7ValidationSchema } from './itr-7.validation.ts';
 import type { ITR7FormData } from './itr-7.types.ts';
 import type { ITR7BalanceSheetComprehensiveData } from './components/itr-7-balance-sheet-comprehensive.types.ts';
@@ -536,6 +537,108 @@ const Itr7Form: React.FC = () => {
     }
   };
 
+  const handleDownloadExcel = () => {
+    try {
+      const wb = XLSX.utils.book_new();
+
+      const createSheet = (data: any, sheetName: string) => {
+        const flatData: any[] = [];
+        
+        const flattenObject = (obj: any, prefix = '') => {
+          Object.keys(obj).forEach(key => {
+            const value = obj[key];
+            const newKey = prefix ? `${prefix}.${key}` : key;
+            
+            if (value && typeof value === 'object' && !Array.isArray(value)) {
+              flattenObject(value, newKey);
+            } else if (Array.isArray(value)) {
+              flatData.push({ Field: newKey, Value: JSON.stringify(value) });
+            } else {
+              flatData.push({ Field: newKey, Value: value ?? '' });
+            }
+          });
+        };
+        
+        flattenObject(data);
+        
+        if (flatData.length > 0) {
+          const ws = XLSX.utils.json_to_sheet(flatData);
+          XLSX.utils.book_append_sheet(wb, ws, sheetName);
+        }
+      };
+
+      createSheet(form.getValues(), 'General Information');
+      createSheet(comprehensiveForm.getValues(), 'Balance Sheet');
+      createSheet(manufacturingForm.getValues(), 'Manufacturing');
+      createSheet(tradingForm.getValues(), 'Trading Account');
+      createSheet(profitLossForm.getValues(), 'Profit & Loss');
+      createSheet(summaryForm.getValues(), 'Summary');
+      createSheet(incomeStatementForm.getValues(), 'Income Statement');
+      createSheet(plAccountForm.getValues(), 'P&L Account');
+      createSheet(partAOIForm.getValues(), 'Part A-OI');
+      createSheet(partAQDForm.getValues(), 'Part A-QD');
+      createSheet(partAOLForm.getValues(), 'Part A-OL');
+      createSheet(scheduleHPForm.getValues(), 'Schedule HP');
+      createSheet(scheduleBPForm.getValues(), 'Schedule BP');
+      createSheet(scheduleDPMForm.getValues(), 'Schedule DPM');
+      createSheet(scheduleDOAForm.getValues(), 'Schedule DOA');
+      createSheet(scheduleDEPForm.getValues(), 'Schedule DEP');
+      createSheet(scheduleDCGForm.getValues(), 'Schedule DCG');
+      createSheet(scheduleESRForm.getValues(), 'Schedule ESR');
+      createSheet(scheduleCGForm.getValues(), 'Schedule CG');
+      createSheet(schedule112AForm.getValues(), 'Schedule 112A');
+      createSheet(schedule115ADForm.getValues(), 'Schedule 115AD');
+      createSheet(scheduleVDAForm.getValues(), 'Schedule VDA');
+      createSheet(scheduleOSForm.getValues(), 'Schedule OS');
+      createSheet(scheduleCYLAForm.getValues(), 'Schedule CYLA');
+      createSheet(scheduleBFLAForm.getValues(), 'Schedule BFLA');
+      createSheet(scheduleCFLForm.getValues(), 'Schedule CFL');
+      createSheet(scheduleUDForm.getValues(), 'Schedule UD');
+      createSheet(scheduleICDSForm.getValues(), 'Schedule ICDS');
+      createSheet(schedule10AAForm.getValues(), 'Schedule 10AA');
+      createSheet(schedule80GForm.getValues(), 'Schedule 80G');
+      createSheet(schedule80GGAForm.getValues(), 'Schedule 80GGA');
+      createSheet(schedule80GGCForm.getValues(), 'Schedule 80GGC');
+      createSheet(schedule80IACForm.getValues(), 'Schedule 80IAC');
+      createSheet(schedule80LAForm.getValues(), 'Schedule 80LA');
+      createSheet(scheduleRAForm.getValues(), 'Schedule RA');
+      createSheet(schedule80IAForm.getValues(), 'Schedule 80IA');
+      createSheet(schedule80IBForm.getValues(), 'Schedule 80IB');
+      createSheet(schedule80IEForm.getValues(), 'Schedule 80IE');
+      createSheet(scheduleSIForm.getValues(), 'Schedule SI');
+      createSheet(scheduleIFForm.getValues(), 'Schedule IF');
+      createSheet(scheduleEIForm.getValues(), 'Schedule EI');
+      createSheet(schedulePTIForm.getValues(), 'Schedule PTI');
+      createSheet(scheduleMATForm.getValues(), 'Schedule MAT');
+      createSheet(scheduleMATCForm.getValues(), 'Schedule MATC');
+      createSheet(scheduleDBSForm.getValues(), 'Schedule DBS');
+      createSheet(scheduleTPSAForm.getValues(), 'Schedule TPSA');
+      createSheet(schedule115TDForm.getValues(), 'Schedule 115TD');
+      createSheet(scheduleFAForm.getValues(), 'Schedule FA');
+      createSheet(scheduleTRForm.getValues(), 'Schedule TR');
+      createSheet(scheduleFSIForm.getValues(), 'Schedule FSI');
+      createSheet(scheduleSH1Form.getValues(), 'Schedule SH1');
+      createSheet(scheduleSH2Form.getValues(), 'Schedule SH2');
+      createSheet(scheduleAL1Form.getValues(), 'Schedule AL1');
+      createSheet(scheduleAL2Form.getValues(), 'Schedule AL2');
+      createSheet(scheduleGSTForm.getValues(), 'Schedule GST');
+      createSheet(scheduleFDForm.getValues(), 'Schedule FD');
+      createSheet(partBTIForm.getValues(), 'Part B-TI');
+      createSheet(partBTTIForm.getValues(), 'Part B-TTI');
+      createSheet(verificationForm.getValues(), 'Verification');
+
+      const date = new Date().toISOString().split('T')[0];
+      const filename = `ITR7_Form_${date}.xlsx`;
+
+      XLSX.writeFile(wb, filename);
+      
+      alert('Excel file downloaded successfully!');
+    } catch (error) {
+      console.error('Error downloading Excel:', error);
+      alert('Error downloading Excel file. Please try again.');
+    }
+  };
+
   const renderStepContent = () => {
     switch (currentStep) {
       case 1:
@@ -729,6 +832,16 @@ const Itr7Form: React.FC = () => {
                 className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
               >
                 Save Draft
+              </button>
+              <button
+                type="button"
+                onClick={handleDownloadExcel}
+                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center gap-2"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Download Excel
               </button>
             </div>
 

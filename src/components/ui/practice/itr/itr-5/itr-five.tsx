@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
+import * as XLSX from "xlsx";
 import ItrFiveProgress from "./components/itr-five-progress.tsx";
 import ItrFiveEntry, {
   ItrFiveSection,
@@ -560,6 +561,46 @@ const ItrFive: React.FC = () => {
     console.log('ITR-5 data exported to CSV successfully!');
   };
 
+  const handleDownloadExcel = () => {
+    const flattenObject = (obj: any, prefix = ""): any => {
+      const flattened: any = {};
+
+      for (const key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+          const value = obj[key];
+          const newKey = prefix ? `${prefix}_${key}` : key;
+
+          if (value === null || value === undefined) {
+            flattened[newKey] = "";
+          } else if (Array.isArray(value)) {
+            value.forEach((item, index) => {
+              if (typeof item === "object" && item !== null) {
+                const itemFlattened = flattenObject(item, `${newKey}_${index + 1}`);
+                Object.assign(flattened, itemFlattened);
+              } else {
+                flattened[`${newKey}_${index + 1}`] = item;
+              }
+            });
+          } else if (typeof value === "object") {
+            const nestedFlattened = flattenObject(value, newKey);
+            Object.assign(flattened, nestedFlattened);
+          } else {
+            flattened[newKey] = value;
+          }
+        }
+      }
+
+      return flattened;
+    };
+
+    const flattenedData = flattenObject(formData);
+    const worksheet = XLSX.utils.json_to_sheet([flattenedData]);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "ITR5");
+    const fileName = `ITR5_${new Date().toISOString().split("T")[0]}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4 md:py-12">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-6">
@@ -979,6 +1020,12 @@ const ItrFive: React.FC = () => {
                 className="mt-4 w-full rounded-lg bg-green-600 px-4 py-3 font-semibold text-white hover:bg-green-700 transition"
               >
                 📥 Export to CSV
+              </button>
+              <button
+                onClick={handleDownloadExcel}
+                className="mt-3 w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700 transition"
+              >
+                📊 Export to Excel
               </button>
             </div>
 

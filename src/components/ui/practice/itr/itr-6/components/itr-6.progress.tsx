@@ -15,9 +15,8 @@ const statusStyles: Record<StepStatus, string> = {
 
 const ITR6Progress: React.FC<ProgressProps> = ({ steps, activeStepId, stepStatusMap = {} }) => {
   return (
-    <div className="w-full bg-white border border-gray-200 rounded-xl shadow-sm">
-      <div className="flex flex-wrap justify-between gap-3 p-4 md:p-6">
-        {steps.map((step, index) => {
+    <div className="flex justify-between items-center overflow-x-auto pb-2">
+      {steps.map((step, index) => {
           const status = stepStatusMap[step.id]
             ? stepStatusMap[step.id]
             : step.id < activeStepId
@@ -27,23 +26,18 @@ const ITR6Progress: React.FC<ProgressProps> = ({ steps, activeStepId, stepStatus
             : "pending";
 
           return (
-            <div key={step.id} className="flex items-center gap-3 min-w-[160px]">
-              <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 font-semibold transition-colors ${statusStyles[status]}`}>
+            <div key={step.id} className="flex items-center min-w-max mr-4">
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center border-2 font-semibold transition-colors ${statusStyles[status]}`}
+              >
                 {status === "completed" ? "\u2713" : step.id}
               </div>
-
-              <div className="flex flex-col text-sm">
-                <span className="font-semibold text-gray-800">{step.title}</span>
-                {step.caption && <span className="text-gray-500">{step.caption}</span>}
-              </div>
-
               {index !== steps.length - 1 && (
-                <span className="hidden md:block w-8 h-px bg-gray-200" aria-hidden />
+                <div className="w-10 h-[2px] mx-2 bg-gray-200" aria-hidden />
               )}
             </div>
           );
-        })}
-      </div>
+      })}
     </div>
   );
 };

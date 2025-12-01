@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import * as XLSX from 'xlsx';
 import ITR6Progress from "./components/itr-6.progress.tsx";
 import ITR6Entry from "./components/itr-6.entry.tsx";
 import CompanyInformation from "./components/Itr-6-company-info.tsx";
@@ -437,6 +438,144 @@ const ItrSix: React.FC = () => {
   useEffect(() => {
     resetTradingAccount(tradingAccountData);
   }, [tradingAccountData, resetTradingAccount]);
+
+  const otherInfoForm = useForm({ defaultValues: otherInfoData });
+  useEffect(() => { otherInfoForm.reset(otherInfoData); }, [otherInfoData, otherInfoForm]);
+
+  const scheduleHPForm = useForm({ defaultValues: scheduleHPData });
+  useEffect(() => { scheduleHPForm.reset(scheduleHPData); }, [scheduleHPData, scheduleHPForm]);
+
+  const scheduleBPForm = useForm({ defaultValues: scheduleBPData });
+  useEffect(() => { scheduleBPForm.reset(scheduleBPData); }, [scheduleBPData, scheduleBPForm]);
+
+  const scheduleDPMForm = useForm({ defaultValues: scheduleDPMData });
+  useEffect(() => { scheduleDPMForm.reset(scheduleDPMData); }, [scheduleDPMData, scheduleDPMForm]);
+
+  const scheduleDOAForm = useForm({ defaultValues: scheduleDOAData });
+  useEffect(() => { scheduleDOAForm.reset(scheduleDOAData); }, [scheduleDOAData, scheduleDOAForm]);
+
+  const scheduleDEPForm = useForm({ defaultValues: scheduleDEPData });
+  useEffect(() => { scheduleDEPForm.reset(scheduleDEPData); }, [scheduleDEPData, scheduleDEPForm]);
+
+  const scheduleDCGForm = useForm({ defaultValues: scheduleDCGData });
+  useEffect(() => { scheduleDCGForm.reset(scheduleDCGData); }, [scheduleDCGData, scheduleDCGForm]);
+
+  const scheduleESRForm = useForm({ defaultValues: scheduleESRData });
+  useEffect(() => { scheduleESRForm.reset(scheduleESRData); }, [scheduleESRData, scheduleESRForm]);
+
+  const scheduleCGForm = useForm({ defaultValues: scheduleCGData });
+  useEffect(() => { scheduleCGForm.reset(scheduleCGData); }, [scheduleCGData, scheduleCGForm]);
+
+  const schedule112AForm = useForm({ defaultValues: schedule112AData });
+  useEffect(() => { schedule112AForm.reset(schedule112AData); }, [schedule112AData, schedule112AForm]);
+
+  const schedule115ADForm = useForm({ defaultValues: schedule115ADData });
+  useEffect(() => { schedule115ADForm.reset(schedule115ADData); }, [schedule115ADData, schedule115ADForm]);
+
+  const scheduleVDAForm = useForm({ defaultValues: scheduleVDAData });
+  useEffect(() => { scheduleVDAForm.reset(scheduleVDAData); }, [scheduleVDAData, scheduleVDAForm]);
+
+  const scheduleOSForm = useForm({ defaultValues: scheduleOSData });
+  useEffect(() => { scheduleOSForm.reset(scheduleOSData); }, [scheduleOSData, scheduleOSForm]);
+
+  const scheduleCYLForm = useForm({ defaultValues: scheduleCYLData });
+  useEffect(() => { scheduleCYLForm.reset(scheduleCYLData); }, [scheduleCYLData, scheduleCYLForm]);
+
+  const scheduleFIForm = useForm({ defaultValues: scheduleFIData });
+  useEffect(() => { scheduleFIForm.reset(scheduleFIData); }, [scheduleFIData, scheduleFIForm]);
+
+  const scheduleLSFForm = useForm({ defaultValues: scheduleLSFData });
+  useEffect(() => { scheduleLSFForm.reset(scheduleLSFData); }, [scheduleLSFData, scheduleLSFForm]);
+
+  const scheduleUFDForm = useForm({ defaultValues: scheduleUFDData });
+  useEffect(() => { scheduleUFDForm.reset(scheduleUFDData); }, [scheduleUFDData, scheduleUFDForm]);
+
+  const scheduleICDSForm = useForm({ defaultValues: scheduleICDSData });
+  useEffect(() => { scheduleICDSForm.reset(scheduleICDSData); }, [scheduleICDSData, scheduleICDSForm]);
+
+  const schedule16AAForm = useForm({ defaultValues: schedule16AAData });
+  useEffect(() => { schedule16AAForm.reset(schedule16AAData); }, [schedule16AAData, schedule16AAForm]);
+
+  const schedule80GForm = useForm({ defaultValues: schedule80GData });
+  useEffect(() => { schedule80GForm.reset(schedule80GData); }, [schedule80GData, schedule80GForm]);
+
+  const schedule80GGAForm = useForm({ defaultValues: schedule80GGAData });
+  useEffect(() => { schedule80GGAForm.reset(schedule80GGAData); }, [schedule80GGAData, schedule80GGAForm]);
+
+  const schedule80GGCForm = useForm({ defaultValues: schedule80GGCData });
+  useEffect(() => { schedule80GGCForm.reset(schedule80GGCData); }, [schedule80GGCData, schedule80GGCForm]);
+
+  const schedule81ACForm = useForm({ defaultValues: schedule81ACData });
+  useEffect(() => { schedule81ACForm.reset(schedule81ACData); }, [schedule81ACData, schedule81ACForm]);
+
+  const schedule81LAForm = useForm({ defaultValues: schedule81LAData });
+  useEffect(() => { schedule81LAForm.reset(schedule81LAData); }, [schedule81LAData, schedule81LAForm]);
+
+  const schedule80IAForm = useForm({ defaultValues: schedule80IAData });
+  useEffect(() => { schedule80IAForm.reset(schedule80IAData); }, [schedule80IAData, schedule80IAForm]);
+
+  const schedule80IBForm = useForm({ defaultValues: schedule80IBData });
+  useEffect(() => { schedule80IBForm.reset(schedule80IBData); }, [schedule80IBData, schedule80IBForm]);
+
+  const schedule80RAForm = useForm({ defaultValues: schedule80RAData });
+  useEffect(() => { schedule80RAForm.reset(schedule80RAData); }, [schedule80RAData, schedule80RAForm]);
+
+  const schedule80IEForm = useForm({ defaultValues: schedule80IEData });
+  useEffect(() => { schedule80IEForm.reset(schedule80IEData); }, [schedule80IEData, schedule80IEForm]);
+
+  const schedule80PForm = useForm({ defaultValues: schedule80PData });
+  useEffect(() => { schedule80PForm.reset(schedule80PData); }, [schedule80PData, schedule80PForm]);
+
+  const scheduleVIAForm = useForm({ defaultValues: scheduleVIAData });
+  useEffect(() => { scheduleVIAForm.reset(scheduleVIAData); }, [scheduleVIAData, scheduleVIAForm]);
+
+  const scheduleAMTForm = useForm({ defaultValues: scheduleAMTData });
+  useEffect(() => { scheduleAMTForm.reset(scheduleAMTData); }, [scheduleAMTData, scheduleAMTForm]);
+
+  const scheduleAMTCreditForm = useForm({ defaultValues: scheduleAMTCreditData });
+  useEffect(() => { scheduleAMTCreditForm.reset(scheduleAMTCreditData); }, [scheduleAMTCreditData, scheduleAMTCreditForm]);
+
+  const scheduleSIForm = useForm({ defaultValues: scheduleSIData });
+  useEffect(() => { scheduleSIForm.reset(scheduleSIData); }, [scheduleSIData, scheduleSIForm]);
+
+  const scheduleIFForm = useForm({ defaultValues: scheduleIFData });
+  useEffect(() => { scheduleIFForm.reset(scheduleIFData); }, [scheduleIFData, scheduleIFForm]);
+
+  const scheduleEXForm = useForm({ defaultValues: scheduleEXData });
+  useEffect(() => { scheduleEXForm.reset(scheduleEXData); }, [scheduleEXData, scheduleEXForm]);
+
+  const schedulePTForm = useForm({ defaultValues: schedulePTData });
+  useEffect(() => { schedulePTForm.reset(schedulePTData); }, [schedulePTData, schedulePTForm]);
+
+  const scheduleTPSAForm = useForm({ defaultValues: scheduleTPSAData });
+  useEffect(() => { scheduleTPSAForm.reset(scheduleTPSAData); }, [scheduleTPSAData, scheduleTPSAForm]);
+
+  const schedule115TDForm = useForm({ defaultValues: schedule115TDData });
+  useEffect(() => { schedule115TDForm.reset(schedule115TDData); }, [schedule115TDData, schedule115TDForm]);
+
+  const scheduleFSIForm = useForm({ defaultValues: scheduleFSIData });
+  useEffect(() => { scheduleFSIForm.reset(scheduleFSIData); }, [scheduleFSIData, scheduleFSIForm]);
+
+  const scheduleTRForm = useForm({ defaultValues: scheduleTRData });
+  useEffect(() => { scheduleTRForm.reset(scheduleTRData); }, [scheduleTRData, scheduleTRForm]);
+
+  const scheduleFAForm = useForm({ defaultValues: scheduleFAData });
+  useEffect(() => { scheduleFAForm.reset(scheduleFAData); }, [scheduleFAData, scheduleFAForm]);
+
+  const scheduleGSTForm = useForm({ defaultValues: scheduleGSTData });
+  useEffect(() => { scheduleGSTForm.reset(scheduleGSTData); }, [scheduleGSTData, scheduleGSTForm]);
+
+  const scheduleTIForm = useForm({ defaultValues: scheduleTIData });
+  useEffect(() => { scheduleTIForm.reset(scheduleTIData); }, [scheduleTIData, scheduleTIForm]);
+
+  const scheduleTTIForm = useForm({ defaultValues: scheduleTTIData });
+  useEffect(() => { scheduleTTIForm.reset(scheduleTTIData); }, [scheduleTTIData, scheduleTTIForm]);
+
+  const scheduleTPForm = useForm({ defaultValues: scheduleTPData });
+  useEffect(() => { scheduleTPForm.reset(scheduleTPData); }, [scheduleTPData, scheduleTPForm]);
+
+  const scheduleTDSForm = useForm({ defaultValues: scheduleTDSData });
+  useEffect(() => { scheduleTDSForm.reset(scheduleTDSData); }, [scheduleTDSData, scheduleTDSForm]);
 
   const handleOtherInfoSubmit = (values: any) => {
     setOtherInfoData(values);
@@ -1650,26 +1789,116 @@ const ItrSix: React.FC = () => {
     console.log('ITR-6 data exported to CSV successfully!');
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-8 rounded-2xl bg-white p-6 shadow-lg">
-          <div className="mb-4 flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                Income Tax Return - ITR-6
-              </h1>
-              <p className="mt-2 text-sm text-gray-600">
-                For companies other than companies claiming exemption under section 11
-              </p>
-            </div>
-            <div className="rounded-lg bg-blue-100 px-4 py-2">
-              <span className="text-sm font-medium text-blue-800">
-                AY {companyData.assessmentYear || "2025-26"}
-              </span>
-            </div>
-          </div>
+  const handleDownloadExcel = () => {
+    try {
+      const wb = XLSX.utils.book_new();
 
+      const createSheet = (data: any, sheetName: string) => {
+        const flatData: any[] = [];
+        
+        const flattenObject = (obj: any, prefix = '') => {
+          Object.keys(obj).forEach(key => {
+            const value = obj[key];
+            const newKey = prefix ? `${prefix}.${key}` : key;
+            
+            if (value && typeof value === 'object' && !Array.isArray(value)) {
+              flattenObject(value, newKey);
+            } else if (Array.isArray(value)) {
+              flatData.push({ Field: newKey, Value: JSON.stringify(value) });
+            } else {
+              flatData.push({ Field: newKey, Value: value ?? '' });
+            }
+          });
+        };
+        
+        flattenObject(data);
+        
+        if (flatData.length > 0) {
+          const ws = XLSX.utils.json_to_sheet(flatData);
+          XLSX.utils.book_append_sheet(wb, ws, sheetName);
+        }
+      };
+
+      createSheet(companyData, 'Company Information');
+      createSheet(balanceSheetData, 'Balance Sheet');
+      createSheet(manufacturingAccountData, 'Manufacturing Account');
+      createSheet(tradingAccountData, 'Trading Account');
+      createSheet(otherInfoData, 'Other Information');
+      createSheet(scheduleHPData, 'Schedule HP');
+      createSheet(scheduleBPData, 'Schedule BP');
+      createSheet(scheduleDPMData, 'Schedule DPM');
+      createSheet(scheduleDOAData, 'Schedule DOA');
+      createSheet(scheduleDEPData, 'Schedule DEP');
+      createSheet(scheduleDCGData, 'Schedule DCG');
+      createSheet(scheduleESRData, 'Schedule ESR');
+      createSheet(scheduleCGData, 'Schedule CG');
+      createSheet(schedule112AData, 'Schedule 112A');
+      createSheet(schedule115ADData, 'Schedule 115AD');
+      createSheet(scheduleVDAData, 'Schedule VDA');
+      createSheet(scheduleOSData, 'Schedule OS');
+      createSheet(scheduleCYLData, 'Schedule CYL');
+      createSheet(scheduleFIData, 'Schedule FI');
+      createSheet(scheduleLSFData, 'Schedule LSF');
+      createSheet(scheduleUFDData, 'Schedule UFD');
+      createSheet(scheduleICDSData, 'Schedule ICDS');
+      createSheet(schedule16AAData, 'Schedule 16AA');
+      createSheet(schedule80GData, 'Schedule 80G');
+      createSheet(schedule80GGAData, 'Schedule 80GGA');
+      createSheet(schedule80GGCData, 'Schedule 80GGC');
+      createSheet(schedule81ACData, 'Schedule 81AC');
+      createSheet(schedule81LAData, 'Schedule 81LA');
+      createSheet(schedule80IAData, 'Schedule 80IA');
+      createSheet(schedule80IBData, 'Schedule 80IB');
+      createSheet(schedule80RAData, 'Schedule 80RA');
+      createSheet(schedule80IEData, 'Schedule 80IE');
+      createSheet(schedule80PData, 'Schedule 80P');
+      createSheet(scheduleVIAData, 'Schedule VIA');
+      createSheet(scheduleAMTData, 'Schedule AMT');
+      createSheet(scheduleAMTCreditData, 'Schedule AMT Credit');
+      createSheet(scheduleSIData, 'Schedule SI');
+      createSheet(scheduleIFData, 'Schedule IF');
+      createSheet(scheduleEXData, 'Schedule EX');
+      createSheet(schedulePTData, 'Schedule PT');
+      createSheet(scheduleTPSAData, 'Schedule TPSA');
+      createSheet(schedule115TDData, 'Schedule 115TD');
+      createSheet(scheduleFSIData, 'Schedule FSI');
+      createSheet(scheduleTRData, 'Schedule TR');
+      createSheet(scheduleFAData, 'Schedule FA');
+      createSheet(scheduleGSTData, 'Schedule GST');
+      createSheet(scheduleTIData, 'Schedule TI');
+      createSheet(scheduleTTIData, 'Schedule TTI');
+      createSheet(scheduleTPData, 'Schedule TP');
+      createSheet(scheduleTDSData, 'Schedule TDS');
+      createSheet(financialData, 'Financial Information');
+      createSheet(taxData, 'Tax Computation');
+      createSheet(shareholdingData, 'Shareholding');
+
+      const date = new Date().toISOString().split('T')[0];
+      const filename = `ITR6_Form_${date}.xlsx`;
+      XLSX.writeFile(wb, filename);
+      
+      alert('Excel file downloaded successfully!');
+    } catch (error) {
+      console.error('Error downloading Excel:', error);
+      alert('Error downloading Excel file. Please try again.');
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+          <h1 className="text-3xl font-bold text-gray-900">
+            ITR-6: Income Tax Return for Companies
+          </h1>
+          <p className="text-gray-600 mt-2">
+            Assessment Year: {companyData.assessmentYear || "2025-26"} | For companies other than companies claiming exemption under section 11
+          </p>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <ITR6Progress
             steps={ITR_SIX_PROGRESS_STEPS}
             activeStepId={activeStepId}
@@ -1678,15 +1907,18 @@ const ItrSix: React.FC = () => {
         </div>
 
         {activeDetailId === null && !submissionInfo && (
-          <div className="space-y-6">
-            <ITR6Entry
-              sections={sections}
-              activeSectionId={activeSectionId}
-              onSectionSelect={handleSectionSelect}
-            />
+          <div className="space-y-4">
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">Form Sections</h2>
+              <ITR6Entry
+                sections={sections}
+                activeSectionId={activeSectionId}
+                onSectionSelect={handleSectionSelect}
+              />
+            </div>
 
             {allSectionsCompleted && (
-              <div className="rounded-2xl border-2 border-green-300 bg-white p-8 shadow-lg">
+              <div className="bg-white rounded-lg shadow-sm p-8">
                 <div className="text-center">
                   <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
                     <svg
@@ -1715,6 +1947,16 @@ const ItrSix: React.FC = () => {
                       className="rounded-lg bg-blue-600 px-8 py-3 text-lg font-semibold text-white shadow-lg transition-colors hover:bg-blue-700"
                     >
                       📥 Export to CSV
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleDownloadExcel}
+                      className="rounded-lg bg-purple-600 px-8 py-3 text-lg font-semibold text-white shadow-lg transition-colors hover:bg-purple-700 flex items-center gap-2"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      Download Excel
                     </button>
                     <button
                       onClick={handleFinalSubmit}
@@ -1763,7 +2005,7 @@ const ItrSix: React.FC = () => {
 
         {activeDetailId === "other-info" && (
           <OtherInfo
-            form={useForm()}
+            form={otherInfoForm}
             onSubmit={handleOtherInfoSubmit}
             onCancel={handleBackToSummary}
           />
@@ -1771,7 +2013,7 @@ const ItrSix: React.FC = () => {
 
         {activeDetailId === "schedule-hp" && (
           <ScheduleHP
-            form={useForm()}
+            form={scheduleHPForm}
             onSubmit={handleScheduleHPSubmit}
             onCancel={handleBackToSummary}
           />
@@ -1779,7 +2021,7 @@ const ItrSix: React.FC = () => {
 
         {activeDetailId === "schedule-bp" && (
           <ScheduleBP
-            form={useForm()}
+            form={scheduleBPForm}
             onSubmit={handleScheduleBPSubmit}
             onCancel={handleBackToSummary}
           />
@@ -1787,7 +2029,7 @@ const ItrSix: React.FC = () => {
 
         {activeDetailId === "schedule-dpm" && (
           <ScheduleDPM
-            form={useForm()}
+            form={scheduleDPMForm}
             onSubmit={handleScheduleDPMSubmit}
             onCancel={handleBackToSummary}
           />
@@ -1795,7 +2037,7 @@ const ItrSix: React.FC = () => {
 
         {activeDetailId === "schedule-doa" && (
           <ScheduleDOA
-            form={useForm()}
+            form={scheduleDOAForm}
             onSubmit={handleScheduleDOASubmit}
             onCancel={handleBackToSummary}
           />
@@ -1803,7 +2045,7 @@ const ItrSix: React.FC = () => {
 
         {activeDetailId === "schedule-dep" && (
           <ScheduleDEP
-            form={useForm()}
+            form={scheduleDEPForm}
             onSubmit={handleScheduleDEPSubmit}
             onCancel={handleBackToSummary}
           />
@@ -1811,7 +2053,7 @@ const ItrSix: React.FC = () => {
 
         {activeDetailId === "schedule-dcg" && (
           <ScheduleDCG
-            form={useForm()}
+            form={scheduleDCGForm}
             onSubmit={handleScheduleDCGSubmit}
             onCancel={handleBackToSummary}
           />
@@ -1819,7 +2061,7 @@ const ItrSix: React.FC = () => {
 
         {activeDetailId === "schedule-esr" && (
           <ScheduleESR
-            form={useForm()}
+            form={scheduleESRForm}
             onSubmit={handleScheduleESRSubmit}
             onCancel={handleBackToSummary}
           />
@@ -1827,7 +2069,7 @@ const ItrSix: React.FC = () => {
 
         {activeDetailId === "schedule-cg" && (
           <ScheduleCG
-            form={useForm()}
+            form={scheduleCGForm}
             onSubmit={handleScheduleCGSubmit}
             onCancel={handleBackToSummary}
           />
@@ -1835,7 +2077,7 @@ const ItrSix: React.FC = () => {
 
         {activeDetailId === "schedule-112a" && (
           <Schedule112A
-            form={useForm()}
+            form={schedule112AForm}
             onSubmit={handleSchedule112ASubmit}
             onCancel={handleBackToSummary}
           />
@@ -1843,7 +2085,7 @@ const ItrSix: React.FC = () => {
 
         {activeDetailId === "schedule-115ad" && (
           <Schedule115AD
-            form={useForm()}
+            form={schedule115ADForm}
             onSubmit={handleSchedule115ADSubmit}
             onCancel={handleBackToSummary}
           />
@@ -1851,7 +2093,7 @@ const ItrSix: React.FC = () => {
 
         {activeDetailId === "schedule-vda" && (
           <ScheduleVDA
-            form={useForm()}
+            form={scheduleVDAForm}
             onSubmit={handleScheduleVDASubmit}
             onCancel={handleBackToSummary}
           />
@@ -1859,7 +2101,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-os" && (
         <ScheduleOS
-          form={useForm()}
+          form={scheduleOSForm}
           onSubmit={handleScheduleOSSubmit}
           onCancel={handleBackToSummary}
         />
@@ -1867,7 +2109,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-cyl" && (
         <ScheduleCYL
-          form={useForm()}
+          form={scheduleCYLForm}
           onSubmit={handleScheduleCYLSubmit}
           onCancel={handleBackToSummary}
         />
@@ -1875,7 +2117,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-fi" && (
         <ScheduleFI
-          form={useForm()}
+          form={scheduleFIForm}
           onSubmit={handleScheduleFISubmit}
           onCancel={handleBackToSummary}
         />
@@ -1883,7 +2125,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-lsf" && (
         <ScheduleLSF
-          form={useForm()}
+          form={scheduleLSFForm}
           onSubmit={handleScheduleLSFSubmit}
           onCancel={handleBackToSummary}
         />
@@ -1891,7 +2133,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-ufd" && (
         <ScheduleUFD
-          form={useForm()}
+          form={scheduleUFDForm}
           onSubmit={handleScheduleUFDSubmit}
           onCancel={handleBackToSummary}
         />
@@ -1899,7 +2141,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-icds" && (
         <ScheduleICDS
-          form={useForm()}
+          form={scheduleICDSForm}
           onSubmit={handleScheduleICDSSubmit}
           onCancel={handleBackToSummary}
         />
@@ -1907,7 +2149,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-16aa" && (
         <Schedule16AA
-          form={useForm()}
+          form={schedule16AAForm}
           onSubmit={handleSchedule16AASubmit}
           onCancel={handleBackToSummary}
         />
@@ -1915,7 +2157,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-80g" && (
         <Schedule80G
-          form={useForm()}
+          form={schedule80GForm}
           onSubmit={handleSchedule80GSubmit}
           onCancel={handleBackToSummary}
         />
@@ -1923,7 +2165,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-80gga" && (
         <Schedule80GGA
-          form={useForm()}
+          form={schedule80GGAForm}
           onSubmit={handleSchedule80GGASubmit}
           onCancel={handleBackToSummary}
         />
@@ -1931,7 +2173,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-80ggc" && (
         <Schedule80GGC
-          form={useForm()}
+          form={schedule80GGCForm}
           onSubmit={handleSchedule80GGCSubmit}
           onCancel={handleBackToSummary}
         />
@@ -1939,7 +2181,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-81ac" && (
         <Schedule81AC
-          form={useForm()}
+          form={schedule81ACForm}
           onSubmit={handleSchedule81ACSubmit}
           onCancel={handleBackToSummary}
         />
@@ -1947,7 +2189,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-81la" && (
         <Schedule81LA
-          form={useForm()}
+          form={schedule81LAForm}
           onSubmit={handleSchedule81LASubmit}
           onCancel={handleBackToSummary}
         />
@@ -1955,7 +2197,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-80ia" && (
         <Schedule80IA
-          form={useForm()}
+          form={schedule80IAForm}
           onSubmit={handleSchedule80IASubmit}
           onCancel={handleBackToSummary}
         />
@@ -1963,7 +2205,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-80ib" && (
         <Schedule80IB
-          form={useForm()}
+          form={schedule80IBForm}
           onSubmit={handleSchedule80IBSubmit}
           onCancel={handleBackToSummary}
         />
@@ -1971,7 +2213,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-80ra" && (
         <Schedule80RA
-          form={useForm()}
+          form={schedule80RAForm}
           onSubmit={handleSchedule80RASubmit}
           onCancel={handleBackToSummary}
         />
@@ -1979,7 +2221,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-80ie" && (
         <Schedule80IE
-          form={useForm()}
+          form={schedule80IEForm}
           onSubmit={handleSchedule80IESubmit}
           onCancel={handleBackToSummary}
         />
@@ -1987,7 +2229,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-80p" && (
         <Schedule80P
-          form={useForm()}
+          form={schedule80PForm}
           onSubmit={handleSchedule80PSubmit}
           onCancel={handleBackToSummary}
         />
@@ -1995,7 +2237,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-via" && (
         <ScheduleVIA
-          form={useForm()}
+          form={scheduleVIAForm}
           onSubmit={handleScheduleVIASubmit}
           onCancel={handleBackToSummary}
         />
@@ -2003,7 +2245,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-amt" && (
         <ScheduleAMT
-          form={useForm()}
+          form={scheduleAMTForm}
           onSubmit={handleScheduleAMTSubmit}
           onCancel={handleBackToSummary}
         />
@@ -2011,7 +2253,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-amt-credit" && (
         <ScheduleAMTCredit
-          form={useForm()}
+          form={scheduleAMTCreditForm}
           onSubmit={handleScheduleAMTCreditSubmit}
           onCancel={handleBackToSummary}
         />
@@ -2019,7 +2261,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-si" && (
         <ScheduleSI
-          form={useForm()}
+          form={scheduleSIForm}
           onSubmit={handleScheduleSISubmit}
           onCancel={handleBackToSummary}
         />
@@ -2027,7 +2269,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-if" && (
         <ScheduleIF
-          form={useForm()}
+          form={scheduleIFForm}
           onSubmit={handleScheduleIFSubmit}
           onCancel={handleBackToSummary}
         />
@@ -2035,7 +2277,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-ex" && (
         <ScheduleEX
-          form={useForm()}
+          form={scheduleEXForm}
           onSubmit={handleScheduleEXSubmit}
           onCancel={handleBackToSummary}
         />
@@ -2043,7 +2285,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-pt" && (
         <SchedulePT
-          form={useForm()}
+          form={schedulePTForm}
           onSubmit={handleSchedulePTSubmit}
           onCancel={handleBackToSummary}
         />
@@ -2051,7 +2293,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-tpsa" && (
         <ScheduleTPSA
-          form={useForm()}
+          form={scheduleTPSAForm}
           onSubmit={handleScheduleTPSASubmit}
           onCancel={handleBackToSummary}
         />
@@ -2059,7 +2301,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-115td" && (
         <Schedule115TD
-          form={useForm()}
+          form={schedule115TDForm}
           onSubmit={handleSchedule115TDSubmit}
           onCancel={handleBackToSummary}
         />
@@ -2067,7 +2309,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-fsi" && (
         <ScheduleFSI
-          form={useForm()}
+          form={scheduleFSIForm}
           onSubmit={handleScheduleFSISubmit}
           onCancel={handleBackToSummary}
         />
@@ -2075,7 +2317,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-tr" && (
         <ScheduleTR
-          form={useForm()}
+          form={scheduleTRForm}
           onSubmit={handleScheduleTRSubmit}
           onCancel={handleBackToSummary}
         />
@@ -2083,7 +2325,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-fa" && (
         <ScheduleFA
-          form={useForm()}
+          form={scheduleFAForm}
           onSubmit={handleScheduleFASubmit}
           onCancel={handleBackToSummary}
         />
@@ -2091,7 +2333,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-gst" && (
         <ScheduleGST
-          form={useForm()}
+          form={scheduleGSTForm}
           onSubmit={handleScheduleGSTSubmit}
           onCancel={handleBackToSummary}
         />
@@ -2099,7 +2341,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-ti" && (
         <ScheduleTI
-          form={useForm()}
+          form={scheduleTIForm}
           onSubmit={handleScheduleTISubmit}
           onCancel={handleBackToSummary}
         />
@@ -2107,7 +2349,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-tti" && (
         <ScheduleTTI
-          form={useForm()}
+          form={scheduleTTIForm}
           onSubmit={handleScheduleTTISubmit}
           onCancel={handleBackToSummary}
         />
@@ -2115,7 +2357,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-tp" && (
         <ScheduleTP
-          form={useForm()}
+          form={scheduleTPForm}
           onSubmit={handleScheduleTPSubmit}
           onCancel={handleBackToSummary}
         />
@@ -2123,7 +2365,7 @@ const ItrSix: React.FC = () => {
 
       {activeDetailId === "schedule-tds" && (
         <ScheduleTDS
-          form={useForm()}
+          form={scheduleTDSForm}
           onSubmit={handleScheduleTDSSubmit}
           onCancel={handleBackToSummary}
         />
