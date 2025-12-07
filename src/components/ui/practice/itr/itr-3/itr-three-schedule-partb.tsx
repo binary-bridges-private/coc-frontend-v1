@@ -53,7 +53,11 @@ const SchedulePartBSchema = z
     totalDeductionPartB: z.string().default("0"),
   })
   .superRefine((data, ctx) => {
-    const validateNumeric = (value: string | undefined, fieldName: string, path: (string | number)[]) => {
+    const validateNumeric = (
+      value: string | undefined,
+      fieldName: string,
+      path: (string | number)[]
+    ) => {
       if (value !== undefined && value !== "") {
         const val = parseFloat(value);
         if (isNaN(val) || val < 0) {
@@ -85,10 +89,15 @@ const SchedulePartBSchema = z
     ];
 
     fields.forEach((field) => {
-      validateNumeric(data[field as keyof typeof data] as string, field, [field]);
+      validateNumeric(data[field as keyof typeof data] as string, field, [
+        field,
+      ]);
     });
 
-    console.log("Schedule Part B - Deduction in respect of certain payments", data);
+    console.log(
+      "Schedule Part B - Deduction in respect of certain payments",
+      data
+    );
   });
 
 export type SchedulePartBFormData = z.infer<typeof SchedulePartBSchema>;
@@ -98,6 +107,7 @@ interface SchedulePartBProps {
   onSave: (data: SchedulePartBFormData) => void;
   onNext: () => void;
   onBack: () => void;
+  partAGeneral?: any;
 }
 
 export default function ItrThreeSchedulePartB({
@@ -105,6 +115,7 @@ export default function ItrThreeSchedulePartB({
   onSave,
   onNext,
   onBack,
+  partAGeneral,
 }: SchedulePartBProps) {
   const {
     control,
@@ -152,7 +163,9 @@ export default function ItrThreeSchedulePartB({
     fieldName: keyof SchedulePartBFormData
   ) => (
     <tr className="hover:bg-rose-50">
-      <td className="border border-rose-300 px-4 py-3 font-semibold">{sectionCode}</td>
+      <td className="border border-rose-300 px-4 py-3 font-semibold">
+        {sectionCode}
+      </td>
       <td className="border border-rose-300 px-4 py-3">{description}</td>
       <td className="border border-rose-300 px-4 py-3">
         <Controller
@@ -193,7 +206,6 @@ export default function ItrThreeSchedulePartB({
       </div>
 
       <div className="max-h-screen overflow-y-auto px-6 py-4 space-y-8">
-        
         <div className="rounded-xl border border-rose-200 bg-rose-50 p-6">
           <h2 className="text-lg font-bold text-rose-900 mb-6">
             Deduction in Respect of Certain Payments
@@ -202,7 +214,10 @@ export default function ItrThreeSchedulePartB({
             <table className="w-full border border-rose-300 bg-white text-sm">
               <thead className="bg-rose-200">
                 <tr>
-                  <th className="border border-rose-300 px-4 py-3 text-left font-semibold" style={{ width: "80px" }}>
+                  <th
+                    className="border border-rose-300 px-4 py-3 text-left font-semibold"
+                    style={{ width: "80px" }}
+                  >
                     Section
                   </th>
                   <th className="border border-rose-300 px-4 py-3 text-left font-semibold">
@@ -214,20 +229,98 @@ export default function ItrThreeSchedulePartB({
                 </tr>
               </thead>
               <tbody>
-                {renderDeductionRow("a", "80CC(1) - Medical Insurance Premium (u/s 80C)", "medicalInsurancePremium")}
-                {renderDeductionRow("b", "80CCD(1) - Senior Citizen Health Insurance", "seniorCitizenHealthInsurance")}
-                {renderDeductionRow("c", "80CCD(1A) - Life Insurance Premium", "lifeInsurancePremium")}
-                {renderDeductionRow("d", "80CCD(1B) - Education Loan Interest", "educationLoanInterest")}
-                {renderDeductionRow("e", "80CCD(2) - Contribution to NPS", "npsContribution")}
-                {renderDeductionRow("f", "80EE - Interest on Education Loan", "educationLoanInterestEE")}
-                {renderDeductionRow("g", "80EEA - Interest on Home Loan", "homeLoanInterestEEA")}
-                {renderDeductionRow("h", "80EEB - Reinvestment of RRB Withdrawal", "rrbWithdrawalReinvestment")}
-                {renderDeductionRow("i", "80F - Employer Contribution to NPS", "employerNPSContribution")}
-                {renderDeductionRow("j", "80F - Investment in Equity Shares", "equitySharesInvestment")}
-                {renderDeductionRow("k", "80CCF - Notified Bonds Investment", "notifiedBondsInvestment")}
-                {renderDeductionRow("l", "80C - Medical Equipment Deduction", "medicalEquipmentDeduction")}
-                {renderDeductionRow("m", "80C - Micro Finance Loan Interest", "microFinanceLoanInterest")}
-                {renderDeductionRow("n", "Other Approved Deductions", "otherApprovedDeductions")}
+                {!partAGeneral?.a19b_taxRegimeOption ||
+                partAGeneral.a19b_taxRegimeOption !== "Yes" ? (
+                  <>
+                    {renderDeductionRow(
+                      "a",
+                      "80CC(1) - Medical Insurance Premium (u/s 80C)",
+                      "medicalInsurancePremium"
+                    )}
+                    {renderDeductionRow(
+                      "b",
+                      "80CCD(1) - Senior Citizen Health Insurance",
+                      "seniorCitizenHealthInsurance"
+                    )}
+                    {renderDeductionRow(
+                      "c",
+                      "80CCD(1A) - Life Insurance Premium",
+                      "lifeInsurancePremium"
+                    )}
+                    {renderDeductionRow(
+                      "d",
+                      "80CCD(1B) - Education Loan Interest",
+                      "educationLoanInterest"
+                    )}
+                    {renderDeductionRow(
+                      "e",
+                      "80CCD(2) - Contribution to NPS",
+                      "npsContribution"
+                    )}
+                    {renderDeductionRow(
+                      "f",
+                      "80EE - Interest on Education Loan",
+                      "educationLoanInterestEE"
+                    )}
+                    {renderDeductionRow(
+                      "g",
+                      "80EEA - Interest on Home Loan",
+                      "homeLoanInterestEEA"
+                    )}
+                    {renderDeductionRow(
+                      "h",
+                      "80EEB - Reinvestment of RRB Withdrawal",
+                      "rrbWithdrawalReinvestment"
+                    )}
+                    {renderDeductionRow(
+                      "i",
+                      "80F - Employer Contribution to NPS",
+                      "employerNPSContribution"
+                    )}
+                    {renderDeductionRow(
+                      "j",
+                      "80F - Investment in Equity Shares",
+                      "equitySharesInvestment"
+                    )}
+                    {renderDeductionRow(
+                      "k",
+                      "80CCF - Notified Bonds Investment",
+                      "notifiedBondsInvestment"
+                    )}
+                    {renderDeductionRow(
+                      "l",
+                      "80C - Medical Equipment Deduction",
+                      "medicalEquipmentDeduction"
+                    )}
+                    {renderDeductionRow(
+                      "m",
+                      "80C - Micro Finance Loan Interest",
+                      "microFinanceLoanInterest"
+                    )}
+                    {renderDeductionRow(
+                      "n",
+                      "Other Approved Deductions",
+                      "otherApprovedDeductions"
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <tr>
+                      <td
+                        colSpan={3}
+                        className="border border-yellow-300 bg-yellow-50 px-4 py-3 text-center text-yellow-800"
+                      >
+                        Most deductions are not available under the New Tax
+                        Regime (u/s 115BAC).
+                      </td>
+                    </tr>
+                    {renderDeductionRow(
+                      "e",
+                      "80CCD(2) - Contribution to NPS (Available in New Regime)",
+                      "npsContribution"
+                    )}
+                  </>
+                )}
               </tbody>
               <tfoot className="bg-rose-100 font-bold">
                 <tr>

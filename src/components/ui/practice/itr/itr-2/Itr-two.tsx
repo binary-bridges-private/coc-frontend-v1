@@ -51,61 +51,90 @@ import {
   Schedule80DDFormData,
 } from "./itr-two.validation.ts";
 
+import { exportITR2ToPDF } from "./utils/pdfExportITR2.ts";
+
 // CSV Export Function
 const exportToCSV = (allFormData: any, taxPaymentsData: any) => {
   const completeData = { ...allFormData, taxPayments: taxPaymentsData };
-  
+
   // Flatten nested objects into CSV rows
-  const flattenObject = (obj: any, prefix = ''): any => {
+  const flattenObject = (obj: any, prefix = ""): any => {
     let result: any = {};
     for (const key in obj) {
       if (obj.hasOwnProperty(key)) {
         const value = obj[key];
         const newKey = prefix ? `${prefix}_${key}` : key;
-        
-        if (value && typeof value === 'object' && !Array.isArray(value)) {
+
+        if (value && typeof value === "object" && !Array.isArray(value)) {
           Object.assign(result, flattenObject(value, newKey));
         } else if (Array.isArray(value)) {
           result[newKey] = JSON.stringify(value);
         } else {
-          result[newKey] = value || '';
+          result[newKey] = value || "";
         }
       }
     }
     return result;
   };
-  
+
   const flatData = flattenObject(completeData);
-  
+
   // Convert to CSV
   const headers = Object.keys(flatData);
   const values = Object.values(flatData);
-  
+
   const csvContent = [
-    headers.join(','),
-    values.map((val: any) => {
-      const stringVal = String(val).replace(/"/g, '""');
-      return `"${stringVal}"`;
-    }).join(',')
-  ].join('\n');
-  
+    headers.join(","),
+    values
+      .map((val: any) => {
+        const stringVal = String(val).replace(/"/g, '""');
+        return `"${stringVal}"`;
+      })
+      .join(","),
+  ].join("\n");
+
   // Download CSV
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
   const url = URL.createObjectURL(blob);
-  link.setAttribute('href', url);
-  link.setAttribute('download', `ITR2_${new Date().toISOString().split('T')[0]}.csv`);
-  link.style.visibility = 'hidden';
+  link.setAttribute("href", url);
+  link.setAttribute(
+    "download",
+    `ITR2_${new Date().toISOString().split("T")[0]}.csv`
+  );
+  link.style.visibility = "hidden";
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-  
-  console.log('ITR-2 data exported to CSV successfully!');
+
+  console.log("ITR-2 data exported to CSV successfully!");
+};
+
+const STORAGE_KEY = "itr2_formData";
+
+const getInitialData = (key: string, fallback: any) => {
+  if (typeof window === "undefined") return fallback;
+  try {
+    const saved = localStorage.getItem(key);
+    if (!saved) return fallback;
+    const parsed = JSON.parse(saved);
+    // Return specific key if it exists in the saved object, otherwise fallback
+    // The saved object structure is { sections, formData }
+    return parsed;
+  } catch (error) {
+    console.error("Error loading data from localStorage:", error);
+    return fallback;
+  }
 };
 
 const ItrTwo: React.FC = () => {
-  const [sections, setSections] = useState<ItrTwoSection[]>(ITR_TWO_SECTIONS);
+  const [sections, setSections] = useState<ItrTwoSection[]>(() => {
+    const saved = getInitialData(STORAGE_KEY, null);
+    return saved?.sections || ITR_TWO_SECTIONS;
+  });
+
   const [activeSectionId, setActiveSectionId] = useState<string | null>(null);
+
   const [formData, setFormData] = useState<{
     personalInfo?: PersonalInfoFormData;
     salaryIncome?: SalaryIncomeFormData;
@@ -139,7 +168,19 @@ const ItrTwo: React.FC = () => {
     scheduleAL?: any;
     part3TTI?: any;
     taxPayments?: any;
-  }>({});
+  }>(() => {
+    const saved = getInitialData(STORAGE_KEY, null);
+    return saved?.formData || {};
+  });
+
+  // Save to localStorage whenever sections or formData change
+  useEffect(() => {
+    const dataToSave = {
+      sections,
+      formData,
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+  }, [sections, formData]);
 
   const completionPercentage = useMemo(
     () => calculateCompletionPercentage(sections),
@@ -166,13 +207,15 @@ const ItrTwo: React.FC = () => {
   // Auto-scroll to the currently active (in-progress) section whenever it changes
   useEffect(() => {
     // Determine the target element id
-    const targetId = activeSectionId ? `section-${activeSectionId}` : 'section-summary';
+    const targetId = activeSectionId
+      ? `section-${activeSectionId}`
+      : "section-summary";
     const scroll = () => {
       const el = document.getElementById(targetId);
-      if (el && 'scrollIntoView' in el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (el && "scrollIntoView" in el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
       } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
     };
     // Allow DOM to render before scrolling
@@ -234,10 +277,10 @@ const ItrTwo: React.FC = () => {
       setFormData((prev) => ({ ...prev, scheduleBFLA: data }));
     }
     if (sectionId === "cyla-bfla" && data) {
-      setFormData((prev) => ({ 
-        ...prev, 
+      setFormData((prev) => ({
+        ...prev,
         scheduleCYLA: data.cyla,
-        scheduleBFLA: data.bfla 
+        scheduleBFLA: data.bfla,
       }));
     }
     if (sectionId === "cfl" && data) {
@@ -322,6 +365,8 @@ const ItrTwo: React.FC = () => {
 
   const handleFinalSubmit = () => {
     exportToCSV(formData, formData.taxPayments);
+    localStorage.removeItem(STORAGE_KEY);
+    // CSV download triggered
   };
 
   const allSectionsCompleted = useMemo(() => {
@@ -385,7 +430,7 @@ const ItrTwo: React.FC = () => {
               <ItrTwoSalary
                 onComplete={(data) => handleSectionComplete("schedule-s", data)}
                 initialData={formData.salaryIncome}
-                personalInfo={formData.personalInfo} 
+                personalInfo={formData.personalInfo}
               />
             )}
 
@@ -395,7 +440,7 @@ const ItrTwo: React.FC = () => {
                   handleSectionComplete("house-property", data)
                 }
                 initialData={formData.houseProperty}
-                personalInfo={formData.personalInfo} 
+                personalInfo={formData.personalInfo}
               />
             )}
 
@@ -409,7 +454,9 @@ const ItrTwo: React.FC = () => {
 
             {activeSectionId === "schedule-112a" && (
               <ItrTwoSchedule112A
-                onSubmit={(data) => handleSectionComplete("schedule-112a", data)}
+                onSubmit={(data) =>
+                  handleSectionComplete("schedule-112a", data)
+                }
                 onCancel={handleBackToSummary}
                 initialData={formData.schedule112A}
               />
@@ -417,7 +464,9 @@ const ItrTwo: React.FC = () => {
 
             {activeSectionId === "schedule-115ad" && (
               <ItrTwo115AD
-                onSubmit={(data) => handleSectionComplete("schedule-115ad", data)}
+                onSubmit={(data) =>
+                  handleSectionComplete("schedule-115ad", data)
+                }
                 onBack={handleBackToSummary}
                 initialData={formData.schedule115AD}
               />
@@ -461,7 +510,7 @@ const ItrTwo: React.FC = () => {
                 onBack={handleBackToSummary}
                 initialData={{
                   cyla: formData.scheduleCYLA,
-                  bfla: formData.scheduleBFLA
+                  bfla: formData.scheduleBFLA,
                 }}
               />
             )}
@@ -479,6 +528,7 @@ const ItrTwo: React.FC = () => {
                 onSave={(data) => handleSectionComplete("80c", data)}
                 onBack={handleBackToSummary}
                 initialData={formData.scheduleVIA}
+                personalInfo={formData.personalInfo}
               />
             )}
 
@@ -722,42 +772,69 @@ const ItrTwo: React.FC = () => {
                       />
                     </svg>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <h3 className="text-2xl font-bold text-gray-900">
                       All Sections Completed!
                     </h3>
                     <p className="text-base text-gray-700">
-                      Congratulations! You have successfully filled all sections of ITR-2 form.
+                      Congratulations! You have successfully filled all sections
+                      of ITR-2 form.
                     </p>
                     <p className="text-sm text-gray-600">
-                      Click the button below to download your complete ITR-2 data as a CSV file.
+                      Click the button below to download your complete ITR-2
+                      data as a CSV file.
                     </p>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={handleFinalSubmit}
-                    className="inline-flex items-center gap-3 rounded-lg bg-green-600 px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all hover:bg-green-700 hover:shadow-xl hover:scale-105"
-                  >
-                    <svg
-                      className="h-6 w-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+                  <div className="flex justify-center gap-4">
+                    <button
+                      type="button"
+                      onClick={handleFinalSubmit}
+                      className="inline-flex items-center gap-3 rounded-lg bg-green-600 px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all hover:bg-green-700 hover:shadow-xl hover:scale-105"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                      />
-                    </svg>
-                    Submit & Download ITR-2 Form
-                  </button>
+                      <svg
+                        className="h-6 w-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        />
+                      </svg>
+                      Download CSV
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => exportITR2ToPDF(formData)}
+                      className="inline-flex items-center gap-3 rounded-lg bg-red-600 px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all hover:bg-red-700 hover:shadow-xl hover:scale-105"
+                    >
+                      <svg
+                        className="h-6 w-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                        />
+                      </svg>
+                      Download PDF
+                    </button>
+                  </div>
 
                   <p className="text-xs text-gray-500 pt-2">
-                    Your data will be downloaded as: ITR2_{new Date().toISOString().split('T')[0]}.csv
+                    Your data will be downloaded as: ITR2_
+                    {new Date().toISOString().split("T")[0]}.csv
                   </p>
                 </div>
               </div>

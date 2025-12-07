@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
+import { exportITR3ToPDF } from "./utils/pdfExportITR3.ts";
 import ItrThreeProgress from "./components/itr-three-progress.tsx";
 import ItrThreeEntry, {
   ItrThreeSection,
@@ -256,25 +257,29 @@ const ITR_THREE_SECTIONS: ItrThreeSection[] = [
   {
     id: "schedule-112a",
     title: "Schedule 112A - Equity Shares with STT",
-    description: "Detailed equity share transactions (Section 112A) with indexation benefit",
+    description:
+      "Detailed equity share transactions (Section 112A) with indexation benefit",
     status: "not-started",
   },
   {
     id: "schedule-115ad",
     title: "Schedule 115AD - Non-Residents Equity",
-    description: "Non-residents equity share sales under Section 115AD(1)(b)(iii)",
+    description:
+      "Non-residents equity share sales under Section 115AD(1)(b)(iii)",
     status: "not-started",
   },
   {
     id: "schedule-vda",
     title: "Schedule VDA - Virtual Digital Assets",
-    description: "Income from transfer of Virtual Digital Assets (taxable @ 30%)",
+    description:
+      "Income from transfer of Virtual Digital Assets (taxable @ 30%)",
     status: "not-started",
   },
   {
     id: "schedule-os",
     title: "Schedule OS - Income from Other Sources",
-    description: "Income from dividends, interest, rental income, and other sources at normal and special rates",
+    description:
+      "Income from dividends, interest, rental income, and other sources at normal and special rates",
     status: "not-started",
   },
   {
@@ -424,7 +429,8 @@ const ITR_THREE_SECTIONS: ItrThreeSection[] = [
   {
     id: "schedule-fa",
     title: "Schedule FA - Foreign Assets",
-    description: "Details of foreign depository, custodial accounts, and investments",
+    description:
+      "Details of foreign depository, custodial accounts, and investments",
     status: "not-started",
   },
   {
@@ -448,25 +454,29 @@ const ITR_THREE_SECTIONS: ItrThreeSection[] = [
   {
     id: "schedule-tds",
     title: "Schedule TDS - Tax Deferred ESOP",
-    description: "Information related to tax deferred ESOP from eligible startups",
+    description:
+      "Information related to tax deferred ESOP from eligible startups",
     status: "not-started",
   },
   {
     id: "schedule-is",
     title: "Schedule IS - Interest and Fee Payable",
-    description: "Computation of interest and fees for non-compliance with filing",
+    description:
+      "Computation of interest and fees for non-compliance with filing",
     status: "not-started",
   },
   {
     id: "schedule-bc",
     title: "Schedule BC - Bank Accounts and Cash",
-    description: "Details of bank accounts held in India and foreign bank accounts",
+    description:
+      "Details of bank accounts held in India and foreign bank accounts",
     status: "not-started",
   },
   {
     id: "schedule-tp",
     title: "Schedule TP - Tax Payments & TDS/TCS",
-    description: "Details of advance tax, self-assessment tax, TDS, and TCS payments",
+    description:
+      "Details of advance tax, self-assessment tax, TDS, and TCS payments",
     status: "not-started",
   },
   {
@@ -536,8 +546,6 @@ const exportToCSV = (allFormData: any) => {
 };
 
 const ItrThree: React.FC = () => {
-  const [sections, setSections] =
-    useState<ItrThreeSection[]>(ITR_THREE_SECTIONS);
   const [activeSectionId, setActiveSectionId] = useState<string | null>(null);
   const [formData, setFormData] = useState<{
     partAGeneral?: PartAGeneralFormData;
@@ -600,7 +608,46 @@ const ItrThree: React.FC = () => {
     scheduleTCS?: any;
     schedule5A?: any;
     verification?: any;
-  }>({});
+  }>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("itr3_formData");
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          return parsed.formData || {};
+        } catch (e) {
+          console.error("Error parsing itr3_formData", e);
+        }
+      }
+    }
+    return {};
+  });
+
+  const [sections, setSections] = useState<ItrThreeSection[]>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("itr3_formData");
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          return parsed.sections || ITR_THREE_SECTIONS;
+        } catch (e) {
+          console.error("Error parsing itr3_sections", e);
+        }
+      }
+    }
+    return ITR_THREE_SECTIONS;
+  });
+
+  // Persistence Effect
+  useEffect(() => {
+    localStorage.setItem(
+      "itr3_formData",
+      JSON.stringify({
+        formData,
+        sections,
+      })
+    );
+  }, [formData, sections]);
 
   // Dev/test helper: dummy data for Schedule HP (Income from House Property)
   const DUMMY_SCHEDULE_HP: ScheduleHPFormData = {
@@ -868,7 +915,10 @@ const ItrThree: React.FC = () => {
           <button
             type="button"
             onClick={() => {
-              setFormData((prev) => ({ ...prev, scheduleHP: DUMMY_SCHEDULE_HP }));
+              setFormData((prev) => ({
+                ...prev,
+                scheduleHP: DUMMY_SCHEDULE_HP,
+              }));
               handleSectionSelect("schedule-hp");
             }}
             className="px-3 py-2 rounded bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition"
@@ -876,7 +926,9 @@ const ItrThree: React.FC = () => {
           >
             Fill Schedule HP (dev)
           </button>
-          <span className="text-sm text-gray-500">Use to prefill Schedule HP for testing.</span>
+          <span className="text-sm text-gray-500">
+            Use to prefill Schedule HP for testing.
+          </span>
         </div>
 
         {/* Main Content */}
@@ -1105,7 +1157,10 @@ const ItrThree: React.FC = () => {
             {activeSectionId === "schedule-115ad" && (
               <ItrThreeSchedule115AD
                 onNext={() =>
-                  handleSectionComplete("schedule-115ad", formData.schedule115AD)
+                  handleSectionComplete(
+                    "schedule-115ad",
+                    formData.schedule115AD
+                  )
                 }
                 onBack={handleBackToSummary}
                 onSave={(data) =>
@@ -1222,7 +1277,10 @@ const ItrThree: React.FC = () => {
             {activeSectionId === "schedule-80gga" && (
               <ItrThreeSchedule80GGA
                 onNext={() =>
-                  handleSectionComplete("schedule-80gga", formData.schedule80GGA)
+                  handleSectionComplete(
+                    "schedule-80gga",
+                    formData.schedule80GGA
+                  )
                 }
                 onBack={handleBackToSummary}
                 onSave={(data) =>
@@ -1235,7 +1293,10 @@ const ItrThree: React.FC = () => {
             {activeSectionId === "schedule-80gcc" && (
               <ItrThreeSchedule80GCC
                 onNext={() =>
-                  handleSectionComplete("schedule-80gcc", formData.schedule80GCC)
+                  handleSectionComplete(
+                    "schedule-80gcc",
+                    formData.schedule80GCC
+                  )
                 }
                 onBack={handleBackToSummary}
                 onSave={(data) =>
@@ -1326,7 +1387,10 @@ const ItrThree: React.FC = () => {
             {activeSectionId === "schedule-partb" && (
               <ItrThreeSchedulePartB
                 onNext={() =>
-                  handleSectionComplete("schedule-partb", formData.schedulePartB)
+                  handleSectionComplete(
+                    "schedule-partb",
+                    formData.schedulePartB
+                  )
                 }
                 onBack={handleBackToSummary}
                 onSave={(data) =>
