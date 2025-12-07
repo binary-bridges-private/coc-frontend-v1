@@ -18,7 +18,7 @@ const genderOptions = [
   { label: "Male", value: Gender.Male },
   { label: "Female", value: Gender.Female },
   { label: "Other", value: Gender.Other },
-  { label: "Prefer not to say", value: Gender.NotSpecified },
+  // { label: "Prefer not to say", value: Gender.NotSpecified },
 ];
 
 const residentialStatusOptions = [
@@ -137,7 +137,7 @@ const PersonalInformation: React.FC<PersonalInformationProps> = ({
                 </li>
                 <li>
                   <strong className="text-red-600">Does NOT have:</strong>
-                  Income from Lottery, Race Horses, Legal Gambling, etc.
+                  Income from Lottery, Horse Race, Legal Gambling, etc.
                 </li>
               </ul>
               <p className="mt-3 rounded bg-white p-2 text-xs italic">
@@ -156,51 +156,81 @@ const PersonalInformation: React.FC<PersonalInformationProps> = ({
         className="space-y-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"
       >
         {(() => {
-          const relevantErrors = Object.entries(errors).filter(([fieldName]) => {
-            // Skip errors for conditional fields that shouldn't be validated
-            if (fieldName === 'originalReceiptNumber' || fieldName === 'originalFilingDate') {
-              if (filingStatus !== FilingStatus.Revised && filingStatus !== FilingStatus.DefectiveReturn) {
-                return false;
+          const relevantErrors = Object.entries(errors).filter(
+            ([fieldName]) => {
+              // Skip errors for conditional fields that shouldn't be validated
+              if (
+                fieldName === "originalReceiptNumber" ||
+                fieldName === "originalFilingDate"
+              ) {
+                if (
+                  filingStatus !== FilingStatus.Revised &&
+                  filingStatus !== FilingStatus.DefectiveReturn
+                ) {
+                  return false;
+                }
               }
-            }
-            if (fieldName === 'responseNoticeSection' || fieldName === 'noticeUniqueDIN') {
-              if (!filedInResponseToNotice) {
-                return false;
+              if (
+                fieldName === "responseNoticeSection" ||
+                fieldName === "noticeUniqueDIN"
+              ) {
+                if (!filedInResponseToNotice) {
+                  return false;
+                }
               }
-            }
-            if (fieldName === 'form10IEAckNumber' || fieldName === 'form10IEAckDate') {
-              if (taxRegime !== TaxRegime.New115BAC) {
-                return false;
+              if (
+                fieldName === "form10IEAckNumber" ||
+                fieldName === "form10IEAckDate"
+              ) {
+                if (taxRegime !== TaxRegime.New115BAC) {
+                  return false;
+                }
               }
-            }
-            if (fieldName === 'foreignTravelExpenditure' || fieldName === 'electricityExpenditure') {
-              if (!filingUnderSeventhProviso) {
-                return false;
+              if (
+                fieldName === "foreignTravelExpenditure" ||
+                fieldName === "electricityExpenditure"
+              ) {
+                if (!filingUnderSeventhProviso) {
+                  return false;
+                }
               }
+              return true;
             }
-            return true;
-          });
+          );
 
           if (relevantErrors.length === 0) return null;
 
           return (
             <div className="rounded-lg border-2 border-red-300 bg-red-50 p-4 shadow-sm">
               <div className="flex items-start gap-3">
-                <svg className="h-6 w-6 flex-shrink-0 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                <svg
+                  className="h-6 w-6 flex-shrink-0 text-red-600"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
                 </svg>
                 <div className="flex-1">
                   <h3 className="mb-2 text-sm font-bold text-red-900">
-                    ⚠️ Please fix the following errors ({relevantErrors.length} field{relevantErrors.length > 1 ? 's' : ''})
+                    ⚠️ Please fix the following errors ({relevantErrors.length}{" "}
+                    field{relevantErrors.length > 1 ? "s" : ""})
                   </h3>
                   <ul className="space-y-1 text-sm text-red-800">
                     {relevantErrors.map(([fieldName, error]: [string, any]) => {
-                      const message = error?.message || 'This field is required';
+                      const message =
+                        error?.message || "This field is required";
                       return (
                         <li key={fieldName} className="flex items-start gap-2">
                           <span className="font-medium">•</span>
                           <span>
-                            <strong className="capitalize">{fieldName.replace(/([A-Z])/g, ' $1').trim()}:</strong> {message}
+                            <strong className="capitalize">
+                              {fieldName.replace(/([A-Z])/g, " $1").trim()}:
+                            </strong>{" "}
+                            {message}
                           </span>
                         </li>
                       );
@@ -474,6 +504,7 @@ const PersonalInformation: React.FC<PersonalInformationProps> = ({
               placeholder="Enter bank name"
               register={register}
               error={errors.bankName?.message}
+              required
             />
 
             <InputField
@@ -482,6 +513,7 @@ const PersonalInformation: React.FC<PersonalInformationProps> = ({
               placeholder="Enter account number"
               register={register}
               error={errors.bankAccountNumber?.message}
+              required
             />
 
             <InputField
@@ -491,6 +523,7 @@ const PersonalInformation: React.FC<PersonalInformationProps> = ({
               maxLength={11}
               register={register}
               error={errors.bankIFSCCode?.message}
+              required
             />
           </div>
         </div>
@@ -506,274 +539,271 @@ const PersonalInformation: React.FC<PersonalInformationProps> = ({
           </div>
 
           <div className="space-y-6 rounded-lg">
-              <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-                <h4 className="mb-2 font-semibold text-blue-900">
-                  💡 Understanding Tax Regimes
-                </h4>
-                <div className="space-y-2 text-sm text-gray-700">
-                  <p>
-                    <strong>Old Regime:</strong> Allows deductions under Chapter
-                    VI-A (80C, 80D, etc.) but higher tax rates
-                  </p>
-                  <p>
-                    <strong>New Regime (115BAC):</strong> Lower tax rates but NO
-                    deductions allowed (except standard deduction)
-                  </p>
-                  <p className="mt-2 text-xs italic text-gray-600">
-                    Choose the regime that minimizes your tax liability
-                  </p>
+            <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+              <h4 className="mb-2 font-semibold text-blue-900">
+                💡 Understanding Tax Regimes
+              </h4>
+              <div className="space-y-2 text-sm text-gray-700">
+                <p>
+                  <strong>Old Regime:</strong> Allows deductions under Chapter
+                  VI-A (80C, 80D, etc.) but higher tax rates
+                </p>
+                <p>
+                  <strong>New Regime (115BAC):</strong> Lower tax rates but NO
+                  deductions allowed (except standard deduction)
+                </p>
+                <p className="mt-2 text-xs italic text-gray-600">
+                  Choose the regime that minimizes your tax liability
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <SelectField
+                label="Filing Status (A6)"
+                name="filingStatus"
+                register={register}
+                error={errors.filingStatus?.message}
+                options={filingStatusOptions}
+                required
+              />
+
+              <SelectField
+                label="Tax Regime (A20)"
+                name="taxRegime"
+                register={register}
+                error={errors.taxRegime?.message}
+                options={taxRegimeOptions}
+                required
+              />
+
+              {(filingStatus === FilingStatus.Revised ||
+                filingStatus === FilingStatus.DefectiveReturn) && (
+                <>
+                  <div className="col-span-2 rounded-md border-l-4 border-yellow-400 bg-yellow-50 p-3 text-sm text-gray-700">
+                    {filingStatus === FilingStatus.Revised ? (
+                      <>
+                        <strong>📝 Revised Return:</strong> File this to correct
+                        errors or omissions in your original return. Can be
+                        filed before the end of the relevant assessment year or
+                        before completion of assessment, whichever is earlier.
+                      </>
+                    ) : (
+                      <>
+                        <strong>🔧 Defective Return:</strong> File this if the
+                        Income Tax Department found defects in your original
+                        return and issued a notice u/s 139(9). You must rectify
+                        the defects and file within the time specified in the
+                        notice.
+                      </>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <InputField
+                      label="Original Receipt Number (A18)"
+                      name="originalReceiptNumber"
+                      placeholder="Receipt number of original return"
+                      register={register}
+                      error={errors.originalReceiptNumber?.message}
+                    />
+
+                    <InputField
+                      label="Date of Filing Original Return (A18)"
+                      name="originalFilingDate"
+                      type="date"
+                      register={register}
+                      error={errors.originalFilingDate?.message}
+                    />
+                  </div>
+                </>
+              )}
+
+              <div className="md:col-span-2">
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                  <input
+                    type="checkbox"
+                    {...register("filedInResponseToNotice")}
+                    className="h-4 w-4 rounded border border-gray-300 bg-white text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0"
+                  />
+                  <span>Filed in response to notice u/s (A16-A19)</span>
+                </label>
+              </div>
+
+              {filedInResponseToNotice && (
+                <>
+                  <div className="col-span-2 rounded-md border-l-4 border-red-400 bg-red-50 p-3 text-sm text-gray-700">
+                    <strong>🚨 Notice Response:</strong> Check this ONLY if you
+                    received an official notice from the Income Tax Department
+                    under sections 139(9), 142(1), 148, 153A, or 153C. The DIN
+                    (Document Identification Number) is mandatory and can be
+                    found on the notice document.
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <SelectField
+                      label="Notice Section"
+                      name="responseNoticeSection"
+                      register={register}
+                      error={errors.responseNoticeSection?.message}
+                      options={noticeResponseSectionOptions}
+                    />
+
+                    <InputField
+                      label="Unique Identification Number (DIN)"
+                      name="noticeUniqueDIN"
+                      placeholder="Enter DIN from notice"
+                      register={register}
+                      error={errors.noticeUniqueDIN?.message}
+                    />
+                  </div>
+                </>
+              )}
+
+              {taxRegime === TaxRegime.New115BAC && (
+                <>
+                  <div className="col-span-2 rounded-lg border border-red-300 bg-red-50 p-4">
+                    <h4 className="mb-2 font-semibold text-red-900">
+                      Do you wish to exercise the option u/s 115BAC(6) of Opting
+                      out of new tax regime? (default is "No")
+                    </h4>
+                    <div className="space-y-2 text-sm text-gray-800">
+                      <p>
+                        1. By selecting <strong>"No"</strong> option your income
+                        and tax computation shall be as per
+                        <strong>"NEW TAX REGIME"</strong>
+                      </p>
+                      <p>
+                        2. By selecting <strong>"Yes"</strong> option your
+                        income and tax computation shall be as per
+                        <strong>"OLD TAX REGIME"</strong>
+                      </p>
+                      <p className="mt-2 rounded bg-white p-2 text-xs italic text-red-700">
+                        <strong>Note:</strong> For Opting out, option should be
+                        exercised along with the return of income filed u/s
+                        139(1).
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                      <input
+                        type="checkbox"
+                        {...register("optingOut115BAC")}
+                        className="h-4 w-4 rounded border border-gray-300 bg-white text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0"
+                      />
+                      <span>Opting out of 115BAC(6) regime</span>
+                    </label>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <InputField
+                      label="Form 10-IE Acknowledgment Number"
+                      name="form10IEAckNumber"
+                      placeholder="Enter Form 10-IE Ack No."
+                      register={register}
+                      error={errors.form10IEAckNumber?.message}
+                    />
+
+                    <InputField
+                      label="Form 10-IE Date"
+                      name="form10IEAckDate"
+                      type="date"
+                      register={register}
+                      error={errors.form10IEAckDate?.message}
+                    />
+                  </div>
+                </>
+              )}
+
+              <div className="md:col-span-2 border-t border-gray-300 pt-4">
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                  <input
+                    type="checkbox"
+                    {...register("filingUnderSeventhProviso")}
+                    className="h-4 w-4 rounded border border-gray-300 bg-white text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0"
+                  />
+                  <span>
+                    Filing under Seventh proviso to section 139(1) (A21)
+                  </span>
+                </label>
+                <div className="ml-6 mt-2 rounded-md border-l-4 border-purple-400 bg-purple-50 p-3 text-xs text-gray-700">
+                  <strong>⚠️ Mandatory Filing Condition:</strong> Even if your
+                  total income is below taxable limit, you MUST file return if
+                  your expenditure on foreign travel exceeds
+                  <strong>₹2,00,000</strong> or electricity consumption exceeds{" "}
+                  <strong>₹1,00,000</strong> during the financial year.
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <SelectField
-                  label="Filing Status (A6)"
-                  name="filingStatus"
-                  register={register}
-                  error={errors.filingStatus?.message}
-                  options={filingStatusOptions}
-                  required
-                />
+              {filingUnderSeventhProviso && (
+                <div className="grid grid-cols-2 gap-4">
+                  <InputField
+                    label="Foreign Travel Expenditure (Rs.)"
+                    name="foreignTravelExpenditure"
+                    type="number"
+                    placeholder="0"
+                    register={register}
+                    error={errors.foreignTravelExpenditure?.message}
+                  />
 
-                <SelectField
-                  label="Tax Regime (A20)"
-                  name="taxRegime"
-                  register={register}
-                  error={errors.taxRegime?.message}
-                  options={taxRegimeOptions}
-                  required
-                />
-
-                {(filingStatus === FilingStatus.Revised ||
-                  filingStatus === FilingStatus.DefectiveReturn) && (
-                  <>
-                    <div className="col-span-2 rounded-md border-l-4 border-yellow-400 bg-yellow-50 p-3 text-sm text-gray-700">
-                      {filingStatus === FilingStatus.Revised ? (
-                        <>
-                          <strong>📝 Revised Return:</strong> File this to
-                          correct errors or omissions in your original return.
-                          Can be filed before the end of the relevant assessment
-                          year or before completion of assessment, whichever is
-                          earlier.
-                        </>
-                      ) : (
-                        <>
-                          <strong>🔧 Defective Return:</strong> File this if the
-                          Income Tax Department found defects in your original
-                          return and issued a notice u/s 139(9). You must
-                          rectify the defects and file within the time specified
-                          in the notice.
-                        </>
-                      )}
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <InputField
-                        label="Original Receipt Number (A18)"
-                        name="originalReceiptNumber"
-                        placeholder="Receipt number of original return"
-                        register={register}
-                        error={errors.originalReceiptNumber?.message}
-                      />
-
-                      <InputField
-                        label="Date of Filing Original Return (A18)"
-                        name="originalFilingDate"
-                        type="date"
-                        register={register}
-                        error={errors.originalFilingDate?.message}
-                      />
-                    </div>
-                  </>
-                )}
-
-                <div className="md:col-span-2">
-                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                    <input
-                      type="checkbox"
-                      {...register("filedInResponseToNotice")}
-                      className="h-4 w-4 rounded border border-gray-300 bg-white text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0"
-                    />
-                    <span>Filed in response to notice u/s (A16-A19)</span>
-                  </label>
+                  <InputField
+                    label="Electricity Expenditure (Rs.)"
+                    name="electricityExpenditure"
+                    type="number"
+                    placeholder="0"
+                    register={register}
+                    error={errors.electricityExpenditure?.message}
+                  />
                 </div>
+              )}
 
-                {filedInResponseToNotice && (
-                  <>
-                    <div className="col-span-2 rounded-md border-l-4 border-red-400 bg-red-50 p-3 text-sm text-gray-700">
-                      <strong>🚨 Notice Response:</strong> Check this ONLY if
-                      you received an official notice from the Income Tax
-                      Department under sections 139(9), 142(1), 148, 153A, or
-                      153C. The DIN (Document Identification Number) is
-                      mandatory and can be found on the notice document.
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <SelectField
-                        label="Notice Section"
-                        name="responseNoticeSection"
-                        register={register}
-                        error={errors.responseNoticeSection?.message}
-                        options={noticeResponseSectionOptions}
+              <div className="md:col-span-2 border-t border-gray-300 pt-4">
+                <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+                  <h4 className="mb-3 font-semibold text-blue-900">
+                    Are you required to file a return as per other conditions
+                    prescribed under clause (iv) of seventh proviso to section
+                    139(1)?
+                  </h4>
+                  <p className="mb-3 text-sm text-gray-700">
+                    (If yes, please furnish following information)
+                  </p>
+
+                  <div className="space-y-3">
+                    <label className="flex items-start gap-3 rounded bg-white p-3 text-sm">
+                      <input
+                        type="checkbox"
+                        {...register("tdsTcsAggregate25ThousandOrMore")}
+                        className="mt-1 h-4 w-4 rounded border border-gray-300 bg-white text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0"
                       />
-
-                      <InputField
-                        label="Unique Identification Number (DIN)"
-                        name="noticeUniqueDIN"
-                        placeholder="Enter DIN from notice"
-                        register={register}
-                        error={errors.noticeUniqueDIN?.message}
-                      />
-                    </div>
-                  </>
-                )}
-
-                {taxRegime === TaxRegime.New115BAC && (
-                  <>
-                    <div className="col-span-2 rounded-lg border border-red-300 bg-red-50 p-4">
-                      <h4 className="mb-2 font-semibold text-red-900">
-                        Do you wish to exercise the option u/s 115BAC(6) of
-                        Opting out of new tax regime? (default is "No")
-                      </h4>
-                      <div className="space-y-2 text-sm text-gray-800">
-                        <p>
-                          1. By selecting <strong>"No"</strong> option your
-                          income and tax computation shall be as per
-                          <strong>"NEW TAX REGIME"</strong>
-                        </p>
-                        <p>
-                          2. By selecting <strong>"Yes"</strong> option your
-                          income and tax computation shall be as per
-                          <strong>"OLD TAX REGIME"</strong>
-                        </p>
-                        <p className="mt-2 rounded bg-white p-2 text-xs italic text-red-700">
-                          <strong>Note:</strong> For Opting out, option should
-                          be exercised along with the return of income filed u/s
-                          139(1).
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="md:col-span-2">
-                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                        <input
-                          type="checkbox"
-                          {...register("optingOut115BAC")}
-                          className="h-4 w-4 rounded border border-gray-300 bg-white text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0"
-                        />
-                        <span>Opting out of 115BAC(6) regime</span>
-                      </label>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <InputField
-                        label="Form 10-IE Acknowledgment Number"
-                        name="form10IEAckNumber"
-                        placeholder="Enter Form 10-IE Ack No."
-                        register={register}
-                        error={errors.form10IEAckNumber?.message}
-                      />
-
-                      <InputField
-                        label="Form 10-IE Date"
-                        name="form10IEAckDate"
-                        type="date"
-                        register={register}
-                        error={errors.form10IEAckDate?.message}
-                      />
-                    </div>
-                  </>
-                )}
-
-                <div className="md:col-span-2 border-t border-gray-300 pt-4">
-                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                    <input
-                      type="checkbox"
-                      {...register("filingUnderSeventhProviso")}
-                      className="h-4 w-4 rounded border border-gray-300 bg-white text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0"
-                    />
-                    <span>
-                      Filing under Seventh proviso to section 139(1) (A21)
-                    </span>
-                  </label>
-                  <div className="ml-6 mt-2 rounded-md border-l-4 border-purple-400 bg-purple-50 p-3 text-xs text-gray-700">
-                    <strong>⚠️ Mandatory Filing Condition:</strong> Even if your
-                    total income is below taxable limit, you MUST file return if
-                    your expenditure on foreign travel exceeds
-                    <strong>₹2,00,000</strong> or electricity consumption
-                    exceeds <strong>₹1,00,000</strong> during the financial
-                    year.
-                  </div>
-                </div>
-
-                {filingUnderSeventhProviso && (
-                  <div className="grid grid-cols-2 gap-4">
-                    <InputField
-                      label="Foreign Travel Expenditure (Rs.)"
-                      name="foreignTravelExpenditure"
-                      type="number"
-                      placeholder="0"
-                      register={register}
-                      error={errors.foreignTravelExpenditure?.message}
-                    />
-
-                    <InputField
-                      label="Electricity Expenditure (Rs.)"
-                      name="electricityExpenditure"
-                      type="number"
-                      placeholder="0"
-                      register={register}
-                      error={errors.electricityExpenditure?.message}
-                    />
-                  </div>
-                )}
-
-                <div className="md:col-span-2 border-t border-gray-300 pt-4">
-                  <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-                    <h4 className="mb-3 font-semibold text-blue-900">
-                      Are you required to file a return as per other conditions
-                      prescribed under clause (iv) of seventh proviso to section
-                      139(1)?
-                    </h4>
-                    <p className="mb-3 text-sm text-gray-700">
-                      (If yes, please furnish following information)
-                    </p>
-
-                    <div className="space-y-3">
-                      <label className="flex items-start gap-3 rounded bg-white p-3 text-sm">
-                        <input
-                          type="checkbox"
-                          {...register("tdsTcsAggregate25ThousandOrMore")}
-                          className="mt-1 h-4 w-4 rounded border border-gray-300 bg-white text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0"
-                        />
-                        <span className="flex-1 text-gray-700">
-                          The aggregate of tax deducted at source and tax
-                          collected at source during the previous year, in the
-                          case of the person, is
-                          <strong>twenty-five thousand rupees or more</strong>
-                          <span className="text-gray-600">
-                            
-                            (fifty thousand for resident senior citizen)
-                          </span>
+                      <span className="flex-1 text-gray-700">
+                        The aggregate of tax deducted at source and tax
+                        collected at source during the previous year, in the
+                        case of the person, is
+                        <strong>twenty-five thousand rupees or more</strong>
+                        <span className="text-gray-600">
+                          (fifty thousand for resident senior citizen)
                         </span>
-                      </label>
+                      </span>
+                    </label>
 
-                      <label className="flex items-start gap-3 rounded bg-white p-3 text-sm">
-                        <input
-                          type="checkbox"
-                          {...register("savingsBankDeposit50LakhOrMore")}
-                          className="mt-1 h-4 w-4 rounded border border-gray-300 bg-white text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0"
-                        />
-                        <span className="flex-1 text-gray-700">
-                          The deposit in one or more savings bank account of the
-                          person, in aggregate, is
-                          <strong>fifty lakh rupees or more</strong>, in the
-                          previous year
-                        </span>
-                      </label>
-                    </div>
+                    <label className="flex items-start gap-3 rounded bg-white p-3 text-sm">
+                      <input
+                        type="checkbox"
+                        {...register("savingsBankDeposit50LakhOrMore")}
+                        className="mt-1 h-4 w-4 rounded border border-gray-300 bg-white text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0"
+                      />
+                      <span className="flex-1 text-gray-700">
+                        The deposit in one or more savings bank account of the
+                        person, in aggregate, is
+                        <strong>fifty lakh rupees or more</strong>, in the
+                        previous year
+                      </span>
+                    </label>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
         </div>
 
         <div className="flex flex-col gap-3 border-t border-gray-100 pt-4 sm:flex-row sm:justify-end">

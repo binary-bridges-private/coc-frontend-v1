@@ -4,6 +4,7 @@ import {
   FilingStatus,
   TaxRegime,
   FilingSection,
+  PropertyType,
 } from "./itr-1.types.ts";
 
 const trimmedString = z.string().trim();
@@ -112,10 +113,9 @@ const taxRegimeSchema = z.nativeEnum(TaxRegime, {
   message: "Please select tax regime",
 });
 
-const filingSectionSchema = z.union([
-  z.literal(""),
-  z.nativeEnum(FilingSection),
-]).optional();
+const filingSectionSchema = z
+  .union([z.literal(""), z.nativeEnum(FilingSection)])
+  .optional();
 
 const optionalDateSchema = z
   .union([
@@ -132,138 +132,167 @@ const optionalDateSchema = z
   ])
   .optional();
 
-export const personalInformationSchema = z.object({
-  assessmentYear: requiredStringSchema,
+export const personalInformationSchema = z
+  .object({
+    assessmentYear: requiredStringSchema,
 
-  pan: panSchema,
-  aadhar: aadhaarSchema,
-  aadhaarEnrolmentId: aadhaarEnrolmentSchema.optional(),
+    pan: panSchema,
+    aadhar: aadhaarSchema,
+    aadhaarEnrolmentId: aadhaarEnrolmentSchema.optional(),
 
-  firstName: nameSchema,
-  middleName: optionalNameSchema.optional(),
-  lastName: nameSchema,
-  dateOfBirth: dateSchema,
-  gender: genderSchema,
-  residentialStatus: requiredStringSchema,
+    firstName: nameSchema,
+    middleName: optionalNameSchema.optional(),
+    lastName: nameSchema,
+    dateOfBirth: dateSchema,
+    gender: genderSchema,
+    residentialStatus: requiredStringSchema,
 
-  email: emailSchema,
-  mobileNumber: mobileSchema,
+    email: emailSchema,
+    mobileNumber: mobileSchema,
 
-  flatDoorBlockNo: z.string().optional(),
-  nameOfPremises: z.string().optional(),
-  roadStreetPostOffice: z.string().optional(),
-  areaLocality: z.string().optional(),
-  city: requiredStringSchema,
-  state: requiredStringSchema,
-  pincode: pincodeSchema.optional(),
-  noZipCode: z.boolean().optional(),
-  zipCode: z.string().optional(),
-  country: requiredStringSchema,
+    flatDoorBlockNo: z.string().optional(),
+    nameOfPremises: z.string().optional(),
+    roadStreetPostOffice: z.string().optional(),
+    areaLocality: z.string().optional(),
+    city: requiredStringSchema,
+    state: requiredStringSchema,
+    pincode: pincodeSchema.optional(),
+    noZipCode: z.boolean().optional(),
+    zipCode: z.string().optional(),
+    country: requiredStringSchema,
 
-  bankName: z.string().optional(),
-  bankAccountNumber: z.string().optional(),
-  bankIFSCCode: z.string().optional(),
+    bankName: requiredStringSchema,
+    bankAccountNumber: z
+      .string()
+      .min(1, "Account Number is required")
+      .regex(/^\d{9,18}$/, "Enter a valid account number"),
+    bankIFSCCode: z
+      .string()
+      .min(1, "IFSC Code is required")
+      .regex(
+        /^[A-Z]{4}0[A-Z0-9]{6}$/,
+        "Enter a valid IFSC Code (e.g., SBIN0123456)"
+      ),
 
-  natureOfEmployment: requiredStringSchema,
+    natureOfEmployment: requiredStringSchema,
 
-  filingStatus: filingStatusSchema,
-  filedInResponseToNotice: z.boolean().optional(),
-  responseNoticeSection: filingSectionSchema,
+    filingStatus: filingStatusSchema,
+    filedInResponseToNotice: z.boolean().optional(),
+    responseNoticeSection: filingSectionSchema,
 
-  isRevisedOrDefective: z.boolean().optional(),
-  originalReceiptNumber: z.string().optional(),
-  originalFilingDate: optionalDateSchema,
+    isRevisedOrDefective: z.boolean().optional(),
+    originalReceiptNumber: z.string().optional(),
+    originalFilingDate: optionalDateSchema,
 
-  noticeUniqueDIN: z.string().optional(),
+    noticeUniqueDIN: z.string().optional(),
 
-  taxRegime: taxRegimeSchema,
-  optingOut115BAC: z.boolean().optional(),
-  form10IEAckNumber: z.string().optional(),
-  form10IEAckDate: optionalDateSchema,
+    taxRegime: taxRegimeSchema,
+    optingOut115BAC: z.boolean().optional(),
+    form10IEAckNumber: z.string().optional(),
+    form10IEAckDate: optionalDateSchema,
 
-  filingUnderSeventhProviso: z.boolean().optional(),
-  foreignTravelExpenditure: z.union([
-    z.number(),
-    z.string().transform((val) => val === "" ? undefined : parseFloat(val)),
-    z.undefined(),
-  ]).optional(),
-  electricityExpenditure: z.union([
-    z.number(),
-    z.string().transform((val) => val === "" ? undefined : parseFloat(val)),
-    z.undefined(),
-  ]).optional(),
+    filingUnderSeventhProviso: z.boolean().optional(),
+    foreignTravelExpenditure: z
+      .union([
+        z.number(),
+        z
+          .string()
+          .transform((val) => (val === "" ? undefined : parseFloat(val))),
+        z.undefined(),
+      ])
+      .optional(),
+    electricityExpenditure: z
+      .union([
+        z.number(),
+        z
+          .string()
+          .transform((val) => (val === "" ? undefined : parseFloat(val))),
+        z.undefined(),
+      ])
+      .optional(),
 
-  filingUnderOtherSeventhProvisoConditions: z.boolean().optional(),
-  tdsTcsAggregate25ThousandOrMore: z.boolean().optional(),
-  savingsBankDeposit50LakhOrMore: z.boolean().optional(),
-}).superRefine((data, ctx) => {
-  if (
-    data.filingStatus === FilingStatus.Revised ||
-    data.filingStatus === FilingStatus.DefectiveReturn
-  ) {
-    if (!data.originalReceiptNumber || data.originalReceiptNumber.trim() === "") {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["originalReceiptNumber"],
-        message: "Original receipt number is required for revised/defective returns",
-      });
-    }
-    if (!data.originalFilingDate || data.originalFilingDate === "") {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["originalFilingDate"],
-        message: "Original filing date is required for revised/defective returns",
-      });
-    }
-  }
-
-  if (data.filedInResponseToNotice) {
-    if (!data.responseNoticeSection) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["responseNoticeSection"],
-        message: "Notice section is required when filed in response to notice",
-      });
-    }
-    if (!data.noticeUniqueDIN || data.noticeUniqueDIN.trim() === "") {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["noticeUniqueDIN"],
-        message: "DIN (Document Identification Number) is required",
-      });
-    }
-  }
-
-  if (data.taxRegime === TaxRegime.New115BAC && data.optingOut115BAC) {
-    if (!data.form10IEAckNumber || data.form10IEAckNumber.trim() === "") {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["form10IEAckNumber"],
-        message: "Form 10-IE acknowledgment number is required when opting out of 115BAC",
-      });
-    }
-    if (!data.form10IEAckDate || data.form10IEAckDate === "") {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["form10IEAckDate"],
-        message: "Form 10-IE date is required when opting out of 115BAC",
-      });
-    }
-  }
-
-  if (data.filingUnderSeventhProviso) {
+    filingUnderOtherSeventhProvisoConditions: z.boolean().optional(),
+    tdsTcsAggregate25ThousandOrMore: z.boolean().optional(),
+    savingsBankDeposit50LakhOrMore: z.boolean().optional(),
+  })
+  .superRefine((data, ctx) => {
     if (
-      (data.foreignTravelExpenditure === undefined || data.foreignTravelExpenditure === 0) &&
-      (data.electricityExpenditure === undefined || data.electricityExpenditure === 0)
+      data.filingStatus === FilingStatus.Revised ||
+      data.filingStatus === FilingStatus.DefectiveReturn
     ) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["foreignTravelExpenditure"],
-        message: "Either foreign travel or electricity expenditure must be provided",
-      });
+      if (
+        !data.originalReceiptNumber ||
+        data.originalReceiptNumber.trim() === ""
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["originalReceiptNumber"],
+          message:
+            "Original receipt number is required for revised/defective returns",
+        });
+      }
+      if (!data.originalFilingDate || data.originalFilingDate === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["originalFilingDate"],
+          message:
+            "Original filing date is required for revised/defective returns",
+        });
+      }
     }
-  }
-});
+
+    if (data.filedInResponseToNotice) {
+      if (!data.responseNoticeSection) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["responseNoticeSection"],
+          message:
+            "Notice section is required when filed in response to notice",
+        });
+      }
+      if (!data.noticeUniqueDIN || data.noticeUniqueDIN.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["noticeUniqueDIN"],
+          message: "DIN (Document Identification Number) is required",
+        });
+      }
+    }
+
+    if (data.taxRegime === TaxRegime.New115BAC && data.optingOut115BAC) {
+      if (!data.form10IEAckNumber || data.form10IEAckNumber.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["form10IEAckNumber"],
+          message:
+            "Form 10-IE acknowledgment number is required when opting out of 115BAC",
+        });
+      }
+      if (!data.form10IEAckDate || data.form10IEAckDate === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["form10IEAckDate"],
+          message: "Form 10-IE date is required when opting out of 115BAC",
+        });
+      }
+    }
+
+    if (data.filingUnderSeventhProviso) {
+      if (
+        (data.foreignTravelExpenditure === undefined ||
+          data.foreignTravelExpenditure === 0) &&
+        (data.electricityExpenditure === undefined ||
+          data.electricityExpenditure === 0)
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["foreignTravelExpenditure"],
+          message:
+            "Either foreign travel or electricity expenditure must be provided",
+        });
+      }
+    }
+  });
 
 export type PersonalInformationFormData = z.infer<
   typeof personalInformationSchema
@@ -303,24 +332,14 @@ export const grossTotalIncomeSchema = z
       message: "Professional tax cannot exceed ₹2,500 per year",
     }),
 
-    propertySelfOccupied: z.boolean().optional(),
-    propertyLetOut: z.boolean().optional(),
-    propertyDeemedLetOut: z.boolean().optional(),
-
+    propertyType: z.nativeEnum(PropertyType).optional(),
     grossRent: optionalNumericAmountSchema,
-
     localTaxPaid: optionalNumericAmountSchema,
-
     annualValue: optionalNumericAmountSchema,
-
     standardDeduction30Percent: optionalNumericAmountSchema,
-
     interestBorrowedCapital: optionalNumericAmountSchema,
-
     arrearsUnrealisedRent: optionalNumericAmountSchema,
-
     otherSourcesIncome: optionalNumericAmountSchema,
-
     // Other Sources Income Table (4 rows)
     otherSource1Nature: z.string().optional(),
     otherSource1Description: z.string().optional(),
@@ -334,35 +353,28 @@ export const grossTotalIncomeSchema = z
     otherSource4Nature: z.string().optional(),
     otherSource4Description: z.string().optional(),
     otherSource4Amount: optionalNumericAmountSchema,
-
     // Retirement benefit from non-notified countries
     retirementBenefitNonNotifiedCountry: optionalNumericAmountSchema,
-    
     // Retirement benefit from notified countries (u/s 89A)
     retirementBenefitUSA: optionalNumericAmountSchema,
     retirementBenefitUK: optionalNumericAmountSchema,
     retirementBenefitCanada: optionalNumericAmountSchema,
-    
     // Quarterly breakup for retirement benefit (notified countries)
     retirementBenefitQ1: optionalNumericAmountSchema,
     retirementBenefitQ2: optionalNumericAmountSchema,
     retirementBenefitQ3: optionalNumericAmountSchema,
     retirementBenefitQ4: optionalNumericAmountSchema,
     retirementBenefitQ5: optionalNumericAmountSchema,
-    
     // Dividend income quarterly breakup
     dividendQ1: optionalNumericAmountSchema,
     dividendQ2: optionalNumericAmountSchema,
     dividendQ3: optionalNumericAmountSchema,
     dividendQ4: optionalNumericAmountSchema,
     dividendQ5: optionalNumericAmountSchema,
-    
     // Deductions
     reliefFromTaxation89AOtherSources: optionalNumericAmountSchema,
     deduction57iia: optionalNumericAmountSchema,
-
     agriculturalIncome: optionalNumericAmountSchema,
-
     // Part C - Deductions
     section80C: optionalNumericAmountSchema.refine((val) => val <= 150000, {
       message: "80C deduction cannot exceed ₹1,50,000",
@@ -414,10 +426,8 @@ export const grossTotalIncomeSchema = z
     }),
     section80CCH: optionalNumericAmountSchema,
     anyOtherDeductions: optionalNumericAmountSchema,
-
     totalDeductions: optionalNumericAmountSchema,
     totalIncome: optionalNumericAmountSchema,
-    
     // Tax calculation fields
     taxPayableOnTotalIncome: optionalNumericAmountSchema,
     rebate87A: optionalNumericAmountSchema,
@@ -435,7 +445,10 @@ export const grossTotalIncomeSchema = z
   })
   .refine(
     (data) => {
-      if (data.propertySelfOccupied && data.interestBorrowedCapital > 200000) {
+      if (
+        data.propertyType === PropertyType.SelfOccupied &&
+        data.interestBorrowedCapital > 200000
+      ) {
         return false;
       }
       return true;
@@ -449,7 +462,10 @@ export const grossTotalIncomeSchema = z
   .refine(
     (data) => {
       // Validate Other Source 1
-      if (data.otherSource1Nature === 'Any Other' && !data.otherSource1Description) {
+      if (
+        data.otherSource1Nature === "Any Other" &&
+        !data.otherSource1Description
+      ) {
         return false;
       }
       return true;
@@ -462,7 +478,10 @@ export const grossTotalIncomeSchema = z
   .refine(
     (data) => {
       // Validate Other Source 2
-      if (data.otherSource2Nature === 'Any Other' && !data.otherSource2Description) {
+      if (
+        data.otherSource2Nature === "Any Other" &&
+        !data.otherSource2Description
+      ) {
         return false;
       }
       return true;
@@ -475,7 +494,10 @@ export const grossTotalIncomeSchema = z
   .refine(
     (data) => {
       // Validate Other Source 3
-      if (data.otherSource3Nature === 'Any Other' && !data.otherSource3Description) {
+      if (
+        data.otherSource3Nature === "Any Other" &&
+        !data.otherSource3Description
+      ) {
         return false;
       }
       return true;
@@ -488,7 +510,10 @@ export const grossTotalIncomeSchema = z
   .refine(
     (data) => {
       // Validate Other Source 4
-      if (data.otherSource4Nature === 'Any Other' && !data.otherSource4Description) {
+      if (
+        data.otherSource4Nature === "Any Other" &&
+        !data.otherSource4Description
+      ) {
         return false;
       }
       return true;
@@ -504,7 +529,7 @@ export type GrossTotalIncomeFormData = z.infer<typeof grossTotalIncomeSchema>;
 // Part C - Tax Deductions Schema
 export const taxDeductionSchema = z.object({
   grossTotalIncome: optionalNumericAmountSchema,
-  
+
   // Section 80C & 80CCC
   section80C: optionalNumericAmountSchema.refine((val) => val <= 150000, {
     message: "80C deduction cannot exceed ₹1,50,000",
@@ -512,7 +537,7 @@ export const taxDeductionSchema = z.object({
   section80CCC: optionalNumericAmountSchema.refine((val) => val <= 150000, {
     message: "80CCC deduction cannot exceed ₹1,50,000",
   }),
-  
+
   // Section 80CCD - Pension Schemes
   section80CCD1: optionalNumericAmountSchema,
   section80CCD1B: optionalNumericAmountSchema.refine((val) => val <= 50000, {
@@ -520,7 +545,7 @@ export const taxDeductionSchema = z.object({
   }),
   pranTaxpayer: z.string().optional(),
   section80CCD2: optionalNumericAmountSchema,
-  
+
   // Section 80D & 80DD - Health & Disability
   section80D: optionalNumericAmountSchema.refine((val) => val <= 100000, {
     message: "80D deduction cannot exceed ₹1,00,000",
@@ -528,13 +553,13 @@ export const taxDeductionSchema = z.object({
   section80DD: optionalNumericAmountSchema.refine((val) => val <= 125000, {
     message: "80DD deduction cannot exceed ₹1,25,000",
   }),
-  
+
   // Section 80DDB - Specified Disease
   section80DDB: optionalNumericAmountSchema.refine((val) => val <= 100000, {
     message: "80DDB deduction cannot exceed ₹1,00,000",
   }),
   specifiedDiseaseName: z.string().optional(),
-  
+
   // Section 80E-80EEB - Loan Interest
   section80E: optionalNumericAmountSchema,
   section80EE: optionalNumericAmountSchema.refine((val) => val <= 50000, {
@@ -546,18 +571,18 @@ export const taxDeductionSchema = z.object({
   section80EEB: optionalNumericAmountSchema.refine((val) => val <= 150000, {
     message: "80EEB deduction cannot exceed ₹1,50,000",
   }),
-  
+
   // Section 80G & 80GG - Donations & Rent
   section80G: optionalNumericAmountSchema,
   section80GG: optionalNumericAmountSchema.refine((val) => val <= 60000, {
     message: "80GG deduction cannot exceed ₹60,000",
   }),
   form10BAAckNumber: z.string().optional(),
-  
+
   // Section 80GGA & 80GGC - Research & Political
   section80GGA: optionalNumericAmountSchema,
   section80GGC: optionalNumericAmountSchema,
-  
+
   // Section 80TTA & 80TTB - Interest Income
   section80TTA: optionalNumericAmountSchema.refine((val) => val <= 10000, {
     message: "80TTA deduction cannot exceed ₹10,000",
@@ -565,20 +590,20 @@ export const taxDeductionSchema = z.object({
   section80TTB: optionalNumericAmountSchema.refine((val) => val <= 50000, {
     message: "80TTB deduction cannot exceed ₹50,000",
   }),
-  
+
   // Section 80U & 80CCH - Other Deductions
   section80U: optionalNumericAmountSchema.refine((val) => val <= 125000, {
     message: "80U deduction cannot exceed ₹1,25,000",
   }),
   section80CCH: optionalNumericAmountSchema,
-  
+
   // Any Other Deductions
   anyOtherDeductions: optionalNumericAmountSchema,
-  
+
   // Calculated fields
   totalDeductions: optionalNumericAmountSchema,
   totalIncome: optionalNumericAmountSchema,
-  
+
   // Tax calculation fields
   taxPayableOnTotalIncome: optionalNumericAmountSchema,
   rebate87A: optionalNumericAmountSchema,
@@ -587,7 +612,7 @@ export const taxDeductionSchema = z.object({
   totalTaxAndCess: optionalNumericAmountSchema,
   relief89: optionalNumericAmountSchema,
   balanceTaxAfterRelief: optionalNumericAmountSchema,
-  
+
   // Interest and Fee
   interest234A: optionalNumericAmountSchema,
   interest234B: optionalNumericAmountSchema,
@@ -595,7 +620,7 @@ export const taxDeductionSchema = z.object({
   fee234F: optionalNumericAmountSchema,
   totalInterestFee: optionalNumericAmountSchema,
   totalTaxFeeInterest: optionalNumericAmountSchema,
-  
+
   // Exempt Income
   exemptIncomeNature1: z.string().optional(),
   exemptIncomeDescription1: z.string().optional(),
@@ -603,7 +628,7 @@ export const taxDeductionSchema = z.object({
   exemptIncomeNature2: z.string().optional(),
   exemptIncomeDescription2: z.string().optional(),
   exemptIncome2: optionalNumericAmountSchema,
-  
+
   // LTCG u/s 112A
   ltcgSaleConsideration112A: optionalNumericAmountSchema,
   ltcgCostOfAcquisition112A: optionalNumericAmountSchema,

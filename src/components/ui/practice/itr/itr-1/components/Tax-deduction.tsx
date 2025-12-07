@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
+import { TaxRegime } from "../itr-1.types.ts";
 
 interface TaxDeductionProps {
   form: UseFormReturn<any>;
   onSubmit: (values: any) => void;
   onCancel: () => void;
+  taxRegime?: string;
 }
 
 interface InputFieldProps {
@@ -64,13 +66,20 @@ const TaxDeduction: React.FC<TaxDeductionProps> = ({
   form,
   onSubmit,
   onCancel,
+  taxRegime,
 }) => {
   const {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = form;
+
+  const [showFormula, setShowFormula] = useState(false);
+  const [taxBreakdown, setTaxBreakdown] = useState<any[]>([]);
+
+  const isNewRegime = taxRegime === TaxRegime.New115BAC;
 
   const toNumber = (val: any) => {
     if (typeof val === "number") return val;
@@ -78,1276 +87,390 @@ const TaxDeduction: React.FC<TaxDeductionProps> = ({
     return Number.isNaN(parsed) ? 0 : parsed;
   };
 
-  // Calculate Gross Total Income from Gross Income sections (B1 + B2 + B3)
-  const salaryValues = watch([
-    "salarySection17_1",
-    "perquisitesSection17_2",
-    "profitSection17_3",
-    "retirementBenefitNotified",
-    "retirementBenefitOther",
-    "exemptAllowances",
-    "reliefFromTaxation89A",
-    "standardDeduction16",
-    "entertainmentAllowance",
-    "professionalTax",
-  ]);
+  // Watch values for calculations
+  const values = watch();
+  
+  const section80C = toNumber(watch("section80C"));
+  const section80CCC = toNumber(watch("section80CCC"));
+  const section80CCD1 = toNumber(watch("section80CCD1"));
+  const section80CCD1B = toNumber(watch("section80CCD1B"));
+  const section80CCD2 = toNumber(watch("section80CCD2"));
+  const section80D = toNumber(watch("section80D"));
+  const section80DD = toNumber(watch("section80DD"));
+  const section80DDB = toNumber(watch("section80DDB"));
+  const section80E = toNumber(watch("section80E"));
+  const section80EE = toNumber(watch("section80EE"));
+  const section80EEA = toNumber(watch("section80EEA"));
+  const section80EEB = toNumber(watch("section80EEB"));
+  const section80G = toNumber(watch("section80G"));
+  const section80GG = toNumber(watch("section80GG"));
+  const section80GGA = toNumber(watch("section80GGA"));
+  const section80GGC = toNumber(watch("section80GGC"));
+  const section80QQB = toNumber(watch("section80QQB"));
+  const section80RRB = toNumber(watch("section80RRB"));
+  const section80TTA = toNumber(watch("section80TTA"));
+  const section80TTB = toNumber(watch("section80TTB"));
+  const section80U = toNumber(watch("section80U"));
+  const section80CCH = toNumber(watch("section80CCH"));
+  const anyOtherDeductions = toNumber(watch("anyOtherDeductions"));
 
-  const calculateNetSalary = () => {
-    const salary = toNumber(salaryValues[0]);
-    const perquisites = toNumber(salaryValues[1]);
-    const profits = toNumber(salaryValues[2]);
-    const retirementNotified = toNumber(salaryValues[3]);
-    const retirementOther = toNumber(salaryValues[4]);
-    const exemptAllowances = toNumber(salaryValues[5]);
-    const relief89A = toNumber(salaryValues[6]);
-    const stdDeduction = toNumber(salaryValues[7]);
-    const entertainment = toNumber(salaryValues[8]);
-    const profTax = toNumber(salaryValues[9]);
+  const grossTotalIncome = toNumber(watch("grossTotalIncome"));
+  
+  // Exempt Income / 112A
+  const ltcgSaleConsideration = toNumber(watch("ltcg112ATotalSaleConsideration"));
+  const ltcgCostOfAcquisition = toNumber(watch("ltcg112ATotalCostOfAcquisition"));
+  
+  // Calculate LTCG 112A
+  useEffect(() => {
+    const gain = Math.max(0, ltcgSaleConsideration - ltcgCostOfAcquisition);
+    setValue("ltcg112ALongTermCapitalGains", gain);
+  }, [ltcgSaleConsideration, ltcgCostOfAcquisition, setValue]);
 
-    const grossSalary =
-      salary + perquisites + profits + retirementNotified + retirementOther;
-    const netSalaryBeforeDeductions =
-      grossSalary - exemptAllowances - relief89A;
-    const totalDeductions = stdDeduction + entertainment + profTax;
-    const netSalary = netSalaryBeforeDeductions - totalDeductions;
+  // Calculate Total Deductions
+  const calculateTotalDeductions = () => {
+    if (isNewRegime) {
+      // In New Regime, mainly 80CCD(2) and 80CCH are allowed
+      // Note: Standard Deduction is technically a deduction from Salary head, dealt with in Gross Total Income
+      // But 80CCD(2) (Employer contribution to NPS) is allowed.
+      return section80CCD2 + section80CCH;
+    }
 
-    return netSalary;
-  };
+    // Old Regime
+    // 80C + 80CCC + 80CCD(1) limit 1.5L
+    let agg80C = section80C + section80CCC + section80CCD1;
+    if (agg80C > 150000) agg80C = 150000;
 
-  const housePropertyValues = watch([
-    "annualValue",
-    "standardDeduction30Percent",
-    "interestBorrowedCapital",
-    "arrearsUnrealisedRent",
-  ]);
+    // 80CCD(1B) limit 50k
+    let val80CCD1B = section80CCD1B;
+    if (val80CCD1B > 50000) val80CCD1B = 50000;
 
-  const calculateHousePropertyIncome = () => {
-    const annualValue = toNumber(housePropertyValues[0]);
-    const deduction30 = toNumber(housePropertyValues[1]);
-    const interest = toNumber(housePropertyValues[2]);
-    const arrears = toNumber(housePropertyValues[3]);
-
-    return annualValue - deduction30 - interest + arrears;
-  };
-
-  const otherSourcesValues = watch([
-    "otherSource1Amount",
-    "otherSource2Amount",
-    "otherSource3Amount",
-    "otherSource4Amount",
-    "retirementBenefitNonNotifiedCountry",
-    "retirementBenefitUSA",
-    "retirementBenefitUK",
-    "retirementBenefitCanada",
-    "dividendQ1",
-    "dividendQ2",
-    "dividendQ3",
-    "dividendQ4",
-    "dividendQ5",
-    "reliefFromTaxation89AOtherSources",
-    "deduction57iia",
-  ]);
-
-  const calculateOtherSourcesIncome = () => {
-    const source1 = toNumber(otherSourcesValues[0]);
-    const source2 = toNumber(otherSourcesValues[1]);
-    const source3 = toNumber(otherSourcesValues[2]);
-    const source4 = toNumber(otherSourcesValues[3]);
-    const retirementNonNotified = toNumber(otherSourcesValues[4]);
-    const retirementUSA = toNumber(otherSourcesValues[5]);
-    const retirementUK = toNumber(otherSourcesValues[6]);
-    const retirementCanada = toNumber(otherSourcesValues[7]);
-    const div1 = toNumber(otherSourcesValues[8]);
-    const div2 = toNumber(otherSourcesValues[9]);
-    const div3 = toNumber(otherSourcesValues[10]);
-    const div4 = toNumber(otherSourcesValues[11]);
-    const div5 = toNumber(otherSourcesValues[12]);
-    const relief89A = toNumber(otherSourcesValues[13]);
-    const deduction57 = toNumber(otherSourcesValues[14]);
-
-    const totalRetirement =
-      retirementNonNotified + retirementUSA + retirementUK + retirementCanada;
-    const totalDividends = div1 + div2 + div3 + div4 + div5;
-    const totalOtherSources = source1 + source2 + source3 + source4;
-
+    // Others (simplified logic, assuming validations handle specific sub-limits roughly)
     return (
-      totalOtherSources +
-      totalRetirement +
-      totalDividends -
-      relief89A -
-      deduction57
+      agg80C +
+      val80CCD1B +
+      section80CCD2 +
+      section80D +
+      section80DD +
+      section80DDB +
+      section80E +
+      section80EE +
+      section80EEA +
+      section80EEB +
+      section80G +
+      section80GG +
+      section80GGA +
+      section80GGC +
+      section80QQB +
+      section80RRB +
+      section80TTA +
+      section80TTB +
+      section80U +
+      section80CCH +
+      anyOtherDeductions
     );
   };
 
-  const netSalary = calculateNetSalary();
-  const housePropertyIncome = calculateHousePropertyIncome();
-  const otherSourcesIncome = calculateOtherSourcesIncome();
+  const totalDeductions = calculateTotalDeductions();
+  const totalIncome = Math.max(0, Math.round((grossTotalIncome - totalDeductions) / 10) * 10); // Round to nearest 10
 
-  // B4 - Gross Total Income (B1 + B2 + B3)
-  const grossTotalIncome = netSalary + housePropertyIncome + otherSourcesIncome;
+  // Update form values
+  useEffect(() => {
+    setValue("totalDeductions", totalDeductions);
+    setValue("totalIncome", totalIncome);
+  }, [totalDeductions, totalIncome, setValue]);
 
-  // Watch all deduction fields for calculations
-  const deductions = {
-    section80C: toNumber(watch("section80C")),
-    section80CCC: toNumber(watch("section80CCC")),
-    section80CCD1: toNumber(watch("section80CCD1")),
-    section80CCD1B: toNumber(watch("section80CCD1B")),
-    section80CCD2: toNumber(watch("section80CCD2")),
-    section80D: toNumber(watch("section80D")),
-    section80DD: toNumber(watch("section80DD")),
-    section80DDB: toNumber(watch("section80DDB")),
-    section80E: toNumber(watch("section80E")),
-    section80EE: toNumber(watch("section80EE")),
-    section80EEA: toNumber(watch("section80EEA")),
-    section80EEB: toNumber(watch("section80EEB")),
-    section80G: toNumber(watch("section80G")),
-    section80GG: toNumber(watch("section80GG")),
-    section80GGA: toNumber(watch("section80GGA")),
-    section80GGC: toNumber(watch("section80GGC")),
-    section80TTA: toNumber(watch("section80TTA")),
-    section80TTB: toNumber(watch("section80TTB")),
-    section80U: toNumber(watch("section80U")),
-    section80CCH: toNumber(watch("section80CCH")),
-    anyOther: toNumber(watch("anyOtherDeductions")),
-  };
-
-  const totalDeductions = Object.values(deductions).reduce(
-    (sum, val) => sum + val,
-    0
-  );
-  const totalIncome = grossTotalIncome - totalDeductions;
-
-  // Tax calculation based on new tax regime (default for ITR-1)
-  const calculateTaxOnIncome = (income: number): number => {
-    if (income <= 0) return 0;
-    
+  // Tax Calculation Logic
+  const calculateTax = (income: number) => {
     let tax = 0;
-    // New Tax Regime slabs for AY 2025-26
-    if (income > 300000 && income <= 700000) {
-      tax += (income - 300000) * 0.05; // 5% on 3L-7L
-    } else if (income > 700000 && income <= 1000000) {
-      tax += 400000 * 0.05; // 5% on 3L-7L
-      tax += (income - 700000) * 0.10; // 10% on 7L-10L
-    } else if (income > 1000000 && income <= 1200000) {
-      tax += 400000 * 0.05;
-      tax += 300000 * 0.10;
-      tax += (income - 1000000) * 0.15; // 15% on 10L-12L
-    } else if (income > 1200000 && income <= 1500000) {
-      tax += 400000 * 0.05;
-      tax += 300000 * 0.10;
-      tax += 200000 * 0.15;
-      tax += (income - 1200000) * 0.20; // 20% on 12L-15L
-    } else if (income > 1500000) {
-      tax += 400000 * 0.05;
-      tax += 300000 * 0.10;
-      tax += 200000 * 0.15;
-      tax += 300000 * 0.20;
-      tax += (income - 1500000) * 0.30; // 30% above 15L
+    const breakdown = [];
+
+    if (isNewRegime) {
+      // New Regime Slabs (AY 2024-25 / FY 2023-24 onwards default)
+      // 0-3L: Nil
+      // 3-6L: 5%
+      // 6-9L: 10%
+      // 9-12L: 15%
+      // 12-15L: 20%
+      // >15L: 30%
+      
+      const slabs = [
+        { limit: 300000, rate: 0, label: "Up to ₹3,00,000" },
+        { limit: 600000, rate: 0.05, label: "₹3,00,001 - ₹6,00,000" },
+        { limit: 900000, rate: 0.10, label: "₹6,00,001 - ₹9,00,000" },
+        { limit: 1200000, rate: 0.15, label: "₹9,00,001 - ₹12,00,000" },
+        { limit: 1500000, rate: 0.20, label: "₹12,00,001 - ₹15,00,000" },
+        { limit: Infinity, rate: 0.30, label: "Above ₹15,00,000" },
+      ];
+
+      let previousLimit = 0;
+      let remainingIncome = income;
+
+      for (const slab of slabs) {
+        if (remainingIncome <= 0) break;
+        
+        const slabRange = slab.limit === Infinity ? remainingIncome : slab.limit - previousLimit;
+        const taxableAtThisSlab = Math.min(remainingIncome, slabRange);
+        
+        if (taxableAtThisSlab > 0) {
+          const taxAtThisSlab = taxableAtThisSlab * slab.rate;
+          tax += taxAtThisSlab;
+          breakdown.push({
+            label: slab.label,
+            rate: `${slab.rate * 100}%`,
+            amount: taxableAtThisSlab,
+            tax: taxAtThisSlab
+          });
+          remainingIncome -= taxableAtThisSlab;
+        }
+        previousLimit = slab.limit;
+      }
+      
+      // Rebate u/s 87A for New Regime: Income <= 7,00,000, max rebate 25,000
+      if (income <= 700000) {
+        const rebate = Math.min(tax, 25000);
+        if (rebate > 0) {
+           breakdown.push({ label: "Rebate u/s 87A", rate: "-", amount: "-", tax: -rebate });
+           tax -= rebate;
+        }
+      }
+
+    } else {
+      // Old Regime Slabs (General Citizen < 60) - Simplified for this context
+      // 0-2.5L: Nil
+      // 2.5-5L: 5%
+      // 5-10L: 20%
+      // >10L: 30%
+      
+      const slabs = [
+        { limit: 250000, rate: 0, label: "Up to ₹2,50,000" },
+        { limit: 500000, rate: 0.05, label: "₹2,50,001 - ₹5,00,000" },
+        { limit: 1000000, rate: 0.20, label: "₹5,00,001 - ₹10,00,000" },
+        { limit: Infinity, rate: 0.30, label: "Above ₹10,00,000" },
+      ];
+
+      let previousLimit = 0;
+      let remainingIncome = income;
+
+      for (const slab of slabs) {
+        if (remainingIncome <= 0) break;
+        
+        const slabRange = slab.limit === Infinity ? remainingIncome : slab.limit - previousLimit;
+        const taxableAtThisSlab = Math.min(remainingIncome, slabRange);
+        
+        if (taxableAtThisSlab > 0) {
+          const taxAtThisSlab = taxableAtThisSlab * slab.rate;
+          tax += taxAtThisSlab;
+           breakdown.push({
+            label: slab.label,
+            rate: `${slab.rate * 100}%`,
+            amount: taxableAtThisSlab,
+            tax: taxAtThisSlab
+          });
+          remainingIncome -= taxableAtThisSlab;
+        }
+         previousLimit = slab.limit;
+      }
+
+      // Rebate u/s 87A for Old Regime: Income <= 5,00,000, max rebate 12,500
+      if (income <= 500000) {
+         const rebate = Math.min(tax, 12500);
+         if (rebate > 0) {
+           breakdown.push({ label: "Rebate u/s 87A", rate: "-", amount: "-", tax: -rebate });
+           tax -= rebate;
+        }
+      }
     }
-    
-    return Math.round(tax);
+
+    return { tax: Math.round(tax), breakdown };
   };
 
-  // Calculate tax components
-  const taxPayableOnTotalIncome = calculateTaxOnIncome(totalIncome);
-  
-  // Rebate u/s 87A - up to ₹25,000 if income <= ₹7,00,000
-  const rebate87A = totalIncome <= 700000 ? Math.min(taxPayableOnTotalIncome, 25000) : 0;
-  
-  const taxPayableAfterRebate = taxPayableOnTotalIncome - rebate87A;
-  
-  // Health and Education Cess @4%
-  const healthEducationCess = Math.round(taxPayableAfterRebate * 0.04);
-  
-  const totalTaxAndCess = taxPayableAfterRebate + healthEducationCess;
-  
-  // Relief u/s 89 (if any, from form data)
-  const relief89 = toNumber(watch('relief89'));
-  
-  const balanceTaxAfterRelief = totalTaxAndCess - relief89;
+  useEffect(() => {
+    const { tax, breakdown } = calculateTax(totalIncome);
+    setValue("taxPayableOnTotalIncome", tax);
+    setTaxBreakdown(breakdown);
+  }, [totalIncome, isNewRegime, setValue]);
 
-  // Interest u/s 234 and Fee u/s 234F (user inputs)
-  const interest234A = toNumber(watch('interest234A'));
-  const interest234B = toNumber(watch('interest234B'));
-  const interest234C = toNumber(watch('interest234C'));
-  const fee234F = toNumber(watch('fee234F'));
-  
-  const totalInterestAndFee = interest234A + interest234B + interest234C + fee234F;
-  const totalTaxFeeAndInterest = balanceTaxAfterRelief + totalInterestAndFee;
-
-  // Exempt Income
-  const exemptIncome1 = toNumber(watch('exemptIncome1'));
-  const exemptIncome2 = toNumber(watch('exemptIncome2'));
-  const totalExemptIncome = exemptIncome1 + exemptIncome2;
-
-  const ltcgSaleConsideration = toNumber(watch('ltcgSaleConsideration112A'));
-  const ltcgCostOfAcquisition = toNumber(watch('ltcgCostOfAcquisition112A'));
-  const ltcgCapitalGains112A = ltcgSaleConsideration - ltcgCostOfAcquisition;
 
   return (
     <section className="space-y-6">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="space-y-6 rounded-2xl border border-gray-200 bg-white p-6 "
-      >
-        <div className="rounded-lg border border-gray-300 bg-gray-50 p-4 text-center">
-          <p className="text-sm text-gray-700">
-            <strong>💡 Helpful Tip:</strong> Ensure you have supporting
-            documents for all deduction claims as per Income Tax Act provisions
-          </p>
-        </div>
-
-        <div className="rounded-lg border border-gray-200 bg-white p-4">
-          <h4 className="mb-3 text-sm font-semibold text-gray-900">
-            Section 80C & 80CCC - Investment Deductions
-          </h4>
-          <div className="grid grid-cols-2 gap-4">
-            <InputField
-              label="80C - Life insurance, provident fund, etc."
-              name="section80C"
-              type="number"
-              placeholder="Enter amount (Max: ₹1,50,000)"
-              register={register}
-              error={errors.section80C?.message}
-              fieldCode="5a"
-            />
-            <InputField
-              label="80CCC - Payment in respect Pension Fund"
-              name="section80CCC"
-              type="number"
-              placeholder="Enter amount (Max: ₹1,50,000)"
-              register={register}
-              error={errors.section80CCC?.message}
-              fieldCode="5b"
-            />
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-gray-200 bg-white p-4">
-          <h4 className="mb-3 text-sm font-semibold text-gray-900">
-            Section 80CCD - Pension Scheme Contributions
-          </h4>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <div className="space-y-2">
-              <div className="rounded-md bg-white p-3 text-sm ">
-                <div className="font-medium text-gray-800">
-                  80CCD(1) - Contribution to pension scheme of Central
-                  Government
-                </div>
-                <p className="mt-1 text-xs text-gray-500">
-                  Part of overall 80C limit
-                </p>
-              </div>
-              <InputField
-                label=""
-                name="section80CCD1"
-                type="number"
-                placeholder="Enter amount"
-                register={register}
-                error={errors.section80CCD1?.message}
-                fieldCode="5c"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <div className="rounded-md bg-white p-3 text-sm ">
-                <div className="font-medium text-gray-800">
-                  80CCD(1B) - Additional contribution to pension scheme
-                </div>
-                <p className="mt-1 text-xs text-gray-500">
-                  Max limit: ₹50,000 (Over and above 80C)
-                </p>
-              </div>
-              <InputField
-                label=""
-                name="section80CCD1B"
-                type="number"
-                placeholder="Enter amount"
-                register={register}
-                error={errors.section80CCD1B?.message}
-                fieldCode="5d"
-              />
-            </div>
-          </div>
-
-          <div className="mt-4 rounded-lg border border-gray-200 bg-white p-4 ">
-            <label className="mb-2 block text-sm font-semibold text-gray-700">
-              PRAN of the taxpayer
-            </label>
-            <input
-              type="text"
-              {...register("pranTaxpayer")}
-              placeholder="Enter 12-digit PRAN number"
-              className="w-full rounded-md border-2 border-gray-300 bg-white px-4 py-2.5 text-sm font-medium transition-all hover:border-purple-400 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
-            />
-          </div>
-
-          <div className="mt-4 space-y-2">
-            <div className="rounded-md bg-white p-3 text-sm ">
-              <div className="font-medium text-gray-800">
-                80CCD(2) - Employer's contribution to pension scheme
-              </div>
-              <p className="mt-1 text-xs text-gray-500">
-                No upper limit (14% of salary)
-              </p>
-            </div>
-            <InputField
-              label=""
-              name="section80CCD2"
-              type="number"
-              placeholder="Enter amount"
-              register={register}
-              error={errors.section80CCD2?.message}
-              fieldCode="5e"
-            />
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-gray-200 bg-white p-4">
-          <h4 className="mb-3 text-sm font-semibold text-gray-900">
-            Health & Medical Deductions
-          </h4>
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <div className="rounded-md bg-white p-3 text-sm ">
-                <a
-                  href="#"
-                  className="font-medium text-blue-600 hover:text-blue-700 hover:underline"
-                >
-                  80D - Deduction in respect of Health Insurance premia
-                </a>
-                <p className="mt-1 text-xs text-gray-500">
-                  Please fill 80D Schedule. Max limit: ₹1,00,000
-                </p>
-              </div>
-              <InputField
-                label=""
-                name="section80D"
-                type="number"
-                placeholder="Enter amount"
-                register={register}
-                error={errors.section80D?.message}
-                fieldCode="5f"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <div className="rounded-md bg-white p-3 text-sm ">
-                <a
-                  href="#"
-                  className="font-medium text-blue-600 hover:text-blue-700 hover:underline"
-                >
-                  80DD - Maintenance including medical treatment of a dependent
-                  who is a person with disability
-                </a>
-                <p className="mt-1 text-xs text-gray-500">
-                  Please fill 80DD Schedule. Max limit: ₹1,25,000
-                </p>
-              </div>
-              <InputField
-                label=""
-                name="section80DD"
-                type="number"
-                placeholder="Enter amount"
-                register={register}
-                error={errors.section80DD?.message}
-                fieldCode="5g"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/*Section 80DDB - Medical treatment */}
-        <div className="rounded-lg border border-gray-200 bg-white p-4">
-          <h4 className="mb-3 text-sm font-semibold text-gray-900">
-            Section 80DDB - Specified Disease Treatment
-          </h4>
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 gap-4 rounded-lg border border-gray-200 bg-white p-4  md:grid-cols-2">
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                  Category of Disease
-                </label>
-                <select
-                  {...register("specifiedDiseaseName")}
-                  className="w-full rounded-md border-2 border-gray-300 bg-white px-4 py-2.5 text-sm font-medium transition-all hover:border-amber-400 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-200"
-                >
-                  <option value="">(Select disease category)</option>
-                  <option>Neurological Diseases</option>
-                  <option>Cancer</option>
-                  <option>AIDS</option>
-                  <option>Chronic Renal Failure</option>
-                  <option>Hemophilia</option>
-                  <option>Thalassaemia</option>
-                </select>
-              </div>
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                  Specific Disease Name
-                </label>
-                <select className="w-full rounded-md border-2 border-gray-300 bg-white px-4 py-2.5 text-sm font-medium transition-all hover:border-amber-400 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-200">
-                  <option>(Select specific disease)</option>
-                </select>
-              </div>
-            </div>
-            <div className="rounded-md bg-white p-3 text-sm ">
-              <div className="font-medium text-gray-800">Deduction Amount</div>
-              <p className="mt-1 text-xs text-gray-500">Max limit: ₹1,00,000</p>
-            </div>
-            <InputField
-              label=""
-              name="section80DDB"
-              type="number"
-              placeholder="Enter amount"
-              register={register}
-              error={errors.section80DDB?.message}
-              fieldCode="5h"
-            />
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-gray-200 bg-white p-4">
-          <h4 className="mb-3 text-sm font-semibold text-gray-900">
-            Section 80E, 80EE, 80EEA, 80EEB - Loan Interest Deductions
-          </h4>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <div className="space-y-2">
-              <div className="rounded-md bg-white p-3 text-sm ">
-                <a
-                  href="#"
-                  className="font-medium text-blue-600 hover:text-blue-700 hover:underline"
-                >
-                  80E - Interest on loan taken for higher education
-                </a>
-                <p className="mt-1 text-xs text-gray-500">No upper limit</p>
-              </div>
-              <InputField
-                label=""
-                name="section80E"
-                type="number"
-                placeholder="Enter amount"
-                register={register}
-                error={errors.section80E?.message}
-                fieldCode="5i"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <div className="rounded-md bg-white p-3 text-sm ">
-                <a
-                  href="#"
-                  className="font-medium text-blue-600 hover:text-blue-700 hover:underline"
-                >
-                  80EE - Interest on loan taken for residential house property
-                </a>
-                <p className="mt-1 text-xs text-gray-500">Max limit: ₹50,000</p>
-              </div>
-              <InputField
-                label=""
-                name="section80EE"
-                type="number"
-                placeholder="Enter amount"
-                register={register}
-                error={errors.section80EE?.message}
-                fieldCode="5j"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <div className="rounded-md bg-white p-3 text-sm ">
-                <a
-                  href="#"
-                  className="font-medium text-blue-600 hover:text-blue-700 hover:underline"
-                >
-                  80EEA - Interest on loan taken for certain house property
-                </a>
-                <p className="mt-1 text-xs text-gray-500">
-                  Max limit: ₹1,50,000
-                </p>
-              </div>
-              <InputField
-                label=""
-                name="section80EEA"
-                type="number"
-                placeholder="Enter amount"
-                register={register}
-                error={errors.section80EEA?.message}
-                fieldCode="5k"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <div className="rounded-md bg-white p-3 text-sm ">
-                <a
-                  href="#"
-                  className="font-medium text-blue-600 hover:text-blue-700 hover:underline"
-                >
-                  80EEB - Deduction in respect of purchase of electric vehicle
-                </a>
-                <p className="mt-1 text-xs text-gray-500">
-                  Max limit: ₹1,50,000
-                </p>
-              </div>
-              <InputField
-                label=""
-                name="section80EEB"
-                type="number"
-                placeholder="Enter amount"
-                register={register}
-                error={errors.section80EEB?.message}
-                fieldCode="5l"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/*Section 80G & 80GG - Donations & Rent */}
-        <div className="rounded-lg border border-gray-200 bg-white p-4">
-          <h4 className="mb-3 text-sm font-semibold text-gray-900">
-            Section 80G & 80GG - Donations & Rent
-          </h4>
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <div className="rounded-md bg-white p-3 text-sm ">
-                <a
-                  href="#"
-                  className="font-medium text-blue-600 hover:text-blue-700 hover:underline"
-                >
-                  80G - Donations to certain funds, charitable institutions,
-                  etc.
-                </a>
-                <p className="mt-1 text-xs text-gray-500">
-                  Please fill 80G Schedule. This field is auto-populated from
-                  schedule 80G.
-                </p>
-              </div>
-              <InputField
-                label=""
-                name="section80G"
-                type="number"
-                placeholder="Enter amount"
-                register={register}
-                error={errors.section80G?.message}
-                fieldCode="5m"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <div className="rounded-md bg-white p-3 text-sm ">
-                <div className="font-medium text-gray-800">
-                  80GG - Rent paid (Please submit form 10BA to claim deduction)
-                </div>
-                <p className="mt-1 text-xs text-gray-500">Max limit: ₹60,000</p>
-              </div>
-              <div className="rounded-lg border-2 border-rose-200 bg-white p-4 ">
-                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                  Acknowledgement number of Form 10BA
-                </label>
-                <input
-                  type="text"
-                  {...register("form10BAAckNumber")}
-                  placeholder="Enter acknowledgement number"
-                  className="w-full rounded-md border-2 border-gray-300 bg-white px-4 py-2.5 text-sm font-medium transition-all hover:border-rose-400 focus:border-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-200"
-                />
-              </div>
-              <InputField
-                label=""
-                name="section80GG"
-                type="number"
-                placeholder="Enter amount"
-                register={register}
-                error={errors.section80GG?.message}
-                fieldCode="5n"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-gray-200 bg-white p-4">
-          <h4 className="mb-3 text-sm font-semibold text-gray-900">
-            Section 80GGA & 80GGC - Research & Political Donations
-          </h4>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <div className="space-y-2">
-              <div className="rounded-md bg-white p-3 text-sm ">
-                <a
-                  href="#"
-                  className="font-medium text-blue-600 hover:text-blue-700 hover:underline"
-                >
-                  80GGA - Donations for scientific research or rural development
-                </a>
-                <p className="mt-1 text-xs text-gray-500">
-                  Please fill 80GGA Schedule. Auto-populated from schedule.
-                </p>
-              </div>
-              <InputField
-                label=""
-                name="section80GGA"
-                type="number"
-                placeholder="Enter amount"
-                register={register}
-                error={errors.section80GGA?.message}
-                fieldCode="5o"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <div className="rounded-md bg-white p-3 text-sm ">
-                <a
-                  href="#"
-                  className="font-medium text-blue-600 hover:text-blue-700 hover:underline"
-                >
-                  80GGC - Contribution to Political party
-                </a>
-                <p className="mt-1 text-xs text-gray-500">
-                  Please fill 80GGC Schedule. Auto-populated from schedule.
-                </p>
-              </div>
-              <InputField
-                label=""
-                name="section80GGC"
-                type="number"
-                placeholder="Enter amount"
-                register={register}
-                error={errors.section80GGC?.message}
-                fieldCode="5p"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-gray-200 bg-white p-4">
-          <h4 className="mb-3 text-sm font-semibold text-gray-900">
-            Section 80TTA & 80TTB - Interest Income Deductions
-          </h4>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <div className="space-y-2">
-              <div className="rounded-md bg-white p-3 text-sm ">
-                <div className="font-medium text-gray-800">
-                  80TTA - Interest on saving bank Accounts (Non-Senior Citizens)
-                </div>
-                <p className="mt-1 text-xs text-gray-500">Max limit: ₹10,000</p>
-              </div>
-              <InputField
-                label=""
-                name="section80TTA"
-                type="number"
-                placeholder="Enter amount"
-                register={register}
-                error={errors.section80TTA?.message}
-                fieldCode="5q"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <div className="rounded-md bg-white p-3 text-sm ">
-                <div className="font-medium text-gray-800">
-                  80TTB - Interest on deposits (Resident Senior Citizens)
-                </div>
-                <p className="mt-1 text-xs text-gray-500">Max limit: ₹50,000</p>
-              </div>
-              <InputField
-                label=""
-                name="section80TTB"
-                type="number"
-                placeholder="Enter amount"
-                register={register}
-                error={errors.section80TTB?.message}
-                fieldCode="5r"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/*Section 80U & 80CCH */}
-        <div className="rounded-lg border border-gray-200 bg-white p-4">
-          <h4 className="mb-3 text-sm font-semibold text-gray-900">
-            Section 80U & 80CCH - Other Deductions
-          </h4>
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <div className="rounded-md bg-white p-3 text-sm ">
-                <a
-                  href="#"
-                  className="font-medium text-blue-600 hover:text-blue-700 hover:underline"
-                >
-                  80U - In case of a person with disability
-                </a>
-                <p className="mt-1 text-xs text-gray-500">
-                  Please fill 80U Schedule. Max limit: ₹1,25,000
-                </p>
-              </div>
-              <InputField
-                label=""
-                name="section80U"
-                type="number"
-                placeholder="Enter amount"
-                register={register}
-                error={errors.section80U?.message}
-                fieldCode="5s"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <div className="rounded-md bg-white p-3 text-sm ">
-                <div className="font-medium text-gray-800">
-                  80CCH - Contribution to Agnipath Scheme
-                </div>
-                <p className="mt-1 text-xs text-gray-500">
-                  As per applicable provisions
-                </p>
-              </div>
-              <InputField
-                label=""
-                name="section80CCH"
-                type="number"
-                placeholder="Enter amount"
-                register={register}
-                error={errors.section80CCH?.message}
-                fieldCode="5t"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/*Any Other Deductions */}
-        <div className="rounded-lg border border-gray-200 bg-white p-4">
-          <h4 className="mb-3 text-sm font-semibold text-gray-900">
-            Any Other Deductions
-          </h4>
-          <div className="space-y-2">
-            <div className="rounded-md bg-white p-3 text-sm ">
-              <div className="font-medium text-gray-800">
-                Other deductions not covered above
-              </div>
-              <p className="mt-1 text-xs text-gray-500">
-                Specify any additional deductions
-              </p>
-            </div>
-            <InputField
-              label=""
-              name="anyOtherDeductions"
-              type="number"
-              placeholder="Enter amount"
-              register={register}
-              error={errors.anyOtherDeductions?.message}
-              fieldCode="5u"
-            />
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-gray-200 bg-white p-4">
-          <h3 className="mb-3 text-sm font-semibold text-gray-900">
-            Summary - Total Deductions & Income
-          </h3>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-blue-50 p-3">
-              <div className="flex items-center gap-3">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-200 text-sm font-semibold text-blue-700">
-                  B4
-                </span>
-                <span className="text-sm font-medium text-gray-900">
-                  Gross Total Income (from Gross Income section)
-                </span>
-              </div>
-              <div className="text-lg font-semibold text-blue-700">
-                ₹{grossTotalIncome.toLocaleString("en-IN")}
-              </div>
-            </div>
-            <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
-              <div className="flex items-center gap-3">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-sm font-semibold text-gray-700">
-                  6
-                </span>
-                <span className="text-sm font-medium text-gray-900">
-                  Total Deductions (Total of 5a to 5t)
-                </span>
-              </div>
-              <div className="text-lg font-semibold text-gray-900">
-                ₹{totalDeductions.toLocaleString("en-IN")}
-              </div>
-            </div>
-            <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-green-50 p-3">
-              <div className="flex items-center gap-3">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-green-200 text-sm font-semibold text-green-700">
-                  7
-                </span>
-                <span className="text-sm font-medium text-gray-900">
-                  Total Income (B4 - Total Deductions)
-                </span>
-              </div>
-              <div className="text-lg font-bold text-green-700">
-                ₹{totalIncome.toLocaleString("en-IN")}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-gray-200 bg-white p-4">
-          <h3 className="mb-3 text-sm font-semibold text-gray-900">
-            Exempt Income: For reporting purpose and Income on which no tax is
-            payable
-          </h3>
-
-          <div className="space-y-3">
-            <div className="rounded-lg bg-gray-50 p-3 text-sm border border-gray-200">
-              <strong className="text-gray-900">Note:</strong>{" "}
-              <span className="text-gray-700">
-                Drop down to be provided in e-filing utility mentioning nature
-                of exempt income, relevant clause and section
-              </span>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full overflow-hidden rounded-lg border border-gray-300">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="border border-gray-300 p-3 text-left text-sm font-semibold text-gray-700 w-20">
-                      Sl.No.
-                    </th>
-                    <th className="border border-gray-300 p-3 text-left text-sm font-semibold text-gray-700">
-                      Nature of Income
-                    </th>
-                    <th className="border border-gray-300 p-3 text-left text-sm font-semibold text-gray-700">
-                      Description (If 'Any Other' selected)
-                    </th>
-                    <th className="border border-gray-300 p-3 text-left text-sm font-semibold text-gray-700 w-48">
-                      Amount (₹)
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="hover:bg-gray-50">
-                    <td className="border border-gray-300 p-3 text-center text-sm font-medium text-gray-700">
-                      1
-                    </td>
-                    <td className="border border-gray-300 p-3">
-                      <select 
-                        {...register('exemptIncomeNature1')}
-                        className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
-                      >
-                        <option value="">(Select nature of income)</option>
-                        <option value="agricultural">Agricultural Income</option>
-                        <option value="dividend">Dividend Income</option>
-                        <option value="interest">Interest Income</option>
-                        <option value="other">Any Other</option>
-                      </select>
-                    </td>
-                    <td className="border border-gray-300 p-3">
-                      <input
-                        type="text"
-                        {...register('exemptIncomeDescription1')}
-                        placeholder="Description (if any)"
-                        className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
-                      />
-                    </td>
-                    <td className="border border-gray-300 p-3">
-                      <input
-                        type="number"
-                        {...register('exemptIncome1')}
-                        placeholder="0"
-                        className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
-                      />
-                    </td>
-                  </tr>
-                  <tr className="hover:bg-gray-50">
-                    <td className="border border-gray-300 p-3 text-center text-sm font-medium text-gray-700">
-                      2
-                    </td>
-                    <td className="border border-gray-300 p-3">
-                      <select 
-                        {...register('exemptIncomeNature2')}
-                        className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
-                      >
-                        <option value="">(Select nature of income)</option>
-                        <option value="agricultural">Agricultural Income</option>
-                        <option value="dividend">Dividend Income</option>
-                        <option value="interest">Interest Income</option>
-                        <option value="other">Any Other</option>
-                      </select>
-                    </td>
-                    <td className="border border-gray-300 p-3">
-                      <input
-                        type="text"
-                        {...register('exemptIncomeDescription2')}
-                        placeholder="Description (if any)"
-                        className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
-                      />
-                    </td>
-                    <td className="border border-gray-300 p-3">
-                      <input
-                        type="number"
-                        {...register('exemptIncome2')}
-                        placeholder="0"
-                        className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
-                      />
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div className="mt-4 flex justify-end">
-              <div className="rounded-lg border-2 border-green-300 bg-green-50 px-6 py-3 shadow-md">
-                <span className="text-sm font-bold text-gray-900">
-                  Total Exempt Income:{" "}
-                </span>
-                <span className="text-xl font-bold text-green-700">₹{totalExemptIncome.toLocaleString('en-IN')}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-gray-200 bg-white p-4">
-          <h3 className="mb-3 text-sm font-semibold text-gray-900">
-            7a. Long Term Capital Gains u/s 112A (Not chargeable to Income-tax)
-          </h3>
-          
-          <div className="mb-3 rounded-lg bg-blue-50 border border-blue-200 p-3 text-sm">
-            <p className="text-blue-900">
-              <strong>ℹ️ Note:</strong> This section is for LTCG on equity shares/equity-oriented mutual funds. 
-              LTCG up to ₹1,00,000 is exempt from tax. Gains above ₹1L are taxed at 10% (without indexation).
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        
+        {/* Header Section */}
+        <div className="flex flex-col gap-4 border-b border-gray-100 pb-6 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">Tax Deductions</h2>
+            <p className="mt-1 text-sm text-gray-500">
+              Claim deductions to reduce your taxable income.
             </p>
-          </div>
-
-          <div className="space-y-3">
-            <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
-              <div className="flex items-center gap-3">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-sm font-semibold text-gray-700">
-                  i
-                </span>
-                <span className="text-sm font-medium text-gray-900">
-                  Total sale consideration <span className="text-xs text-gray-500">(Full value of consideration)</span>
-                </span>
-              </div>
-              <input
-                type="number"
-                {...register('ltcgSaleConsideration112A')}
-                placeholder="0"
-                className="w-48 rounded border border-gray-300 px-3 py-2 text-sm text-right"
-              />
-            </div>
-            <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
-              <div className="flex items-center gap-3">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-sm font-semibold text-gray-700">
-                  ii
-                </span>
-                <span className="text-sm font-medium text-gray-900">
-                  Total cost of acquisition <span className="text-xs text-gray-500">(Purchase price + expenses)</span>
-                </span>
-              </div>
-              <input
-                type="number"
-                {...register('ltcgCostOfAcquisition112A')}
-                placeholder="0"
-                className="w-48 rounded border border-gray-300 px-3 py-2 text-sm text-right"
-              />
-            </div>
-            <div className="flex items-center justify-between rounded-lg border-2 border-purple-300 bg-purple-50 p-3">
-              <div className="flex items-center gap-3">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-200 text-sm font-semibold text-purple-700">
-                  iii
-                </span>
-                <span className="text-sm font-semibold text-gray-900">
-                  Long term capital gains as per sec 112A (i - ii)
-                </span>
-              </div>
-              <div className="text-lg font-bold text-purple-700">
-                ₹{ltcgCapitalGains112A.toLocaleString('en-IN')}
-              </div>
-            </div>
-            
-            {ltcgCapitalGains112A > 0 && (
-              <div className="rounded-lg bg-yellow-50 border border-yellow-200 p-3 text-sm">
-                <p className="text-yellow-900">
-                  <strong>💡 Tax Implication:</strong>
-                  {ltcgCapitalGains112A <= 100000 ? (
-                    <> This gain of ₹{ltcgCapitalGains112A.toLocaleString('en-IN')} is fully exempt from tax (up to ₹1,00,000).</>
-                  ) : (
-                    <> LTCG up to ₹1,00,000 is exempt. The amount above ₹1,00,000 (i.e., ₹{(ltcgCapitalGains112A - 100000).toLocaleString('en-IN')}) will be taxed at 10%.</>
-                  )}
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-gray-200 bg-white p-4">
-          <h3 className="mb-3 text-sm font-semibold text-gray-900">
-            Tax Calculation Details
-          </h3>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
-              <div className="flex items-center gap-3">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-sm font-semibold text-gray-700">
-                  8
-                </span>
-                <span className="text-sm font-medium text-gray-900">
-                  Tax Payable on Total Income
-                </span>
-              </div>
-              <div className="text-sm font-medium text-gray-900">₹{taxPayableOnTotalIncome.toLocaleString('en-IN')}</div>
-            </div>
-            <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
-              <div className="flex items-center gap-3">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-sm font-semibold text-gray-700">
-                  9
-                </span>
-                <span className="text-sm font-medium text-gray-900">
-                  Rebate u/s 87A
-                </span>
-              </div>
-              <div className="text-sm font-medium text-green-600">-₹{rebate87A.toLocaleString('en-IN')}</div>
-            </div>
-            <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
-              <div className="flex items-center gap-3">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-sm font-semibold text-gray-700">
-                  10
-                </span>
-                <span className="text-sm font-medium text-gray-900">
-                  Tax payable after Rebate
-                </span>
-              </div>
-              <div className="text-sm font-medium text-gray-900">₹{taxPayableAfterRebate.toLocaleString('en-IN')}</div>
-            </div>
-            <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
-              <div className="flex items-center gap-3">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-sm font-semibold text-gray-700">
-                  11
-                </span>
-                <span className="text-sm font-medium text-gray-900">
-                  Health and Education Cess @4% on (10)
-                </span>
-              </div>
-              <div className="text-sm font-medium text-gray-900">₹{healthEducationCess.toLocaleString('en-IN')}</div>
-            </div>
-            <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
-              <div className="flex items-center gap-3">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-sm font-semibold text-gray-700">
-                  12
-                </span>
-                <span className="text-sm font-medium text-gray-900">
-                  Total Tax and Cess
-                </span>
-              </div>
-              <div className="text-lg font-semibold text-gray-900">₹{totalTaxAndCess.toLocaleString('en-IN')}</div>
-            </div>
-            <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
-              <div className="flex items-center gap-3">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-sm font-semibold text-gray-700">
-                  13
-                </span>
-                <span className="text-sm font-medium text-gray-900">
-                  Relief u/s 89{" "}
-                  <span className="text-xs text-gray-600">
-                    (Submit Form 10E to claim)
-                  </span>
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <input
-                  type="number"
-                  {...register('relief89')}
-                  placeholder="0"
-                  className="w-32 rounded border border-gray-300 px-2 py-1 text-sm text-right"
-                />
-              </div>
-            </div>
-            <div className="flex items-center justify-between rounded-lg border-2 border-orange-300 bg-orange-50 p-3">
-              <div className="flex items-center gap-3">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-200 text-sm font-semibold text-orange-700">
-                  14
-                </span>
-                <span className="text-sm font-semibold text-gray-900">
-                  Balance Tax after Relief (12-13)
-                </span>
-              </div>
-              <div className="text-lg font-bold text-orange-700">₹{balanceTaxAfterRelief.toLocaleString('en-IN')}</div>
+             <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">
+              Current Regime: {taxRegime === TaxRegime.New115BAC ? "New Tax Regime" : "Old Tax Regime"}
             </div>
           </div>
-        </div>
-
-        <div className="rounded-lg border border-gray-200 bg-white p-4">
-          <h3 className="mb-3 text-sm font-semibold text-gray-900">
-            15. Interest u/s 234 & Fee
-          </h3>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
-              <div className="flex items-center gap-3">
-                <span className="flex h-8 w-12 items-center justify-center rounded border border-gray-400 bg-gray-100 text-xs font-semibold text-gray-700">
-                  15a
-                </span>
-                <span className="text-sm font-medium text-gray-900">
-                  Interest u/s 234 A <span className="text-xs text-gray-500">(Default/late filing)</span>
-                </span>
-              </div>
-              <input
-                type="number"
-                {...register('interest234A')}
-                placeholder="0"
-                className="w-40 rounded border border-gray-300 px-3 py-2 text-sm text-right"
-              />
-            </div>
-            <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
-              <div className="flex items-center gap-3">
-                <span className="flex h-8 w-12 items-center justify-center rounded border border-gray-400 bg-gray-100 text-xs font-semibold text-gray-700">
-                  15b
-                </span>
-                <span className="text-sm font-medium text-gray-900">
-                  Interest u/s 234 B <span className="text-xs text-gray-500">(Delay in advance tax)</span>
-                </span>
-              </div>
-              <input
-                type="number"
-                {...register('interest234B')}
-                placeholder="0"
-                className="w-40 rounded border border-gray-300 px-3 py-2 text-sm text-right"
-              />
-            </div>
-            <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
-              <div className="flex items-center gap-3">
-                <span className="flex h-8 w-12 items-center justify-center rounded border border-gray-400 bg-gray-100 text-xs font-semibold text-gray-700">
-                  15c
-                </span>
-                <span className="text-sm font-medium text-gray-900">
-                  Interest u/s 234 C <span className="text-xs text-gray-500">(Deferment of advance tax)</span>
-                </span>
-              </div>
-              <input
-                type="number"
-                {...register('interest234C')}
-                placeholder="0"
-                className="w-40 rounded border border-gray-300 px-3 py-2 text-sm text-right"
-              />
-            </div>
-            <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
-              <div className="flex items-center gap-3">
-                <span className="flex h-8 w-12 items-center justify-center rounded border border-gray-400 bg-gray-100 text-xs font-semibold text-gray-700">
-                  15d
-                </span>
-                <span className="text-sm font-medium text-gray-900">
-                  Fee u/s 234F <span className="text-xs text-gray-500">(Late filing fee)</span>
-                </span>
-              </div>
-              <input
-                type="number"
-                {...register('fee234F')}
-                placeholder="0"
-                className="w-40 rounded border border-gray-300 px-3 py-2 text-sm text-right"
-              />
-            </div>
-            <div className="flex items-center justify-between rounded-lg border-2 border-gray-300 bg-gray-100 p-3">
-              <div className="flex items-center gap-3">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-sm font-semibold text-gray-700">
-                  16
-                </span>
-                <span className="text-sm font-semibold text-gray-900">
-                  Total Interest & Fee Payable (15a + 15b + 15c + 15d)
-                </span>
-              </div>
-              <div className="text-lg font-semibold text-gray-900">₹{totalInterestAndFee.toLocaleString('en-IN')}</div>
-            </div>
-            <div className="flex items-center justify-between rounded-lg border-2 border-red-300 bg-red-50 p-3">
-              <div className="flex items-center gap-3">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-red-200 text-sm font-semibold text-red-700">
-                  17
-                </span>
-                <span className="text-sm font-bold text-gray-900">
-                  Total Tax, Fee and Interest (14 + 16)
-                </span>
-              </div>
-              <div className="text-xl font-bold text-red-700">₹{totalTaxFeeAndInterest.toLocaleString('en-IN')}</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Summary Card Before Submit */}
-        <div className="rounded-xl">
-          <h3 className="mb-4 flex items-center gap-2 text-lg font-bold text-gray-900">
-            <span className="text-2xl">📊</span>
-            Tax Computation Summary
-          </h3>
           
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {/* Left Column */}
-            <div className="space-y-3 rounded-lg bg-white p-4 shadow-sm">
-              <div className="flex items-center justify-between border-b border-gray-200 pb-2">
-                <span className="text-sm font-medium text-gray-600">Gross Total Income (B4)</span>
-                <span className="text-sm font-semibold text-gray-900">₹{grossTotalIncome.toLocaleString('en-IN')}</span>
-              </div>
-              <div className="flex items-center justify-between border-b border-gray-200 pb-2">
-                <span className="text-sm font-medium text-gray-600">Total Deductions (Item 6)</span>
-                <span className="text-sm font-semibold text-green-600">-₹{totalDeductions.toLocaleString('en-IN')}</span>
-              </div>
-              <div className="flex items-center justify-between border-b border-gray-200 pb-2">
-                <span className="text-sm font-semibold text-gray-700">Total Income (Item 7)</span>
-                <span className="text-sm font-bold text-gray-900">₹{totalIncome.toLocaleString('en-IN')}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-600">Tax on Total Income</span>
-                <span className="text-sm font-semibold text-orange-600">₹{taxPayableOnTotalIncome.toLocaleString('en-IN')}</span>
-              </div>
+           <div className="flex flex-col items-end gap-2">
+            <div className="text-right">
+              <p className="text-xs text-gray-500">Gross Total Income</p>
+              <p className="text-lg font-bold text-gray-900">₹{grossTotalIncome.toLocaleString('en-IN')}</p>
             </div>
-
-            {/* Right Column */}
-            <div className="space-y-3 rounded-lg bg-white p-4 shadow-sm">
-              <div className="flex items-center justify-between border-b border-gray-200 pb-2">
-                <span className="text-sm font-medium text-gray-600">Rebate u/s 87A</span>
-                <span className="text-sm font-semibold text-green-600">-₹{rebate87A.toLocaleString('en-IN')}</span>
-              </div>
-              <div className="flex items-center justify-between border-b border-gray-200 pb-2">
-                <span className="text-sm font-medium text-gray-600">Health & Education Cess</span>
-                <span className="text-sm font-semibold text-gray-900">₹{healthEducationCess.toLocaleString('en-IN')}</span>
-              </div>
-              <div className="flex items-center justify-between border-b border-gray-200 pb-2">
-                <span className="text-sm font-medium text-gray-600">Interest & Fee (Items 15-16)</span>
-                <span className="text-sm font-semibold text-red-600">₹{totalInterestAndFee.toLocaleString('en-IN')}</span>
-              </div>
-              <div className="flex items-center justify-between rounded-lg bg-gradient-to-r from-red-100 to-orange-100 p-2">
-                <span className="text-sm font-bold text-gray-900">💰 Final Tax Payable</span>
-                <span className="text-lg font-bold text-red-700">₹{totalTaxFeeAndInterest.toLocaleString('en-IN')}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Additional Info */}
-          <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-3">
-            <p className="text-xs text-blue-900">
-              <strong>ℹ️ Important:</strong> Please review all entries carefully before proceeding. 
-              {totalExemptIncome > 0 && (
-                <> You have declared exempt income of ₹{totalExemptIncome.toLocaleString('en-IN')} (for reporting purposes only).</>
-              )}
-              {ltcgCapitalGains112A > 0 && (
-                <> LTCG u/s 112A of ₹{ltcgCapitalGains112A.toLocaleString('en-IN')} has been reported.</>
-              )}
-            </p>
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex items-center justify-between border-t-2 border-gray-200 pt-6">
+        {isNewRegime && (
+          <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
+             <div className="flex items-start gap-3">
+              <span className="text-xl">⚠️</span>
+              <div className="text-sm text-yellow-800">
+                <strong>Note:</strong> You have opted for the <strong>New Tax Regime</strong>. 
+                Most deductions under Chapter VI-A (like 80C, 80D, 80G etc.) are <strong>NOT available</strong>. 
+                Only deductions u/s 80CCD(2) (Employer contribution to NPS) and 80CCH (Agniveer Corpus Fund) are allowed.
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Deductions - Conditional Rendering */}
+        <div className="grid gap-6 md:grid-cols-2">
+          {!isNewRegime && (
+            <>
+              {/* 80C, 80CCC, 80CCD */}
+              <div className="space-y-4 rounded-xl border border-gray-200 p-4">
+                <h3 className="font-semibold text-gray-900 border-b border-gray-100 pb-2">Part B - Deductions u/s 80C</h3>
+                <InputField fieldCode="80C" label="Life Insurance, PPF, etc." name="section80C" type="number" register={register} placeholder="0" error={errors.section80C?.message} />
+                <InputField fieldCode="80CCC" label="Annuity Plan of LIC/Other Insurer" name="section80CCC" type="number" register={register} placeholder="0" error={errors.section80CCC?.message} />
+                <InputField fieldCode="80CCD(1)" label="Pension Scheme of Central Govt" name="section80CCD1" type="number" register={register} placeholder="0" error={errors.section80CCD1?.message} />
+                <InputField fieldCode="80CCD(1B)" label="NPS Contribution (Additional ₹50k)" name="section80CCD1B" type="number" register={register} placeholder="0" error={errors.section80CCD1B?.message} />
+              </div>
+
+               {/* 80D & Health */}
+               <div className="space-y-4 rounded-xl border border-gray-200 p-4">
+                 <h3 className="font-semibold text-gray-900 border-b border-gray-100 pb-2">Part C - Deductions u/s 80D</h3>
+                 <InputField fieldCode="80D" label="Health Insurance Premium" name="section80D" type="number" register={register} placeholder="0" error={errors.section80D?.message} />
+                 <InputField fieldCode="80DD" label="Maintenance of Dependent with Disability" name="section80DD" type="number" register={register} placeholder="0" error={errors.section80DD?.message} />
+                 <InputField fieldCode="80DDB" label="Medical Treatment of Specified Diseases" name="section80DDB" type="number" register={register} placeholder="0" error={errors.section80DDB?.message} />
+                 <InputField fieldCode="80U" label="Person with Disability" name="section80U" type="number" register={register} placeholder="0" error={errors.section80U?.message} />
+               </div>
+
+                {/* Other Deductions */}
+                <div className="space-y-4 rounded-xl border border-gray-200 p-4 md:col-span-2">
+                  <h3 className="font-semibold text-gray-900 border-b border-gray-100 pb-2">Part D - Other Deductions</h3>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <InputField fieldCode="80E" label="Interest on Higher Education Loan" name="section80E" type="number" register={register} placeholder="0" />
+                    <InputField fieldCode="80EE" label="Interest on Residential House Loan (AY 17-18)" name="section80EE" type="number" register={register} placeholder="0" />
+                    <InputField fieldCode="80EEA" label="Interest on Housing Loan (Affordable)" name="section80EEA" type="number" register={register} placeholder="0" />
+                    <InputField fieldCode="80EEB" label="Interest on Electric Vehicle Loan" name="section80EEB" type="number" register={register} placeholder="0" />
+                    <InputField fieldCode="80G" label="Donations to Certain Funds, Charities" name="section80G" type="number" register={register} placeholder="0" />
+                    <InputField fieldCode="80GG" label="Rent Paid (Non-HRA)" name="section80GG" type="number" register={register} placeholder="0" />
+                    <InputField fieldCode="80GGA" label="Donations for Scientific Research" name="section80GGA" type="number" register={register} placeholder="0" />
+                    <InputField fieldCode="80GGC" label="Donations to Political Parties" name="section80GGC" type="number" register={register} placeholder="0" />
+                    <InputField fieldCode="80TTA" label="Interest on Savings Account" name="section80TTA" type="number" register={register} placeholder="0" />
+                    <InputField fieldCode="80TTB" label="Interest on Deposits (Senior Citizens)" name="section80TTB" type="number" register={register} placeholder="0" />
+                  </div>
+                </div>
+            </>
+          )}
+
+           {/* Allowed in BOTH Regimes */}
+           <div className={`space-y-4 rounded-xl border border-gray-200 p-4 ${isNewRegime ? "md:col-span-2 bg-blue-50/30" : "md:col-span-2"}`}>
+              <h3 className="font-semibold text-gray-900 border-b border-gray-100 pb-2">
+                 {isNewRegime ? "Allowed Deductions in New Regime" : "Other Allowed Deductions"}
+              </h3>
+              <div className="grid gap-4 md:grid-cols-2">
+                 <InputField fieldCode="80CCD(2)" label="Employer's Contribution to NPS" name="section80CCD2" type="number" register={register} placeholder="0" error={errors.section80CCD2?.message} />
+                 <InputField fieldCode="80CCH" label="Agniveer Corpus Fund" name="section80CCH" type="number" register={register} placeholder="0" error={errors.section80CCH?.message} />
+                 {!isNewRegime && (
+                    <InputField label="Any Other Deductions" name="anyOtherDeductions" type="number" register={register} placeholder="0" />
+                 )}
+              </div>
+           </div>
+        </div>
+        
+        {/* Exempt Income 112A Fix */}
+        <div className="rounded-xl border border-gray-200 p-4">
+             <h3 className="font-semibold text-gray-900 border-b border-gray-100 pb-2 mb-4">Exempt Income (For Reporting Purposes)</h3>
+             <div className="grid gap-4 md:grid-cols-2">
+                 <InputField label="Long Term Capital Gains (u/s 112A) Sale Consideration" name="ltcg112ATotalSaleConsideration" type="number" register={register} placeholder="0" />
+                 <InputField label="Long Term Capital Gains (u/s 112A) Cost of Acquisition" name="ltcg112ATotalCostOfAcquisition" type="number" register={register} placeholder="0" />
+                 <div className="md:col-span-2">
+                     <p className="text-xs text-gray-500 mb-1">Calculated LTCG u/s 112A (Gain &gt; ₹1 Lakh is taxable @ 10%)</p>
+                     <div className="rounded-md bg-gray-100 p-2 text-sm font-medium">
+                        ₹ {toNumber(watch("ltcg112ALongTermCapitalGains")).toLocaleString('en-IN')}
+                     </div>
+                 </div>
+             </div>
+        </div>
+
+
+        {/* Summary & Tax Calculation */}
+        <div className="rounded-xl bg-gray-50 p-6">
+           <h3 className="mb-4 text-lg font-bold text-gray-900">Tax Computation Summary</h3>
+           <div className="space-y-3">
+              <div className="flex justify-between text-sm">
+                 <span className="text-gray-600">Gross Total Income</span>
+                 <span className="font-medium">₹{grossTotalIncome.toLocaleString('en-IN')}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                 <span className="text-gray-600">Total Deductions</span>
+                 <span className="font-medium text-green-600">- ₹{totalDeductions.toLocaleString('en-IN')}</span>
+              </div>
+              <div className="border-t border-gray-200 pt-3 flex justify-between text-base font-bold">
+                 <span>Total Taxable Income</span>
+                 <span>₹{totalIncome.toLocaleString('en-IN')}</span>
+              </div>
+              
+              <div className="mt-4">
+                 <button 
+                  type="button" 
+                  onClick={() => setShowFormula(!showFormula)}
+                  className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                 >
+                   {showFormula ? "Hide Tax Calculation Formula" : "Show Tax Calculation Formula"}
+                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transform transition-transform ${showFormula ? "rotate-180" : ""}`}><path d="m6 9 6 6 6-6"/></svg>
+                 </button>
+                 
+                 {showFormula && (
+                    <div className="mt-3 rounded-lg border border-gray-200 bg-white p-4 text-sm animate-in fade-in slide-in-from-top-2">
+                       <h4 className="font-semibold text-gray-900 mb-2">Calculation Breakdown ({isNewRegime ? "New Regime" : "Old Regime"})</h4>
+                       <div className="space-y-2">
+                          <div className="grid grid-cols-4 gap-2 text-xs font-medium text-gray-500 border-b pb-1">
+                             <div className="col-span-2">Slab</div>
+                             <div className="text-right">Rate</div>
+                             <div className="text-right">Tax</div>
+                          </div>
+                          {taxBreakdown.map((item, idx) => (
+                             <div key={idx} className="grid grid-cols-4 gap-2 text-xs">
+                                <div className="col-span-2 text-gray-700">{item.label}</div>
+                                <div className="text-right text-gray-600">{item.rate}</div>
+                                <div className="text-right font-medium text-gray-900">
+                                   {typeof item.tax === 'number' ? `₹${Math.abs(item.tax).toLocaleString('en-IN')}` : item.tax}
+                                   {item.tax < 0 && " (Rebate)"}
+                                </div>
+                             </div>
+                          ))}
+                          <div className="border-t pt-2 mt-2 grid grid-cols-4 gap-2 font-bold text-gray-900">
+                             <div className="col-span-3 text-right">Tax Payable</div>
+                             <div className="text-right">₹{toNumber(watch("taxPayableOnTotalIncome")).toLocaleString('en-IN')}</div>
+                          </div>
+                       </div>
+                    </div>
+                 )}
+              </div>
+           </div>
+        </div>
+
+        <div className="flex gap-3 pt-4">
           <button
             type="button"
             onClick={onCancel}
-            className="flex items-center gap-2 rounded-lg border-2 border-gray-300 bg-white px-6 py-3 text-sm font-semibold text-gray-700 shadow-sm transition-all hover:bg-gray-50 hover:shadow-md"
+            className="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50"
           >
-            <span>←</span>
-            Back to Summary
+            Back
           </button>
-          
-          <div className="flex items-center gap-3">
-            <div className="text-right">
-              <p className="text-xs text-gray-500">Next: TDS & Tax Payments</p>
-              <p className="text-sm font-semibold text-gray-900">Complete Chapter VI-A Deductions</p>
-            </div>
-            <button
-              type="submit"
-              className="flex items-center gap-2 rounded-lg border-2 border-gray-300 bg-white px-6 py-3 text-sm font-semibold text-gray-700 shadow-sm transition-all hover:bg-gray-50 hover:shadow-md"
-            >
-              Save & Continue
-              <span>→</span>
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="flex-1 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-500"
+          >
+            Continue
+          </button>
         </div>
       </form>
     </section>

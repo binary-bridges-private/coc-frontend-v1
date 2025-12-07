@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ITRProgress from "./components/ITR-ProgressBar.tsx";
@@ -10,7 +11,12 @@ import {
   ITR_ONE_PROGRESS_STEPS,
   ITR_ONE_SUMMARY_SECTIONS,
 } from "./itr-1.constants.ts";
-import { Gender, ItrSummarySection, StepStatus } from "./itr-1.types.ts";
+import {
+  Gender,
+  ItrSummarySection,
+  StepStatus,
+  PropertyType,
+} from "./itr-1.types.ts";
 import {
   personalInformationSchema,
   PersonalInformationFormData,
@@ -19,19 +25,56 @@ import {
   TaxDeductionFormData,
 } from "./itr-1.validation.ts";
 import { exportITR1ToCSV, ITR1ExportData } from "./utils/csvExport.ts";
+import { exportITR1ToPDF } from "./utils/pdfExport.ts";
 
 const ItrOne: React.FC = () => {
+  const STORAGE_KEY = "itr1_formData";
+
+  // Initialize state with data from localStorage if available
+  const getInitialData = (key: string, defaultValue: any) => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        return parsed[key] || defaultValue;
+      }
+    } catch (e) {
+      console.error("Failed to load from storage", e);
+    }
+    return defaultValue;
+  };
+
   const [sections, setSections] = useState<ItrSummarySection[]>(() =>
-    ITR_ONE_SUMMARY_SECTIONS.map((section) => ({ ...section }))
+    getInitialData(
+      "sections",
+      ITR_ONE_SUMMARY_SECTIONS.map((section) => ({ ...section }))
+    )
   );
-  const [activeDetailId, setActiveDetailId] = useState<string | null>(null);
+  const { activeSection } = useParams();
+  const navigate = useNavigate();
+  // We can treat "activeSection" param as the source of truth for "activeDetailId".
+  // Note: activeSection will be undefined when at /practice/itr/itr-1
+  const activeDetailId = activeSection || null;
+
+  // We don't need setActiveDetailId state anymore if we use the URL.
+  // const [activeDetailId, setActiveDetailId] = useState<string | null>(null);
   const [submissionInfo, setSubmissionInfo] = useState<{
     acknowledgementNo: string;
     submittedAt: Date;
   } | null>(null);
+  const scrollTop = () => {
+    // Scroll the main container instead of window, as the layout has overflow-auto on the div
+    setTimeout(() => {
+      document.getElementById("app-scroll-container")?.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }, 100);
+  };
+
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+    scrollTop();
+  }, [activeDetailId, submissionInfo]);
 
   const defaultPersonalInfo: Partial<PersonalInformationFormData> = useMemo(
     () => ({
@@ -74,7 +117,7 @@ const ItrOne: React.FC = () => {
       houseRentAllowance: 0,
       standardDeduction16: 50000,
       professionalTax: 0,
-      propertyType: "",
+      propertyType: undefined,
       grossRent: 0,
       localTaxPaid: 0,
       annualValue: 0,
@@ -91,36 +134,60 @@ const ItrOne: React.FC = () => {
     []
   );
 
-  const [personalData, setPersonalData] =
-    useState<Partial<PersonalInformationFormData>>(defaultPersonalInfo);
+  const [personalData, setPersonalData] = useState<
+    Partial<PersonalInformationFormData>
+  >(() => getInitialData("personalData", defaultPersonalInfo));
   const [grossIncomeData, setGrossIncomeData] = useState<
     Partial<GrossTotalIncomeFormData>
-  >(defaultGrossIncomeData);
+  >(() => getInitialData("grossIncomeData", defaultGrossIncomeData));
   const [deductionData, setDeductionData] = useState<
     Partial<TaxDeductionFormData>
-  >({});
+  >(() => getInitialData("deductionData", {}));
 
   const personalFormMethods = useForm({
     resolver: zodResolver(personalInformationSchema) as any,
     mode: "onBlur",
-    defaultValues: personalData as any,
+    defaultValues: personalData as any, // Initialized from localStorage via useState
   });
 
   const grossIncomeFormMethods = useForm({
     mode: "onBlur",
-    defaultValues: grossIncomeData as any,
+    defaultValues: grossIncomeData as any, // Initialized from localStorage via useState
   });
 
   const deductionFormMethods = useForm({
     resolver: zodResolver(taxDeductionSchema) as any,
     mode: "onBlur",
-    defaultValues: deductionData as any,
+    defaultValues: deductionData as any, // Initialized from localStorage via useState
   });
 
   const { reset: resetPersonal } = personalFormMethods;
   const { reset: resetGrossIncome } = grossIncomeFormMethods;
   const { reset: resetDeduction } = deductionFormMethods;
 
+  // Watch form values for real-time persistence
+  const currentPersonalData = personalFormMethods.watch();
+  const currentGrossIncomeData = grossIncomeFormMethods.watch();
+  const currentDeductionData = deductionFormMethods.watch();
+
+  // Save to localStorage whenever FORM data changes (real-time)
+  useEffect(() => {
+    // Debounce or just save directly (localStorage is fast enough for this size)
+    const dataToSave = {
+      personalData: currentPersonalData,
+      grossIncomeData: currentGrossIncomeData,
+      deductionData: currentDeductionData,
+      sections, // Persist the UI state (completed/pending statuses)
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+  }, [
+    currentPersonalData,
+    currentGrossIncomeData,
+    currentDeductionData,
+    sections,
+  ]);
+
+  // Sync state with form reset (only when state explicitly changes via submit)
   useEffect(() => {
     resetPersonal(personalData);
   }, [personalData, resetPersonal]);
@@ -132,6 +199,127 @@ const ItrOne: React.FC = () => {
   useEffect(() => {
     resetDeduction({ ...grossIncomeData, ...deductionData });
   }, [deductionData, grossIncomeData, resetDeduction]);
+
+  useEffect(() => {
+    const toNumber = (val: any) => {
+      if (typeof val === "number") return val;
+      const parsed = parseFloat(val || "0");
+      return Number.isNaN(parsed) ? 0 : parsed;
+    };
+
+    // Calculate Gross Salary
+    const grossSalaryIncome =
+      toNumber(grossIncomeData.salarySection17_1) +
+      toNumber(grossIncomeData.perquisitesSection17_2) +
+      toNumber(grossIncomeData.profitSection17_3) +
+      toNumber(grossIncomeData.retirementBenefitNotified) +
+      toNumber(grossIncomeData.retirementBenefitOther);
+
+    // Calculate Net Salary
+    const netSalaryIncome =
+      grossSalaryIncome -
+      toNumber(grossIncomeData.exemptAllowances) -
+      toNumber(grossIncomeData.reliefFromTaxation89A) -
+      toNumber(grossIncomeData.standardDeduction16) -
+      toNumber(grossIncomeData.entertainmentAllowance) -
+      toNumber(grossIncomeData.professionalTax);
+
+    // Calculate House Property Income
+    const housePropertyIncome =
+      toNumber(grossIncomeData.annualValue) -
+      toNumber(grossIncomeData.standardDeduction30Percent) -
+      toNumber(grossIncomeData.interestBorrowedCapital) +
+      toNumber(grossIncomeData.arrearsUnrealisedRent);
+
+    // Calculate Other Sources Income
+    const otherSourcesIncome =
+      toNumber(grossIncomeData.otherSource1Amount) +
+      toNumber(grossIncomeData.otherSource2Amount) +
+      toNumber(currentGrossIncomeData.otherSource3Amount) +
+      toNumber(currentGrossIncomeData.otherSource4Amount) +
+      toNumber(currentGrossIncomeData.retirementBenefitNonNotifiedCountry) +
+      toNumber(currentGrossIncomeData.retirementBenefitUSA) +
+      toNumber(currentGrossIncomeData.retirementBenefitUK) +
+      toNumber(currentGrossIncomeData.retirementBenefitCanada) +
+      toNumber(currentGrossIncomeData.dividendQ1) +
+      toNumber(currentGrossIncomeData.dividendQ2) +
+      toNumber(currentGrossIncomeData.dividendQ3) +
+      toNumber(currentGrossIncomeData.dividendQ4) +
+      toNumber(currentGrossIncomeData.dividendQ5) -
+      toNumber(currentGrossIncomeData.reliefFromTaxation89AOtherSources) -
+      toNumber(currentGrossIncomeData.deduction57iia);
+
+    // Calculate Gross Total Income
+    const grossTotalIncome =
+      netSalaryIncome + housePropertyIncome + otherSourcesIncome;
+
+    // Calculate Total Deductions
+    const totalDeductions =
+      toNumber(currentDeductionData.section80C) +
+      toNumber(currentDeductionData.section80CCC) +
+      toNumber(currentDeductionData.section80CCD1) +
+      toNumber(currentDeductionData.section80CCD1B) +
+      toNumber(currentDeductionData.section80CCD2) +
+      toNumber(currentDeductionData.section80D) +
+      toNumber(currentDeductionData.section80DD) +
+      toNumber(currentDeductionData.section80DDB) +
+      toNumber(currentDeductionData.section80E) +
+      toNumber(currentDeductionData.section80EE) +
+      toNumber(currentDeductionData.section80EEA) +
+      toNumber(currentDeductionData.section80EEB) +
+      toNumber(currentDeductionData.section80G) +
+      toNumber(currentDeductionData.section80GG) +
+      toNumber(currentDeductionData.section80GGA) +
+      toNumber(currentDeductionData.section80GGC) +
+      toNumber(currentDeductionData.section80TTA) +
+      toNumber(currentDeductionData.section80TTB) +
+      toNumber(currentDeductionData.section80U) +
+      toNumber(currentDeductionData.section80CCH) +
+      toNumber(currentDeductionData.anyOtherDeductions);
+
+    setSections((prev) =>
+      prev.map((section) => {
+        if (section.id === "personal") {
+          const isComplete = !!(
+            currentPersonalData.pan && currentPersonalData.aadhar
+          );
+          if (isComplete && section.status !== "completed") {
+            return { ...section, status: "completed", statusText: "Confirmed" };
+          }
+        }
+        if (section.id === "gross-income") {
+          const isComplete = grossTotalIncome > 0;
+          return {
+            ...section,
+            amountValue: Math.max(0, grossTotalIncome).toLocaleString("en-IN"),
+            status: isComplete ? "completed" : section.status,
+            statusText: isComplete ? "Confirmed" : section.statusText,
+          };
+        }
+        if (section.id === "deductions") {
+          // Mark as complete if there are deductions OR if gross income is confirmed (sequential flow implication)
+          // But strict check: totalDeductions > 0 OR if the user explicitly visited and saved (which we don't track easily here except via sections persistence)
+          // Let's stick to totalDeductions > 0 for auto-confirm, OR if it was ALREADY completed (persistence).
+          const isComplete = totalDeductions > 0;
+          const currentStatus =
+            section.status === "completed"
+              ? "completed"
+              : isComplete
+              ? "completed"
+              : section.status;
+
+          return {
+            ...section,
+            amountValue: Math.max(0, totalDeductions).toLocaleString("en-IN"),
+            status: currentStatus,
+            statusText:
+              currentStatus === "completed" ? "Confirmed" : section.statusText,
+          };
+        }
+        return section;
+      })
+    );
+  }, [currentGrossIncomeData, currentDeductionData, currentPersonalData]);
 
   const ensureAtLeastOneInProgress = (
     list: ItrSummarySection[]
@@ -196,23 +384,23 @@ const ItrOne: React.FC = () => {
     });
 
     if (sectionId === "personal") {
-      setActiveDetailId("personal");
+      navigate("/practice/itr/itr-1/personal");
       resetPersonal(personalData);
     } else if (sectionId === "gross-income") {
-      setActiveDetailId("gross-income");
+      navigate("/practice/itr/itr-1/gross-income");
       resetGrossIncome(grossIncomeData);
     } else if (sectionId === "deductions") {
-      setActiveDetailId("deductions");
+      navigate("/practice/itr/itr-1/deductions");
       resetDeduction(deductionData);
     } else {
-      setActiveDetailId(null);
+      navigate("/practice/itr/itr-1");
     }
   };
 
   const handleBackToSummary = () => {
     resetPersonal(personalData);
     resetGrossIncome(grossIncomeData);
-    setActiveDetailId(null);
+    navigate("/practice/itr/itr-1");
     setSubmissionInfo(null);
     setSections((prev) =>
       ensureAtLeastOneInProgress(prev.map((section) => ({ ...section })))
@@ -237,7 +425,7 @@ const ItrOne: React.FC = () => {
       });
       return ensureAtLeastOneInProgress(updated);
     });
-    setActiveDetailId(null);
+    navigate("/practice/itr/itr-1");
   };
 
   const handleGrossIncomeSubmit = (values: any) => {
@@ -256,7 +444,7 @@ const ItrOne: React.FC = () => {
       });
       return ensureAtLeastOneInProgress(updated);
     });
-    setActiveDetailId(null);
+    navigate("/practice/itr/itr-1");
   };
 
   const handleDeductionSubmit = (values: any) => {
@@ -275,7 +463,7 @@ const ItrOne: React.FC = () => {
       });
       return ensureAtLeastOneInProgress(updated);
     });
-    setActiveDetailId(null);
+    navigate("/practice/itr/itr-1");
   };
 
   const allSectionsCompleted = useMemo(
@@ -293,6 +481,8 @@ const ItrOne: React.FC = () => {
     const acknowledgementNo = generateAcknowledgementNumber();
     const submittedAt = new Date();
     setSubmissionInfo({ acknowledgementNo, submittedAt });
+    // Clear saved data on successful submission
+    localStorage.removeItem(STORAGE_KEY);
   };
 
   const handleDownloadCSV = () => {
@@ -400,6 +590,96 @@ const ItrOne: React.FC = () => {
     exportITR1ToCSV(exportData);
   };
 
+  const handleDownloadPDF = () => {
+    // Calculate derived values (reused logic)
+    const toNumber = (val: any) => {
+      if (typeof val === "number") return val;
+      const parsed = parseFloat(val || "0");
+      return Number.isNaN(parsed) ? 0 : parsed;
+    };
+
+    const grossSalaryIncome =
+      toNumber(grossIncomeData.salarySection17_1) +
+      toNumber(grossIncomeData.perquisitesSection17_2) +
+      toNumber(grossIncomeData.profitSection17_3) +
+      toNumber(grossIncomeData.retirementBenefitNotified) +
+      toNumber(grossIncomeData.retirementBenefitOther);
+
+    const netSalaryIncome =
+      grossSalaryIncome -
+      toNumber(grossIncomeData.exemptAllowances) -
+      toNumber(grossIncomeData.reliefFromTaxation89A) -
+      toNumber(grossIncomeData.standardDeduction16) -
+      toNumber(grossIncomeData.entertainmentAllowance) -
+      toNumber(grossIncomeData.professionalTax);
+
+    const housePropertyIncome =
+      toNumber(grossIncomeData.annualValue) -
+      toNumber(grossIncomeData.standardDeduction30Percent) -
+      toNumber(grossIncomeData.interestBorrowedCapital) +
+      toNumber(grossIncomeData.arrearsUnrealisedRent);
+
+    const otherSourcesIncome =
+      toNumber(grossIncomeData.otherSource1Amount) +
+      toNumber(grossIncomeData.otherSource2Amount) +
+      toNumber(grossIncomeData.otherSource3Amount) +
+      toNumber(grossIncomeData.otherSource4Amount) +
+      toNumber(grossIncomeData.retirementBenefitNonNotifiedCountry) +
+      toNumber(grossIncomeData.retirementBenefitUSA) +
+      toNumber(grossIncomeData.retirementBenefitUK) +
+      toNumber(grossIncomeData.retirementBenefitCanada) +
+      toNumber(grossIncomeData.dividendQ1) +
+      toNumber(grossIncomeData.dividendQ2) +
+      toNumber(grossIncomeData.dividendQ3) +
+      toNumber(grossIncomeData.dividendQ4) +
+      toNumber(grossIncomeData.dividendQ5) -
+      toNumber(grossIncomeData.reliefFromTaxation89AOtherSources) -
+      toNumber(grossIncomeData.deduction57iia);
+
+    const grossTotalIncome =
+      netSalaryIncome + housePropertyIncome + otherSourcesIncome;
+
+    const totalDeductions =
+      toNumber(deductionData.section80C) +
+      toNumber(deductionData.section80CCC) +
+      toNumber(deductionData.section80CCD1) +
+      toNumber(deductionData.section80CCD1B) +
+      toNumber(deductionData.section80CCD2) +
+      toNumber(deductionData.section80D) +
+      toNumber(deductionData.section80DD) +
+      toNumber(deductionData.section80DDB) +
+      toNumber(deductionData.section80E) +
+      toNumber(deductionData.section80EE) +
+      toNumber(deductionData.section80EEA) +
+      toNumber(deductionData.section80EEB) +
+      toNumber(deductionData.section80G) +
+      toNumber(deductionData.section80GG) +
+      toNumber(deductionData.section80GGA) +
+      toNumber(deductionData.section80GGC) +
+      toNumber(deductionData.section80TTA) +
+      toNumber(deductionData.section80TTB) +
+      toNumber(deductionData.section80U) +
+      toNumber(deductionData.section80CCH) +
+      toNumber(deductionData.anyOtherDeductions);
+
+    const totalIncome = grossTotalIncome - totalDeductions;
+
+    const exportData: ITR1ExportData = {
+      ...personalData,
+      ...grossIncomeData,
+      ...deductionData,
+      grossSalaryIncome,
+      netSalaryIncome,
+      housePropertyIncome,
+      otherSourcesIncome,
+      grossTotalIncome,
+      totalDeductions,
+      totalIncome,
+    };
+
+    exportITR1ToPDF(exportData);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4 md:py-12">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-6">
@@ -437,12 +717,14 @@ const ItrOne: React.FC = () => {
             form={grossIncomeFormMethods as any}
             onSubmit={handleGrossIncomeSubmit}
             onCancel={handleBackToSummary}
+            taxRegime={personalData.taxRegime}
           />
         ) : activeDetailId === "deductions" ? (
           <TaxDeduction
             form={deductionFormMethods as any}
             onSubmit={handleDeductionSubmit}
             onCancel={handleBackToSummary}
+            taxRegime={personalData.taxRegime}
           />
         ) : (
           <section className="space-y-4">
@@ -479,7 +761,7 @@ const ItrOne: React.FC = () => {
                       Services &gt; View Filed Returns.
                     </p>
                   </div>
-                  <button
+                  {/* <button
                     type="button"
                     onClick={handleDownloadCSV}
                     className="flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
@@ -498,6 +780,30 @@ const ItrOne: React.FC = () => {
                       />
                     </svg>
                     Download CSV
+                  </button> */}
+                  <button
+                    type="button"
+                    onClick={handleDownloadPDF}
+                    className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                      <polyline points="14 2 14 8 20 8" />
+                      <path d="M12 18v-4" />
+                      <path d="M8 18v-2" />
+                      <path d="M16 18v-6" />
+                    </svg>
+                    Download PDF
                   </button>
                 </div>
               </div>

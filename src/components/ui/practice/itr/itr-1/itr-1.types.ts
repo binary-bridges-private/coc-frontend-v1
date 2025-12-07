@@ -36,6 +36,12 @@ export enum AccountType {
   Other = "Other",
 }
 
+export enum PropertyType {
+  SelfOccupied = "Self-Occupied",
+  LetOut = "Let Out",
+  DeemedLetOut = "Deemed Let Out",
+}
+
 export interface ExemptAllowance {
   slNo: number;
   natureOfExemptAllowance: string;
@@ -198,9 +204,7 @@ export interface ItrOneFormData {
 
   incomeChargeableSalaries?: number | string;
 
-  propertySelfOccupied?: boolean;
-  propertyLetOut?: boolean;
-  propertyDeemedLetOut?: boolean;
+  propertyType?: PropertyType | string;
 
   grossRent?: number | string;
 

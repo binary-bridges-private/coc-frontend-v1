@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { grossTotalIncomeSchema } from "../itr-1.validation.ts";
+import { PropertyType, TaxRegime } from "../itr-1.types.ts";
 
 interface GrossTotalIncomeProps {
   form: UseFormReturn<any>;
   onSubmit: (values: any) => void;
   onCancel: () => void;
+  taxRegime?: string;
 }
 
 type IncomeSection = "salary" | "houseProperty" | "otherSources";
@@ -14,6 +16,7 @@ const GrossTotalIncome: React.FC<GrossTotalIncomeProps> = ({
   form,
   onSubmit,
   onCancel,
+  taxRegime,
 }) => {
   const [activeSection, setActiveSection] = useState<IncomeSection | null>(
     null
@@ -27,7 +30,23 @@ const GrossTotalIncome: React.FC<GrossTotalIncomeProps> = ({
     handleSubmit,
     watch,
     formState: { errors, isSubmitting },
+    setValue,
   } = form;
+
+  const topRef = React.useRef<HTMLDivElement>(null);
+
+  // Scroll to top when active section changes
+  useEffect(() => {
+    topRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [activeSection]);
+
+  useEffect(() => {
+    if (taxRegime === TaxRegime.New115BAC) {
+      setValue("standardDeduction16", 75000);
+    } else {
+      setValue("standardDeduction16", 50000);
+    }
+  }, [taxRegime, setValue]);
 
   const handleFormSubmit = async (values: any) => {
     try {
@@ -97,17 +116,52 @@ const GrossTotalIncome: React.FC<GrossTotalIncomeProps> = ({
     calculateNetSalary();
 
   const housePropertyValues = watch([
+    "grossRent",
+    "localTaxPaid",
     "annualValue",
     "standardDeduction30Percent",
     "interestBorrowedCapital",
     "arrearsUnrealisedRent",
+    "propertyType",
+  ]);
+
+  // Auto-calculation for Annual Value and Standard Deduction
+  useEffect(() => {
+    const grossRent = toNumber(housePropertyValues[0]);
+    const localTax = toNumber(housePropertyValues[1]);
+    const propertyType = housePropertyValues[6];
+
+    let newAnnualValue = 0;
+    if (propertyType === PropertyType.SelfOccupied) {
+      newAnnualValue = 0;
+    } else {
+      newAnnualValue = grossRent - localTax;
+    }
+
+    // Only update if value changed to avoid infinite loop
+    if (toNumber(housePropertyValues[2]) !== newAnnualValue) {
+      setValue("annualValue", newAnnualValue, { shouldValidate: true });
+    }
+
+    // Standard Deduction 30%
+    const deduction = Math.round(newAnnualValue * 0.3);
+    if (toNumber(housePropertyValues[3]) !== deduction) {
+      setValue("standardDeduction30Percent", deduction, {
+        shouldValidate: true,
+      });
+    }
+  }, [
+    housePropertyValues[0], // grossRent
+    housePropertyValues[1], // localTaxPaid
+    housePropertyValues[6], // propertyType
+    setValue,
   ]);
 
   const calculateHousePropertyIncome = () => {
-    const annualValue = toNumber(housePropertyValues[0]);
-    const deduction30 = toNumber(housePropertyValues[1]);
-    const interest = toNumber(housePropertyValues[2]);
-    const arrears = toNumber(housePropertyValues[3]);
+    const annualValue = toNumber(housePropertyValues[2]); // Watch annualValue from form state
+    const deduction30 = toNumber(housePropertyValues[3]); // Watch deduction from form state
+    const interest = toNumber(housePropertyValues[4]);
+    const arrears = toNumber(housePropertyValues[5]);
 
     return annualValue - deduction30 - interest + arrears;
   };
@@ -154,13 +208,7 @@ const GrossTotalIncome: React.FC<GrossTotalIncomeProps> = ({
       retirementNonNotified + retirementUSA + retirementUK + retirementCanada;
     const totalDividend = div1 + div2 + div3 + div4 + div5;
 
-    return (
-      totalOtherSources +
-      totalRetirement +
-      totalDividend -
-      relief89A -
-      deduction57
-    );
+    return totalOtherSources + totalRetirement - relief89A - deduction57;
   };
 
   const otherSourcesIncome = calculateOtherSourcesIncome();
@@ -275,57 +323,60 @@ const GrossTotalIncome: React.FC<GrossTotalIncomeProps> = ({
           </div>
         )}
 
-        <div className="overflow-hidden rounded-lg border-2 border-gray-300 bg-white shadow-md">
-          <div className="bg-gray-100 border-b-2 border-gray-300 px-6 py-4">
+        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+          <div className="border-b border-gray-100 bg-gray-50/50 px-6 py-4">
             <h3 className="text-lg font-bold text-gray-900">
               Part B - Gross Total Income Summary
             </h3>
-            <p className="text-sm text-gray-600">Whole-Rupee (₹) only</p>
+            <p className="text-sm text-gray-500">Whole-Rupee (₹) only</p>
           </div>
 
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-300">
+            <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
                   Section
                 </th>
-                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">
+                <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-gray-500">
                   Amount (₹)
                 </th>
-                <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">
+                <th className="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-500">
                   Status
                 </th>
-                <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">
+                <th className="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-500">
                   Action
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-100">
               <tr
                 className={`transition-colors ${
-                  !completedSections.salary
-                    ? ""
-                    : "hover:bg-gray-50"
+                  !completedSections.salary ? "" : "hover:bg-gray-50"
                 }`}
               >
                 <td className="px-6 py-4">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                      <span className="text-xs font-bold">B1</span>
+                    </div>
                     <span className="font-medium text-gray-900">
-                      B1 - Salary Income
+                      Salary Income
                     </span>
                   </div>
                 </td>
-                <td className="px-6 py-4 text-right font-semibold text-gray-900">
+                <td className="px-6 py-4 text-right font-medium text-gray-900">
                   ₹{netSalary.toLocaleString("en-IN")}
                 </td>
                 <td className="px-6 py-4 text-center">
                   {completedSections.salary ? (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
-                      <span className="text-sm">✓</span> Completed
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
+                      <span className="h-1.5 w-1.5 rounded-full bg-green-500"></span>
+                      Completed
                     </span>
                   ) : (
-                    <span className="inline-flex items-center rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-700">
-                      PENDING
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-700">
+                      <span className="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
+                      Pending
                     </span>
                   )}
                 </td>
@@ -333,41 +384,44 @@ const GrossTotalIncome: React.FC<GrossTotalIncomeProps> = ({
                   <button
                     type="button"
                     onClick={() => setActiveSection("salary")}
-                    className={`rounded px-4 py-2 font-medium transition-colors ${
+                    className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
                       completedSections.salary
-                        ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
-                        : "bg-yellow-500 text-white hover:bg-yellow-600"
+                        ? "text-blue-600 hover:bg-blue-50"
+                        : "bg-blue-600 text-white shadow-sm hover:bg-blue-700"
                     }`}
                   >
-                    {completedSections.salary ? "Edit" : "Fill Now"}
+                    {completedSections.salary ? "Edit Details" : "Fill Now"}
                   </button>
                 </td>
               </tr>
               <tr
                 className={`transition-colors ${
-                  !completedSections.houseProperty
-                    ? ""
-                    : "hover:bg-gray-50"
+                  !completedSections.houseProperty ? "" : "hover:bg-gray-50"
                 }`}
               >
                 <td className="px-6 py-4">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-100 text-purple-600">
+                      <span className="text-xs font-bold">B2</span>
+                    </div>
                     <span className="font-medium text-gray-900">
-                      B2 - House Property
+                      House Property
                     </span>
                   </div>
                 </td>
-                <td className="px-6 py-4 text-right font-semibold text-gray-900">
+                <td className="px-6 py-4 text-right font-medium text-gray-900">
                   ₹{housePropertyIncome.toLocaleString("en-IN")}
                 </td>
                 <td className="px-6 py-4 text-center">
                   {completedSections.houseProperty ? (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
-                      <span className="text-sm">✓</span> Completed
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
+                      <span className="h-1.5 w-1.5 rounded-full bg-green-500"></span>
+                      Completed
                     </span>
                   ) : (
-                    <span className="inline-flex items-center rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-700">
-                      PENDING
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-700">
+                      <span className="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
+                      Pending
                     </span>
                   )}
                 </td>
@@ -375,13 +429,15 @@ const GrossTotalIncome: React.FC<GrossTotalIncomeProps> = ({
                   <button
                     type="button"
                     onClick={() => setActiveSection("houseProperty")}
-                    className={`rounded px-4 py-2 font-medium transition-colors ${
+                    className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
                       completedSections.houseProperty
-                        ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
-                        : "bg-yellow-500 text-white hover:bg-yellow-600"
+                        ? "text-blue-600 hover:bg-blue-50"
+                        : "bg-blue-600 text-white shadow-sm hover:bg-blue-700"
                     }`}
                   >
-                    {completedSections.houseProperty ? "Edit" : "Fill Now"}
+                    {completedSections.houseProperty
+                      ? "Edit Details"
+                      : "Fill Now"}
                   </button>
                 </td>
               </tr>
@@ -391,21 +447,28 @@ const GrossTotalIncome: React.FC<GrossTotalIncomeProps> = ({
                 }`}
               >
                 <td className="px-6 py-4">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-gray-900">B3 - Other Sources</span>
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-100 text-teal-600">
+                      <span className="text-xs font-bold">B3</span>
+                    </div>
+                    <span className="font-medium text-gray-900">
+                      Other Sources
+                    </span>
                   </div>
                 </td>
-                <td className="px-6 py-4 text-right font-semibold text-gray-900">
+                <td className="px-6 py-4 text-right font-medium text-gray-900">
                   ₹{otherSourcesIncome.toLocaleString("en-IN")}
                 </td>
                 <td className="px-6 py-4 text-center">
                   {completedSections.otherSources ? (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
-                      <span className="text-sm">✓</span> Completed
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
+                      <span className="h-1.5 w-1.5 rounded-full bg-green-500"></span>
+                      Completed
                     </span>
                   ) : (
-                    <span className="inline-flex items-center rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-700">
-                      PENDING
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-700">
+                      <span className="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
+                      Pending
                     </span>
                   )}
                 </td>
@@ -413,31 +476,41 @@ const GrossTotalIncome: React.FC<GrossTotalIncomeProps> = ({
                   <button
                     type="button"
                     onClick={() => setActiveSection("otherSources")}
-                    className={`rounded px-4 py-2 font-medium transition-colors ${
+                    className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
                       completedSections.otherSources
-                        ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
-                        : "bg-yellow-500 text-white hover:bg-yellow-600"
+                        ? "text-blue-600 hover:bg-blue-50"
+                        : "bg-blue-600 text-white shadow-sm hover:bg-blue-700"
                     }`}
                   >
-                    {completedSections.otherSources ? "Edit" : "Fill Now"}
+                    {completedSections.otherSources
+                      ? "Edit Details"
+                      : "Fill Now"}
                   </button>
                 </td>
               </tr>
-              
+
               {/* Total Row */}
-              <tr className="border-t-2 ">
+              <tr className="bg-gray-50/80">
                 <td colSpan={4} className="px-6 py-5">
                   <div className="flex items-center justify-between">
-                    <span className="text-lg font-bold text-gray-900">
-                      B4 - Gross Total Income (B1+B2+B3)
-                    </span>
-                    <span className="text-2xl font-bold text-blue-700">
-                      ₹{(
-                        netSalary +
-                        housePropertyIncome +
-                        otherSourcesIncome
-                      ).toLocaleString("en-IN")}
-                    </span>
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-600 text-white shadow-md">
+                        <span className="text-sm font-bold">B4</span>
+                      </div>
+                      <span className="text-lg font-bold text-gray-900">
+                        Gross Total Income (B1+B2+B3)
+                      </span>
+                    </div>
+                    <div className="text-right">
+                      <span className="block text-2xl font-bold text-indigo-700">
+                        ₹
+                        {(
+                          netSalary +
+                          housePropertyIncome +
+                          otherSourcesIncome
+                        ).toLocaleString("en-IN")}
+                      </span>
+                    </div>
                   </div>
                 </td>
               </tr>
@@ -448,11 +521,12 @@ const GrossTotalIncome: React.FC<GrossTotalIncomeProps> = ({
         {/* Note Banner */}
         <div className="mt-4 rounded-xl border border-blue-200 bg-blue-50 p-4 shadow-sm">
           <div className="flex items-start gap-3">
-            <span className="text-xl">�</span>
+            <span className="text-xl">ℹ️</span>
             <div>
               <p className="text-sm text-blue-900">
-                <strong>Note:</strong> If loss, put the figure in negative. To avail the benefit of carry
-                forward and set off of losses, please use ITR-2.
+                <strong>Note:</strong> If loss, put the figure in negative. To
+                avail the benefit of carry forward and set off of losses, please
+                use ITR-2.
               </p>
             </div>
           </div>
@@ -479,35 +553,35 @@ const GrossTotalIncome: React.FC<GrossTotalIncomeProps> = ({
     );
 
     return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-between border-b border-gray-300 pb-2">
-          <h3 className="text-lg font-bold">B1 - Salary Income</h3>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+              <span className="font-bold">B1</span>
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-gray-900">Salary Income</h3>
+              <p className="text-sm text-gray-500">
+                Provide details of your salary components
+              </p>
+            </div>
+          </div>
           <button
             type="button"
             onClick={() => setActiveSection(null)}
-            className="text-sm text-blue-600 underline hover:text-blue-800"
+            className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900"
           >
-            Back to Summary
+            Cancel & Go Back
           </button>
         </div>
 
         {sectionErrors.length > 0 && (
-          <div className="rounded-lg border-2 border-red-300 bg-red-50 p-4">
+          <div className="rounded-xl border border-red-200 bg-red-50 p-4">
             <div className="flex items-start gap-3">
-              <svg
-                className="h-6 w-6 flex-shrink-0 text-red-600"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              <span className="text-xl">⚠️</span>
               <div className="flex-1">
                 <h4 className="mb-2 text-sm font-bold text-red-900">
-                  ⚠️ Please fix the following errors ({sectionErrors.length})
+                  Please fix the following errors ({sectionErrors.length})
                 </h4>
                 <ul className="space-y-1 text-sm text-red-800">
                   {sectionErrors.map(([fieldName, error]: [string, any]) => (
@@ -527,11 +601,14 @@ const GrossTotalIncome: React.FC<GrossTotalIncomeProps> = ({
           </div>
         )}
 
-        <div className="border border-gray-300 bg-white p-4">
-          <div className="mb-3 bg-gray-100 p-2 font-semibold">
-            i. Gross Salary (ia + ib + ic + id + ie)
+        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <div className="mb-6 rounded-lg bg-gray-50 p-4">
+            <h4 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+              i. Gross Salary (ia + ib + ic + id + ie)
+            </h4>
           </div>
-          <div className="grid grid-cols-2 gap-4 mb-4">
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <InputField
               label="a. Salary as per section 17(1) (ia)"
               name="salarySection17_1"
@@ -550,7 +627,7 @@ const GrossTotalIncome: React.FC<GrossTotalIncomeProps> = ({
               error={errors.perquisitesSection17_2?.message}
             />
           </div>
-          <div className="grid grid-cols-3 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <InputField
               label="c. Profit in lieu of salary u/s 17(3) (ic)"
               name="profitSection17_3"
@@ -578,21 +655,29 @@ const GrossTotalIncome: React.FC<GrossTotalIncomeProps> = ({
               error={errors.retirementBenefitOther?.message}
             />
           </div>
-          <div className="border-t border-gray-300 pt-2 mb-4 bg-gray-50 p-2">
-            <strong>Gross Salary (ia + ib + ic + id + ie):</strong> ₹
-            {grossSalary.toLocaleString("en-IN")}
-          </div>
-          <div className="mb-4">
-            <div className="mb-2 font-medium text-gray-900">
-              ii. Less allowances to the extent exempt u/s 10{" "}
-              <span className="text-sm italic text-gray-600">
-                (drop down to be provided in e-filing utility)
+
+          <div className="mb-8 rounded-lg border border-blue-100 bg-blue-50/50 p-4">
+            <div className="flex items-center justify-between">
+              <span className="font-medium text-gray-700">
+                Gross Salary (ia + ib + ic + id + ie)
+              </span>
+              <span className="text-lg font-bold text-gray-900">
+                ₹{grossSalary.toLocaleString("en-IN")}
               </span>
             </div>
-            <div className="mb-2 rounded border border-blue-300 bg-blue-50 p-2 text-xs italic text-gray-700">
-              (Ensure that it is included in salary income u/s
-              17(1)/17(2)/17(3))
+          </div>
+
+          <div className="mb-6 pt-6 border-t border-gray-100">
+            <div className="mb-4">
+              <h4 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+                ii. Less allowances to the extent exempt u/s 10
+              </h4>
+              <p className="text-xs text-gray-500 mt-1">
+                (Ensure that it is included in salary income u/s
+                17(1)/17(2)/17(3))
+              </p>
             </div>
+
             <InputField
               label="Total Allowances Exempt u/s 10"
               name="exemptAllowances"
@@ -602,7 +687,8 @@ const GrossTotalIncome: React.FC<GrossTotalIncomeProps> = ({
               error={errors.exemptAllowances?.message}
             />
           </div>
-          <div className="mb-4">
+
+          <div className="mb-8">
             <InputField
               label="iia. Less: Income claimed for relief from taxation u/s 89A"
               name="reliefFromTaxation89A"
@@ -612,18 +698,27 @@ const GrossTotalIncome: React.FC<GrossTotalIncomeProps> = ({
               error={errors.reliefFromTaxation89A?.message}
             />
           </div>
-          <div className="border-t border-gray-300 pt-2 mb-4 bg-blue-50 p-3">
-            <strong className="text-blue-900">
-              iii. Net Salary (i - ii - iia):
-            </strong>{" "}
-            <span className="text-lg font-bold text-blue-700">
-              ₹{netSalaryBeforeDeductions.toLocaleString("en-IN")}
-            </span>
+
+          <div className="mb-8 rounded-lg border border-indigo-100 bg-indigo-50/50 p-4">
+            <div className="flex items-center justify-between">
+              <span className="font-medium text-indigo-900">
+                iii. Net Salary (i - ii - iia)
+              </span>
+              <span className="text-xl font-bold text-indigo-700">
+                ₹{netSalaryBeforeDeductions.toLocaleString("en-IN")}
+              </span>
+            </div>
           </div>
-          <div className="mb-3 bg-gray-100 p-2 font-semibold">
-            iv. Deductions u/s 16 (iva + ivb + ivc)
+
+          <div className="mb-6 pt-6 border-t border-gray-100">
+            <div className="mb-4 rounded-lg bg-gray-50 p-4">
+              <h4 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+                iv. Deductions u/s 16 (iva + ivb + ivc)
+              </h4>
+            </div>
           </div>
-          <div className="grid grid-cols-3 gap-4">
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <InputField
               label="a. Standard deduction (iva)"
               name="standardDeduction16"
@@ -652,9 +747,6 @@ const GrossTotalIncome: React.FC<GrossTotalIncomeProps> = ({
               >
                 c. Professional tax (ivc){" "}
                 <span className="text-red-500">*</span>
-                <span className="ml-2 text-xs font-normal text-orange-600">
-                  Max: ₹2,500
-                </span>
               </label>
               <input
                 id="professionalTax"
@@ -669,6 +761,7 @@ const GrossTotalIncome: React.FC<GrossTotalIncomeProps> = ({
                 }`}
                 {...register("professionalTax")}
               />
+              <p className="text-xs text-gray-500">Max ₹2,500/year</p>
               {(errors.professionalTax?.message ||
                 validationErrors.professionalTax) && (
                 <p className="text-sm text-red-500">
@@ -676,32 +769,36 @@ const GrossTotalIncome: React.FC<GrossTotalIncomeProps> = ({
                     validationErrors.professionalTax}
                 </p>
               )}
-              <p className="text-xs text-gray-500">
-                ⚠️ Professional tax is limited to ₹2,500 per year as per Income
-                Tax Act
-              </p>
             </div>
-          </div>{" "}
-          <div className="mt-4 border border-gray-400 bg-yellow-50 p-3">
-            <strong>
-              v. Income chargeable under the head 'Salaries' (iii - iv) [B1]:
-            </strong>{" "}
-            ₹{netSalary.toLocaleString("en-IN")}
           </div>
-          <div className="mt-4 flex justify-end gap-3">
+
+          <div className="mt-8 flex flex-col gap-4 rounded-xl border border-indigo-200 bg-indigo-50 p-6 shadow-sm md:flex-row md:items-center md:justify-between">
+            <div>
+              <h4 className="text-lg font-bold text-indigo-900">
+                Income chargeable under the head 'Salaries'
+              </h4>
+              <p className="text-sm text-indigo-700">(iii - iv) [B1]</p>
+            </div>
+
+            <span className="text-3xl font-bold text-indigo-700">
+              ₹{netSalary.toLocaleString("en-IN")}
+            </span>
+          </div>
+
+          <div className="mt-8 flex justify-end gap-3 pt-6 border-t border-gray-100">
             <button
               type="button"
               onClick={() => setActiveSection(null)}
-              className="border border-gray-300 bg-white px-4 py-2 hover:bg-gray-50"
+              className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
             >
               Cancel
             </button>
             <button
               type="button"
               onClick={() => handleSectionComplete("salary")}
-              className="bg-blue-600 px-6 py-2 text-white hover:bg-blue-700"
+              className="rounded-lg bg-green-600 px-6 py-2 text-sm font-bold text-white shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
             >
-              Save & Continue to B2
+              Save & Continue
             </button>
           </div>
         </div>
@@ -724,35 +821,37 @@ const GrossTotalIncome: React.FC<GrossTotalIncomeProps> = ({
     );
 
     return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-between border-b border-gray-300 pb-2">
-          <h3 className="text-lg font-bold">B2 - House Property</h3>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-100 text-purple-600">
+              <span className="font-bold">B2</span>
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-gray-900">
+                House Property
+              </h3>
+              <p className="text-sm text-gray-500">
+                Details of income from house property
+              </p>
+            </div>
+          </div>
           <button
             type="button"
             onClick={() => setActiveSection(null)}
-            className="text-sm text-blue-600 underline hover:text-blue-800"
+            className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900"
           >
-            Back to Summary
+            Cancel & Go Back
           </button>
         </div>
 
         {sectionErrors.length > 0 && (
-          <div className="rounded-lg border-2 border-red-300 bg-red-50 p-4">
+          <div className="rounded-xl border border-red-200 bg-red-50 p-4">
             <div className="flex items-start gap-3">
-              <svg
-                className="h-6 w-6 flex-shrink-0 text-red-600"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              <span className="text-xl">⚠️</span>
               <div className="flex-1">
                 <h4 className="mb-2 text-sm font-bold text-red-900">
-                  ⚠️ Please fix the following errors ({sectionErrors.length})
+                  Please fix the following errors ({sectionErrors.length})
                 </h4>
                 <ul className="space-y-1 text-sm text-red-800">
                   {sectionErrors.map(([fieldName, error]: [string, any]) => (
@@ -772,40 +871,43 @@ const GrossTotalIncome: React.FC<GrossTotalIncomeProps> = ({
           </div>
         )}
 
-        <div className="border border-gray-300 bg-white p-4">
-          <div className="mb-3">
-            <label className="mb-2 block font-medium">
-              Tick applicable option
+        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <div className="mb-8 rounded-lg border border-gray-100 bg-gray-50 p-4">
+            <label className="mb-3 block text-sm font-semibold text-gray-700">
+              Type of House Property
             </label>
-            <div className="flex gap-4">
-              <label className="flex items-center gap-2">
+            <div className="flex flex-wrap gap-6">
+              <label className="flex items-center gap-3 cursor-pointer">
                 <input
-                  type="checkbox"
-                  {...register("propertySelfOccupied")}
-                  className="h-4 w-4 rounded border border-gray-300 bg-white text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0"
+                  type="radio"
+                  value={PropertyType.SelfOccupied}
+                  {...register("propertyType")}
+                  className="h-5 w-5 border-gray-300 text-purple-600 focus:ring-purple-500"
                 />
-                <span>Self-Occupied</span>
+                <span className="text-gray-900">Self-Occupied</span>
               </label>
-              <label className="flex items-center gap-2">
+              <label className="flex items-center gap-3 cursor-pointer">
                 <input
-                  type="checkbox"
-                  {...register("propertyLetOut")}
-                  className="h-4 w-4 rounded border border-gray-300 bg-white text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0"
+                  type="radio"
+                  value={PropertyType.LetOut}
+                  {...register("propertyType")}
+                  className="h-5 w-5 border-gray-300 text-purple-600 focus:ring-purple-500"
                 />
-                <span>Let Out</span>
+                <span className="text-gray-900">Let Out</span>
               </label>
-              <label className="flex items-center gap-2">
+              <label className="flex items-center gap-3 cursor-pointer">
                 <input
-                  type="checkbox"
-                  {...register("propertyDeemedLetOut")}
-                  className="h-4 w-4 rounded border border-gray-300 bg-white text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0"
+                  type="radio"
+                  value={PropertyType.DeemedLetOut}
+                  {...register("propertyType")}
+                  className="h-5 w-5 border-gray-300 text-purple-600 focus:ring-purple-500"
                 />
-                <span>Deemed Let Out</span>
+                <span className="text-gray-900">Deemed Let Out</span>
               </label>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <InputField
               label="i. Gross rent received/receivable/lettable value"
               name="grossRent"
@@ -825,23 +927,25 @@ const GrossTotalIncome: React.FC<GrossTotalIncomeProps> = ({
             />
           </div>
 
-          <div className="grid grid-cols-3 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <InputField
               label="iii. Annual Value (i - ii)"
               name="annualValue"
               type="number"
-              placeholder="0"
+              placeholder="Auto-calculated"
               register={register}
               error={errors.annualValue?.message}
+              readOnly={true}
             />
 
             <InputField
               label="iv. 30% of Annual Value"
               name="standardDeduction30Percent"
               type="number"
-              placeholder="0"
+              placeholder="Auto-calculated"
               register={register}
               error={errors.standardDeduction30Percent?.message}
+              readOnly={true}
             />
 
             <InputField
@@ -854,7 +958,7 @@ const GrossTotalIncome: React.FC<GrossTotalIncomeProps> = ({
             />
           </div>
 
-          <div className="mb-4">
+          <div className="mb-8">
             <InputField
               label="vi. Arrears/Unrealised rent received during the year less 30%"
               name="arrearsUnrealisedRent"
@@ -865,35 +969,39 @@ const GrossTotalIncome: React.FC<GrossTotalIncomeProps> = ({
             />
           </div>
 
-          <div className="mt-4 border border-gray-400 bg-yellow-50 p-3">
-            <strong>
-              vii. Income chargeable under the head 'House Property' (iii - iv -
-              v) + vi [B2]
-            </strong>
-            <p className="mt-1 text-sm">
-              (If loss, put the figure in negative)
-            </p>
-            <p className="mt-1 text-xs text-red-700">
-              <strong>Note:</strong> Maximum loss from House Property that can
-              be set-off is INR 2,00,000. To avail the benefit of carry forward
-              and set of loss, please use ITR-2
-            </p>
+          <div className="mt-8 flex flex-col gap-4 rounded-xl border border-indigo-200 bg-indigo-50 p-6 shadow-sm md:flex-row md:items-center md:justify-between">
+            <div>
+              <h4 className="text-lg font-bold text-indigo-900">
+                Income chargeable under the head 'House Property'
+              </h4>
+              <p className="text-sm text-indigo-700">
+                (iii - iv - v) + vi [B2]
+              </p>
+              <p className="mt-2 text-xs text-red-600 font-medium">
+                Note: Maximum loss up to ₹2,00,000 can be set-off. For carry
+                forward, use ITR-2.
+              </p>
+            </div>
+
+            <span className="text-3xl font-bold text-indigo-700">
+              ₹{housePropertyIncome.toLocaleString("en-IN")}
+            </span>
           </div>
 
-          <div className="mt-4 flex justify-end gap-3">
+          <div className="mt-8 flex justify-end gap-3 pt-6 border-t border-gray-100">
             <button
               type="button"
               onClick={() => setActiveSection("salary")}
-              className="border border-gray-300 bg-white px-4 py-2 hover:bg-gray-50"
+              className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
             >
-              ← Previous
+              Cancel
             </button>
             <button
               type="button"
               onClick={() => handleSectionComplete("houseProperty")}
-              className="bg-blue-600 px-6 py-2 text-white hover:bg-blue-700"
+              className="rounded-lg bg-green-600 px-6 py-2 text-sm font-bold text-white shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
             >
-              Save & Continue to B3
+              Save & Continue
             </button>
           </div>
         </div>
@@ -919,6 +1027,13 @@ const GrossTotalIncome: React.FC<GrossTotalIncomeProps> = ({
         key.includes("relief") ||
         key.includes("deduction57")
     );
+
+    const handleRemoveOtherSource = (id: number) => {
+      const fieldPrefix = `otherSource${id}`;
+      setValue(`${fieldPrefix}Nature` as any, "");
+      setValue(`${fieldPrefix}Description` as any, "");
+      setValue(`${fieldPrefix}Amount` as any, "");
+    };
 
     const otherSourcesData = [
       {
@@ -960,35 +1075,37 @@ const GrossTotalIncome: React.FC<GrossTotalIncomeProps> = ({
       toNumber(watch("dividendQ5"));
 
     return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-between border-b border-gray-300 pb-2">
-          <h3 className="text-lg font-bold">B3 - Income from Other Sources</h3>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-teal-100 text-teal-600">
+              <span className="font-bold">B3</span>
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-gray-900">
+                Income from Other Sources
+              </h3>
+              <p className="text-sm text-gray-500">
+                Interest, dividends, and other income details
+              </p>
+            </div>
+          </div>
           <button
             type="button"
             onClick={() => setActiveSection(null)}
-            className="text-sm text-blue-600 underline hover:text-blue-800"
+            className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900"
           >
-            Back to Summary
+            Cancel & Go Back
           </button>
         </div>
 
         {sectionErrors.length > 0 && (
-          <div className="rounded-lg border-2 border-red-300 bg-red-50 p-4">
+          <div className="rounded-xl border border-red-200 bg-red-50 p-4">
             <div className="flex items-start gap-3">
-              <svg
-                className="h-6 w-6 flex-shrink-0 text-red-600"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              <span className="text-xl">⚠️</span>
               <div className="flex-1">
                 <h4 className="mb-2 text-sm font-bold text-red-900">
-                  ⚠️ Please fix the following errors ({sectionErrors.length})
+                  Please fix the following errors ({sectionErrors.length})
                 </h4>
                 <ul className="space-y-1 text-sm text-red-800">
                   {sectionErrors.map(([fieldName, error]: [string, any]) => (
@@ -1008,130 +1125,160 @@ const GrossTotalIncome: React.FC<GrossTotalIncomeProps> = ({
           </div>
         )}
 
-        <div className="border border-gray-300 bg-white p-4">
-          <div className="mb-4 border border-blue-300 bg-blue-50 p-2 text-xs italic">
-            <strong>Income from Other Sources</strong> (drop down like interest
-            from saving account, deposit etc. to be provided in e-filing utility
-            specifying nature of income and in case of dividend income and
-            Income from retirement benefit account maintained in a notified
-            country u/s 89A, please mention quarterly breakup for allowing
-            applicable relief from section 234C)
-          </div>
-
-          <div className="mb-4">
-            <div className="mb-2 font-medium text-gray-900">
-              Income from Other Sources
-            </div>
-            <table className="w-full border-2 border-gray-400">
-              <thead className="bg-gray-200">
-                <tr>
-                  <th className="border border-gray-400 p-2 text-left text-sm font-semibold text-gray-900 w-12">
-                    Sl.No.
-                  </th>
-                  <th className="border border-gray-400 p-2 text-left text-sm font-semibold text-gray-900">
-                    Nature of Income
-                  </th>
-                  <th className="border border-gray-400 p-2 text-left text-sm font-semibold text-gray-900">
-                    Description (If 'Any Other' selected)
-                  </th>
-                  <th className="border border-gray-400 p-2 text-left text-sm font-semibold text-gray-900 w-40">
-                    Amount
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {otherSourcesData.map((row) => {
-                  const isAnyOther = row.nature === "Any Other";
-                  const hasSelection = row.nature && row.nature !== "";
-                  const fieldPrefix = `otherSource${row.id}`;
-                  const descriptionError =
-                    validationErrors[`${fieldPrefix}Description`];
-
-                  return (
-                    <tr
-                      key={row.id}
-                      className={hasSelection ? "bg-green-100" : "bg-white"}
-                    >
-                      <td className="border border-gray-400 p-2 text-center font-medium text-gray-900">
-                        {row.id}
-                      </td>
-                      <td className="border border-gray-400 p-2">
-                        <select
-                          {...register(`${fieldPrefix}Nature` as any)}
-                          className={`w-full border-0 bg-transparent p-1 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            hasSelection ? "text-gray-900" : "text-gray-500"
-                          }`}
-                        >
-                          <option value="">(Select)</option>
-                          <option value="Interest from Savings Account">
-                            Interest from Savings Account
-                          </option>
-                          <option value="Interest from Fixed Deposit">
-                            Interest from Fixed Deposit
-                          </option>
-                          <option value="Interest from Company Deposit">
-                            Interest from Company Deposit
-                          </option>
-                          <option value="Interest from Other Deposit">
-                            Interest from Other Deposit
-                          </option>
-                          <option value="Dividend Income">
-                            Dividend Income
-                          </option>
-                          <option value="Any Other">Any Other</option>
-                        </select>
-                      </td>
-                      <td
-                        className={`border border-gray-400 p-2 ${
-                          isAnyOther ? "bg-yellow-50" : "bg-gray-100"
-                        }`}
-                      >
-                        {isAnyOther ? (
-                          <div>
-                            <input
-                              type="text"
-                              {...register(`${fieldPrefix}Description` as any)}
-                              placeholder="Enter description..."
-                              className={`w-full border ${
-                                descriptionError
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                              } bg-white p-1 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                            />
-                            {descriptionError && (
-                              <div className="mt-1 text-xs text-red-600">
-                                {descriptionError}
-                              </div>
-                            )}
-                          </div>
-                        ) : null}
-                      </td>
-                      <td
-                        className={`border border-gray-400 p-2 ${
-                          hasSelection ? "bg-green-200" : "bg-gray-100"
-                        }`}
-                      >
-                        {hasSelection ? (
-                          <input
-                            type="number"
-                            {...register(`${fieldPrefix}Amount` as any)}
-                            placeholder="0"
-                            className="w-full border border-gray-300 bg-white p-1 text-sm font-medium focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                        ) : null}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-            <div className="mt-2 text-xs text-gray-600 italic">
-              * Select nature of income to enable amount entry. For "Any Other",
-              description is mandatory.
+        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <div className="mb-6 rounded-lg border border-blue-100 bg-blue-50 p-4">
+            <div className="flex items-start gap-3">
+              <span className="text-xl">ℹ️</span>
+              <div className="text-sm text-blue-900">
+                <strong>Instructions:</strong> Select nature of income (e.g.,
+                Interest from Savings, Dividend) to provide details. For
+                retirement benefits from notified countries u/s 89A, provide
+                quarterly breakup.
+              </div>
             </div>
           </div>
 
-          <div className="mb-4">
+          <div className="mb-8">
+            <h4 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500">
+              Income Details
+            </h4>
+            <div className="overflow-hidden rounded-lg border border-gray-200">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 w-16">
+                      Sl.No.
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                      Nature of Income
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                      Description (If 'Any Other')
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 w-48">
+                      Amount
+                    </th>
+                    <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-gray-500 w-16">
+                      Action
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {otherSourcesData.map((row) => {
+                    const isAnyOther = row.nature === "Any Other";
+                    const hasSelection = row.nature && row.nature !== "";
+                    const fieldPrefix = `otherSource${row.id}`;
+                    const descriptionError =
+                      validationErrors[`${fieldPrefix}Description`];
+
+                    return (
+                      <tr
+                        key={row.id}
+                        className={hasSelection ? "bg-green-50/50" : "bg-white"}
+                      >
+                        <td className="px-4 py-3 text-center text-sm font-medium text-gray-500">
+                          {row.id}
+                        </td>
+                        <td className="px-4 py-3">
+                          <select
+                            {...register(`${fieldPrefix}Nature` as any)}
+                            className={`w-full rounded-md border-gray-300 px-2 py-1.5 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 ${
+                              hasSelection ? "text-gray-900" : "text-gray-500"
+                            }`}
+                          >
+                            <option value="">Select Nature of Income</option>
+                            <option value="Interest from Savings Account">
+                              Interest from Savings Account (u/s 80TTA/TTB
+                              eligible)
+                            </option>
+                            <option value="Interest from Fixed Deposit">
+                              Interest from Fixed Deposit
+                            </option>
+                            <option value="Interest from Company Deposit">
+                              Interest from Company Deposit
+                            </option>
+                            <option value="Interest from Other Deposit">
+                              Interest from Other Deposit
+                            </option>
+                            <option value="Dividend Income">
+                              Dividend Income
+                            </option>
+                            <option value="Any Other">Any Other</option>
+                          </select>
+                        </td>
+                        <td className="px-4 py-3">
+                          {isAnyOther && (
+                            <div>
+                              <input
+                                type="text"
+                                {...register(
+                                  `${fieldPrefix}Description` as any
+                                )}
+                                placeholder="Specify nature of income"
+                                className={`w-full rounded-md border ${
+                                  descriptionError
+                                    ? "border-red-300 focus:border-red-500 focus:ring-red-200"
+                                    : "border-gray-300 focus:border-blue-500 focus:ring-blue-200"
+                                } px-3 py-1.5 text-sm shadow-sm transition-colors focus:ring-2`}
+                              />
+                              {descriptionError && (
+                                <div className="mt-1 text-xs text-red-600">
+                                  {descriptionError}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </td>
+                        <td className="px-4 py-3">
+                          {hasSelection && (
+                            <div className="relative">
+                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                                ₹
+                              </span>
+                              <input
+                                type="number"
+                                {...register(`${fieldPrefix}Amount` as any)}
+                                placeholder="0"
+                                className="w-full rounded-md border-gray-300 pl-7 pr-3 py-1.5 text-sm font-medium shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                              />
+                            </div>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          {hasSelection && (
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveOtherSource(row.id)}
+                              className="p-1.5 text-gray-400 hover:bg-red-50 hover:text-red-600 rounded-md transition-colors"
+                              title="Remove"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <path d="M3 6h18"></path>
+                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                              </svg>
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="mb-8">
             <InputField
               label="Income from retirement benefit account maintained in a country other than notified country u/s 89A"
               name="retirementBenefitNonNotifiedCountry"
@@ -1142,234 +1289,178 @@ const GrossTotalIncome: React.FC<GrossTotalIncomeProps> = ({
             />
           </div>
 
-          <div className="mb-4">
-            <div className="mb-3 font-medium text-gray-900">
-              Income from retirement benefit account maintained in a notified
-              country u/s 89A (1 + 2 + 3)
+          <div className="mb-8 p-4 rounded-xl border border-gray-200 bg-gray-50">
+            <h4 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-600">
+              Retirement Benefits (Notified Country u/s 89A)
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <InputField
+                label="1. USA"
+                name="retirementBenefitUSA"
+                type="number"
+                placeholder="0"
+                register={register}
+              />
+              <InputField
+                label="2. UK"
+                name="retirementBenefitUK"
+                type="number"
+                placeholder="0"
+                register={register}
+              />
+              <InputField
+                label="3. Canada"
+                name="retirementBenefitCanada"
+                type="number"
+                placeholder="0"
+                register={register}
+              />
             </div>
-            <table className="w-full border-2 border-gray-300 shadow-sm">
-              <thead>
-                <tr className="bg-gray-700 text-white">
-                  <th className="border-r border-gray-500 p-3 text-left font-semibold">
-                    Country
-                  </th>
-                  <th className="p-3 text-left font-semibold w-64">
-                    Amount (₹)
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="bg-white hover:bg-gray-50">
-                  <td className="border-b border-r border-gray-300 p-3 text-gray-800">
-                    1. United States of America
-                  </td>
-                  <td className="border-b border-gray-300 p-2">
-                    <input
-                      type="number"
-                      {...register("retirementBenefitUSA")}
-                      className="w-full rounded border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                      placeholder="Enter amount"
-                    />
-                  </td>
-                </tr>
-                <tr className="bg-white hover:bg-gray-50">
-                  <td className="border-b border-r border-gray-300 p-3 text-gray-800">
-                    2. United Kingdom of Great Britain and Northern Ireland
-                  </td>
-                  <td className="border-b border-gray-300 p-2">
-                    <input
-                      type="number"
-                      {...register("retirementBenefitUK")}
-                      className="w-full rounded border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                      placeholder="Enter amount"
-                    />
-                  </td>
-                </tr>
-                <tr className="bg-white hover:bg-gray-50">
-                  <td className="border-r border-gray-300 p-3 text-gray-800">
-                    3. Canada
-                  </td>
-                  <td className="p-2">
-                    <input
-                      type="number"
-                      {...register("retirementBenefitCanada")}
-                      className="w-full rounded border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                      placeholder="Enter amount"
-                    />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <div className="mt-2 rounded bg-blue-50 p-3 text-right">
-              <span className="text-sm font-semibold text-gray-700">
-                Total:{" "}
-              </span>
-              <span className="text-lg font-bold text-blue-700">
-                ₹{retirementBenefitNotified.toLocaleString("en-IN")}
-              </span>
+            <div className="mt-4 flex justify-end">
+              <div className="rounded-lg bg-blue-100 px-4 py-2 text-sm font-semibold text-blue-800">
+                Total: ₹{retirementBenefitNotified.toLocaleString("en-IN")}
+              </div>
             </div>
           </div>
 
-          <div className="mb-4">
-            <div className="mb-3 font-medium text-gray-900">
-              Income from retirement benefit account maintained in a notified
-              country u/s 89A (Quarterly breakup of Taxable Portion)
-            </div>
-            <table className="w-full border-2 border-gray-300 shadow-sm">
-              <tbody>
-                <tr className="bg-white hover:bg-gray-50">
-                  <td className="border-b border-r border-gray-300 p-3 text-gray-800">
-                    i. Upto 15-Jun-2024
-                  </td>
-                  <td className="border-b border-gray-300 p-2 w-64">
+          <div className="mb-8">
+            <h4 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500">
+              Quarterly Breakup (For Interest Calculation)
+            </h4>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Retirement Benefit Breakup */}
+              <div className="rounded-xl border border-gray-200 p-4">
+                <h5 className="mb-3 font-semibold text-gray-700 border-b pb-2">
+                  Retirement Benefit u/s 89A
+                </h5>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 items-center gap-4">
+                    <label className="text-xs text-gray-600">Upto 15-Jun</label>
                     <input
                       type="number"
                       {...register("retirementBenefitQ1")}
-                      className="w-full rounded border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                      placeholder="Enter amount"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      placeholder="0"
                     />
-                  </td>
-                </tr>
-                <tr className="bg-white hover:bg-gray-50">
-                  <td className="border-b border-r border-gray-300 p-3 text-gray-800">
-                    ii. From 16-Jun-2024 to 15-Sep-2024
-                  </td>
-                  <td className="border-b border-gray-300 p-2">
+                  </div>
+                  <div className="grid grid-cols-2 items-center gap-4">
+                    <label className="text-xs text-gray-600">
+                      16-Jun to 15-Sep
+                    </label>
                     <input
                       type="number"
                       {...register("retirementBenefitQ2")}
-                      className="w-full rounded border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                      placeholder="Enter amount"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      placeholder="0"
                     />
-                  </td>
-                </tr>
-                <tr className="bg-white hover:bg-gray-50">
-                  <td className="border-b border-r border-gray-300 p-3 text-gray-800">
-                    iii. From 16-Sep-2024 to 15-Dec-2024
-                  </td>
-                  <td className="border-b border-gray-300 p-2">
+                  </div>
+                  <div className="grid grid-cols-2 items-center gap-4">
+                    <label className="text-xs text-gray-600">
+                      16-Sep to 15-Dec
+                    </label>
                     <input
                       type="number"
                       {...register("retirementBenefitQ3")}
-                      className="w-full rounded border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                      placeholder="Enter amount"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      placeholder="0"
                     />
-                  </td>
-                </tr>
-                <tr className="bg-white hover:bg-gray-50">
-                  <td className="border-b border-r border-gray-300 p-3 text-gray-800">
-                    iv. From 16-Dec-2024 to 15-Mar-2025
-                  </td>
-                  <td className="border-b border-gray-300 p-2">
+                  </div>
+                  <div className="grid grid-cols-2 items-center gap-4">
+                    <label className="text-xs text-gray-600">
+                      16-Dec to 15-Mar
+                    </label>
                     <input
                       type="number"
                       {...register("retirementBenefitQ4")}
-                      className="w-full rounded border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                      placeholder="Enter amount"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      placeholder="0"
                     />
-                  </td>
-                </tr>
-                <tr className="bg-white hover:bg-gray-50">
-                  <td className="border-r border-gray-300 p-3 text-gray-800">
-                    v. From 16-Mar-2025 to 31-Mar-2025
-                  </td>
-                  <td className="p-2">
+                  </div>
+                  <div className="grid grid-cols-2 items-center gap-4">
+                    <label className="text-xs text-gray-600">
+                      16-Mar to 31-Mar
+                    </label>
                     <input
                       type="number"
                       {...register("retirementBenefitQ5")}
-                      className="w-full rounded border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                      placeholder="Enter amount"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      placeholder="0"
                     />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+                  </div>
+                </div>
+              </div>
 
-          <div className="mb-4">
-            <div className="mb-3 font-medium text-gray-900">
-              Dividend (i+ii+iii+iv+v)
-            </div>
-            <table className="w-full border-2 border-gray-300 shadow-sm">
-              <tbody>
-                <tr className="bg-white hover:bg-gray-50">
-                  <td className="border-b border-r border-gray-300 p-3 text-gray-800">
-                    i. Upto 15-Jun-2024
-                  </td>
-                  <td className="border-b border-gray-300 p-2 w-64">
+              {/* Dividend Breakup */}
+              <div className="rounded-xl border border-gray-200 p-4">
+                <div className="flex justify-between items-center border-b pb-2 mb-3">
+                  <h5 className="font-semibold text-gray-700">
+                    Dividend Income
+                  </h5>
+                  <span className="text-xs font-bold text-blue-600">
+                    Total: ₹{totalDividend.toLocaleString()}
+                  </span>
+                </div>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 items-center gap-4">
+                    <label className="text-xs text-gray-600">Upto 15-Jun</label>
                     <input
                       type="number"
                       {...register("dividendQ1")}
-                      className="w-full rounded border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                      placeholder="Enter amount"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      placeholder="0"
                     />
-                  </td>
-                </tr>
-                <tr className="bg-white hover:bg-gray-50">
-                  <td className="border-b border-r border-gray-300 p-3 text-gray-800">
-                    ii. From 16-Jun-2024 to 15-Sep-2024
-                  </td>
-                  <td className="border-b border-gray-300 p-2">
+                  </div>
+                  <div className="grid grid-cols-2 items-center gap-4">
+                    <label className="text-xs text-gray-600">
+                      16-Jun to 15-Sep
+                    </label>
                     <input
                       type="number"
                       {...register("dividendQ2")}
-                      className="w-full rounded border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                      placeholder="Enter amount"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      placeholder="0"
                     />
-                  </td>
-                </tr>
-                <tr className="bg-white hover:bg-gray-50">
-                  <td className="border-b border-r border-gray-300 p-3 text-gray-800">
-                    iii. From 16-Sep-2024 to 15-Dec-2024
-                  </td>
-                  <td className="border-b border-gray-300 p-2">
+                  </div>
+                  <div className="grid grid-cols-2 items-center gap-4">
+                    <label className="text-xs text-gray-600">
+                      16-Sep to 15-Dec
+                    </label>
                     <input
                       type="number"
                       {...register("dividendQ3")}
-                      className="w-full rounded border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                      placeholder="Enter amount"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      placeholder="0"
                     />
-                  </td>
-                </tr>
-                <tr className="bg-white hover:bg-gray-50">
-                  <td className="border-b border-r border-gray-300 p-3 text-gray-800">
-                    iv. From 16-Dec-2024 to 15-Mar-2025
-                  </td>
-                  <td className="border-b border-gray-300 p-2">
+                  </div>
+                  <div className="grid grid-cols-2 items-center gap-4">
+                    <label className="text-xs text-gray-600">
+                      16-Dec to 15-Mar
+                    </label>
                     <input
                       type="number"
                       {...register("dividendQ4")}
-                      className="w-full rounded border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                      placeholder="Enter amount"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      placeholder="0"
                     />
-                  </td>
-                </tr>
-                <tr className="bg-white hover:bg-gray-50">
-                  <td className="border-r border-gray-300 p-3 text-gray-800">
-                    v. From 16-Mar-2025 to 31-Mar-2025
-                  </td>
-                  <td className="p-2">
+                  </div>
+                  <div className="grid grid-cols-2 items-center gap-4">
+                    <label className="text-xs text-gray-600">
+                      16-Mar to 31-Mar
+                    </label>
                     <input
                       type="number"
                       {...register("dividendQ5")}
-                      className="w-full rounded border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                      placeholder="Enter amount"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      placeholder="0"
                     />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <div className="mt-2 rounded bg-blue-50 p-3 text-right">
-              <span className="text-sm font-semibold text-gray-700">
-                Total Dividend:{" "}
-              </span>
-              <span className="text-lg font-bold text-blue-700">
-                ₹{totalDividend.toLocaleString("en-IN")}
-              </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <InputField
               label="Less: Income claimed for relief from taxation u/s 89A"
               name="reliefFromTaxation89AOtherSources"
@@ -1389,18 +1480,33 @@ const GrossTotalIncome: React.FC<GrossTotalIncomeProps> = ({
             />
           </div>
 
-          <div className="mt-4 flex justify-end gap-3">
+          <div className="mt-8 flex flex-col gap-4 rounded-xl border border-indigo-200 bg-indigo-50 p-6 shadow-sm md:flex-row md:items-center md:justify-between">
+            <div>
+              <h4 className="text-lg font-bold text-indigo-900">
+                Income chargeable under the head 'Income from Other Sources'
+              </h4>
+              <p className="text-sm text-indigo-700">
+                (iii + iv + v + ... - deductions) [B3]
+              </p>
+            </div>
+
+            <span className="text-3xl font-bold text-indigo-700">
+              ₹{otherSourcesIncome.toLocaleString("en-IN")}
+            </span>
+          </div>
+
+          <div className="mt-8 flex justify-end gap-3 pt-6 border-t border-gray-100">
             <button
               type="button"
               onClick={() => setActiveSection("houseProperty")}
-              className="border border-gray-300 bg-white px-4 py-2 hover:bg-gray-50"
+              className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
             >
-              ← Previous
+              Cancel
             </button>
             <button
               type="button"
               onClick={() => handleSectionComplete("otherSources")}
-              className="bg-green-600 px-6 py-2 text-white hover:bg-green-700"
+              className="rounded-lg bg-green-600 px-6 py-2 text-sm font-bold text-white shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
             >
               Complete & Submit
             </button>
@@ -1411,20 +1517,28 @@ const GrossTotalIncome: React.FC<GrossTotalIncomeProps> = ({
   };
 
   return (
-    <section className="space-y-6">
+    <section ref={topRef} className="space-y-6">
       {/* Header */}
       <div className="rounded-xl border border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-6 shadow-sm">
         <div className="flex items-start justify-between">
           <div>
             <div className="mb-2 flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-lg font-bold text-white">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-lg font-bold text-white shadow-md">
                 B
               </span>
-              <h2 className="text-2xl font-bold text-gray-900">Gross Total Income</h2>
+              <h2 className="text-2xl font-bold text-gray-900">
+                Gross Total Income
+              </h2>
             </div>
-            <p className="text-sm text-gray-600">
-              Part B - Complete all income sections (Salary, House Property, Other Sources). All amounts in whole rupees (₹) only.
-            </p>
+            <div className="space-y-1">
+              <p className="text-sm text-gray-600">
+                <strong>Part B:</strong> Provide details of Salary, House
+                Property, and Other Sources income.
+              </p>
+              <p className="text-xs text-gray-500">
+                Status of all sections must be 'Completed' to proceed.
+              </p>
+            </div>
           </div>
           <button
             type="button"
@@ -1582,6 +1696,7 @@ interface InputFieldProps {
   placeholder?: string;
   type?: string;
   helpText?: string;
+  readOnly?: boolean;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -1592,6 +1707,7 @@ const InputField: React.FC<InputFieldProps> = ({
   placeholder,
   type = "text",
   helpText,
+  readOnly,
 }) => {
   const errorMessage = typeof error === "string" ? error : error?.message;
 
@@ -1604,9 +1720,10 @@ const InputField: React.FC<InputFieldProps> = ({
         id={name}
         type={type}
         placeholder={placeholder}
-        className={`w-full rounded-lg border bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 ${
-          errorMessage ? "border-red-400" : "border-gray-300"
-        }`}
+        readOnly={readOnly}
+        className={`w-full rounded-lg border px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 ${
+          readOnly ? "bg-gray-100 cursor-not-allowed" : "bg-white"
+        } ${errorMessage ? "border-red-400" : "border-gray-300"}`}
         {...register(name)}
       />
       {helpText && <p className="text-xs text-gray-500">{helpText}</p>}
