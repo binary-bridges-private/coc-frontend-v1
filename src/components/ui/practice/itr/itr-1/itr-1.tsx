@@ -277,14 +277,18 @@ const ItrOne: React.FC = () => {
       toNumber(currentDeductionData.section80CCH) +
       toNumber(currentDeductionData.anyOtherDeductions);
 
-    setSections((prev) =>
-      prev.map((section) => {
+    setSections((prev) => {
+      const updated = prev.map((section) => {
         if (section.id === "personal") {
           const isComplete = !!(
             currentPersonalData.pan && currentPersonalData.aadhar
           );
           if (isComplete && section.status !== "completed") {
-            return { ...section, status: "completed", statusText: "Confirmed" };
+            return {
+              ...section,
+              status: "completed" as StepStatus,
+              statusText: "Confirmed",
+            };
           }
         }
         if (section.id === "gross-income") {
@@ -292,7 +296,7 @@ const ItrOne: React.FC = () => {
           return {
             ...section,
             amountValue: Math.max(0, grossTotalIncome).toLocaleString("en-IN"),
-            status: isComplete ? "completed" : section.status,
+            status: (isComplete ? "completed" : section.status) as StepStatus,
             statusText: isComplete ? "Confirmed" : section.statusText,
           };
         }
@@ -311,14 +315,20 @@ const ItrOne: React.FC = () => {
           return {
             ...section,
             amountValue: Math.max(0, totalDeductions).toLocaleString("en-IN"),
-            status: currentStatus,
+            status: currentStatus as StepStatus,
             statusText:
               currentStatus === "completed" ? "Confirmed" : section.statusText,
           };
         }
         return section;
-      })
-    );
+      });
+
+      // Prevent infinite loop by checking if state actually changed
+      if (JSON.stringify(updated) === JSON.stringify(prev)) {
+        return prev;
+      }
+      return updated;
+    });
   }, [currentGrossIncomeData, currentDeductionData, currentPersonalData]);
 
   const ensureAtLeastOneInProgress = (
