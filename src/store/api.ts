@@ -2,14 +2,14 @@ import axios from 'axios';
 
 const devUrl = 'http://localhost:8080/practice/v1';
 // const prodUrl = 'https://cfmpractice.coceducation.com/api/practice/v1';
-const prodUrl = 'https://cfmpracticeapi.coceducation.com/practice/v1';
+const prodUrl = 'http://cfmpracticeapi.coceducation.com/practice/v1';
 
 // Helper function to get access token from localStorage
 const getAccessToken = () => {
   return localStorage.getItem('accessToken');
 };
 
-// Request interceptor to add Authorization header
+// Request interceptor to add Authorization headers
 const addAuthHeader = (config: any) => {
   const token = getAccessToken();
   if (token) {
