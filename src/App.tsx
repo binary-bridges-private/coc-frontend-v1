@@ -57,7 +57,7 @@ import FormAOC4 from "./components/ui/practice/roc/FormAOC4.tsx";
 import FormMGT7 from "./components/ui/practice/roc/FormMGT7.tsx";
 import Incorporation from "./components/ui/practice/roc/Incorporation.tsx";
 import RocFilingForm from "./components/ui/practice/roc/RocFilingForm.tsx";
-import ItrThree from "./components/ui/practice/itr/itrThree.tsx";
+import ItrThree from "./components/ui/practice/itr/ItrThree.tsx";
 import ItrFive from "./components/ui/practice/itr/ItrFive.tsx";
 import ItrSeven from "./components/ui/practice/itr/ItrSeven.tsx";
 
@@ -117,7 +117,7 @@ function App() {
 
             <Route path="/practice/tds" element={<ProtectedRoutes isFree={false} children={<Tds />} />} />
             <Route path="/practice/tds/registration" element={<ProtectedRoutes isFree={false} children={<TdsRegister />} />} />
-            <Route path="/practice/tds/login" element={<ProtectedRoutes isFree={false} children={<TdsLogin/>}/>}/>
+            <Route path="/practice/tds/login" element={<ProtectedRoutes isFree={false} children={<TdsLogin />} />} />
             <Route path="/practice/tds/pay-tds" element={<ProtectedRoutes isFree={false} children={<PayTds />} />} />
             <Route path="/practice/tds/tds-return" element={<ProtectedRoutes isFree={false} children={<Form26Q />} />} />
             <Route path="/practice/tds/form16a" element={<ProtectedRoutes isFree={false} children={<Form16A />} />} />

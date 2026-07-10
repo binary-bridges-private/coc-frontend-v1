@@ -1,6 +1,6 @@
 import React from 'react';
-import { ItrThreeFormData, ItrThreeFormErrors } from '../types/ItrThreeTypes';
-import { ITR_THREE_OPTIONS } from '../constants/ItrThreeConstants';
+import { ItrThreeFormData, ItrThreeFormErrors } from '../types/ItrThreeTypes.ts';
+import { ITR_THREE_OPTIONS } from '../constants/ItrThreeConstants.ts';
 
 interface ItrThreeGeneralInfoProps {
   formData: ItrThreeFormData;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ItrThreeFormData, ItrThreeFormErrors } from '../types/ItrThreeTypes';
+import { ItrThreeFormData, ItrThreeFormErrors } from '../types/ItrThreeTypes.ts';
 
 interface ItrThreeTradingAccountProps {
   formData: ItrThreeFormData;

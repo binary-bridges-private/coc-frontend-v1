@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ItrThreeFormData, ItrThreeFormErrors } from './types/ItrThreeTypes';
-import { initialItrThreeFormData, initialItrThreeFormErrors, ITR_THREE_STEPS } from './constants/ItrThreeConstants';
-import { validateItrThreeStep, calculateTotalIncome, calculateTotalDeductions, calculateTaxPayable } from './ItrThreeValidation';
-import ItrThreeGeneralInfo from './components/ItrThreeGeneralInfo';
-import ItrThreeBusinessDetails from './components/ItrThreeBusinessDetails';
-import ItrThreeTradingAccount from './components/ItrThreeTradingAccount';
+import { ItrThreeFormData, ItrThreeFormErrors } from './types/ItrThreeTypes.ts';
+import { initialItrThreeFormData, initialItrThreeFormErrors, ITR_THREE_STEPS } from './constants/ItrThreeConstants.ts';
+import { validateItrThreeStep, calculateTotalIncome, calculateTotalDeductions, calculateTaxPayable } from './ItrThreeValidation.ts';
+import ItrThreeGeneralInfo from './components/ItrThreeGeneralInfo.tsx';
+import ItrThreeBusinessDetails from './components/ItrThreeBusinessDetails.tsx';
+import ItrThreeTradingAccount from './components/ItrThreeTradingAccount.tsx';
+
 
 const ItrThree: React.FC = () => {
   const navigate = useNavigate();

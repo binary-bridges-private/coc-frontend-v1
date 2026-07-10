@@ -1,6 +1,6 @@
 // ITR-3 Validation Utilities
 
-import { VALIDATION_PATTERNS } from './constants/ItrThreeConstants';
+import { VALIDATION_PATTERNS } from './constants/ItrThreeConstants.ts';
 
 // Individual validation functions
 export const validatePAN = (pan: string): boolean => {
