@@ -46,7 +46,8 @@ const FacultyCard = ({ image, label, name, bio, rating, subjects, link }) => (
         className="object-cover object-center w-full h-full"
         onError={(e) => {
           const target = e.target as HTMLImageElement;
-          target.src = 'https://via.placeholder.com/400x400?text=Faculty+Image';
+          target.onerror = null;
+          target.src = 'https://placehold.co/400x400?text=Faculty+Image';
           target.className = "object-contain p-4 bg-gray-200";
         }}
       />
@@ -84,8 +85,8 @@ const FacultyCard = ({ image, label, name, bio, rating, subjects, link }) => (
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1 * index, duration: 0.3 }}
-            whileHover={{ 
-              scale: 1.05, 
+            whileHover={{
+              scale: 1.05,
               backgroundColor: "rgb(249 115 22 / 0.2)",
               color: "rgb(194 65 12)"
             }}
@@ -112,9 +113,8 @@ const FacultyHome = () => {
     <motion.div
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.9 }}
-      className={`absolute top-1/2 -translate-y-1/2 z-20 cursor-pointer p-3 rounded-full bg-white shadow-lg hover:shadow-xl ${
-        direction === 'next' ? '-right-12' : '-left-12'
-      }`}
+      className={`absolute top-1/2 -translate-y-1/2 z-20 cursor-pointer p-3 rounded-full bg-white shadow-lg hover:shadow-xl ${direction === 'next' ? '-right-12' : '-left-12'
+        }`}
       onClick={onClick}
     >
       {direction === 'next' ? (

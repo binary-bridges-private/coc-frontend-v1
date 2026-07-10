@@ -6,7 +6,8 @@ import { RiFlashlightFill } from "react-icons/ri";
 const ProductCard = ({ name, byline, photo, priceRange, rating, students, tag, discount, link }) => {
     const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
         const target = e.target as HTMLImageElement;
-        target.src = 'https://via.placeholder.com/800x450?text=Course+Image';
+        target.onerror = null;
+        target.src = 'https://placehold.co/800x450?text=Course+Image';
         target.className = "object-contain bg-gray-200";
     };
 
@@ -15,13 +16,12 @@ const ProductCard = ({ name, byline, photo, priceRange, rating, students, tag, d
             {/* Tag Badge */}
             {tag && (
                 <div className="absolute z-10 top-4 left-4">
-                    <span className={`px-3 py-1.5 text-xs font-bold tracking-wider text-white uppercase rounded-full shadow-md ${
-                        tag === "BEST SELLER" ? "bg-gradient-to-r from-purple-600 to-purple-700" :
-                        tag === "NEW" ? "bg-gradient-to-r from-blue-600 to-blue-700" :
-                        tag === "POPULAR" ? "bg-gradient-to-r from-pink-600 to-pink-700" :
-                        tag === "HOT" ? "bg-gradient-to-r from-red-600 to-red-700" : 
-                        "bg-gradient-to-r from-indigo-600 to-indigo-700"
-                    }`}>
+                    <span className={`px-3 py-1.5 text-xs font-bold tracking-wider text-white uppercase rounded-full shadow-md ${tag === "BEST SELLER" ? "bg-gradient-to-r from-purple-600 to-purple-700" :
+                            tag === "NEW" ? "bg-gradient-to-r from-blue-600 to-blue-700" :
+                                tag === "POPULAR" ? "bg-gradient-to-r from-pink-600 to-pink-700" :
+                                    tag === "HOT" ? "bg-gradient-to-r from-red-600 to-red-700" :
+                                        "bg-gradient-to-r from-indigo-600 to-indigo-700"
+                        }`}>
                         {tag}
                     </span>
                 </div>
@@ -40,7 +40,7 @@ const ProductCard = ({ name, byline, photo, priceRange, rating, students, tag, d
             {/* Image Container */}
             <div className="relative w-full h-[220px] overflow-hidden bg-gray-100">
                 <img
-                    src={photo || 'https://via.placeholder.com/800x450?text=Course+Image'}
+                    src={photo || 'https://placehold.co/800x450?text=Course+Image'}
                     alt={name}
                     className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
                     onError={handleImageError}
@@ -96,9 +96,9 @@ const ProductCard = ({ name, byline, photo, priceRange, rating, students, tag, d
                             <MdPhoneInTalk className="text-base" />
                         </button>
                     </div>
-                    <a 
-                        href={link} 
-                        target="_blank" 
+                    <a
+                        href={link}
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="px-4 py-2 text-sm font-medium text-white transition-all duration-300 bg-gradient-to-r from-orange-600 to-orange-700 rounded-lg hover:from-orange-700 hover:to-orange-800 hover:shadow-lg"
                     >
